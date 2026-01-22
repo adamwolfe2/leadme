@@ -25,6 +25,45 @@ A multi-tenant B2B lead intelligence platform that identifies companies actively
 - 🔐 Row-level security (RLS) policies
 - 📈 Trending topics dashboard
 - 👤 People search with credit system
+- 🔥 Intent scoring (Hot/Warm/Cold leads)
+- 🚀 Industry-specific platform uploads
+
+## Lead Pipeline
+
+The platform automatically discovers, scores, enriches, and delivers leads through a multi-stage pipeline:
+
+### 1. Discovery (DataShopper)
+- Daily cron job at 2 AM discovers companies with intent signals
+- Filters by location, company size, revenue, and industry
+- Up to 50 companies per query per day
+
+### 2. Intent Scoring
+Leads are automatically scored based on signal strength:
+- **🔥 Hot**: 3+ high signals OR 2+ high + 3+ medium signals
+- **⚡ Warm**: 1+ high signals OR 4+ medium signals
+- **❄️ Cold**: Everything else
+
+### 3. Enrichment (Clay)
+- Finds up to 5 contacts per company
+- Targets C-level, VPs, Directors, and Managers
+- Verifies email addresses
+- Updates company information
+
+### 4. Delivery
+Multi-channel lead delivery:
+- 📧 Email notifications (Resend)
+- 💬 Slack messages (if configured)
+- 🔗 Webhooks (if configured)
+
+### 5. Platform Upload
+Hot and warm leads are automatically uploaded to industry-specific platforms:
+- **Tech**: Salesforce, HubSpot
+- **Finance**: Custom financial CRMs
+- **Healthcare**: HIPAA-compliant systems
+- **Retail**: E-commerce integrations
+- **Marketing**: Marketing automation tools
+
+See [PHASE_4_LEAD_PIPELINE.md](./PHASE_4_LEAD_PIPELINE.md) for complete documentation.
 
 ## Getting Started
 
