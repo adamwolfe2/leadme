@@ -4,40 +4,34 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createPortalSession } from '@/lib/stripe/client'
+import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
+    // 1. Check authentication
     const user = await getCurrentUser()
-
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
-    // Check if user has Stripe customer ID
+    // 2. Check if user has Stripe customer ID
     if (!user.stripe_customer_id) {
-      return NextResponse.json(
-        { error: 'No active subscription found' },
-        { status: 400 }
-      )
+      return badRequest('No active subscription found')
     }
 
-    // Create portal session
+    // 3. Create portal session
     const baseUrl = request.nextUrl.origin
     const session = await createPortalSession({
       customerId: user.stripe_customer_id,
       returnUrl: `${baseUrl}/settings/billing`,
     })
 
+    // 4. Return response
     return NextResponse.json({
       success: true,
       url: session.url,
     })
   } catch (error: any) {
-    console.error('[API] Portal error:', error)
-    return NextResponse.json(
-      { error: error.message || 'Failed to create portal session' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

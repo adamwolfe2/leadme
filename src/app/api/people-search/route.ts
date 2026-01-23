@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { PeopleSearchService } from '@/lib/services/people-search.service'
 import { PeopleSearchRepository } from '@/lib/repositories/people-search.repository'
+import { handleApiError, unauthorized, badRequest, success } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 
 const searchRequestSchema = z.object({
@@ -23,30 +24,26 @@ const searchRequestSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
+    // 1. Check authentication
     const user = await getCurrentUser()
-
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
-    // Parse request body
+    // 2. Validate input with Zod
     const body = await request.json()
     const { filters, save_search, search_name } = searchRequestSchema.parse(body)
 
     // Validate at least one filter is provided
     if (!filters.domain && !filters.company) {
-      return NextResponse.json(
-        { error: 'Please provide either a company domain or company name' },
-        { status: 400 }
-      )
+      return badRequest('Please provide either a company domain or company name')
     }
 
-    // Search for people
+    // 3. Search for people
     const peopleSearchService = new PeopleSearchService()
     const results = await peopleSearchService.searchPeople(filters, 50)
 
-    // Save results to database
+    // 4. Save results to database with workspace filtering
     const peopleSearchRepo = new PeopleSearchRepository()
     const savedResults = await Promise.all(
       results.map((person) =>
@@ -70,62 +67,43 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        results: savedResults.map((result) => ({
-          ...result,
-          person_data: {
-            ...result.person_data,
-            // Mask email for display
-            email: peopleSearchService.maskEmail(
-              result.person_data.email || ''
-            ),
-          },
-        })),
-        count: savedResults.length,
-      },
+    // 5. Return response
+    return success({
+      results: savedResults.map((result) => ({
+        ...result,
+        person_data: {
+          ...result.person_data,
+          // Mask email for display
+          email: peopleSearchService.maskEmail(
+            result.person_data.email || ''
+          ),
+        },
+      })),
+      count: savedResults.length,
     })
   } catch (error: any) {
-    console.error('[API] People search error:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
 // GET /api/people-search - Get saved searches
 export async function GET(request: NextRequest) {
   try {
+    // 1. Check authentication
     const user = await getCurrentUser()
-
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
+    // 2. Fetch saved searches with workspace filtering
     const peopleSearchRepo = new PeopleSearchRepository()
     const savedSearches = await peopleSearchRepo.findSavedSearches(
       user.workspace_id
     )
 
-    return NextResponse.json({
-      success: true,
-      data: savedSearches,
-    })
+    // 3. Return response
+    return success(savedSearches)
   } catch (error: any) {
-    console.error('[API] Get saved searches error:', error)
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

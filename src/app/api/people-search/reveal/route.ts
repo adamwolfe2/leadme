@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { PeopleSearchRepository } from '@/lib/repositories/people-search.repository'
+import { handleApiError, unauthorized, forbidden, success } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 
 const revealRequestSchema = z.object({
@@ -12,39 +13,34 @@ const revealRequestSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
+    // 1. Check authentication
     const user = await getCurrentUser()
-
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
-    // Parse request body
+    // 2. Validate input with Zod
     const body = await request.json()
     const { result_id } = revealRequestSchema.parse(body)
 
-    // Check if user has credits available
+    // 3. Check if user has credits available
     const peopleSearchRepo = new PeopleSearchRepository()
     const hasCredits = await peopleSearchRepo.checkCredits(user.id, 1)
 
     if (!hasCredits) {
-      return NextResponse.json(
-        {
-          error: 'Insufficient credits',
-          message:
-            'You have reached your daily credit limit. Upgrade to Pro for more credits or wait for the daily reset at midnight.',
-        },
-        { status: 403 }
+      return forbidden(
+        'You have reached your daily credit limit. Upgrade to Pro for more credits or wait for the daily reset at midnight.'
       )
     }
 
-    // Reveal email (this deducts 1 credit atomically)
+    // 4. Reveal email with workspace filtering (deducts 1 credit atomically)
     const result = await peopleSearchRepo.revealEmail(
       result_id,
       user.workspace_id,
       user.id
     )
 
+    // 5. Return response
     return NextResponse.json({
       success: true,
       data: {
@@ -54,29 +50,6 @@ export async function POST(request: NextRequest) {
       message: `Email revealed. ${result.credits_remaining} credits remaining today.`,
     })
   } catch (error: any) {
-    console.error('[API] Email reveal error:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    // Check for specific error messages
-    if (error.message?.includes('Insufficient credits')) {
-      return NextResponse.json(
-        {
-          error: 'Insufficient credits',
-          message: error.message,
-        },
-        { status: 403 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

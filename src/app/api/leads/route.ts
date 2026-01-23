@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { LeadRepository } from '@/lib/repositories/lead.repository'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 
 const leadFiltersSchema = z.object({
@@ -20,14 +21,13 @@ const leadFiltersSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    // Check authentication
+    // 1. Check authentication
     const user = await getCurrentUser()
-
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
-    // Parse query params
+    // 2. Validate input with Zod
     const searchParams = request.nextUrl.searchParams
     const params = {
       query_id: searchParams.get('query_id') || undefined,
@@ -41,14 +41,13 @@ export async function GET(request: NextRequest) {
       per_page: searchParams.get('per_page') || '50',
     }
 
-    // Validate
     const validated = leadFiltersSchema.parse(params)
 
     // Parse pagination
     const page = parseInt(validated.page || '1', 10)
     const perPage = parseInt(validated.per_page || '50', 10)
 
-    // Fetch leads
+    // 3. Fetch leads with workspace filtering
     const leadRepo = new LeadRepository()
     const result = await leadRepo.findByWorkspace(
       user.workspace_id,
@@ -65,6 +64,7 @@ export async function GET(request: NextRequest) {
       perPage
     )
 
+    // 4. Return response
     return NextResponse.json({
       success: true,
       data: result.leads,
@@ -76,18 +76,6 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error: any) {
-    console.error('[API] Leads list error:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid parameters', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

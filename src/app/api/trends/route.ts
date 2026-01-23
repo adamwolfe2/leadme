@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { TopicSearchService } from '@/lib/services/topic-search.service'
+import { handleApiError, unauthorized, success } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 
 const trendsQuerySchema = z.object({
@@ -13,14 +14,13 @@ const trendsQuerySchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    // Check authentication
+    // 1. Check authentication
     const user = await getCurrentUser()
-
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
-    // Parse query params
+    // 2. Validate input with Zod
     const searchParams = request.nextUrl.searchParams
     const params = {
       type: searchParams.get('type') || 'all',
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     const validated = trendsQuerySchema.parse(params)
     const limit = parseInt(validated.limit || '20', 10)
 
-    // Fetch trending topics
+    // 3. Fetch trending topics
     const topicSearchService = new TopicSearchService()
 
     let gainers: any[] = []
@@ -44,26 +44,12 @@ export async function GET(request: NextRequest) {
       losers = await topicSearchService.getTrendingLosers(limit)
     }
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        gainers,
-        losers,
-      },
+    // 4. Return response
+    return success({
+      gainers,
+      losers,
     })
   } catch (error: any) {
-    console.error('[API] Trends error:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid parameters', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

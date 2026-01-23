@@ -4,37 +4,29 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { LeadRepository } from '@/lib/repositories/lead.repository'
+import { handleApiError, unauthorized, success } from '@/lib/utils/api-error-handler'
 
 export async function GET(request: NextRequest) {
   try {
-    // Check authentication
+    // 1. Check authentication
     const user = await getCurrentUser()
-
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
-    // Fetch stats
+    // 2. Fetch stats with workspace filtering
     const leadRepo = new LeadRepository()
-
     const [intentBreakdown, platformStats] = await Promise.all([
       leadRepo.getIntentBreakdown(user.workspace_id),
       leadRepo.getPlatformUploadStats(user.workspace_id),
     ])
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        intent_breakdown: intentBreakdown,
-        platform_uploads: platformStats,
-      },
+    // 3. Return response
+    return success({
+      intent_breakdown: intentBreakdown,
+      platform_uploads: platformStats,
     })
   } catch (error: any) {
-    console.error('[API] Leads stats error:', error)
-
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

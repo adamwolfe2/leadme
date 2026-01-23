@@ -3,6 +3,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { QueryRepository } from '@/lib/repositories/query.repository'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized, notFound, success } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 
 interface RouteContext {
@@ -61,27 +62,24 @@ export async function GET(
   try {
     const { id } = await context.params
 
-    // Check authentication
+    // 1. Check authentication
     const user = await getCurrentUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
-    // Get query
+    // 2. Get query with workspace filtering
     const queryRepo = new QueryRepository()
     const query = await queryRepo.findById(id, user.workspace_id)
 
     if (!query) {
-      return NextResponse.json({ error: 'Query not found' }, { status: 404 })
+      return notFound('Query not found')
     }
 
-    return NextResponse.json({ data: query })
+    // 3. Return response
+    return success(query)
   } catch (error: any) {
-    console.error('Get query error:', error)
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -95,17 +93,17 @@ export async function PATCH(
   try {
     const { id } = await context.params
 
-    // Check authentication
+    // 1. Check authentication
     const user = await getCurrentUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
-    // Parse and validate request body
+    // 2. Validate input with Zod
     const body = await request.json()
     const validatedData = updateQuerySchema.parse(body)
 
-    // Update query
+    // 3. Update query with workspace filtering
     const queryRepo = new QueryRepository()
     const query = await queryRepo.update(
       id,
@@ -113,21 +111,10 @@ export async function PATCH(
       validatedData
     )
 
-    return NextResponse.json({ data: query })
+    // 4. Return response
+    return success(query)
   } catch (error: any) {
-    console.error('Update query error:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Validation error', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -141,22 +128,19 @@ export async function DELETE(
   try {
     const { id } = await context.params
 
-    // Check authentication
+    // 1. Check authentication
     const user = await getCurrentUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
-    // Delete query
+    // 2. Delete query with workspace filtering
     const queryRepo = new QueryRepository()
     await queryRepo.delete(id, user.workspace_id)
 
-    return NextResponse.json({ success: true })
+    // 3. Return response
+    return success({ message: 'Query deleted successfully' })
   } catch (error: any) {
-    console.error('Delete query error:', error)
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

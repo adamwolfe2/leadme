@@ -3,6 +3,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { QueryRepository } from '@/lib/repositories/query.repository'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized, forbidden, success, created } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 
 // Validation schema for query creation
@@ -50,23 +51,20 @@ const createQuerySchema = z.object({
  */
 export async function GET(request: NextRequest) {
   try {
-    // Check authentication
+    // 1. Check authentication
     const user = await getCurrentUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
-    // Get queries
+    // 2. Use repository with workspace filtering
     const queryRepo = new QueryRepository()
     const queries = await queryRepo.findByWorkspace(user.workspace_id)
 
-    return NextResponse.json({ data: queries })
+    // 3. Return response
+    return success(queries)
   } catch (error: any) {
-    console.error('Get queries error:', error)
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -75,31 +73,28 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
+    // 1. Check authentication
     const user = await getCurrentUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
-    // Parse and validate request body
+    // 2. Validate input with Zod
     const body = await request.json()
     const validatedData = createQuerySchema.parse(body)
 
-    // Check query limit based on plan
+    // 3. Check query limit based on plan
     const queryRepo = new QueryRepository()
     const activeCount = await queryRepo.countActiveByWorkspace(user.workspace_id)
 
     const limit = user.plan === 'pro' ? 5 : 1
     if (activeCount >= limit) {
-      return NextResponse.json(
-        {
-          error: `Query limit reached. ${user.plan === 'free' ? 'Upgrade to Pro to create up to 5 queries.' : 'You have reached the maximum of 5 queries.'}`,
-        },
-        { status: 403 }
+      return forbidden(
+        `Query limit reached. ${user.plan === 'free' ? 'Upgrade to Pro to create up to 5 queries.' : 'You have reached the maximum of 5 queries.'}`
       )
     }
 
-    // Create query
+    // 4. Create query with workspace isolation
     const query = await queryRepo.create({
       workspace_id: user.workspace_id,
       topic_id: validatedData.topic_id,
@@ -109,20 +104,9 @@ export async function POST(request: NextRequest) {
       created_by: user.id,
     })
 
-    return NextResponse.json({ data: query }, { status: 201 })
+    // 5. Return response
+    return created(query)
   } catch (error: any) {
-    console.error('Create query error:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Validation error', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

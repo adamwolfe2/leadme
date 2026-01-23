@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { LeadRepository } from '@/lib/repositories/lead.repository'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 
 const exportRequestSchema = z.object({
@@ -22,22 +23,21 @@ const exportRequestSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
+    // 1. Check authentication
     const user = await getCurrentUser()
-
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
-    // Parse request body
+    // 2. Validate input with Zod
     const body = await request.json()
     const { filters } = exportRequestSchema.parse(body)
 
-    // Generate CSV
+    // 3. Generate CSV with workspace filtering
     const leadRepo = new LeadRepository()
     const csv = await leadRepo.exportToCSV(user.workspace_id, filters || {})
 
-    // Return CSV file
+    // 4. Return CSV file response
     return new NextResponse(csv, {
       status: 200,
       headers: {
@@ -46,18 +46,6 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error: any) {
-    console.error('[API] Leads export error:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

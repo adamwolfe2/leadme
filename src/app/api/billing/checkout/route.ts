@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createCheckoutSession, STRIPE_PRICES } from '@/lib/stripe/client'
+import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 
 const checkoutSchema = z.object({
@@ -13,22 +14,18 @@ const checkoutSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
+    // 1. Check authentication
     const user = await getCurrentUser()
-
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     // Check if user already has active subscription
     if (user.plan === 'pro' && user.subscription_status === 'active') {
-      return NextResponse.json(
-        { error: 'You already have an active Pro subscription' },
-        { status: 400 }
-      )
+      return badRequest('You already have an active Pro subscription')
     }
 
-    // Parse request body
+    // 2. Validate input with Zod
     const body = await request.json()
     const { priceId, billingPeriod } = checkoutSchema.parse(body)
 
@@ -46,7 +43,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create checkout session
+    // 3. Create checkout session
     const baseUrl = request.nextUrl.origin
     const session = await createCheckoutSession({
       userId: user.id,
@@ -57,24 +54,13 @@ export async function POST(request: NextRequest) {
       cancelUrl: `${baseUrl}/pricing?checkout=cancelled`,
     })
 
+    // 4. Return response
     return NextResponse.json({
       success: true,
       sessionId: session.id,
       url: session.url,
     })
   } catch (error: any) {
-    console.error('[API] Checkout error:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid parameters', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: error.message || 'Failed to create checkout session' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
