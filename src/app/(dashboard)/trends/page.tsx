@@ -40,44 +40,44 @@ export default function TrendsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Trending Topics</h1>
-        <p className="mt-2 text-sm text-gray-600">
+        <h1 className="text-xl font-medium text-zinc-900">Trending Topics</h1>
+        <p className="mt-2 text-[13px] text-zinc-600">
           Discover emerging trends and track topics with the highest growth
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-zinc-200">
         <nav className="-mb-px flex space-x-8">
           <button
             onClick={() => setActiveTab('gainers')}
             className={`${
               activeTab === 'gainers'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-            } whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition-colors`}
+                ? 'border-zinc-900 text-zinc-900'
+                : 'border-transparent text-zinc-600 hover:border-zinc-300 hover:text-zinc-900'
+            } whitespace-nowrap border-b-2 py-4 px-1 text-[13px] font-medium transition-colors`}
           >
-            🚀 Top Gainers
+            Top Gainers
           </button>
           <button
             onClick={() => setActiveTab('losers')}
             className={`${
               activeTab === 'losers'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-            } whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition-colors`}
+                ? 'border-zinc-900 text-zinc-900'
+                : 'border-transparent text-zinc-600 hover:border-zinc-300 hover:text-zinc-900'
+            } whitespace-nowrap border-b-2 py-4 px-1 text-[13px] font-medium transition-colors`}
           >
-            📉 Top Losers
+            Top Losers
           </button>
         </nav>
       </div>
 
       {/* Info Banner */}
-      <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
+      <div className="rounded-lg bg-zinc-50 border border-zinc-200 p-4">
         <div className="flex">
           <div className="flex-shrink-0">
             <svg
-              className="h-5 w-5 text-blue-400"
+              className="h-5 w-5 text-zinc-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -91,10 +91,10 @@ export default function TrendsPage() {
             </svg>
           </div>
           <div className="ml-3 flex-1">
-            <h3 className="text-sm font-medium text-blue-800">
+            <h3 className="text-[13px] font-medium text-zinc-900">
               {activeTab === 'gainers' ? 'Top Gaining Topics' : 'Top Declining Topics'}
             </h3>
-            <div className="mt-2 text-sm text-blue-700">
+            <div className="mt-2 text-[13px] text-zinc-600">
               <p>
                 {activeTab === 'gainers'
                   ? 'These topics are showing the highest growth in search volume. Track them to discover companies actively researching these areas.'
@@ -111,7 +111,7 @@ export default function TrendsPage() {
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="h-64 rounded-lg border border-gray-200 bg-gray-50 animate-pulse"
+              className="h-64 rounded-lg border border-zinc-200 bg-zinc-50 animate-pulse"
             />
           ))}
         </div>
@@ -134,7 +134,7 @@ export default function TrendsPage() {
       {!isLoading && topics.length === 0 && (
         <div className="text-center py-12">
           <svg
-            className="mx-auto h-12 w-12 text-gray-400"
+            className="mx-auto h-12 w-12 text-zinc-400"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -146,10 +146,10 @@ export default function TrendsPage() {
               d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
             />
           </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">
+          <h3 className="mt-2 text-[13px] font-medium text-zinc-900">
             No trends available
           </h3>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-[13px] text-zinc-600">
             {activeTab === 'gainers'
               ? 'No gaining topics found in the current period.'
               : 'No declining topics found in the current period.'}
