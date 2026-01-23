@@ -78,7 +78,7 @@ function LoginForm() {
         {/* Header */}
         <div>
           <h2 className="mt-6 text-center text-xl font-medium text-zinc-900">
-            Sign in to OpenInfo
+            Sign in to LeadMe
           </h2>
           <p className="mt-2 text-center text-[13px] text-zinc-600">
             Or{' '}
@@ -149,7 +149,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="h-9 px-4 w-full text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-9 px-4 w-full text-[13px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Signing in...' : 'Sign in'}
             </button>

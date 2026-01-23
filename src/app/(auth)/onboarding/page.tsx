@@ -247,7 +247,7 @@ export default function OnboardingPage() {
               <div
                 className={`flex h-10 w-10 items-center justify-center rounded-full text-[13px] font-medium ${
                   step >= s
-                    ? 'bg-zinc-900 text-white'
+                    ? 'bg-blue-600 text-white'
                     : 'bg-zinc-200 text-zinc-600'
                 }`}
               >
@@ -316,7 +316,7 @@ export default function OnboardingPage() {
               <button
                 type="submit"
                 disabled={!businessName || !industry}
-                className="h-10 px-6 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-10 px-6 text-[13px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Continue
               </button>
@@ -364,7 +364,7 @@ export default function OnboardingPage() {
                     onClick={() => toggleState(state.code)}
                     className={`px-3 py-2 text-[12px] font-medium rounded-lg border transition-all ${
                       serviceAreas.includes(state.code)
-                        ? 'bg-zinc-900 text-white border-zinc-900'
+                        ? 'bg-blue-600 text-white border-blue-600'
                         : 'bg-white text-zinc-600 border-zinc-200 hover:border-zinc-400'
                     }`}
                   >
@@ -391,7 +391,7 @@ export default function OnboardingPage() {
               <button
                 type="submit"
                 disabled={serviceAreas.length === 0}
-                className="h-10 px-6 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-10 px-6 text-[13px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Continue
               </button>
