@@ -5,7 +5,13 @@ import { inngest } from '../client'
 import { createClient } from '@/lib/supabase/server'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Helper to get Resend client - only initializes when called
+function getResendClient() {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error('Missing RESEND_API_KEY environment variable')
+  }
+  return new Resend(process.env.RESEND_API_KEY)
+}
 
 export const leadDelivery = inngest.createFunction(
   {
@@ -68,6 +74,7 @@ export const leadDelivery = inngest.createFunction(
     if (delivery_channels.includes('email')) {
       await step.run('send-email', async () => {
         try {
+          const resend = getResendClient()
           const emailPromises = users.map((user: any) => {
             return resend.emails.send({
               from: 'OpenInfo <leads@openinfo.com>',
