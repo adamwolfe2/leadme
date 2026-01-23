@@ -2,38 +2,45 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { signupSchema, type SignupFormData } from '@/lib/validation/schemas'
+import {
+  FormField,
+  FormLabel,
+  FormInput,
+  FormCheckbox,
+  FormError,
+} from '@/components/ui/form'
 
 export default function SignupPage() {
   const router = useRouter()
-
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [fullName, setFullName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const handleEmailSignup = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignupFormData>({
+    resolver: zodResolver(signupSchema),
+    mode: 'onBlur',
+  })
+
+  const handleEmailSignup = async (data: SignupFormData) => {
     setLoading(true)
     setError(null)
-
-    // Validate password
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters')
-      setLoading(false)
-      return
-    }
 
     const supabase = createClient()
 
     const { error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
+      email: data.email,
+      password: data.password,
       options: {
         data: {
-          full_name: fullName,
+          full_name: data.full_name,
         },
         emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
       },
@@ -89,97 +96,97 @@ export default function SignupPage() {
         </div>
 
         {/* Error Message */}
-        {error && (
-          <div className="rounded-lg bg-red-50 p-4">
-            <div className="flex">
-              <div className="ml-3">
-                <h3 className="text-[13px] font-medium text-red-700">{error}</h3>
-              </div>
-            </div>
-          </div>
-        )}
+        <FormError message={error || undefined} />
 
         {/* Signup Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleEmailSignup}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit(handleEmailSignup)}>
           <div className="space-y-3">
-            <div>
-              <label htmlFor="full-name" className="sr-only">
+            <FormField error={errors.full_name}>
+              <label htmlFor="full_name" className="sr-only">
                 Full name
               </label>
-              <input
-                id="full-name"
-                name="full-name"
+              <FormInput
+                id="full_name"
                 type="text"
                 autoComplete="name"
-                required
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="w-full h-9 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200 transition-all duration-150"
                 placeholder="Full name"
                 disabled={loading}
+                error={errors.full_name}
+                {...register('full_name')}
               />
-            </div>
-            <div>
+            </FormField>
+
+            <FormField error={errors.email}>
               <label htmlFor="email" className="sr-only">
                 Email address
               </label>
-              <input
+              <FormInput
                 id="email"
-                name="email"
                 type="email"
                 autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full h-9 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200 transition-all duration-150"
                 placeholder="Email address"
                 disabled={loading}
+                error={errors.email}
+                {...register('email')}
               />
-            </div>
-            <div>
+            </FormField>
+
+            <FormField error={errors.password}>
               <label htmlFor="password" className="sr-only">
                 Password
               </label>
-              <input
+              <FormInput
                 id="password"
-                name="password"
                 type="password"
                 autoComplete="new-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full h-9 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200 transition-all duration-150"
                 placeholder="Password (min. 8 characters)"
                 disabled={loading}
+                error={errors.password}
+                {...register('password')}
               />
-            </div>
+            </FormField>
+
+            <FormField error={errors.confirm_password}>
+              <label htmlFor="confirm_password" className="sr-only">
+                Confirm password
+              </label>
+              <FormInput
+                id="confirm_password"
+                type="password"
+                autoComplete="new-password"
+                placeholder="Confirm password"
+                disabled={loading}
+                error={errors.confirm_password}
+                {...register('confirm_password')}
+              />
+            </FormField>
           </div>
 
-          <div className="flex items-center">
-            <input
-              id="terms"
-              name="terms"
-              type="checkbox"
-              required
-              className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
-            />
-            <label htmlFor="terms" className="ml-2 block text-[13px] text-zinc-700">
-              I agree to the{' '}
-              <Link
-                href="/terms"
-                className="font-medium text-zinc-900 hover:text-zinc-700"
-              >
-                Terms of Service
-              </Link>{' '}
-              and{' '}
-              <Link
-                href="/privacy"
-                className="font-medium text-zinc-900 hover:text-zinc-700"
-              >
-                Privacy Policy
-              </Link>
-            </label>
-          </div>
+          <FormField error={errors.terms}>
+            <div className="flex items-start">
+              <FormCheckbox
+                id="terms"
+                error={errors.terms}
+                {...register('terms')}
+              />
+              <label htmlFor="terms" className="ml-2 block text-[13px] text-zinc-700">
+                I agree to the{' '}
+                <Link
+                  href="/terms"
+                  className="font-medium text-zinc-900 hover:text-zinc-700"
+                >
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link
+                  href="/privacy"
+                  className="font-medium text-zinc-900 hover:text-zinc-700"
+                >
+                  Privacy Policy
+                </Link>
+              </label>
+            </div>
+          </FormField>
 
           <div>
             <button

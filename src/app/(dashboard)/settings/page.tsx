@@ -3,12 +3,23 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
+import { profileSettingsSchema, type ProfileSettingsFormData } from '@/lib/validation/schemas'
+import {
+  FormField,
+  FormLabel,
+  FormInput,
+  FormError,
+  FormSuccess,
+} from '@/components/ui/form'
 
 export default function ProfileSettingsPage() {
   const queryClient = useQueryClient()
   const router = useRouter()
   const [successMessage, setSuccessMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
 
   // Fetch current user
   const { data: userData, isLoading } = useQuery({
@@ -22,15 +33,37 @@ export default function ProfileSettingsPage() {
 
   const user = userData?.data
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<ProfileSettingsFormData>({
+    resolver: zodResolver(profileSettingsSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      full_name: user?.full_name || '',
+      email: user?.email || '',
+    },
+  })
+
+  // Reset form when user data loads
+  useState(() => {
+    if (user) {
+      reset({
+        full_name: user.full_name || '',
+        email: user.email || '',
+      })
+    }
+  })
+
   // Update profile mutation
   const updateProfileMutation = useMutation({
-    mutationFn: async (data: {
-      full_name: string
-    }) => {
+    mutationFn: async (data: ProfileSettingsFormData) => {
       const response = await fetch('/api/users/me', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ full_name: data.full_name }),
       })
       if (!response.ok) {
         const error = await response.json()
@@ -41,17 +74,17 @@ export default function ProfileSettingsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] })
       setSuccessMessage('Profile updated successfully!')
+      setErrorMessage('')
       setTimeout(() => setSuccessMessage(''), 3000)
+    },
+    onError: (error: Error) => {
+      setErrorMessage(error.message)
+      setSuccessMessage('')
     },
   })
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-
-    updateProfileMutation.mutate({
-      full_name: formData.get('full_name') as string,
-    })
+  const onSubmit = async (data: ProfileSettingsFormData) => {
+    updateProfileMutation.mutate(data)
   }
 
   const copyReferralCode = () => {
@@ -119,80 +152,54 @@ export default function ProfileSettingsPage() {
       </div>
 
       {/* Success Message */}
-      {successMessage && (
-        <div className="rounded-lg bg-green-50 border border-green-200 p-4">
-          <div className="flex">
-            <svg
-              className="h-5 w-5 text-green-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <p className="ml-3 text-sm font-medium text-green-800">
-              {successMessage}
-            </p>
-          </div>
-        </div>
-      )}
+      <FormSuccess message={successMessage || undefined} />
+
+      {/* Error Message */}
+      <FormError message={errorMessage || undefined} />
 
       {/* Profile Form */}
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="rounded-lg border border-gray-200 bg-white p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div className="rounded-lg border border-zinc-200 bg-white p-6">
+          <h2 className="text-lg font-semibold text-zinc-900 mb-4">
             Personal Information
           </h2>
 
           <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="full_name"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
+            <FormField error={errors.full_name}>
+              <FormLabel htmlFor="full_name" required>
                 Full Name
-              </label>
-              <input
-                type="text"
+              </FormLabel>
+              <FormInput
                 id="full_name"
-                name="full_name"
-                defaultValue={user?.full_name || ''}
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                required
+                type="text"
+                disabled={updateProfileMutation.isPending}
+                error={errors.full_name}
+                {...register('full_name')}
               />
-            </div>
+            </FormField>
 
-            <div>
-              <label
+            <FormField error={errors.email}>
+              <FormLabel
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                hint="Email cannot be changed once registered"
               >
                 Email Address
-              </label>
-              <input
-                type="email"
+              </FormLabel>
+              <FormInput
                 id="email"
-                name="email"
-                defaultValue={user?.email || ''}
+                type="email"
                 disabled
-                className="block w-full rounded-md border-gray-300 bg-gray-50 text-gray-500 shadow-sm"
+                className="bg-zinc-50 text-zinc-500"
+                {...register('email')}
               />
-              <p className="mt-1 text-xs text-gray-500">
-                Email cannot be changed once registered
-              </p>
-            </div>
+            </FormField>
           </div>
 
           <div className="mt-6 flex justify-end">
             <button
               type="submit"
-              disabled={updateProfileMutation.isPending}
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-50"
+              disabled={updateProfileMutation.isPending || Object.keys(errors).length > 0}
+              className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150"
             >
               {updateProfileMutation.isPending ? 'Saving...' : 'Save Changes'}
             </button>

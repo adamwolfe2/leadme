@@ -2,29 +2,45 @@
 
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { loginSchema, type LoginFormData } from '@/lib/validation/schemas'
+import {
+  FormField,
+  FormLabel,
+  FormInput,
+  FormCheckbox,
+  FormError,
+} from '@/components/ui/form'
 
 function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirect = searchParams.get('redirect') || '/dashboard'
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const handleEmailLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    mode: 'onBlur',
+  })
+
+  const handleEmailLogin = async (data: LoginFormData) => {
     setLoading(true)
     setError(null)
 
     const supabase = createClient()
 
     const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+      email: data.email,
+      password: data.password,
     })
 
     if (signInError) {
@@ -76,70 +92,48 @@ function LoginForm() {
         </div>
 
         {/* Error Message */}
-        {error && (
-          <div className="rounded-lg bg-red-50 p-4">
-            <div className="flex">
-              <div className="ml-3">
-                <h3 className="text-[13px] font-medium text-red-700">{error}</h3>
-              </div>
-            </div>
-          </div>
-        )}
+        <FormError message={error || undefined} />
 
         {/* Login Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleEmailLogin}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit(handleEmailLogin)}>
           <div className="space-y-3">
-            <div>
+            <FormField error={errors.email}>
               <label htmlFor="email" className="sr-only">
                 Email address
               </label>
-              <input
+              <FormInput
                 id="email"
-                name="email"
                 type="email"
                 autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full h-9 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200 transition-all duration-150"
                 placeholder="Email address"
                 disabled={loading}
+                error={errors.email}
+                {...register('email')}
               />
-            </div>
-            <div>
+            </FormField>
+
+            <FormField error={errors.password}>
               <label htmlFor="password" className="sr-only">
                 Password
               </label>
-              <input
+              <FormInput
                 id="password"
-                name="password"
                 type="password"
                 autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full h-9 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200 transition-all duration-150"
                 placeholder="Password"
                 disabled={loading}
+                error={errors.password}
+                {...register('password')}
               />
-            </div>
+            </FormField>
           </div>
 
           <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
-              />
-              <label
-                htmlFor="remember-me"
-                className="ml-2 block text-[13px] text-zinc-700"
-              >
-                Remember me
-              </label>
-            </div>
+            <FormCheckbox
+              id="remember"
+              label="Remember me"
+              {...register('remember')}
+            />
 
             <div className="text-[13px]">
               <Link

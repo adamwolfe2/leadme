@@ -3,23 +3,17 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-
-const searchFormSchema = z.object({
-  domain: z.string().optional(),
-  company: z.string().optional(),
-  job_title: z.string().optional(),
-  seniority: z.string().optional(),
-  department: z.string().optional(),
-  location: z.string().optional(),
-  save_search: z.boolean().optional(),
-  search_name: z.string().optional(),
-})
-
-type SearchFormData = z.infer<typeof searchFormSchema>
+import { peopleSearchSchema, type PeopleSearchFormData } from '@/lib/validation/schemas'
+import {
+  FormField,
+  FormLabel,
+  FormInput,
+  FormSelect,
+  FormCheckbox,
+} from '@/components/ui/form'
 
 interface SearchFormProps {
-  onSearch: (data: SearchFormData) => void
+  onSearch: (data: PeopleSearchFormData) => void
   loading: boolean
 }
 
@@ -49,17 +43,16 @@ export function SearchForm({ onSearch, loading }: SearchFormProps) {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
     reset,
-  } = useForm<SearchFormData>({
-    resolver: zodResolver(searchFormSchema),
+    watch,
+  } = useForm<PeopleSearchFormData>({
+    resolver: zodResolver(peopleSearchSchema),
+    mode: 'onBlur',
   })
 
-  const onSubmit = (data: SearchFormData) => {
-    onSearch({
-      ...data,
-      save_search: saveSearch,
-    })
+  const onSubmit = (data: PeopleSearchFormData) => {
+    onSearch(data)
   }
 
   return (
@@ -71,77 +64,68 @@ export function SearchForm({ onSearch, loading }: SearchFormProps) {
 
         {/* Company Domain */}
         <div className="space-y-4">
-          <div>
-            <label
+          <FormField error={errors.domain}>
+            <FormLabel
               htmlFor="domain"
-              className="block text-[13px] font-medium text-zinc-700 mb-2"
+              required
+              hint="Enter the company's website domain to find employees"
             >
-              Company Domain <span className="text-red-600">*</span>
-            </label>
-            <input
+              Company Domain
+            </FormLabel>
+            <FormInput
               id="domain"
               type="text"
-              {...register('domain')}
               placeholder="e.g., acme.com"
-              className="w-full h-9 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200 transition-all duration-150"
+              disabled={loading}
+              error={errors.domain}
+              {...register('domain')}
             />
-            {errors.domain && (
-              <p className="mt-1 text-[13px] text-red-600">{errors.domain.message}</p>
-            )}
-            <p className="mt-1 text-[12px] text-zinc-500">
-              Enter the company&apos;s website domain to find employees
-            </p>
-          </div>
+          </FormField>
 
           {/* Company Name (Alternative) */}
-          <div>
-            <label
+          <FormField error={errors.company}>
+            <FormLabel
               htmlFor="company"
-              className="block text-[13px] font-medium text-zinc-700 mb-2"
+              optional
+              hint="If you don't know the domain, enter the company name"
             >
               Or Company Name
-            </label>
-            <input
+            </FormLabel>
+            <FormInput
               id="company"
               type="text"
-              {...register('company')}
               placeholder="e.g., Acme Corporation"
-              className="w-full h-9 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200 transition-all duration-150"
+              disabled={loading}
+              error={errors.company}
+              {...register('company')}
             />
-            <p className="mt-1 text-[12px] text-zinc-500">
-              If you don&apos;t know the domain, enter the company name
-            </p>
-          </div>
+          </FormField>
 
           {/* Job Title */}
-          <div>
-            <label
-              htmlFor="job_title"
-              className="block text-[13px] font-medium text-zinc-700 mb-2"
-            >
+          <FormField error={errors.job_title}>
+            <FormLabel htmlFor="job_title" optional>
               Job Title
-            </label>
-            <input
+            </FormLabel>
+            <FormInput
               id="job_title"
               type="text"
-              {...register('job_title')}
               placeholder="e.g., VP of Engineering"
-              className="w-full h-9 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200 transition-all duration-150"
+              disabled={loading}
+              error={errors.job_title}
+              {...register('job_title')}
             />
-          </div>
+          </FormField>
 
           {/* Seniority Level */}
-          <div>
-            <label
-              htmlFor="seniority"
-              className="block text-[13px] font-medium text-zinc-700 mb-2"
-            >
+          <FormField error={errors.seniority}>
+            <FormLabel htmlFor="seniority" optional>
               Seniority Level
-            </label>
-            <select
+            </FormLabel>
+            <FormSelect
               id="seniority"
+              disabled={loading}
+              error={errors.seniority}
               {...register('seniority')}
-              className="w-full h-9 px-3 text-[13px] text-zinc-900 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200 transition-all duration-150"
             >
               <option value="">All Levels</option>
               {SENIORITY_LEVELS.map((level) => (
@@ -149,21 +133,19 @@ export function SearchForm({ onSearch, loading }: SearchFormProps) {
                   {level}
                 </option>
               ))}
-            </select>
-          </div>
+            </FormSelect>
+          </FormField>
 
           {/* Department */}
-          <div>
-            <label
-              htmlFor="department"
-              className="block text-[13px] font-medium text-zinc-700 mb-2"
-            >
+          <FormField error={errors.department}>
+            <FormLabel htmlFor="department" optional>
               Department
-            </label>
-            <select
+            </FormLabel>
+            <FormSelect
               id="department"
+              disabled={loading}
+              error={errors.department}
               {...register('department')}
-              className="w-full h-9 px-3 text-[13px] text-zinc-900 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200 transition-all duration-150"
             >
               <option value="">All Departments</option>
               {DEPARTMENTS.map((dept) => (
@@ -171,52 +153,46 @@ export function SearchForm({ onSearch, loading }: SearchFormProps) {
                   {dept}
                 </option>
               ))}
-            </select>
-          </div>
+            </FormSelect>
+          </FormField>
 
           {/* Location */}
-          <div>
-            <label
-              htmlFor="location"
-              className="block text-[13px] font-medium text-zinc-700 mb-2"
-            >
+          <FormField error={errors.location}>
+            <FormLabel htmlFor="location" optional>
               Location
-            </label>
-            <input
+            </FormLabel>
+            <FormInput
               id="location"
               type="text"
-              {...register('location')}
               placeholder="e.g., San Francisco, CA"
-              className="w-full h-9 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200 transition-all duration-150"
+              disabled={loading}
+              error={errors.location}
+              {...register('location')}
             />
-          </div>
+          </FormField>
         </div>
       </div>
 
       {/* Save Search */}
       <div className="border-t border-zinc-200 pt-4">
-        <div className="flex items-center">
-          <input
-            id="save_search"
-            type="checkbox"
-            checked={saveSearch}
-            onChange={(e) => setSaveSearch(e.target.checked)}
-            className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
-          />
-          <label htmlFor="save_search" className="ml-2 text-[13px] text-zinc-700">
-            Save this search
-          </label>
-        </div>
+        <FormCheckbox
+          id="save_search"
+          label="Save this search"
+          checked={saveSearch}
+          onChange={(e) => setSaveSearch(e.target.checked)}
+          disabled={loading}
+        />
 
         {saveSearch && (
-          <div className="mt-3">
-            <input
+          <FormField error={errors.search_name} className="mt-3">
+            <FormInput
               type="text"
-              {...register('search_name')}
               placeholder="Search name..."
-              className="w-full h-9 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200 transition-all duration-150"
+              disabled={loading}
+              error={errors.search_name}
+              {...register('search_name')}
             />
-          </div>
+          </FormField>
         )}
       </div>
 
@@ -224,14 +200,17 @@ export function SearchForm({ onSearch, loading }: SearchFormProps) {
       <div className="flex space-x-3">
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || !isValid}
           className="flex-1 h-9 px-4 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? 'Searching...' : 'Search People'}
         </button>
         <button
           type="button"
-          onClick={() => reset()}
+          onClick={() => {
+            reset()
+            setSaveSearch(false)
+          }}
           disabled={loading}
           className="h-9 px-4 text-[13px] font-medium border border-zinc-300 text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50"
         >

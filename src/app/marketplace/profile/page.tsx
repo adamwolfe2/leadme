@@ -1,19 +1,41 @@
 'use client'
 
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { NavBar } from '@/components/nav-bar'
+import { buyerProfileSchema, type BuyerProfileFormData } from '@/lib/validation/schemas'
+import {
+  FormField,
+  FormLabel,
+  FormInput,
+  FormSelect,
+  FormError,
+} from '@/components/ui/form'
 
 export default function BuyerProfilePage() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [companyName, setCompanyName] = useState('')
-  const [industryVertical, setIndustryVertical] = useState('Healthcare')
   const [serviceStates, setServiceStates] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
 
   const supabase = createClient()
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm<BuyerProfileFormData>({
+    resolver: zodResolver(buyerProfileSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      industry_vertical: 'Healthcare',
+      service_states: [],
+    },
+  })
 
   const states = [
     'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
@@ -35,39 +57,35 @@ export default function BuyerProfilePage() {
   ]
 
   const toggleState = (state: string) => {
-    if (serviceStates.includes(state)) {
-      setServiceStates(serviceStates.filter(s => s !== state))
-    } else {
-      setServiceStates([...serviceStates, state])
-    }
+    const newStates = serviceStates.includes(state)
+      ? serviceStates.filter(s => s !== state)
+      : [...serviceStates, state]
+
+    setServiceStates(newStates)
+    setValue('service_states', newStates, { shouldValidate: true })
   }
 
-  const saveProfile = async () => {
-    if (!email || !companyName) {
-      alert('Please fill in required fields')
-      return
-    }
-
+  const onSubmit = async (data: BuyerProfileFormData) => {
     setSaving(true)
+    setError('')
 
-    const { error } = await supabase
+    const { error: saveError } = await supabase
       .from('buyers')
       .upsert({
-        email,
-        company_name: companyName,
-        industry_vertical: industryVertical,
-        service_states: serviceStates,
+        email: data.email,
+        company_name: data.company_name,
+        industry_vertical: data.industry_vertical,
+        service_states: data.service_states,
         workspace_id: 'default'
       }, { onConflict: 'email' })
 
     setSaving(false)
 
-    if (error) {
-      alert(`Failed to save profile: ${error.message}`)
+    if (saveError) {
+      setError(`Failed to save profile: ${saveError.message}`)
       return
     }
 
-    alert('Profile saved successfully!')
     router.push('/marketplace')
   }
 
@@ -78,83 +96,105 @@ export default function BuyerProfilePage() {
         <div className="max-w-3xl mx-auto px-8 py-8">
           <h1 className="text-xl font-semibold text-zinc-900 mb-8">Buyer Profile Setup</h1>
 
-          <div className="bg-white border border-zinc-200 rounded-lg shadow-sm p-6">
-            <div className="space-y-6">
-              <div>
-                <label className="block text-[13px] font-medium text-zinc-900 mb-2">Email *</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full h-9 border border-zinc-300 rounded-lg px-3 text-[13px] text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent"
-                  placeholder="buyer@company.com"
-                />
-              </div>
+          <FormError message={error || undefined} className="mb-6" />
 
-              <div>
-                <label className="block text-[13px] font-medium text-zinc-900 mb-2">Company Name *</label>
-                <input
-                  type="text"
-                  value={companyName}
-                  onChange={(e) => setCompanyName(e.target.value)}
-                  className="w-full h-9 border border-zinc-300 rounded-lg px-3 text-[13px] text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent"
-                  placeholder="Your Company LLC"
-                />
-              </div>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="bg-white border border-zinc-200 rounded-lg shadow-sm p-6">
+              <div className="space-y-6">
+                <FormField error={errors.email}>
+                  <FormLabel htmlFor="email" required>
+                    Email
+                  </FormLabel>
+                  <FormInput
+                    id="email"
+                    type="email"
+                    placeholder="buyer@company.com"
+                    disabled={saving}
+                    error={errors.email}
+                    {...register('email')}
+                  />
+                </FormField>
 
-              <div>
-                <label className="block text-[13px] font-medium text-zinc-900 mb-2">Industry Vertical</label>
-                <select
-                  value={industryVertical}
-                  onChange={(e) => setIndustryVertical(e.target.value)}
-                  className="w-full h-9 border border-zinc-300 rounded-lg px-3 text-[13px] text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent"
-                >
-                  {industries.map(industry => (
-                    <option key={industry} value={industry}>{industry}</option>
-                  ))}
-                </select>
-              </div>
+                <FormField error={errors.company_name}>
+                  <FormLabel htmlFor="company_name" required>
+                    Company Name
+                  </FormLabel>
+                  <FormInput
+                    id="company_name"
+                    type="text"
+                    placeholder="Your Company LLC"
+                    disabled={saving}
+                    error={errors.company_name}
+                    {...register('company_name')}
+                  />
+                </FormField>
 
-              <div>
-                <label className="block text-[13px] font-medium text-zinc-900 mb-2">Service States</label>
-                <p className="text-[12px] text-zinc-500 mb-3">Select states where you want to receive leads</p>
-                <div className="grid grid-cols-8 gap-2">
-                  {states.map(state => (
-                    <button
-                      key={state}
-                      onClick={() => toggleState(state)}
-                      className={`h-9 px-2 rounded-lg text-[13px] font-medium transition-all duration-150 ${
-                        serviceStates.includes(state)
-                          ? 'bg-zinc-900 text-white'
-                          : 'bg-zinc-50 text-zinc-700 border border-zinc-200 hover:bg-zinc-100'
-                      }`}
-                    >
-                      {state}
-                    </button>
-                  ))}
+                <FormField error={errors.industry_vertical}>
+                  <FormLabel htmlFor="industry_vertical" required>
+                    Industry Vertical
+                  </FormLabel>
+                  <FormSelect
+                    id="industry_vertical"
+                    disabled={saving}
+                    error={errors.industry_vertical}
+                    {...register('industry_vertical')}
+                  >
+                    {industries.map(industry => (
+                      <option key={industry} value={industry}>{industry}</option>
+                    ))}
+                  </FormSelect>
+                </FormField>
+
+                <FormField error={errors.service_states}>
+                  <FormLabel
+                    htmlFor="service_states"
+                    required
+                    hint="Select states where you want to receive leads"
+                  >
+                    Service States
+                  </FormLabel>
+                  <div className="grid grid-cols-8 gap-2">
+                    {states.map(state => (
+                      <button
+                        key={state}
+                        type="button"
+                        onClick={() => toggleState(state)}
+                        disabled={saving}
+                        className={`h-9 px-2 rounded-lg text-[13px] font-medium transition-all duration-150 disabled:opacity-50 ${
+                          serviceStates.includes(state)
+                            ? 'bg-zinc-900 text-white'
+                            : 'bg-zinc-50 text-zinc-700 border border-zinc-200 hover:bg-zinc-100'
+                        }`}
+                      >
+                        {state}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-[12px] text-zinc-500 mt-3">
+                    Selected: {serviceStates.length > 0 ? serviceStates.join(', ') : 'None'}
+                  </p>
+                </FormField>
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="submit"
+                    disabled={saving || Object.keys(errors).length > 0}
+                    className="flex-1 h-9 px-4 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {saving ? 'Saving...' : 'Save Profile'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => router.push('/marketplace')}
+                    disabled={saving}
+                    className="flex-1 h-9 px-4 text-[13px] font-medium border border-zinc-300 text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150 disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
                 </div>
-                <p className="text-[12px] text-zinc-500 mt-3">
-                  Selected: {serviceStates.length > 0 ? serviceStates.join(', ') : 'None'}
-                </p>
-              </div>
-
-              <div className="flex gap-3 pt-4">
-                <button
-                  onClick={saveProfile}
-                  disabled={saving}
-                  className="flex-1 h-9 px-4 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 disabled:opacity-50"
-                >
-                  {saving ? 'Saving...' : 'Save Profile'}
-                </button>
-                <button
-                  onClick={() => router.push('/marketplace')}
-                  className="flex-1 h-9 px-4 text-[13px] font-medium border border-zinc-300 text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150"
-                >
-                  Cancel
-                </button>
               </div>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </>
