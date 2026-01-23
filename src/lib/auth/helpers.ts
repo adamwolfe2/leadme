@@ -103,3 +103,81 @@ export async function getCreditsRemaining(): Promise<number> {
 
   return Math.max(0, user.daily_credit_limit - user.daily_credits_used)
 }
+
+/**
+ * Require authentication
+ * Throws UnauthorizedError if not authenticated
+ */
+export async function requireAuth() {
+  const user = await getCurrentUser()
+  if (!user) {
+    throw new Error('Unauthorized')
+  }
+  return user
+}
+
+/**
+ * Check if user has specific permission
+ * Permissions are role-based: owner > admin > member
+ */
+export async function checkPermissions(
+  requiredRole: 'owner' | 'admin' | 'member'
+): Promise<boolean> {
+  const user = await getCurrentUser()
+  if (!user) return false
+
+  const roleHierarchy: Record<string, number> = {
+    owner: 3,
+    admin: 2,
+    member: 1,
+  }
+
+  const userLevel = roleHierarchy[user.role] || 0
+  const requiredLevel = roleHierarchy[requiredRole] || 0
+
+  return userLevel >= requiredLevel
+}
+
+/**
+ * Require specific permission
+ * Throws UnauthorizedError if user doesn't have permission
+ */
+export async function requirePermission(
+  requiredRole: 'owner' | 'admin' | 'member'
+) {
+  const hasPermission = await checkPermissions(requiredRole)
+  if (!hasPermission) {
+    throw new Error('Insufficient permissions')
+  }
+}
+
+/**
+ * Get auth session
+ * Returns the raw Supabase session
+ */
+export async function getSession() {
+  const supabase = await createClient()
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+  return session
+}
+
+/**
+ * Check if user's email is verified
+ */
+export async function isEmailVerified(): Promise<boolean> {
+  const session = await getSession()
+  return !!session?.user.email_confirmed_at
+}
+
+/**
+ * Check if user has completed onboarding
+ */
+export async function hasCompletedOnboarding(): Promise<boolean> {
+  const user = await getCurrentUser()
+  if (!user) return false
+
+  // User has completed onboarding if they have a workspace
+  return !!user.workspace_id
+}

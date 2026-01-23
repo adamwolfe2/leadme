@@ -123,35 +123,35 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen items-center justify-center bg-white px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-2xl space-y-8">
         {/* Header */}
         <div className="text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900">
+          <h2 className="text-xl font-medium text-zinc-900">
             Welcome to OpenInfo
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Let&apos;s set up your workspace to get started
+          <p className="mt-2 text-[13px] text-zinc-600">
+            Let's set up your workspace to get started
           </p>
         </div>
 
         {/* Progress Steps */}
         <div className="flex items-center justify-center space-x-4">
           <div
-            className={`flex h-10 w-10 items-center justify-center rounded-full ${
+            className={`flex h-10 w-10 items-center justify-center rounded-full text-[13px] font-medium ${
               step === 1
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-600'
+                ? 'bg-zinc-900 text-white'
+                : 'bg-zinc-200 text-zinc-600'
             }`}
           >
             1
           </div>
-          <div className="h-1 w-16 bg-gray-200" />
+          <div className="h-1 w-16 bg-zinc-200" />
           <div
-            className={`flex h-10 w-10 items-center justify-center rounded-full ${
+            className={`flex h-10 w-10 items-center justify-center rounded-full text-[13px] font-medium ${
               step === 2
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-600'
+                ? 'bg-zinc-900 text-white'
+                : 'bg-zinc-200 text-zinc-600'
             }`}
           >
             2
@@ -160,10 +160,10 @@ export default function OnboardingPage() {
 
         {/* Error Message */}
         {error && (
-          <div className="rounded-md bg-red-50 p-4">
+          <div className="rounded-lg bg-red-50 p-4">
             <div className="flex">
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">{error}</h3>
+                <h3 className="text-[13px] font-medium text-red-700">{error}</h3>
               </div>
             </div>
           </div>
@@ -172,8 +172,8 @@ export default function OnboardingPage() {
         {/* Step 1: Workspace Details */}
         {step === 1 && (
           <form onSubmit={(e) => { e.preventDefault(); setStep(2); }} className="space-y-6">
-            <div className="rounded-lg bg-white p-8 shadow">
-              <h3 className="text-lg font-medium text-gray-900 mb-6">
+            <div className="rounded-lg bg-white border border-zinc-200 p-8">
+              <h3 className="text-[13px] font-medium text-zinc-900 mb-6">
                 Workspace Details
               </h3>
 
@@ -181,7 +181,7 @@ export default function OnboardingPage() {
                 <div>
                   <label
                     htmlFor="workspace-name"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-[13px] font-medium text-zinc-700 mb-2"
                   >
                     Workspace Name
                   </label>
@@ -191,10 +191,10 @@ export default function OnboardingPage() {
                     required
                     value={workspaceName}
                     onChange={(e) => handleWorkspaceNameChange(e.target.value)}
-                    className="block w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                    className="w-full h-9 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200 transition-all duration-150"
                     placeholder="Acme Corporation"
                   />
-                  <p className="mt-2 text-sm text-gray-500">
+                  <p className="mt-2 text-[13px] text-zinc-500">
                     This will be displayed throughout the platform
                   </p>
                 </div>
@@ -202,26 +202,26 @@ export default function OnboardingPage() {
                 <div>
                   <label
                     htmlFor="workspace-slug"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-[13px] font-medium text-zinc-700 mb-2"
                   >
                     Workspace Slug
                   </label>
-                  <div className="flex rounded-md shadow-sm">
+                  <div className="flex rounded-lg">
                     <input
                       id="workspace-slug"
                       type="text"
                       required
                       value={workspaceSlug}
                       onChange={(e) => setWorkspaceSlug(e.target.value)}
-                      className="block w-full rounded-l-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                      className="flex-1 h-9 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-l-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200 transition-all duration-150"
                       placeholder="acme-corp"
                       pattern="[a-z0-9-]+"
                     />
-                    <span className="inline-flex items-center rounded-r-md border border-l-0 border-gray-300 px-3 text-gray-500 sm:text-sm">
+                    <span className="inline-flex items-center h-9 px-3 text-[13px] text-zinc-500 bg-zinc-50 border border-l-0 border-zinc-300 rounded-r-lg">
                       .openinfo.com
                     </span>
                   </div>
-                  <p className="mt-2 text-sm text-gray-500">
+                  <p className="mt-2 text-[13px] text-zinc-500">
                     Your workspace URL: {workspaceSlug || 'your-slug'}.openinfo.com
                   </p>
                 </div>
@@ -229,7 +229,7 @@ export default function OnboardingPage() {
                 <div>
                   <label
                     htmlFor="industry"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-[13px] font-medium text-zinc-700 mb-2"
                   >
                     Industry (Optional)
                   </label>
@@ -237,7 +237,7 @@ export default function OnboardingPage() {
                     id="industry"
                     value={industryVertical}
                     onChange={(e) => setIndustryVertical(e.target.value)}
-                    className="block w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                    className="w-full h-9 px-3 text-[13px] text-zinc-900 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200 transition-all duration-150"
                   >
                     <option value="">Select an industry</option>
                     {industries.map((industry) => (
@@ -253,7 +253,7 @@ export default function OnboardingPage() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                className="h-9 px-4 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150"
               >
                 Continue
               </button>
@@ -264,43 +264,43 @@ export default function OnboardingPage() {
         {/* Step 2: Review & Create */}
         {step === 2 && (
           <form onSubmit={handleCreateWorkspace} className="space-y-6">
-            <div className="rounded-lg bg-white p-8 shadow">
-              <h3 className="text-lg font-medium text-gray-900 mb-6">
+            <div className="rounded-lg bg-white border border-zinc-200 p-8">
+              <h3 className="text-[13px] font-medium text-zinc-900 mb-6">
                 Review & Create
               </h3>
 
-              <dl className="divide-y divide-gray-100">
+              <dl className="divide-y divide-zinc-100">
                 <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                  <dt className="text-sm font-medium leading-6 text-gray-900">
+                  <dt className="text-[13px] font-medium text-zinc-900">
                     Workspace Name
                   </dt>
-                  <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                  <dd className="mt-1 text-[13px] text-zinc-700 sm:col-span-2 sm:mt-0">
                     {workspaceName}
                   </dd>
                 </div>
                 <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                  <dt className="text-sm font-medium leading-6 text-gray-900">
+                  <dt className="text-[13px] font-medium text-zinc-900">
                     Workspace URL
                   </dt>
-                  <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                  <dd className="mt-1 text-[13px] text-zinc-700 sm:col-span-2 sm:mt-0">
                     {workspaceSlug}.openinfo.com
                   </dd>
                 </div>
                 {industryVertical && (
                   <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                    <dt className="text-sm font-medium leading-6 text-gray-900">
+                    <dt className="text-[13px] font-medium text-zinc-900">
                       Industry
                     </dt>
-                    <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                    <dd className="mt-1 text-[13px] text-zinc-700 sm:col-span-2 sm:mt-0">
                       {industryVertical}
                     </dd>
                   </div>
                 )}
                 <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                  <dt className="text-sm font-medium leading-6 text-gray-900">
+                  <dt className="text-[13px] font-medium text-zinc-900">
                     Plan
                   </dt>
-                  <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                  <dd className="mt-1 text-[13px] text-zinc-700 sm:col-span-2 sm:mt-0">
                     Free (3 credits/day)
                   </dd>
                 </div>
@@ -311,7 +311,7 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                className="h-9 px-4 text-[13px] font-medium border border-zinc-300 text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150"
                 disabled={loading}
               >
                 Back
@@ -319,7 +319,7 @@ export default function OnboardingPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-9 px-4 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Creating workspace...' : 'Create Workspace'}
               </button>
