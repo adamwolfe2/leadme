@@ -65,37 +65,67 @@ export function IndustryFilterStep({
     onNext()
   }
 
+  const clearAll = () => {
+    setSelectedIndustries([])
+  }
+
+  const selectAll = () => {
+    setSelectedIndustries([...INDUSTRIES])
+  }
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 className="text-[17px] font-medium text-zinc-900">
           Filter by Industry (Optional)
         </h2>
-        <p className="mt-2 text-gray-600">
+        <p className="mt-1 text-[13px] text-zinc-600">
           Select one or more industries to target. Leave blank to include all.
         </p>
       </div>
 
       {/* Selected Count */}
       {selectedIndustries.length > 0 && (
-        <div className="rounded-lg bg-blue-50 px-4 py-3">
-          <p className="text-sm text-blue-900">
-            {selectedIndustries.length} {selectedIndustries.length === 1 ? 'industry' : 'industries'} selected
-          </p>
+        <div className="rounded-lg bg-zinc-50 border border-zinc-200 px-4 py-3">
+          <div className="flex items-center justify-between">
+            <p className="text-[13px] text-zinc-900">
+              {selectedIndustries.length} {selectedIndustries.length === 1 ? 'industry' : 'industries'} selected
+            </p>
+            <button
+              type="button"
+              onClick={clearAll}
+              className="text-[12px] font-medium text-zinc-600 hover:text-zinc-900 transition-colors"
+            >
+              Clear all
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Actions */}
+      {selectedIndustries.length === 0 && (
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={selectAll}
+            className="text-[13px] font-medium text-zinc-600 hover:text-zinc-900 transition-colors"
+          >
+            Select all
+          </button>
         </div>
       )}
 
       {/* Industry Grid */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {INDUSTRIES.map((industry) => (
           <button
             key={industry}
             type="button"
             onClick={() => toggleIndustry(industry)}
-            className={`rounded-lg border-2 px-4 py-3 text-sm font-medium transition-colors ${
+            className={`rounded-lg border-2 px-4 py-3 text-[13px] font-medium transition-all duration-150 ${
               selectedIndustries.includes(industry)
-                ? 'border-blue-600 bg-blue-50 text-blue-700'
-                : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                ? 'border-zinc-900 bg-zinc-900 text-white'
+                : 'border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50'
             }`}
           >
             {industry}
@@ -104,11 +134,11 @@ export function IndustryFilterStep({
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-between">
+      <div className="flex justify-between pt-4 border-t border-zinc-200">
         <button
           type="button"
           onClick={onBack}
-          className="rounded-md bg-white px-6 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          className="h-9 px-4 text-[13px] font-medium border border-zinc-300 text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150"
         >
           Back
         </button>
@@ -116,14 +146,14 @@ export function IndustryFilterStep({
           <button
             type="button"
             onClick={handleSkip}
-            className="rounded-md bg-white px-6 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            className="h-9 px-4 text-[13px] font-medium border border-zinc-300 text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150"
           >
             Skip
           </button>
           <button
             type="button"
             onClick={handleNext}
-            className="rounded-md bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-500"
+            className="h-9 px-6 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150"
           >
             Continue
           </button>

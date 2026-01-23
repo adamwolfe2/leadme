@@ -26,19 +26,21 @@ export function ReviewStep({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Review Your Query</h2>
-        <p className="mt-2 text-gray-600">
+        <h2 className="text-[17px] font-medium text-zinc-900">
+          Review Your Query
+        </h2>
+        <p className="mt-1 text-[13px] text-zinc-600">
           Make sure everything looks correct before creating your query
         </p>
       </div>
 
       {/* Query Summary */}
-      <div className="rounded-lg border border-gray-200 bg-gray-50 p-6">
+      <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-6">
         <dl className="space-y-4">
           {/* Topic */}
           <div>
-            <dt className="text-sm font-medium text-gray-500">Topic</dt>
-            <dd className="mt-1 text-lg font-semibold text-gray-900">
+            <dt className="text-[12px] font-medium text-zinc-500">Topic</dt>
+            <dd className="mt-1 text-[15px] font-medium text-zinc-900">
               {topicName}
             </dd>
           </div>
@@ -46,8 +48,10 @@ export function ReviewStep({
           {/* Location */}
           {filters.location && (
             <div>
-              <dt className="text-sm font-medium text-gray-500">Location</dt>
-              <dd className="mt-1 text-base text-gray-900">
+              <dt className="text-[12px] font-medium text-zinc-500">
+                Location
+              </dt>
+              <dd className="mt-1 text-[13px] text-zinc-900">
                 {[
                   filters.location.city,
                   filters.location.state,
@@ -62,10 +66,10 @@ export function ReviewStep({
           {/* Employee Range */}
           {filters.employee_range && (
             <div>
-              <dt className="text-sm font-medium text-gray-500">
+              <dt className="text-[12px] font-medium text-zinc-500">
                 Number of Employees
               </dt>
-              <dd className="mt-1 text-base text-gray-900">
+              <dd className="mt-1 text-[13px] text-zinc-900">
                 {filters.employee_range.min?.toLocaleString() || '0'} -{' '}
                 {filters.employee_range.max
                   ? filters.employee_range.max.toLocaleString()
@@ -77,10 +81,10 @@ export function ReviewStep({
           {/* Revenue Range */}
           {filters.revenue_range && (
             <div>
-              <dt className="text-sm font-medium text-gray-500">
+              <dt className="text-[12px] font-medium text-zinc-500">
                 Annual Revenue
               </dt>
-              <dd className="mt-1 text-base text-gray-900">
+              <dd className="mt-1 text-[13px] text-zinc-900">
                 ${(filters.revenue_range.min || 0).toLocaleString()} -{' '}
                 {filters.revenue_range.max
                   ? `$${filters.revenue_range.max.toLocaleString()}`
@@ -92,12 +96,14 @@ export function ReviewStep({
           {/* Industries */}
           {filters.industry && filters.industry.length > 0 && (
             <div>
-              <dt className="text-sm font-medium text-gray-500">Industries</dt>
+              <dt className="text-[12px] font-medium text-zinc-500">
+                Industries
+              </dt>
               <dd className="mt-2 flex flex-wrap gap-2">
                 {filters.industry.map((industry) => (
                   <span
                     key={industry}
-                    className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800"
+                    className="inline-flex items-center rounded-md px-2 py-1 text-[11px] font-medium bg-zinc-100 text-zinc-700"
                   >
                     {industry}
                   </span>
@@ -109,8 +115,8 @@ export function ReviewStep({
           {/* No Filters Message */}
           {!hasFilters && (
             <div>
-              <dt className="text-sm font-medium text-gray-500">Filters</dt>
-              <dd className="mt-1 text-base text-gray-900">
+              <dt className="text-[12px] font-medium text-zinc-500">Filters</dt>
+              <dd className="mt-1 text-[13px] text-zinc-900">
                 No filters applied - tracking all companies researching this
                 topic
               </dd>
@@ -120,11 +126,11 @@ export function ReviewStep({
       </div>
 
       {/* Info Box */}
-      <div className="rounded-lg bg-blue-50 p-4">
+      <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-4">
         <div className="flex">
           <div className="flex-shrink-0">
             <svg
-              className="h-5 w-5 text-blue-400"
+              className="h-5 w-5 text-emerald-600"
               viewBox="0 0 20 20"
               fill="currentColor"
             >
@@ -136,10 +142,10 @@ export function ReviewStep({
             </svg>
           </div>
           <div className="ml-3">
-            <h3 className="text-sm font-medium text-blue-800">
+            <h3 className="text-[13px] font-medium text-emerald-900">
               What happens next?
             </h3>
-            <div className="mt-2 text-sm text-blue-700">
+            <div className="mt-2 text-[13px] text-emerald-800">
               <ul className="list-disc space-y-1 pl-5">
                 <li>Your query will run daily to discover new leads</li>
                 <li>
@@ -157,12 +163,12 @@ export function ReviewStep({
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-between">
+      <div className="flex justify-between pt-4 border-t border-zinc-200">
         <button
           type="button"
           onClick={onBack}
           disabled={loading}
-          className="rounded-md bg-white px-6 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          className="h-9 px-4 text-[13px] font-medium border border-zinc-300 text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Back
         </button>
@@ -170,9 +176,35 @@ export function ReviewStep({
           type="button"
           onClick={onSubmit}
           disabled={loading}
-          className="rounded-md bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className="h-9 px-6 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2"
         >
-          {loading ? 'Creating Query...' : 'Create Query'}
+          {loading ? (
+            <span className="flex items-center">
+              <svg
+                className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Creating Query...
+            </span>
+          ) : (
+            'Create Query'
+          )}
         </button>
       </div>
     </div>

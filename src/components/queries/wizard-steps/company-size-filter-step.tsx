@@ -72,20 +72,20 @@ export function CompanySizeFilterStep({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 className="text-[17px] font-medium text-zinc-900">
           Filter by Company Size (Optional)
         </h2>
-        <p className="mt-2 text-gray-600">
+        <p className="mt-1 text-[13px] text-zinc-600">
           Target companies based on their employee count and revenue
         </p>
       </div>
 
       {/* Employee Range */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-[13px] font-medium text-zinc-700 mb-3">
           Number of Employees
         </label>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {EMPLOYEE_RANGES.map((range, index) => (
             <button
               key={range.label}
@@ -93,10 +93,10 @@ export function CompanySizeFilterStep({
               onClick={() =>
                 setSelectedEmployee(selectedEmployee === index ? null : index)
               }
-              className={`rounded-lg border-2 px-4 py-3 text-sm font-medium transition-colors ${
+              className={`rounded-lg border-2 px-4 py-3 text-[13px] font-medium transition-all duration-150 ${
                 selectedEmployee === index
-                  ? 'border-blue-600 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                  ? 'border-zinc-900 bg-zinc-900 text-white'
+                  : 'border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50'
               }`}
             >
               {range.label}
@@ -107,10 +107,10 @@ export function CompanySizeFilterStep({
 
       {/* Revenue Range */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-[13px] font-medium text-zinc-700 mb-3">
           Annual Revenue
         </label>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {REVENUE_RANGES.map((range, index) => (
             <button
               key={range.label}
@@ -118,10 +118,10 @@ export function CompanySizeFilterStep({
               onClick={() =>
                 setSelectedRevenue(selectedRevenue === index ? null : index)
               }
-              className={`rounded-lg border-2 px-4 py-3 text-sm font-medium transition-colors ${
+              className={`rounded-lg border-2 px-4 py-3 text-[13px] font-medium transition-all duration-150 ${
                 selectedRevenue === index
-                  ? 'border-blue-600 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                  ? 'border-zinc-900 bg-zinc-900 text-white'
+                  : 'border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50'
               }`}
             >
               {range.label}
@@ -130,12 +130,29 @@ export function CompanySizeFilterStep({
         </div>
       </div>
 
+      {/* Current Selection */}
+      {(selectedEmployee !== null || selectedRevenue !== null) && (
+        <div className="rounded-lg bg-zinc-50 border border-zinc-200 p-4">
+          <p className="text-[12px] font-medium text-zinc-700 mb-2">
+            Current Selection
+          </p>
+          <div className="space-y-1 text-[13px] text-zinc-900">
+            {selectedEmployee !== null && (
+              <p>Employees: {EMPLOYEE_RANGES[selectedEmployee].label}</p>
+            )}
+            {selectedRevenue !== null && (
+              <p>Revenue: {REVENUE_RANGES[selectedRevenue].label}</p>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Navigation */}
-      <div className="flex justify-between">
+      <div className="flex justify-between pt-4 border-t border-zinc-200">
         <button
           type="button"
           onClick={onBack}
-          className="rounded-md bg-white px-6 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          className="h-9 px-4 text-[13px] font-medium border border-zinc-300 text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150"
         >
           Back
         </button>
@@ -143,14 +160,14 @@ export function CompanySizeFilterStep({
           <button
             type="button"
             onClick={handleSkip}
-            className="rounded-md bg-white px-6 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            className="h-9 px-4 text-[13px] font-medium border border-zinc-300 text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150"
           >
             Skip
           </button>
           <button
             type="button"
             onClick={handleNext}
-            className="rounded-md bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-500"
+            className="h-9 px-6 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150"
           >
             Continue
           </button>

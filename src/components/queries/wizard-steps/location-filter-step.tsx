@@ -10,6 +10,25 @@ interface LocationFilterStepProps {
   onBack: () => void
 }
 
+const US_STATES = [
+  'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
+  'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho',
+  'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
+  'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
+  'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada',
+  'New Hampshire', 'New Jersey', 'New Mexico', 'New York',
+  'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon',
+  'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
+  'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington',
+  'West Virginia', 'Wisconsin', 'Wyoming'
+]
+
+const COUNTRIES = [
+  'United States', 'Canada', 'United Kingdom', 'Germany', 'France',
+  'Australia', 'Japan', 'India', 'Brazil', 'Mexico', 'China',
+  'Netherlands', 'Sweden', 'Spain', 'Italy', 'Switzerland'
+]
+
 export function LocationFilterStep({
   filters,
   onUpdate,
@@ -48,10 +67,10 @@ export function LocationFilterStep({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 className="text-[17px] font-medium text-zinc-900">
           Filter by Location (Optional)
         </h2>
-        <p className="mt-2 text-gray-600">
+        <p className="mt-1 text-[13px] text-zinc-600">
           Narrow down companies by their geographic location
         </p>
       </div>
@@ -60,41 +79,62 @@ export function LocationFilterStep({
         <div>
           <label
             htmlFor="country"
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block text-[13px] font-medium text-zinc-700 mb-2"
           >
             Country
           </label>
-          <input
+          <select
             id="country"
-            type="text"
             value={country}
             onChange={(e) => setCountry(e.target.value)}
-            placeholder="e.g., United States"
-            className="block w-full rounded-md border-gray-300 px-4 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          />
+            className="w-full h-10 px-3 text-[13px] text-zinc-900 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200 transition-all duration-150"
+          >
+            <option value="">Select a country</option>
+            {COUNTRIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
           <label
             htmlFor="state"
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block text-[13px] font-medium text-zinc-700 mb-2"
           >
             State/Province
           </label>
-          <input
-            id="state"
-            type="text"
-            value={state}
-            onChange={(e) => setState(e.target.value)}
-            placeholder="e.g., California"
-            className="block w-full rounded-md border-gray-300 px-4 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          />
+          {country === 'United States' ? (
+            <select
+              id="state"
+              value={state}
+              onChange={(e) => setState(e.target.value)}
+              className="w-full h-10 px-3 text-[13px] text-zinc-900 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200 transition-all duration-150"
+            >
+              <option value="">Select a state</option>
+              {US_STATES.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              id="state"
+              type="text"
+              value={state}
+              onChange={(e) => setState(e.target.value)}
+              placeholder="e.g., California, Ontario"
+              className="w-full h-10 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200 transition-all duration-150"
+            />
+          )}
         </div>
 
         <div>
           <label
             htmlFor="city"
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block text-[13px] font-medium text-zinc-700 mb-2"
           >
             City
           </label>
@@ -104,17 +144,29 @@ export function LocationFilterStep({
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder="e.g., San Francisco"
-            className="block w-full rounded-md border-gray-300 px-4 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="w-full h-10 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200 transition-all duration-150"
           />
         </div>
       </div>
 
+      {/* Current Selection */}
+      {(country || state || city) && (
+        <div className="rounded-lg bg-zinc-50 border border-zinc-200 p-4">
+          <p className="text-[12px] font-medium text-zinc-700 mb-2">
+            Current Selection
+          </p>
+          <p className="text-[13px] text-zinc-900">
+            {[city, state, country].filter(Boolean).join(', ')}
+          </p>
+        </div>
+      )}
+
       {/* Navigation */}
-      <div className="flex justify-between">
+      <div className="flex justify-between pt-4 border-t border-zinc-200">
         <button
           type="button"
           onClick={onBack}
-          className="rounded-md bg-white px-6 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          className="h-9 px-4 text-[13px] font-medium border border-zinc-300 text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150"
         >
           Back
         </button>
@@ -122,14 +174,14 @@ export function LocationFilterStep({
           <button
             type="button"
             onClick={handleSkip}
-            className="rounded-md bg-white px-6 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            className="h-9 px-4 text-[13px] font-medium border border-zinc-300 text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150"
           >
             Skip
           </button>
           <button
             type="button"
             onClick={handleNext}
-            className="rounded-md bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-500"
+            className="h-9 px-6 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150"
           >
             Continue
           </button>
