@@ -41,24 +41,33 @@ export default function ProfileSettingsPage() {
 
   const user = userData?.data
 
+  // Profile form
   const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
+    register: registerProfile,
+    handleSubmit: handleSubmitProfile,
+    formState: { errors: profileErrors },
+    reset: resetProfile,
   } = useForm<ProfileSettingsFormData>({
     resolver: zodResolver(profileSettingsSchema),
-    mode: 'onBlur',
     defaultValues: {
       full_name: user?.full_name || '',
       email: user?.email || '',
     },
   })
 
-  // Reset form when user data loads
+  // Workspace form
+  const {
+    register: registerWorkspace,
+    handleSubmit: handleSubmitWorkspace,
+    formState: { errors: workspaceErrors },
+  } = useForm<WorkspaceSettingsFormData>({
+    resolver: zodResolver(workspaceSettingsSchema),
+  })
+
+  // Reset profile form when user data loads
   useState(() => {
     if (user) {
-      reset({
+      resetProfile({
         full_name: user.full_name || '',
         email: user.email || '',
       })
@@ -81,17 +90,37 @@ export default function ProfileSettingsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] })
-      setSuccessMessage('Profile updated successfully!')
-      setErrorMessage('')
-      setTimeout(() => setSuccessMessage(''), 3000)
+      toast.success('Profile updated successfully!')
     },
     onError: (error: Error) => {
-      setErrorMessage(error.message)
-      setSuccessMessage('')
+      toast.error(error.message || 'Failed to update profile')
     },
   })
 
-  const onSubmit = async (data: ProfileSettingsFormData) => {
+  // Delete account mutation
+  const deleteAccountMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/users/me', {
+        method: 'DELETE',
+      })
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to delete account')
+      }
+      return response.json()
+    },
+    onSuccess: () => {
+      toast.success('Account deleted successfully. Redirecting...')
+      setTimeout(() => {
+        router.push('/signup')
+      }, 2000)
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to delete account')
+    },
+  })
+
+  const onSubmitProfile = (data: ProfileSettingsFormData) => {
     updateProfileMutation.mutate(data)
   }
 
