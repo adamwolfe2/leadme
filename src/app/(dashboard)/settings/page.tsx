@@ -2,22 +2,30 @@
 
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import Link from 'next/link'
 import { profileSettingsSchema, type ProfileSettingsFormData } from '@/lib/validation/schemas'
-import {
-  FormField,
-  FormLabel,
-  FormInput,
-  FormError,
-  FormSuccess,
-} from '@/components/ui/form'
+import { PageContainer, PageHeader } from '@/components/layout'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { FormField, FormActions } from '@/components/ui/form-field'
+import { Skeleton, SkeletonCard } from '@/components/ui/skeleton'
+
+const settingsTabs = [
+  { value: 'profile', label: 'Profile', href: '/settings' },
+  { value: 'notifications', label: 'Notifications', href: '/settings/notifications' },
+  { value: 'security', label: 'Security', href: '/settings/security' },
+  { value: 'billing', label: 'Billing', href: '/settings/billing' },
+]
 
 export default function ProfileSettingsPage() {
   const queryClient = useQueryClient()
-  const router = useRouter()
+  const pathname = usePathname()
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
 
@@ -87,235 +95,241 @@ export default function ProfileSettingsPage() {
     updateProfileMutation.mutate(data)
   }
 
-  const copyReferralCode = () => {
-    if (user?.referral_code) {
-      navigator.clipboard.writeText(user.referral_code)
-      setSuccessMessage('Referral code copied!')
-      setTimeout(() => setSuccessMessage(''), 3000)
-    }
-  }
-
-  const copyReferralLink = () => {
-    const link = `${window.location.origin}/signup?ref=${user?.referral_code}`
-    navigator.clipboard.writeText(link)
-    setSuccessMessage('Referral link copied!')
+  const copyToClipboard = (text: string, message: string) => {
+    navigator.clipboard.writeText(text)
+    setSuccessMessage(message)
     setTimeout(() => setSuccessMessage(''), 3000)
   }
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
-        <div className="h-96 bg-gray-200 rounded animate-pulse" />
-      </div>
+      <PageContainer>
+        <div className="space-y-6">
+          <Skeleton className="h-10 w-48" />
+          <Skeleton className="h-10 w-full max-w-md" />
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+      </PageContainer>
     )
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Profile Settings</h1>
-        <p className="mt-2 text-sm text-gray-600">
-          Manage your account information and preferences
-        </p>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title="Settings"
+        description="Manage your account settings and preferences"
+        breadcrumbs={[
+          { label: 'Dashboard', href: '/dashboard' },
+          { label: 'Settings' },
+        ]}
+      />
 
       {/* Navigation Tabs */}
-      <div className="border-b border-gray-200">
+      <div className="mb-6 border-b border-border">
         <nav className="-mb-px flex space-x-8">
-          <Link
-            href="/settings"
-            className="border-blue-500 text-blue-600 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium"
-          >
-            Profile
-          </Link>
-          <Link
-            href="/settings/notifications"
-            className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium"
-          >
-            Notifications
-          </Link>
-          <Link
-            href="/settings/security"
-            className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium"
-          >
-            Security
-          </Link>
-          <Link
-            href="/settings/billing"
-            className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium"
-          >
-            Billing
-          </Link>
+          {settingsTabs.map((tab) => {
+            const isActive = pathname === tab.href
+            return (
+              <Link
+                key={tab.value}
+                href={tab.href}
+                className={`whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                }`}
+              >
+                {tab.label}
+              </Link>
+            )
+          })}
         </nav>
       </div>
 
       {/* Success Message */}
-      <FormSuccess message={successMessage || undefined} />
+      {successMessage && (
+        <Alert variant="success" className="mb-6">
+          <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <AlertDescription>{successMessage}</AlertDescription>
+        </Alert>
+      )}
 
       {/* Error Message */}
-      <FormError message={errorMessage || undefined} />
+      {errorMessage && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertDescription>{errorMessage}</AlertDescription>
+        </Alert>
+      )}
 
-      {/* Profile Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="rounded-lg border border-zinc-200 bg-white p-6">
-          <h2 className="text-lg font-semibold text-zinc-900 mb-4">
-            Personal Information
-          </h2>
+      <div className="space-y-6">
+        {/* Profile Form */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Personal Information</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="space-y-4 max-w-md">
+                <FormField
+                  label="Full Name"
+                  htmlFor="full_name"
+                  required
+                  error={errors.full_name?.message}
+                >
+                  <Input
+                    id="full_name"
+                    placeholder="Enter your full name"
+                    disabled={updateProfileMutation.isPending}
+                    {...register('full_name')}
+                  />
+                </FormField>
 
-          <div className="space-y-4">
-            <FormField error={errors.full_name}>
-              <FormLabel htmlFor="full_name" required>
-                Full Name
-              </FormLabel>
-              <FormInput
-                id="full_name"
-                type="text"
-                disabled={updateProfileMutation.isPending}
-                error={errors.full_name}
-                {...register('full_name')}
-              />
-            </FormField>
+                <FormField
+                  label="Email Address"
+                  htmlFor="email"
+                  description="Email cannot be changed once registered"
+                >
+                  <Input
+                    id="email"
+                    type="email"
+                    disabled
+                    className="bg-muted"
+                    {...register('email')}
+                  />
+                </FormField>
+              </div>
 
-            <FormField error={errors.email}>
-              <FormLabel
-                htmlFor="email"
-                hint="Email cannot be changed once registered"
-              >
-                Email Address
-              </FormLabel>
-              <FormInput
-                id="email"
-                type="email"
-                disabled
-                className="bg-zinc-50 text-zinc-500"
-                {...register('email')}
-              />
-            </FormField>
-          </div>
+              <FormActions>
+                <Button
+                  type="submit"
+                  disabled={updateProfileMutation.isPending || Object.keys(errors).length > 0}
+                >
+                  {updateProfileMutation.isPending ? 'Saving...' : 'Save Changes'}
+                </Button>
+              </FormActions>
+            </form>
+          </CardContent>
+        </Card>
 
-          <div className="mt-6 flex justify-end">
-            <button
-              type="submit"
-              disabled={updateProfileMutation.isPending || Object.keys(errors).length > 0}
-              className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150"
-            >
-              {updateProfileMutation.isPending ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
-        </div>
-      </form>
+        {/* Workspace Info */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Workspace Information</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4 max-w-md">
+                <div>
+                  <p className="text-sm text-muted-foreground">Role</p>
+                  <p className="text-sm font-medium text-foreground capitalize">
+                    {user?.role || 'Member'}
+                  </p>
+                </div>
 
-      {/* Workspace Info */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Workspace Information
-        </h2>
+                <div>
+                  <p className="text-sm text-muted-foreground">Plan</p>
+                  <div className="flex items-center gap-2">
+                    <Badge variant={user?.plan === 'pro' ? 'default' : 'muted'}>
+                      {user?.plan === 'pro' ? 'Pro' : 'Free'}
+                    </Badge>
+                    {user?.plan === 'free' && (
+                      <Link href="/pricing">
+                        <Button variant="link" size="sm" className="px-0">
+                          Upgrade
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
+                </div>
 
-        <div className="space-y-3">
-          <div>
-            <span className="text-sm font-medium text-gray-700">Role:</span>
-            <span className="ml-2 text-sm text-gray-900 capitalize">
-              {user?.role || 'Member'}
-            </span>
-          </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Daily Credits</p>
+                  <p className="text-sm font-medium text-foreground">
+                    {user?.credits_remaining || 0} / {user?.daily_credit_limit || 3}
+                  </p>
+                </div>
 
-          <div>
-            <span className="text-sm font-medium text-gray-700">Plan:</span>
-            <span className="ml-2 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 capitalize">
-              {user?.plan || 'free'}
-            </span>
-            {user?.plan === 'free' && (
-              <Link
-                href="/pricing"
-                className="ml-2 text-sm text-blue-600 hover:text-blue-500 font-medium"
-              >
-                Upgrade to Pro →
-              </Link>
-            )}
-          </div>
-
-          <div>
-            <span className="text-sm font-medium text-gray-700">
-              Credits Remaining:
-            </span>
-            <span className="ml-2 text-sm text-gray-900">
-              {user?.credits_remaining || 0} /{' '}
-              {user?.daily_credit_limit || 3} today
-            </span>
-          </div>
-
-          <div>
-            <span className="text-sm font-medium text-gray-700">
-              Member since:
-            </span>
-            <span className="ml-2 text-sm text-gray-900">
-              {user?.created_at
-                ? new Date(user.created_at).toLocaleDateString()
-                : 'N/A'}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Referral Program */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Referral Program
-        </h2>
-
-        <p className="text-sm text-gray-600 mb-4">
-          Share OpenInfo with your network and earn bonus credits when they
-          sign up using your referral link.
-        </p>
-
-        <div className="space-y-3">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Your Referral Code
-            </label>
-            <div className="flex space-x-2">
-              <input
-                type="text"
-                value={user?.referral_code || 'Generating...'}
-                readOnly
-                className="block flex-1 rounded-md border-gray-300 bg-gray-50 shadow-sm"
-              />
-              <button
-                onClick={copyReferralCode}
-                className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              >
-                Copy Code
-              </button>
+                <div>
+                  <p className="text-sm text-muted-foreground">Member Since</p>
+                  <p className="text-sm font-medium text-foreground">
+                    {user?.created_at
+                      ? new Date(user.created_at).toLocaleDateString('en-US', {
+                          month: 'long',
+                          year: 'numeric',
+                        })
+                      : 'N/A'}
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Your Referral Link
-            </label>
-            <div className="flex space-x-2">
-              <input
-                type="text"
-                value={
-                  user?.referral_code
-                    ? `${window.location.origin}/signup?ref=${user.referral_code}`
-                    : 'Generating...'
-                }
-                readOnly
-                className="block flex-1 rounded-md border-gray-300 bg-gray-50 shadow-sm text-sm"
-              />
-              <button
-                onClick={copyReferralLink}
-                className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              >
-                Copy Link
-              </button>
+        {/* Referral Program */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Referral Program</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Share OpenInfo with your network and earn bonus credits when they
+              sign up using your referral link.
+            </p>
+
+            <div className="space-y-4 max-w-md">
+              <FormField label="Your Referral Code">
+                <div className="flex gap-2">
+                  <Input
+                    value={user?.referral_code || 'Generating...'}
+                    readOnly
+                    className="bg-muted"
+                  />
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      copyToClipboard(user?.referral_code, 'Referral code copied!')
+                    }
+                  >
+                    Copy
+                  </Button>
+                </div>
+              </FormField>
+
+              <FormField label="Your Referral Link">
+                <div className="flex gap-2">
+                  <Input
+                    value={
+                      user?.referral_code
+                        ? `${typeof window !== 'undefined' ? window.location.origin : ''}/signup?ref=${user.referral_code}`
+                        : 'Generating...'
+                    }
+                    readOnly
+                    className="bg-muted text-sm"
+                  />
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      copyToClipboard(
+                        `${window.location.origin}/signup?ref=${user?.referral_code}`,
+                        'Referral link copied!'
+                      )
+                    }
+                  >
+                    Copy
+                  </Button>
+                </div>
+              </FormField>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
-    </div>
+    </PageContainer>
   )
 }
