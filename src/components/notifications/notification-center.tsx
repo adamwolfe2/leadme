@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
-import { useToast } from '@/components/ui/toast'
+import { useToast } from '@/lib/contexts/toast-context'
 import { useNotificationUpdates } from '@/lib/realtime'
 import { formatDistanceToNow } from 'date-fns'
 
