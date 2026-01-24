@@ -118,8 +118,9 @@ function getSubdomain(hostname: string): string | null {
   // Extract subdomain (first part)
   const subdomain = parts[0]
 
-  // Ignore www
-  if (subdomain === 'www') {
+  // Ignore www and app subdomains (these are the main app, not tenant subdomains)
+  const appSubdomains = ['www', 'leads', 'app', 'dashboard']
+  if (appSubdomains.includes(subdomain)) {
     return null
   }
 
