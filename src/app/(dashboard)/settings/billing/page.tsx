@@ -3,8 +3,19 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useToast } from '@/lib/hooks/use-toast'
 import { UpgradeButton } from '@/components/billing/upgrade-button'
+
+// Integration logos for the Pro plan card
+const INTEGRATION_LOGOS = {
+  slack: { src: '/Slack_icon_2019.svg.png', alt: 'Slack' },
+  zapier: { src: '/zapier-logo-png-transparent.png', alt: 'Zapier' },
+  salesforce: { src: '/Salesforce.com_logo.svg.png', alt: 'Salesforce' },
+  hubspot: { src: '/free-hubspot-logo-icon-svg-download-png-2944939.webp', alt: 'HubSpot' },
+  pipedrive: { src: '/Pipedrive_Monogram_Green background.png', alt: 'Pipedrive' },
+  googleSheets: { src: '/Google_Sheets_Logo_512px.png', alt: 'Google Sheets' },
+}
 
 function SettingsNav({ currentPath }: { currentPath: string }) {
   const tabs = [
@@ -479,6 +490,17 @@ export default function BillingSettingsPage() {
                   <div>
                     <span className="font-medium text-zinc-900">Multi-channel delivery</span>
                     <p className="text-sm text-zinc-500">Email, Slack, Webhooks, Zapier</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <div className="relative h-6 w-6 rounded-md overflow-hidden bg-white shadow-sm border border-zinc-200">
+                        <Image src={INTEGRATION_LOGOS.slack.src} alt={INTEGRATION_LOGOS.slack.alt} fill className="object-contain p-0.5" />
+                      </div>
+                      <div className="relative h-6 w-6 rounded-md overflow-hidden bg-white shadow-sm border border-zinc-200">
+                        <Image src={INTEGRATION_LOGOS.zapier.src} alt={INTEGRATION_LOGOS.zapier.alt} fill className="object-contain p-0.5" />
+                      </div>
+                      <div className="relative h-6 w-6 rounded-md overflow-hidden bg-white shadow-sm border border-zinc-200">
+                        <Image src={INTEGRATION_LOGOS.googleSheets.src} alt={INTEGRATION_LOGOS.googleSheets.alt} fill className="object-contain p-0.5" />
+                      </div>
+                    </div>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
@@ -488,6 +510,17 @@ export default function BillingSettingsPage() {
                   <div>
                     <span className="font-medium text-zinc-900">CRM integrations</span>
                     <p className="text-sm text-zinc-500">Salesforce, HubSpot, Pipedrive</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <div className="relative h-6 w-6 rounded-md overflow-hidden bg-white shadow-sm border border-zinc-200">
+                        <Image src={INTEGRATION_LOGOS.salesforce.src} alt={INTEGRATION_LOGOS.salesforce.alt} fill className="object-contain p-0.5" />
+                      </div>
+                      <div className="relative h-6 w-6 rounded-md overflow-hidden bg-white shadow-sm border border-zinc-200">
+                        <Image src={INTEGRATION_LOGOS.hubspot.src} alt={INTEGRATION_LOGOS.hubspot.alt} fill className="object-contain p-0.5" />
+                      </div>
+                      <div className="relative h-6 w-6 rounded-md overflow-hidden bg-white shadow-sm border border-zinc-200">
+                        <Image src={INTEGRATION_LOGOS.pipedrive.src} alt={INTEGRATION_LOGOS.pipedrive.alt} fill className="object-contain p-0.5" />
+                      </div>
+                    </div>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
