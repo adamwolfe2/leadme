@@ -91,14 +91,21 @@ async function refreshGhlToken(
   connection: GhlConnection
 ): Promise<{ accessToken: string; refreshToken: string } | null> {
   try {
+    const clientId = process.env.GHL_CLIENT_ID
+    const clientSecret = process.env.GHL_CLIENT_SECRET
+    if (!clientId || !clientSecret) {
+      console.error('GoHighLevel OAuth credentials not configured')
+      return null
+    }
+
     const response = await fetch(`${GHL_API_URL}/oauth/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: new URLSearchParams({
-        client_id: process.env.GHL_CLIENT_ID!,
-        client_secret: process.env.GHL_CLIENT_SECRET!,
+        client_id: clientId,
+        client_secret: clientSecret,
         grant_type: 'refresh_token',
         refresh_token: connection.refreshToken,
       }),
@@ -469,6 +476,7 @@ export async function bulkSyncToGhl(
           },
         })
         .eq('id', lead.id)
+        .eq('workspace_id', workspaceId) // Workspace isolation
     } else {
       failed++
       results.push({ leadId: lead.id, success: false })
