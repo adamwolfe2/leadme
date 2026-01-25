@@ -482,6 +482,7 @@ export async function bulkSyncToGhl(
           },
         })
         .eq('id', lead.id)
+        .eq('workspace_id', workspaceId) // Workspace isolation
     } else {
       failed++
       results.push({ leadId: lead.id, success: false })

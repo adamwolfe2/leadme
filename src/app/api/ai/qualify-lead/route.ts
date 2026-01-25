@@ -102,6 +102,7 @@ export async function POST(req: NextRequest) {
           },
         })
         .eq('id', lead_id)
+        .eq('workspace_id', user.workspace_id) // Workspace isolation
 
       // Log activity
       await supabase.from('lead_activities').insert({

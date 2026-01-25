@@ -519,12 +519,19 @@ async function refreshGmailToken(
   refreshToken: string
 ): Promise<{ access_token: string } | null> {
   try {
+    const clientId = process.env.GOOGLE_CLIENT_ID
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET
+    if (!clientId || !clientSecret) {
+      console.error('Google OAuth credentials not configured')
+      return null
+    }
+
     const response = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
-        client_id: process.env.GOOGLE_CLIENT_ID!,
-        client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+        client_id: clientId,
+        client_secret: clientSecret,
         refresh_token: refreshToken,
         grant_type: 'refresh_token',
       }),
@@ -561,14 +568,21 @@ async function refreshOutlookToken(
   refreshToken: string
 ): Promise<{ access_token: string } | null> {
   try {
+    const clientId = process.env.MICROSOFT_CLIENT_ID
+    const clientSecret = process.env.MICROSOFT_CLIENT_SECRET
+    if (!clientId || !clientSecret) {
+      console.error('Microsoft OAuth credentials not configured')
+      return null
+    }
+
     const response = await fetch(
       'https://login.microsoftonline.com/common/oauth2/v2.0/token',
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
-          client_id: process.env.MICROSOFT_CLIENT_ID!,
-          client_secret: process.env.MICROSOFT_CLIENT_SECRET!,
+          client_id: clientId,
+          client_secret: clientSecret,
           refresh_token: refreshToken,
           grant_type: 'refresh_token',
           scope: 'https://graph.microsoft.com/Mail.Send offline_access',
