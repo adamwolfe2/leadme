@@ -30,5 +30,10 @@ export const { GET, POST, PUT } = serve({
     // System Jobs
     functions.creditReset,
     functions.weeklyTrends,
+
+    // Webhook Delivery
+    functions.deliverLeadWebhook,
+    functions.retryWebhookDeliveries,
+    functions.sendLeadEmailNotification,
   ],
 })
