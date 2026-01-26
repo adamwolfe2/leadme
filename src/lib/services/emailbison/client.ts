@@ -170,6 +170,23 @@ export class EmailBisonClient {
   // SENDING
   // ============================================================================
 
+  async sendEmail(options: {
+    to_email: string
+    to_name?: string
+    subject: string
+    body_html: string
+    body_text?: string
+    from_email_id?: number
+    account_id?: number
+    tracking_id?: string
+    reply_to?: string
+  }): Promise<{ success: boolean; message_id: string; sent_at: string }> {
+    return this.request('/api/emails/send', {
+      method: 'POST',
+      body: JSON.stringify(options),
+    })
+  }
+
   async sendReply(options: EmailBisonSendOptions): Promise<{ success: boolean; message_id?: number }> {
     return this.request('/api/emails/reply', {
       method: 'POST',
