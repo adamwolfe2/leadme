@@ -15,7 +15,7 @@ export const scrapeWebsite = inngest.createFunction(
     id: 'scrape-website',
     retries: 2,
   },
-  { event: 'workspace/website.scrape' },
+  { event: 'workspace/scrape-website' },
   async ({ event, step }) => {
     const { workspace_id, website_url } = event.data
 
