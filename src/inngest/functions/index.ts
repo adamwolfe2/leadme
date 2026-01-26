@@ -64,6 +64,11 @@ export {
 // System Jobs
 export { creditReset } from './credit-reset'
 export { weeklyTrends } from './weekly-trends'
+export {
+  processRetryQueue,
+  cleanupFailedJobs,
+  onJobRetryRequested,
+} from './retry-failed-jobs'
 
 // Webhook Delivery
 export {

@@ -199,6 +199,19 @@ export type Events = {
       workspace_id: string
     }
   }
+  'job/retry-requested': {
+    data: {
+      job_id: string
+      workspace_id?: string
+    }
+  }
+  'webhook/deliver': {
+    data: {
+      url: string
+      data: Record<string, any>
+      workspace_id: string
+    }
+  }
 
   // Campaign Events
   'campaign/lead-added': {
