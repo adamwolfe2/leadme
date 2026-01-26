@@ -14,6 +14,10 @@ export {
   batchSendApprovedEmails,
   onEmailApproved,
 } from './campaign-send'
+export {
+  processReply,
+  batchProcessReplies,
+} from './campaign-reply'
 
 // Lead Generation & Management
 export { dailyLeadGeneration } from './daily-lead-generation'
