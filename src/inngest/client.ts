@@ -194,6 +194,11 @@ export type Events = {
       websiteUrl: string
     }
   }
+  'workspace/reset-send-count': {
+    data: {
+      workspace_id: string
+    }
+  }
 
   // Campaign Events
   'campaign/lead-added': {

@@ -43,6 +43,8 @@ export const { GET, POST, PUT } = serve({
     functions.processCampaignSequences,
     functions.handleAutoSendEmail,
     functions.checkSequenceCompletion,
+    functions.resetDailySendCounts,
+    functions.resetWorkspaceSendCount,
 
     // System Jobs
     functions.creditReset,

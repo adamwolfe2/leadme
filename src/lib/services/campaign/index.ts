@@ -5,3 +5,4 @@
 
 export * from './campaign-state-machine'
 export * from './suppression.service'
+export * from './send-limits.service'
