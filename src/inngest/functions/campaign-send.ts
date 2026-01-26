@@ -4,6 +4,7 @@
 import { inngest } from '../client'
 import { createClient } from '@/lib/supabase/server'
 import { EmailBisonClient } from '@/lib/services/emailbison'
+import { isEmailSuppressed } from '@/lib/services/campaign/suppression.service'
 
 // Mock flag for development when API keys aren't available
 const USE_MOCKS = !process.env.EMAILBISON_API_KEY
@@ -64,7 +65,38 @@ export const sendApprovedEmail = inngest.createFunction(
 
     logger.info(`Sending email ${email_send_id} to ${emailSend.recipient_email}`)
 
-    // Step 2: Send via EmailBison or mock
+    // Step 2: Check suppression list
+    const suppressionCheck = await step.run('check-suppression', async () => {
+      return await isEmailSuppressed(emailSend.recipient_email, workspace_id)
+    })
+
+    if (suppressionCheck.isSuppressed) {
+      logger.info(`Email ${emailSend.recipient_email} is suppressed (${suppressionCheck.reason}), skipping send`)
+
+      // Update email status to indicate suppression
+      await step.run('mark-suppressed', async () => {
+        const supabase = await createClient()
+        await supabase
+          .from('email_sends')
+          .update({
+            status: 'suppressed',
+            send_metadata: {
+              suppression_reason: suppressionCheck.reason,
+              suppressed_at: suppressionCheck.suppressedAt,
+            },
+          })
+          .eq('id', email_send_id)
+      })
+
+      return {
+        success: false,
+        email_send_id,
+        reason: 'suppressed',
+        suppression_reason: suppressionCheck.reason,
+      }
+    }
+
+    // Step 3: Send via EmailBison or mock
     const sendResult = await step.run('send-email', async () => {
       if (USE_MOCKS) {
         logger.info('[MOCK] Simulating email send')

@@ -4,3 +4,4 @@
  */
 
 export * from './campaign-state-machine'
+export * from './suppression.service'
