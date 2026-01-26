@@ -238,6 +238,39 @@ export type Events = {
       workspace_id: string
     }
   }
+  'campaign/batch-send': {
+    data: {
+      campaign_id: string
+      workspace_id: string
+      limit?: number
+    }
+  }
+  // EmailBison webhook events
+  'emailbison/email-sent': {
+    data: {
+      message_id: string
+      lead_email: string
+      sent_at: string
+    }
+  }
+  'emailbison/reply-received': {
+    data: {
+      reply_id: string
+      lead_email: string
+      from_email: string
+      subject: string
+      body: string
+      received_at: string
+    }
+  }
+  'emailbison/bounce-received': {
+    data: {
+      lead_email: string
+      bounce_type: 'hard' | 'soft'
+      bounce_reason: string
+      bounced_at: string
+    }
+  }
 }
 
 // Create Inngest client

@@ -9,6 +9,11 @@ export {
   composeCampaignEmail,
   batchComposeCampaignEmails,
 } from './campaign-compose'
+export {
+  sendApprovedEmail,
+  batchSendApprovedEmails,
+  onEmailApproved,
+} from './campaign-send'
 
 // Lead Generation & Management
 export { dailyLeadGeneration } from './daily-lead-generation'
