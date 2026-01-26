@@ -6,6 +6,10 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useToast } from '@/lib/hooks/use-toast'
 import { UpgradeButton } from '@/components/billing/upgrade-button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Skeleton, SkeletonCard } from '@/components/ui/skeleton'
 
 // Integration logos for the Pro plan card
 const INTEGRATION_LOGOS = {
@@ -15,38 +19,6 @@ const INTEGRATION_LOGOS = {
   hubspot: { src: '/free-hubspot-logo-icon-svg-download-png-2944939.webp', alt: 'HubSpot' },
   pipedrive: { src: '/Pipedrive_Monogram_Green background.png', alt: 'Pipedrive' },
   googleSheets: { src: '/Google_Sheets_Logo_512px.png', alt: 'Google Sheets' },
-}
-
-function SettingsNav({ currentPath }: { currentPath: string }) {
-  const tabs = [
-    { name: 'Profile', href: '/settings' },
-    { name: 'Billing', href: '/settings/billing' },
-    { name: 'Security', href: '/settings/security' },
-    { name: 'Notifications', href: '/settings/notifications' },
-  ]
-
-  return (
-    <div className="border-b border-zinc-200">
-      <nav className="-mb-px flex space-x-8">
-        {tabs.map((tab) => {
-          const isActive = currentPath === tab.href
-          return (
-            <Link
-              key={tab.name}
-              href={tab.href}
-              className={`whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition-colors ${
-                isActive
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700'
-              }`}
-            >
-              {tab.name}
-            </Link>
-          )
-        })}
-      </nav>
-    </div>
-  )
 }
 
 export default function BillingSettingsPage() {
@@ -116,8 +88,9 @@ export default function BillingSettingsPage() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-48 bg-zinc-200 rounded animate-pulse" />
-        <div className="h-64 bg-zinc-200 rounded animate-pulse" />
+        <Skeleton className="h-8 w-48" />
+        <SkeletonCard />
+        <SkeletonCard />
       </div>
     )
   }
@@ -128,24 +101,14 @@ export default function BillingSettingsPage() {
   const isCancelled = user?.cancel_at_period_end
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-zinc-900">Billing & Subscription</h1>
-        <p className="mt-2 text-sm text-zinc-600">
-          Manage your subscription, payment methods, and billing history
-        </p>
-      </div>
-
-      {/* Navigation Tabs */}
-      <SettingsNav currentPath="/settings/billing" />
-
+    <div className="space-y-6">
       {/* Current Plan Card */}
-      <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+      <Card>
+        <CardContent className="pt-6">
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-4">
-              <h2 className="text-lg font-semibold text-zinc-900">Current Plan</h2>
+              <h2 className="text-lg font-semibold text-foreground">Current Plan</h2>
               <span
                 className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
                   isPro
@@ -385,11 +348,15 @@ export default function BillingSettingsPage() {
             )}
           </div>
         </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Usage Card */}
-      <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-zinc-900 mb-6">Current Usage</h2>
+      <Card>
+        <CardHeader>
+          <CardTitle>Current Usage</CardTitle>
+        </CardHeader>
+        <CardContent>
 
         <div className="space-y-6">
           <div>
@@ -412,14 +379,15 @@ export default function BillingSettingsPage() {
             <p className="mt-1.5 text-xs text-zinc-500">Resets daily at midnight UTC</p>
           </div>
 
-          <div className="pt-4 border-t border-zinc-200">
+          <div className="pt-4 border-t border-border">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-zinc-700">Active Queries</span>
-              <span className="text-sm text-zinc-600">0 / {isPro ? '5' : '1'}</span>
+              <span className="text-sm font-medium text-foreground">Active Queries</span>
+              <span className="text-sm text-muted-foreground">0 / {isPro ? '5' : '1'}</span>
             </div>
           </div>
         </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Pro Plan Details for Free users */}
       {!isPro && (
@@ -599,93 +567,106 @@ export default function BillingSettingsPage() {
       )}
 
       {/* Payment Method */}
-      <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-zinc-900 mb-4">Payment Method</h2>
-
-        {isPro && hasActiveSubscription ? (
-          <div className="space-y-3">
-            <p className="text-sm text-zinc-600">
-              Your payment method and billing details are securely managed by Stripe.
+      <Card>
+        <CardHeader>
+          <CardTitle>Payment Method</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isPro && hasActiveSubscription ? (
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Your payment method and billing details are securely managed by Stripe.
+              </p>
+              <Button
+                variant="link"
+                onClick={handleManageBilling}
+                disabled={loading}
+                className="px-0"
+              >
+                {loading ? 'Loading...' : 'Update payment method'}
+              </Button>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              You don&apos;t have an active subscription. Upgrade to Pro to add a payment
+              method.
             </p>
-            <button
-              onClick={handleManageBilling}
-              disabled={loading}
-              className="text-sm text-blue-600 hover:text-blue-700 font-medium disabled:opacity-50 transition-colors"
-            >
-              {loading ? 'Loading...' : 'Update payment method →'}
-            </button>
-          </div>
-        ) : (
-          <p className="text-sm text-zinc-600">
-            You don&apos;t have an active subscription. Upgrade to Pro to add a payment
-            method.
-          </p>
-        )}
-      </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Billing History */}
-      <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-zinc-900 mb-4">Billing History</h2>
-
-        {isPro && hasActiveSubscription ? (
-          <div className="space-y-3">
-            <p className="text-sm text-zinc-600">
-              View and download your billing history in the Stripe Customer Portal.
-            </p>
-            <button
-              onClick={handleManageBilling}
-              disabled={loading}
-              className="text-sm text-blue-600 hover:text-blue-700 font-medium disabled:opacity-50 transition-colors"
-            >
-              {loading ? 'Loading...' : 'View billing history →'}
-            </button>
-          </div>
-        ) : (
-          <p className="text-sm text-zinc-600">No billing history available.</p>
-        )}
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Billing History</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isPro && hasActiveSubscription ? (
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                View and download your billing history in the Stripe Customer Portal.
+              </p>
+              <Button
+                variant="link"
+                onClick={handleManageBilling}
+                disabled={loading}
+                className="px-0"
+              >
+                {loading ? 'Loading...' : 'View billing history'}
+              </Button>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">No billing history available.</p>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Cancel Subscription */}
       {isPro && hasActiveSubscription && !isCancelled && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-6">
-          <h2 className="text-lg font-semibold text-red-900 mb-2">Cancel Subscription</h2>
-          <p className="text-sm text-red-700 mb-4">
-            Your subscription will remain active until the end of the current billing
-            period. You can reactivate at any time before then.
-          </p>
+        <Card className="border-destructive/20 bg-destructive/5">
+          <CardHeader>
+            <CardTitle className="text-destructive">Cancel Subscription</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Your subscription will remain active until the end of the current billing
+              period. You can reactivate at any time before then.
+            </p>
 
-          {!showCancelConfirm ? (
-            <button
-              onClick={() => setShowCancelConfirm(true)}
-              className="rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100 transition-colors"
-            >
-              Cancel Subscription
-            </button>
-          ) : (
-            <div className="space-y-3">
-              <p className="text-sm text-red-800 font-medium">
-                Are you sure you want to cancel your subscription?
-              </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => cancelSubscriptionMutation.mutate()}
-                  disabled={cancelSubscriptionMutation.isPending}
-                  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50 transition-colors"
-                >
-                  {cancelSubscriptionMutation.isPending
-                    ? 'Cancelling...'
-                    : 'Yes, Cancel Subscription'}
-                </button>
-                <button
-                  onClick={() => setShowCancelConfirm(false)}
-                  className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
-                >
-                  Keep Subscription
-                </button>
+            {!showCancelConfirm ? (
+              <Button
+                variant="outline"
+                onClick={() => setShowCancelConfirm(true)}
+                className="border-destructive text-destructive hover:bg-destructive/10"
+              >
+                Cancel Subscription
+              </Button>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-sm text-destructive font-medium">
+                  Are you sure you want to cancel your subscription?
+                </p>
+                <div className="flex gap-3">
+                  <Button
+                    variant="destructive"
+                    onClick={() => cancelSubscriptionMutation.mutate()}
+                    disabled={cancelSubscriptionMutation.isPending}
+                  >
+                    {cancelSubscriptionMutation.isPending
+                      ? 'Cancelling...'
+                      : 'Yes, Cancel Subscription'}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowCancelConfirm(false)}
+                  >
+                    Keep Subscription
+                  </Button>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </CardContent>
+        </Card>
       )}
     </div>
   )

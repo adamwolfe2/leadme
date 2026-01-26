@@ -2,26 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { PageContainer, PageHeader } from '@/components/layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import { FormField } from '@/components/ui/form-field'
 import { Skeleton, SkeletonCard } from '@/components/ui/skeleton'
 import { useToast } from '@/lib/hooks/use-toast'
 import { Badge } from '@/components/ui/badge'
-
-const settingsTabs = [
-  { value: 'profile', label: 'Profile', href: '/settings' },
-  { value: 'client-profile', label: 'Client Profile', href: '/settings/client-profile' },
-  { value: 'notifications', label: 'Notifications', href: '/settings/notifications' },
-  { value: 'security', label: 'Security', href: '/settings/security' },
-  { value: 'billing', label: 'Billing', href: '/settings/billing' },
-]
 
 interface ValueProposition {
   id: string
@@ -55,7 +43,6 @@ interface ClientProfile {
 
 export default function ClientProfileSettingsPage() {
   const queryClient = useQueryClient()
-  const pathname = usePathname()
   const toast = useToast()
 
   // Form state
@@ -205,52 +192,17 @@ export default function ClientProfileSettingsPage() {
 
   if (isLoading) {
     return (
-      <PageContainer>
-        <div className="space-y-6">
-          <Skeleton className="h-10 w-48" />
-          <Skeleton className="h-10 w-full max-w-md" />
-          <SkeletonCard />
-          <SkeletonCard />
-        </div>
-      </PageContainer>
+      <div className="space-y-6">
+        <Skeleton className="h-10 w-48" />
+        <Skeleton className="h-10 w-full max-w-md" />
+        <SkeletonCard />
+        <SkeletonCard />
+      </div>
     )
   }
 
   return (
-    <PageContainer>
-      <PageHeader
-        title="Settings"
-        description="Manage your account settings and preferences"
-        breadcrumbs={[
-          { label: 'Dashboard', href: '/dashboard' },
-          { label: 'Settings', href: '/settings' },
-          { label: 'Client Profile' },
-        ]}
-      />
-
-      {/* Navigation Tabs */}
-      <div className="mb-6 border-b border-border">
-        <nav className="-mb-px flex space-x-8 overflow-x-auto">
-          {settingsTabs.map((tab) => {
-            const isActive = pathname === tab.href
-            return (
-              <Link
-                key={tab.value}
-                href={tab.href}
-                className={`whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition-colors ${
-                  isActive
-                    ? 'border-primary text-primary'
-                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-                }`}
-              >
-                {tab.label}
-              </Link>
-            )
-          })}
-        </nav>
-      </div>
-
-      <div className="space-y-6">
+    <div className="space-y-6">
         {/* Company Information */}
         <Card>
           <CardHeader>
@@ -575,16 +527,15 @@ export default function ClientProfileSettingsPage() {
           </CardContent>
         </Card>
 
-        {/* Save Button */}
-        <div className="flex justify-end">
-          <Button
-            onClick={() => saveProfileMutation.mutate()}
-            disabled={!companyName.trim() || saveProfileMutation.isPending}
-          >
-            {saveProfileMutation.isPending ? 'Saving...' : 'Save Client Profile'}
-          </Button>
-        </div>
+      {/* Save Button */}
+      <div className="flex justify-end">
+        <Button
+          onClick={() => saveProfileMutation.mutate()}
+          disabled={!companyName.trim() || saveProfileMutation.isPending}
+        >
+          {saveProfileMutation.isPending ? 'Saving...' : 'Save Client Profile'}
+        </Button>
       </div>
-    </PageContainer>
+    </div>
   )
 }
