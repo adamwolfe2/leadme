@@ -75,8 +75,8 @@ function LoginForm() {
             <Image
               src="/logo.png"
               alt="Cursive"
-              width={48}
-              height={48}
+              width={90}
+              height={90}
               priority
             />
           </div>
