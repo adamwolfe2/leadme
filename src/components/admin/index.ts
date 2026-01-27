@@ -24,3 +24,6 @@ export {
   ConfirmActionModal,
   type AdminUser,
 } from './user-management'
+
+// Impersonation
+export { ImpersonationBanner } from './impersonation-banner'

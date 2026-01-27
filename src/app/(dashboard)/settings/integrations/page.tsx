@@ -155,15 +155,7 @@ export default function IntegrationsPage() {
   const isPro = user?.plan === 'pro'
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-zinc-900">Integrations</h1>
-        <p className="mt-2 text-sm text-zinc-600">
-          Connect Cursive with your favorite tools and automate your lead workflow
-        </p>
-      </div>
-
+    <div className="space-y-6">
       {/* Info Banner */}
       <div className="rounded-xl bg-blue-50 border border-blue-200 p-4">
         <div className="flex">

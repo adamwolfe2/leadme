@@ -1,41 +1,12 @@
 'use client'
 
-import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useToast } from '@/lib/hooks/use-toast'
-
-function SettingsNav({ currentPath }: { currentPath: string }) {
-  const tabs = [
-    { name: 'Profile', href: '/settings' },
-    { name: 'Billing', href: '/settings/billing' },
-    { name: 'Security', href: '/settings/security' },
-    { name: 'Notifications', href: '/settings/notifications' },
-  ]
-
-  return (
-    <div className="border-b border-zinc-200">
-      <nav className="-mb-px flex space-x-8">
-        {tabs.map((tab) => {
-          const isActive = currentPath === tab.href
-          return (
-            <Link
-              key={tab.name}
-              href={tab.href}
-              className={`whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition-colors ${
-                isActive
-                  ? 'border-emerald-500 text-emerald-600'
-                  : 'border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700'
-              }`}
-            >
-              {tab.name}
-            </Link>
-          )
-        })}
-      </nav>
-    </div>
-  )
-}
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Skeleton, SkeletonCard } from '@/components/ui/skeleton'
 
 interface ToggleSwitchProps {
   enabled: boolean
@@ -49,7 +20,7 @@ function ToggleSwitch({ enabled, onChange, disabled }: ToggleSwitchProps) {
       onClick={() => !disabled && onChange(!enabled)}
       disabled={disabled}
       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-        enabled ? 'bg-emerald-600' : 'bg-zinc-200'
+        enabled ? 'bg-primary' : 'bg-muted'
       } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
     >
       <span
@@ -111,8 +82,9 @@ export default function NotificationsSettingsPage() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-48 bg-zinc-200 rounded animate-pulse" />
-        <div className="h-96 bg-zinc-200 rounded animate-pulse" />
+        <Skeleton className="h-8 w-48" />
+        <SkeletonCard />
+        <SkeletonCard />
       </div>
     )
   }
@@ -121,268 +93,259 @@ export default function NotificationsSettingsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-zinc-900">Notification Settings</h1>
-        <p className="mt-2 text-sm text-zinc-600">
-          Manage how and when you receive notifications about leads and account activity
-        </p>
-      </div>
-
-      {/* Navigation Tabs */}
-      <SettingsNav currentPath="/settings/notifications" />
-
       {/* Email Notifications */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-zinc-900 mb-4">Email Notifications</h2>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between py-3 border-b border-zinc-100 last:border-0">
-            <div className="flex-1">
-              <p className="text-sm font-medium text-zinc-900">New Lead Alerts</p>
-              <p className="text-sm text-zinc-500 mt-0.5">
-                Get notified immediately when new leads match your queries
-              </p>
+      <Card>
+        <CardHeader>
+          <CardTitle>Email Notifications</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-foreground">New Lead Alerts</p>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  Get notified immediately when new leads match your queries
+                </p>
+              </div>
+              <ToggleSwitch
+                enabled={prefs.new_leads ?? true}
+                onChange={(value) => handleToggle('new_leads', value)}
+              />
             </div>
-            <ToggleSwitch
-              enabled={prefs.new_leads ?? true}
-              onChange={(value) => handleToggle('new_leads', value)}
-            />
-          </div>
 
-          <div className="flex items-center justify-between py-3 border-b border-zinc-100 last:border-0">
-            <div className="flex-1">
-              <p className="text-sm font-medium text-zinc-900">Daily Digest</p>
-              <p className="text-sm text-zinc-500 mt-0.5">
-                Receive a daily summary of lead generation activity
-              </p>
+            <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-foreground">Daily Digest</p>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  Receive a daily summary of lead generation activity
+                </p>
+              </div>
+              <ToggleSwitch
+                enabled={prefs.daily_digest ?? false}
+                onChange={(value) => handleToggle('daily_digest', value)}
+              />
             </div>
-            <ToggleSwitch
-              enabled={prefs.daily_digest ?? false}
-              onChange={(value) => handleToggle('daily_digest', value)}
-            />
-          </div>
 
-          <div className="flex items-center justify-between py-3 border-b border-zinc-100 last:border-0">
-            <div className="flex-1">
-              <p className="text-sm font-medium text-zinc-900">Weekly Report</p>
-              <p className="text-sm text-zinc-500 mt-0.5">
-                Get a weekly performance report with insights and statistics
-              </p>
+            <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-foreground">Weekly Report</p>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  Get a weekly performance report with insights and statistics
+                </p>
+              </div>
+              <ToggleSwitch
+                enabled={prefs.weekly_report ?? true}
+                onChange={(value) => handleToggle('weekly_report', value)}
+              />
             </div>
-            <ToggleSwitch
-              enabled={prefs.weekly_report ?? true}
-              onChange={(value) => handleToggle('weekly_report', value)}
-            />
-          </div>
 
-          <div className="flex items-center justify-between py-3 border-b border-zinc-100 last:border-0">
-            <div className="flex-1">
-              <p className="text-sm font-medium text-zinc-900">Query Updates</p>
-              <p className="text-sm text-zinc-500 mt-0.5">
-                Notifications about query status changes and errors
-              </p>
+            <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-foreground">Query Updates</p>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  Notifications about query status changes and errors
+                </p>
+              </div>
+              <ToggleSwitch
+                enabled={prefs.query_updates ?? true}
+                onChange={(value) => handleToggle('query_updates', value)}
+              />
             </div>
-            <ToggleSwitch
-              enabled={prefs.query_updates ?? true}
-              onChange={(value) => handleToggle('query_updates', value)}
-            />
-          </div>
 
-          <div className="flex items-center justify-between py-3 border-b border-zinc-100 last:border-0">
-            <div className="flex-1">
-              <p className="text-sm font-medium text-zinc-900">Credit Alerts</p>
-              <p className="text-sm text-zinc-500 mt-0.5">
-                Get notified when you&apos;re running low on daily credits
-              </p>
+            <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-foreground">Credit Alerts</p>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  Get notified when you&apos;re running low on daily credits
+                </p>
+              </div>
+              <ToggleSwitch
+                enabled={prefs.credit_alerts ?? true}
+                onChange={(value) => handleToggle('credit_alerts', value)}
+              />
             </div>
-            <ToggleSwitch
-              enabled={prefs.credit_alerts ?? true}
-              onChange={(value) => handleToggle('credit_alerts', value)}
-            />
-          </div>
 
-          <div className="flex items-center justify-between py-3">
-            <div className="flex-1">
-              <p className="text-sm font-medium text-zinc-900">
-                All Email Notifications
-              </p>
-              <p className="text-sm text-zinc-500 mt-0.5">
-                Master toggle for all email notifications
-              </p>
+            <div className="flex items-center justify-between py-3">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-foreground">
+                  All Email Notifications
+                </p>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  Master toggle for all email notifications
+                </p>
+              </div>
+              <ToggleSwitch
+                enabled={prefs.email_notifications ?? true}
+                onChange={(value) => handleToggle('email_notifications', value)}
+              />
             </div>
-            <ToggleSwitch
-              enabled={prefs.email_notifications ?? true}
-              onChange={(value) => handleToggle('email_notifications', value)}
-            />
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Delivery Channels */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-zinc-900 mb-2">
-          Lead Delivery Channels
-        </h2>
-        <p className="text-sm text-zinc-600 mb-4">
-          Choose how you want to receive new leads from your active queries
-        </p>
+      <Card>
+        <CardHeader>
+          <CardTitle>Lead Delivery Channels</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-4">
+            Choose how you want to receive new leads from your active queries
+          </p>
 
-        <div className="space-y-4">
-          <div className="flex items-center justify-between py-3 border-b border-zinc-100 last:border-0">
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <p className="text-sm font-medium text-zinc-900">Email Delivery</p>
-                <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-zinc-100 text-zinc-800">
-                  Free
-                </span>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium text-foreground">Email Delivery</p>
+                  <Badge variant="muted">Free</Badge>
+                </div>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  Receive leads directly in your inbox
+                </p>
               </div>
-              <p className="text-sm text-zinc-500 mt-0.5">
-                Receive leads directly in your inbox
+              <ToggleSwitch
+                enabled={prefs.lead_delivery_email ?? true}
+                onChange={(value) => handleToggle('lead_delivery_email', value)}
+              />
+            </div>
+
+            <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium text-foreground">Slack Notifications</p>
+                  <Badge variant="default">Pro</Badge>
+                </div>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  Send leads to your Slack workspace
+                  {!user?.slack_webhook_url && (
+                    <Link
+                      href="/settings/integrations"
+                      className="text-primary hover:text-primary/80 ml-1"
+                    >
+                      (Connect Slack)
+                    </Link>
+                  )}
+                </p>
+              </div>
+              <ToggleSwitch
+                enabled={prefs.slack_notifications ?? false}
+                onChange={(value) => handleToggle('slack_notifications', value)}
+                disabled={!user?.slack_webhook_url}
+              />
+            </div>
+
+            <div className="flex items-center justify-between py-3">
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium text-foreground">Webhook Delivery</p>
+                  <Badge variant="default">Pro</Badge>
+                </div>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  Send leads to your webhook endpoints
+                  {!user?.zapier_webhook_url && !user?.custom_webhook_url && (
+                    <Link
+                      href="/settings/integrations"
+                      className="text-primary hover:text-primary/80 ml-1"
+                    >
+                      (Set up webhooks)
+                    </Link>
+                  )}
+                </p>
+              </div>
+              <ToggleSwitch
+                enabled={prefs.webhook_delivery ?? false}
+                onChange={(value) => handleToggle('webhook_delivery', value)}
+                disabled={!user?.zapier_webhook_url && !user?.custom_webhook_url}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Notification Preferences */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Notification Preferences</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4 max-w-md">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Notification Email Address
+              </label>
+              <Input
+                type="email"
+                value={user?.email || ''}
+                disabled
+                className="bg-muted"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                All notifications are sent to your registered email address
               </p>
             </div>
-            <ToggleSwitch
-              enabled={prefs.lead_delivery_email ?? true}
-              onChange={(value) => handleToggle('lead_delivery_email', value)}
-            />
-          </div>
 
-          <div className="flex items-center justify-between py-3 border-b border-zinc-100 last:border-0">
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <p className="text-sm font-medium text-zinc-900">Slack Notifications</p>
-                <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-emerald-100 text-emerald-800">
-                  Pro
-                </span>
-              </div>
-              <p className="text-sm text-zinc-500 mt-0.5">
-                Send leads to your Slack workspace
-                {!user?.slack_webhook_url && (
-                  <Link
-                    href="/integrations"
-                    className="text-emerald-600 hover:text-emerald-700 ml-1"
-                  >
-                    (Connect Slack →)
-                  </Link>
-                )}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Preferred Time for Daily Digest
+              </label>
+              <select
+                value={prefs.digest_time || '09:00'}
+                onChange={(e) => handleToggle('digest_time', e.target.value as any)}
+                className="flex h-10 w-full max-w-xs rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+              >
+                <option value="06:00">6:00 AM</option>
+                <option value="07:00">7:00 AM</option>
+                <option value="08:00">8:00 AM</option>
+                <option value="09:00">9:00 AM</option>
+                <option value="10:00">10:00 AM</option>
+                <option value="12:00">12:00 PM</option>
+                <option value="18:00">6:00 PM</option>
+              </select>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Time zone: UTC (adjust for your local time zone)
               </p>
             </div>
-            <ToggleSwitch
-              enabled={prefs.slack_notifications ?? false}
-              onChange={(value) => handleToggle('slack_notifications', value)}
-              disabled={!user?.slack_webhook_url}
-            />
           </div>
-
-          <div className="flex items-center justify-between py-3">
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <p className="text-sm font-medium text-zinc-900">Webhook Delivery</p>
-                <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-emerald-100 text-emerald-800">
-                  Pro
-                </span>
-              </div>
-              <p className="text-sm text-zinc-500 mt-0.5">
-                Send leads to your webhook endpoints
-                {!user?.zapier_webhook_url && !user?.custom_webhook_url && (
-                  <Link
-                    href="/integrations"
-                    className="text-emerald-600 hover:text-emerald-700 ml-1"
-                  >
-                    (Set up webhooks →)
-                  </Link>
-                )}
-              </p>
-            </div>
-            <ToggleSwitch
-              enabled={prefs.webhook_delivery ?? false}
-              onChange={(value) => handleToggle('webhook_delivery', value)}
-              disabled={!user?.zapier_webhook_url && !user?.custom_webhook_url}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Notification Email Address */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-zinc-900 mb-4">
-          Notification Preferences
-        </h2>
-
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-2">
-              Notification Email Address
-            </label>
-            <input
-              type="email"
-              value={user?.email || ''}
-              disabled
-              className="block w-full rounded-lg border-zinc-300 bg-zinc-50 text-zinc-500 shadow-sm cursor-not-allowed"
-            />
-            <p className="mt-1 text-xs text-zinc-500">
-              All notifications are sent to your registered email address
-            </p>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-2">
-              Preferred Time for Daily Digest
-            </label>
-            <select
-              value={prefs.digest_time || '09:00'}
-              onChange={(e) => handleToggle('digest_time', e.target.value as any)}
-              className="block w-full max-w-xs rounded-lg border-zinc-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
-            >
-              <option value="06:00">6:00 AM</option>
-              <option value="07:00">7:00 AM</option>
-              <option value="08:00">8:00 AM</option>
-              <option value="09:00">9:00 AM</option>
-              <option value="10:00">10:00 AM</option>
-              <option value="12:00">12:00 PM</option>
-              <option value="18:00">6:00 PM</option>
-            </select>
-            <p className="mt-1 text-xs text-zinc-500">
-              Time zone: UTC (adjust for your local time zone)
-            </p>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Pro Features Banner */}
       {user?.plan !== 'pro' && (
-        <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-6">
-          <div className="flex items-start gap-3">
-            <svg
-              className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 10V3L4 14h7v7l9-11h-7z"
-              />
-            </svg>
-            <div className="flex-1">
-              <h3 className="text-sm font-medium text-emerald-900">
-                Upgrade to Pro for Multi-Channel Delivery
-              </h3>
-              <p className="text-sm text-emerald-800 mt-1">
-                Get leads delivered to Slack, webhooks, and custom integrations. Perfect
-                for teams and advanced workflows.
-              </p>
-              <Link
-                href="/settings/billing"
-                className="inline-flex items-center text-sm font-medium text-emerald-600 hover:text-emerald-700 mt-3"
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="pt-6">
+            <div className="flex items-start gap-3">
+              <svg
+                className="h-5 w-5 text-primary flex-shrink-0 mt-0.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                Upgrade to Pro →
-              </Link>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+              <div className="flex-1">
+                <h3 className="text-sm font-medium text-foreground">
+                  Upgrade to Pro for Multi-Channel Delivery
+                </h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Get leads delivered to Slack, webhooks, and custom integrations. Perfect
+                  for teams and advanced workflows.
+                </p>
+                <Link
+                  href="/settings/billing"
+                  className="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 mt-3"
+                >
+                  Upgrade to Pro
+                </Link>
+              </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   )

@@ -6,6 +6,8 @@ export const dynamic = 'force-dynamic'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AppShell } from '@/components/layout'
+import { ImpersonationBanner } from '@/components/admin'
+import { isAdmin } from '@/lib/auth/admin'
 
 export default async function DashboardLayout({
   children,
@@ -34,6 +36,9 @@ export default async function DashboardLayout({
     redirect('/onboarding')
   }
 
+  // Check if user is an admin (for showing impersonation banner)
+  const userIsAdmin = await isAdmin()
+
   const workspace = user.workspaces as {
     name: string
     subdomain?: string
@@ -46,25 +51,31 @@ export default async function DashboardLayout({
   } | null
 
   return (
-    <AppShell
-      user={{
-        name: user.full_name,
-        email: user.email,
-        plan: user.plan,
-        creditsRemaining: user.daily_credit_limit - user.daily_credits_used,
-        totalCredits: user.daily_credit_limit,
-        avatarUrl: null,
-      }}
-      workspace={
-        workspace
-          ? {
-              name: workspace.name,
-              logoUrl: workspace.branding?.logo_url || workspace.branding?.favicon_url || null,
-            }
-          : undefined
-      }
-    >
-      {children}
-    </AppShell>
+    <>
+      {/* Show impersonation banner for admins */}
+      {userIsAdmin && <ImpersonationBanner />}
+
+      <AppShell
+        user={{
+          name: user.full_name,
+          email: user.email,
+          plan: user.plan,
+          role: user.role,
+          creditsRemaining: user.daily_credit_limit - user.daily_credits_used,
+          totalCredits: user.daily_credit_limit,
+          avatarUrl: null,
+        }}
+        workspace={
+          workspace
+            ? {
+                name: workspace.name,
+                logoUrl: workspace.branding?.logo_url || workspace.branding?.favicon_url || null,
+              }
+            : undefined
+        }
+      >
+        {children}
+      </AppShell>
+    </>
   )
 }

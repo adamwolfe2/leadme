@@ -3,11 +3,10 @@
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { profileSettingsSchema, type ProfileSettingsFormData } from '@/lib/validation/schemas'
-import { PageContainer, PageHeader } from '@/components/layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -17,17 +16,8 @@ import { FormField, FormActions } from '@/components/ui/form-field'
 import { Skeleton, SkeletonCard } from '@/components/ui/skeleton'
 import { useToast } from '@/lib/hooks/use-toast'
 
-const settingsTabs = [
-  { value: 'profile', label: 'Profile', href: '/settings' },
-  { value: 'client-profile', label: 'Client Profile', href: '/settings/client-profile' },
-  { value: 'notifications', label: 'Notifications', href: '/settings/notifications' },
-  { value: 'security', label: 'Security', href: '/settings/security' },
-  { value: 'billing', label: 'Billing', href: '/settings/billing' },
-]
-
 export default function ProfileSettingsPage() {
   const queryClient = useQueryClient()
-  const pathname = usePathname()
   const router = useRouter()
   const toast = useToast()
   const [successMessage, setSuccessMessage] = useState('')
@@ -127,50 +117,16 @@ export default function ProfileSettingsPage() {
 
   if (isLoading) {
     return (
-      <PageContainer>
-        <div className="space-y-6">
-          <Skeleton className="h-10 w-48" />
-          <Skeleton className="h-10 w-full max-w-md" />
-          <SkeletonCard />
-          <SkeletonCard />
-        </div>
-      </PageContainer>
+      <div className="space-y-6">
+        <Skeleton className="h-10 w-48" />
+        <SkeletonCard />
+        <SkeletonCard />
+      </div>
     )
   }
 
   return (
-    <PageContainer>
-      <PageHeader
-        title="Settings"
-        description="Manage your account settings and preferences"
-        breadcrumbs={[
-          { label: 'Dashboard', href: '/dashboard' },
-          { label: 'Settings' },
-        ]}
-      />
-
-      {/* Navigation Tabs */}
-      <div className="mb-6 border-b border-border">
-        <nav className="-mb-px flex space-x-8">
-          {settingsTabs.map((tab) => {
-            const isActive = pathname === tab.href
-            return (
-              <Link
-                key={tab.value}
-                href={tab.href}
-                className={`whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition-colors ${
-                  isActive
-                    ? 'border-primary text-primary'
-                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-                }`}
-              >
-                {tab.label}
-              </Link>
-            )
-          })}
-        </nav>
-      </div>
-
+    <>
       {/* Success Message */}
       {successMessage && (
         <Alert variant="success" className="mb-6">
@@ -354,6 +310,6 @@ export default function ProfileSettingsPage() {
           </CardContent>
         </Card>
       </div>
-    </PageContainer>
+    </>
   )
 }

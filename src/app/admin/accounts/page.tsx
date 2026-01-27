@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 interface Workspace {
@@ -12,33 +13,59 @@ interface Workspace {
   industry_vertical: string
   allowed_regions: string[]
   website_url: string | null
+  logo_url: string | null
+  onboarding_status: string
+  is_suspended: boolean
+  suspended_reason: string | null
+  last_activity_at: string | null
   created_at: string
-  users: { id: string; email: string; plan: string }[]
-  _count?: { leads: number }
+  users: { id: string; email: string; full_name: string | null; plan: string; role: string }[]
+  workspace_tiers?: {
+    product_tiers?: {
+      name: string
+      slug: string
+    }
+  }
 }
 
 export default function AdminAccountsPage() {
   const [search, setSearch] = useState('')
   const [industryFilter, setIndustryFilter] = useState('')
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'suspended'>('all')
+  const [impersonateModalOpen, setImpersonateModalOpen] = useState(false)
+  const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null)
+  const [impersonateReason, setImpersonateReason] = useState('')
+
   const supabase = createClient()
+  const router = useRouter()
+  const queryClient = useQueryClient()
 
   const { data: workspaces, isLoading, refetch } = useQuery({
-    queryKey: ['admin', 'workspaces', search, industryFilter],
+    queryKey: ['admin', 'workspaces', search, industryFilter, statusFilter],
     queryFn: async () => {
       let query = supabase
         .from('workspaces')
         .select(`
           *,
-          users (id, email, plan)
+          users (id, email, full_name, plan, role),
+          workspace_tiers (
+            product_tiers (name, slug)
+          )
         `)
         .order('created_at', { ascending: false })
 
       if (search) {
-        query = query.ilike('name', `%${search}%`)
+        query = query.or(`name.ilike.%${search}%,slug.ilike.%${search}%`)
       }
 
       if (industryFilter) {
         query = query.eq('industry_vertical', industryFilter)
+      }
+
+      if (statusFilter === 'active') {
+        query = query.eq('is_suspended', false)
+      } else if (statusFilter === 'suspended') {
+        query = query.eq('is_suspended', true)
       }
 
       const { data, error } = await query.limit(100)
@@ -48,11 +75,62 @@ export default function AdminAccountsPage() {
     },
   })
 
-  const toggleSuspend = async (workspaceId: string, currentStatus: boolean) => {
-    await supabase
-      .from('workspaces')
-      .update({ is_suspended: !currentStatus })
-      .eq('id', workspaceId)
+  // Impersonation mutation
+  const impersonateMutation = useMutation({
+    mutationFn: async ({ workspaceId, reason }: { workspaceId: string; reason?: string }) => {
+      const response = await fetch('/api/admin/impersonate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ workspaceId, reason }),
+      })
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to start impersonation')
+      }
+      return response.json()
+    },
+    onSuccess: () => {
+      // Redirect to the impersonated workspace's dashboard
+      router.push('/dashboard')
+    },
+  })
+
+  const handleImpersonate = (workspace: Workspace) => {
+    setSelectedWorkspace(workspace)
+    setImpersonateReason('')
+    setImpersonateModalOpen(true)
+  }
+
+  const confirmImpersonate = () => {
+    if (!selectedWorkspace) return
+    impersonateMutation.mutate({
+      workspaceId: selectedWorkspace.id,
+      reason: impersonateReason || undefined,
+    })
+  }
+
+  const toggleSuspend = async (workspace: Workspace) => {
+    if (workspace.is_suspended) {
+      // Unsuspend
+      await supabase
+        .from('workspaces')
+        .update({
+          is_suspended: false,
+          suspended_reason: null,
+          suspended_at: null,
+        })
+        .eq('id', workspace.id)
+    } else {
+      // Suspend - could add a modal for reason
+      await supabase
+        .from('workspaces')
+        .update({
+          is_suspended: true,
+          suspended_reason: 'Suspended by admin',
+          suspended_at: new Date().toISOString(),
+        })
+        .eq('id', workspace.id)
+    }
     refetch()
   }
 
@@ -63,13 +141,48 @@ export default function AdminAccountsPage() {
     'Legal Services', 'Financial Services', 'Healthcare', 'Other',
   ]
 
+  const getTierBadge = (workspace: Workspace) => {
+    const tierName = workspace.workspace_tiers?.product_tiers?.name
+    const tierSlug = workspace.workspace_tiers?.product_tiers?.slug
+
+    // Fallback to user plan if no tier
+    const plan = workspace.users?.[0]?.plan
+
+    if (tierSlug === 'enterprise' || tierName === 'Enterprise') {
+      return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-amber-100 text-amber-700">Enterprise</span>
+    }
+    if (tierSlug === 'growth' || tierName === 'Growth') {
+      return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-violet-100 text-violet-700">Growth</span>
+    }
+    if (tierSlug === 'starter' || tierName === 'Starter') {
+      return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-blue-100 text-blue-700">Starter</span>
+    }
+    if (plan === 'pro') {
+      return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-violet-100 text-violet-700">Pro</span>
+    }
+    return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-zinc-100 text-zinc-600">Free</span>
+  }
+
+  const getOnboardingBadge = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-green-100 text-green-700">Complete</span>
+      case 'in_progress':
+        return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-blue-100 text-blue-700">In Progress</span>
+      case 'skipped':
+        return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-yellow-100 text-yellow-700">Skipped</span>
+      default:
+        return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-zinc-100 text-zinc-600">Pending</span>
+    }
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
       {/* Page Header */}
       <div className="mb-6">
         <h1 className="text-xl font-medium text-zinc-900">Business Accounts</h1>
         <p className="text-[13px] text-zinc-500 mt-1">
-          Manage all registered businesses and their lead delivery
+          Manage all registered businesses. Use "Switch Into" to view any account as if you were the owner.
         </p>
       </div>
 
@@ -79,7 +192,7 @@ export default function AdminAccountsPage() {
           <div className="flex-1">
             <input
               type="text"
-              placeholder="Search by business name..."
+              placeholder="Search by business name or slug..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full h-10 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-violet-500"
@@ -97,11 +210,22 @@ export default function AdminAccountsPage() {
               ))}
             </select>
           </div>
+          <div className="w-40">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
+              className="w-full h-10 px-3 text-[13px] text-zinc-900 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-violet-500"
+            >
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="suspended">Suspended</option>
+            </select>
+          </div>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
         <div className="bg-white border border-zinc-200 rounded-lg p-4">
           <div className="text-[13px] text-zinc-600">Total Accounts</div>
           <div className="text-2xl font-medium text-zinc-900 mt-1">
@@ -110,23 +234,33 @@ export default function AdminAccountsPage() {
         </div>
         <div className="bg-white border border-zinc-200 rounded-lg p-4">
           <div className="text-[13px] text-zinc-600">Active Today</div>
-          <div className="text-2xl font-medium text-emerald-600 mt-1">
+          <div className="text-2xl font-medium text-green-600 mt-1">
             {workspaces?.filter(w => {
+              if (!w.last_activity_at) return false
               const today = new Date().toDateString()
-              return new Date(w.created_at).toDateString() === today
+              return new Date(w.last_activity_at).toDateString() === today
             }).length || 0}
           </div>
         </div>
         <div className="bg-white border border-zinc-200 rounded-lg p-4">
-          <div className="text-[13px] text-zinc-600">Pro Plans</div>
+          <div className="text-[13px] text-zinc-600">Paid Plans</div>
           <div className="text-2xl font-medium text-violet-600 mt-1">
-            {workspaces?.filter(w => w.users?.some(u => u.plan === 'pro')).length || 0}
+            {workspaces?.filter(w =>
+              w.users?.some(u => u.plan === 'pro') ||
+              w.workspace_tiers?.product_tiers?.slug !== 'free'
+            ).length || 0}
           </div>
         </div>
         <div className="bg-white border border-zinc-200 rounded-lg p-4">
-          <div className="text-[13px] text-zinc-600">Free Plans</div>
-          <div className="text-2xl font-medium text-zinc-600 mt-1">
-            {workspaces?.filter(w => w.users?.every(u => u.plan === 'free')).length || 0}
+          <div className="text-[13px] text-zinc-600">Onboarded</div>
+          <div className="text-2xl font-medium text-blue-600 mt-1">
+            {workspaces?.filter(w => w.onboarding_status === 'completed').length || 0}
+          </div>
+        </div>
+        <div className="bg-white border border-zinc-200 rounded-lg p-4">
+          <div className="text-[13px] text-zinc-600">Suspended</div>
+          <div className="text-2xl font-medium text-red-600 mt-1">
+            {workspaces?.filter(w => w.is_suspended).length || 0}
           </div>
         </div>
       </div>
@@ -146,55 +280,91 @@ export default function AdminAccountsPage() {
                 <tr>
                   <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Business</th>
                   <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Industry</th>
-                  <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Service Areas</th>
                   <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Plan</th>
+                  <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Onboarding</th>
+                  <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Status</th>
                   <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Created</th>
                   <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {workspaces?.map((workspace) => (
-                  <tr key={workspace.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
+                  <tr
+                    key={workspace.id}
+                    className={`border-b border-zinc-100 hover:bg-zinc-50 transition-colors ${
+                      workspace.is_suspended ? 'bg-red-50/50' : ''
+                    }`}
+                  >
                     <td className="px-5 py-3">
-                      <div>
-                        <div className="text-[13px] font-medium text-zinc-900">{workspace.name}</div>
-                        <div className="text-[12px] text-zinc-500">{workspace.users?.[0]?.email}</div>
+                      <div className="flex items-center gap-3">
+                        {workspace.logo_url ? (
+                          <img
+                            src={workspace.logo_url}
+                            alt={workspace.name}
+                            className="h-8 w-8 rounded-lg object-cover border border-zinc-200"
+                          />
+                        ) : (
+                          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-violet-100 to-indigo-100 flex items-center justify-center">
+                            <span className="text-xs font-bold text-violet-600">
+                              {workspace.name?.charAt(0)?.toUpperCase() || '?'}
+                            </span>
+                          </div>
+                        )}
+                        <div>
+                          <div className="text-[13px] font-medium text-zinc-900">{workspace.name}</div>
+                          <div className="text-[12px] text-zinc-500">
+                            {workspace.users?.[0]?.email || 'No owner'}
+                          </div>
+                        </div>
                       </div>
                     </td>
                     <td className="px-5 py-3 text-[13px] text-zinc-600">
                       {workspace.industry_vertical || 'N/A'}
                     </td>
-                    <td className="px-5 py-3 text-[13px] text-zinc-600">
-                      {workspace.allowed_regions?.length === 50
-                        ? 'All States'
-                        : `${workspace.allowed_regions?.length || 0} states`}
+                    <td className="px-5 py-3">
+                      {getTierBadge(workspace)}
                     </td>
                     <td className="px-5 py-3">
-                      <span className={`inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md ${
-                        workspace.users?.[0]?.plan === 'pro'
-                          ? 'bg-violet-100 text-violet-700'
-                          : 'bg-zinc-100 text-zinc-600'
-                      }`}>
-                        {workspace.users?.[0]?.plan === 'pro' ? 'Pro' : 'Free'}
-                      </span>
+                      {getOnboardingBadge(workspace.onboarding_status)}
+                    </td>
+                    <td className="px-5 py-3">
+                      {workspace.is_suspended ? (
+                        <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-red-100 text-red-700">
+                          Suspended
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-green-100 text-green-700">
+                          Active
+                        </span>
+                      )}
                     </td>
                     <td className="px-5 py-3 text-[12px] text-zinc-500">
                       {new Date(workspace.created_at).toLocaleDateString()}
                     </td>
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleImpersonate(workspace)}
+                          className="text-[12px] text-violet-600 hover:text-violet-700 font-medium bg-violet-50 hover:bg-violet-100 px-2 py-1 rounded transition-colors"
+                        >
+                          Switch Into
+                        </button>
                         <Link
                           href={`/admin/accounts/${workspace.id}`}
-                          className="text-[12px] text-violet-600 hover:text-violet-700 font-medium"
-                        >
-                          View
-                        </Link>
-                        <Link
-                          href={`/admin/leads?workspace=${workspace.id}`}
                           className="text-[12px] text-zinc-600 hover:text-zinc-700 font-medium"
                         >
-                          Leads
+                          Details
                         </Link>
+                        <button
+                          onClick={() => toggleSuspend(workspace)}
+                          className={`text-[12px] font-medium ${
+                            workspace.is_suspended
+                              ? 'text-green-600 hover:text-green-700'
+                              : 'text-red-600 hover:text-red-700'
+                          }`}
+                        >
+                          {workspace.is_suspended ? 'Unsuspend' : 'Suspend'}
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -210,6 +380,60 @@ export default function AdminAccountsPage() {
           </div>
         )}
       </div>
+
+      {/* Impersonation Modal */}
+      {impersonateModalOpen && selectedWorkspace && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setImpersonateModalOpen(false)}
+          />
+          <div className="relative bg-white rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
+            <h3 className="text-lg font-semibold text-zinc-900 mb-2">
+              Switch Into Account
+            </h3>
+            <p className="text-sm text-zinc-600 mb-4">
+              You're about to view <strong>{selectedWorkspace.name}</strong>'s account as if you
+              were the owner. All your actions will be logged for audit purposes.
+            </p>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-zinc-700 mb-1">
+                Reason (optional)
+              </label>
+              <input
+                type="text"
+                value={impersonateReason}
+                onChange={(e) => setImpersonateReason(e.target.value)}
+                placeholder="e.g., Customer support request #1234"
+                className="w-full h-10 px-3 text-sm text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-violet-500"
+              />
+            </div>
+
+            <div className="flex items-center gap-3 justify-end">
+              <button
+                onClick={() => setImpersonateModalOpen(false)}
+                className="px-4 py-2 text-sm font-medium text-zinc-700 hover:text-zinc-900 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmImpersonate}
+                disabled={impersonateMutation.isPending}
+                className="px-4 py-2 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-lg transition-colors disabled:opacity-50"
+              >
+                {impersonateMutation.isPending ? 'Switching...' : 'Switch Into Account'}
+              </button>
+            </div>
+
+            {impersonateMutation.isError && (
+              <p className="mt-3 text-sm text-red-600">
+                {impersonateMutation.error?.message || 'Failed to switch into account'}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -163,7 +163,7 @@ export default function TeamSettingsPage() {
         </div>
         <button
           onClick={() => setShowInviteModal(true)}
-          className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -211,7 +211,7 @@ export default function TeamSettingsPage() {
                 <tr key={member.id} className="hover:bg-zinc-50">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-medium text-sm">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium text-sm">
                         {member.full_name?.charAt(0) || member.email.charAt(0).toUpperCase()}
                       </div>
                       <div>
@@ -246,7 +246,7 @@ export default function TeamSettingsPage() {
                               updateRoleMutation.mutate({ id: member.id, role: e.target.value })
                             }
                           }}
-                          className="rounded-md border border-zinc-300 text-sm py-1 px-2 focus:border-emerald-500 focus:ring-emerald-500"
+                          className="rounded-md border border-input text-sm py-1 px-2 focus:border-primary focus:ring-primary"
                         >
                           <option value="member">Member</option>
                           <option value="admin">Admin</option>
@@ -369,7 +369,7 @@ export default function TeamSettingsPage() {
                     onChange={(e) => setInviteEmail(e.target.value)}
                     placeholder="colleague@company.com"
                     required
-                    className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="mt-1 block w-full rounded-lg border border-input px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                   />
                 </div>
 
@@ -381,7 +381,7 @@ export default function TeamSettingsPage() {
                     id="role"
                     value={inviteRole}
                     onChange={(e) => setInviteRole(e.target.value as 'admin' | 'member')}
-                    className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="mt-1 block w-full rounded-lg border border-input px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                   >
                     <option value="member">Member - Can view and manage leads</option>
                     <option value="admin">Admin - Can also manage team and settings</option>
@@ -400,7 +400,7 @@ export default function TeamSettingsPage() {
                     type="submit"
                     disabled={inviteMutation.isPending}
                     className={cn(
-                      'flex-1 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700',
+                      'flex-1 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90',
                       inviteMutation.isPending && 'opacity-50 cursor-not-allowed'
                     )}
                   >
