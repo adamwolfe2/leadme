@@ -102,3 +102,9 @@ export {
   processReferralMilestones,
   updatePartnerDataCompleteness,
 } from './marketplace-jobs'
+
+// Partner Upload Processor (Large File Support)
+export {
+  processPartnerUpload,
+  retryStatledUploads,
+} from './partner-upload-processor'
