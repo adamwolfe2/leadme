@@ -93,3 +93,12 @@ export {
   dailyCommissionRelease,
   reconcilePayouts,
 } from './partner-payouts'
+
+// Marketplace Jobs (Scoring, Freshness, Bonuses)
+export {
+  dailyFreshnessDecay,
+  dailyPartnerScoreCalculation,
+  monthlyVolumeBonusUpdate,
+  processReferralMilestones,
+  updatePartnerDataCompleteness,
+} from './marketplace-jobs'
