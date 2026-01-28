@@ -76,3 +76,12 @@ export {
   retryWebhookDeliveries,
   sendLeadEmailNotification,
 } from './webhook-delivery'
+
+// Email Verification (Marketplace)
+export {
+  processEmailVerificationQueue,
+  continueEmailVerification,
+  queueNewLeadsForVerification,
+  reverifyStaleLeads,
+  updatePartnerVerificationRates,
+} from './email-verification'
