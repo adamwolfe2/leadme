@@ -6,7 +6,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
-import { COMMISSION_CONFIG } from '@/lib/services/commission.service'
+import { COMMISSION_CONFIG, calculateCommission } from '@/lib/services/commission.service'
 import { sendPurchaseConfirmationEmail } from '@/lib/email/service'
 import Stripe from 'stripe'
 
@@ -58,6 +58,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Fetch partner data for commission calculation with bonuses
+    const uniquePartnerIds = [...new Set(leads.map(l => l.partner_id).filter(Boolean))] as string[]
+    const partnersMap = new Map<string, any>()
+
+    if (uniquePartnerIds.length > 0) {
+      const { data: partners } = await supabase
+        .from('partners')
+        .select('id, verification_pass_rate, bonus_commission_rate, base_commission_rate')
+        .in('id', uniquePartnerIds)
+
+      if (partners) {
+        partners.forEach(p => partnersMap.set(p.id, p))
+      }
+    }
+
     // Calculate total price
     const totalPrice = leads.reduce(
       (sum, lead) => sum + (lead.marketplace_price || 0.05),
@@ -90,25 +105,46 @@ export async function POST(request: NextRequest) {
         creditsUsed: totalPrice,
       })
 
-      // Add purchase items with commission calculations
-      // Note: Full commission calculation with bonuses happens via recordCommission
+      // Add purchase items with commission calculations including bonuses
       const purchaseItems = leads.map((lead) => {
         const price = lead.marketplace_price || 0.05
 
-        // Basic commission calculation using base rate
-        // Full calculation with partner-specific bonuses happens in background
-        const hasPartner = !!lead.partner_id
-        const commissionRate = hasPartner ? COMMISSION_CONFIG.BASE_RATE : 0
-        const commissionAmount = hasPartner ? price * commissionRate : 0
+        // Calculate commission with bonuses if lead has a partner
+        if (lead.partner_id && partnersMap.has(lead.partner_id)) {
+          const partner = partnersMap.get(lead.partner_id)!
+          const commissionCalc = calculateCommission({
+            salePrice: price,
+            partner: {
+              id: partner.id,
+              verification_pass_rate: partner.verification_pass_rate || 0,
+              bonus_commission_rate: partner.bonus_commission_rate || 0,
+              base_commission_rate: partner.base_commission_rate,
+            },
+            leadCreatedAt: new Date(lead.created_at),
+            saleDate: new Date(),
+          })
 
+          return {
+            leadId: lead.id,
+            priceAtPurchase: price,
+            intentScoreAtPurchase: lead.intent_score_calculated,
+            freshnessScoreAtPurchase: lead.freshness_score,
+            partnerId: lead.partner_id,
+            commissionRate: commissionCalc.rate,
+            commissionAmount: commissionCalc.amount,
+            commissionBonuses: commissionCalc.bonuses,
+          }
+        }
+
+        // No partner = no commission
         return {
           leadId: lead.id,
           priceAtPurchase: price,
           intentScoreAtPurchase: lead.intent_score_calculated,
           freshnessScoreAtPurchase: lead.freshness_score,
-          partnerId: lead.partner_id || undefined,
-          commissionRate: hasPartner ? commissionRate : undefined,
-          commissionAmount: hasPartner ? commissionAmount : undefined,
+          partnerId: undefined,
+          commissionRate: undefined,
+          commissionAmount: undefined,
           commissionBonuses: [],
         }
       })
@@ -171,21 +207,46 @@ export async function POST(request: NextRequest) {
         status: 'pending',
       })
 
-      // Add purchase items with commission calculations
+      // Add purchase items with commission calculations including bonuses
       const purchaseItems = leads.map((lead) => {
         const price = lead.marketplace_price || 0.05
-        const hasPartner = !!lead.partner_id
-        const commissionRate = hasPartner ? COMMISSION_CONFIG.BASE_RATE : 0
-        const commissionAmount = hasPartner ? price * commissionRate : 0
 
+        // Calculate commission with bonuses if lead has a partner
+        if (lead.partner_id && partnersMap.has(lead.partner_id)) {
+          const partner = partnersMap.get(lead.partner_id)!
+          const commissionCalc = calculateCommission({
+            salePrice: price,
+            partner: {
+              id: partner.id,
+              verification_pass_rate: partner.verification_pass_rate || 0,
+              bonus_commission_rate: partner.bonus_commission_rate || 0,
+              base_commission_rate: partner.base_commission_rate,
+            },
+            leadCreatedAt: new Date(lead.created_at),
+            saleDate: new Date(),
+          })
+
+          return {
+            leadId: lead.id,
+            priceAtPurchase: price,
+            intentScoreAtPurchase: lead.intent_score_calculated,
+            freshnessScoreAtPurchase: lead.freshness_score,
+            partnerId: lead.partner_id,
+            commissionRate: commissionCalc.rate,
+            commissionAmount: commissionCalc.amount,
+            commissionBonuses: commissionCalc.bonuses,
+          }
+        }
+
+        // No partner = no commission
         return {
           leadId: lead.id,
           priceAtPurchase: price,
           intentScoreAtPurchase: lead.intent_score_calculated,
           freshnessScoreAtPurchase: lead.freshness_score,
-          partnerId: lead.partner_id || undefined,
-          commissionRate: hasPartner ? commissionRate : undefined,
-          commissionAmount: hasPartner ? commissionAmount : undefined,
+          partnerId: undefined,
+          commissionRate: undefined,
+          commissionAmount: undefined,
           commissionBonuses: [],
         }
       })
