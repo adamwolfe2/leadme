@@ -27,6 +27,7 @@ async function setupAdminUser() {
 
   const adminEmail = 'adam@meetcursive.com'
   const adminPassword = 'AdminPass123!' // Default - you should change this after first login
+  const adminWorkspaceId = '00000000-0000-0000-0000-000000000000' // Fixed admin workspace ID
 
   // Step 1: Check if admin already exists in platform_admins table
   const { data: existingAdmin } = await supabase
@@ -57,10 +58,14 @@ async function setupAdminUser() {
   const { data: authUsers } = await supabase.auth.admin.listUsers()
   const existingAuthUser = authUsers?.users?.find((u) => u.email === adminEmail)
 
+  let authUserId: string
+
   if (existingAuthUser) {
     console.log('✅ Auth user already exists')
     console.log(`   User ID: ${existingAuthUser.id}`)
     console.log(`   Email confirmed: ${!!existingAuthUser.email_confirmed_at}`)
+
+    authUserId = existingAuthUser.id
 
     // Update password in case they forgot it
     const { error: updateError } = await supabase.auth.admin.updateUserById(
@@ -87,8 +92,64 @@ async function setupAdminUser() {
       return
     }
 
+    authUserId = newUser.user!.id
     console.log('✅ Created auth user')
-    console.log(`   User ID: ${newUser.user!.id}`)
+    console.log(`   User ID: ${authUserId}`)
+  }
+
+  // Step 3: Create admin workspace
+  const { data: existingWorkspace } = await supabase
+    .from('workspaces')
+    .select('*')
+    .eq('id', adminWorkspaceId)
+    .single()
+
+  if (existingWorkspace) {
+    console.log('✅ Admin workspace already exists')
+  } else {
+    const { error: workspaceError } = await supabase
+      .from('workspaces')
+      .insert({
+        id: adminWorkspaceId,
+        name: 'Admin Workspace',
+        slug: 'admin',
+        subdomain: 'admin',
+        plan: 'enterprise',
+      })
+
+    if (workspaceError) {
+      console.error('❌ Failed to create admin workspace:', workspaceError)
+    } else {
+      console.log('✅ Created admin workspace')
+    }
+  }
+
+  // Step 4: Create database user record
+  const { data: existingDbUser } = await supabase
+    .from('users')
+    .select('*')
+    .eq('auth_user_id', authUserId)
+    .single()
+
+  if (existingDbUser) {
+    console.log('✅ Database user record already exists')
+  } else {
+    const { error: dbUserError } = await supabase
+      .from('users')
+      .insert({
+        auth_user_id: authUserId,
+        workspace_id: adminWorkspaceId,
+        email: adminEmail,
+        full_name: 'Adam',
+        role: 'owner',
+        plan: 'enterprise',
+      })
+
+    if (dbUserError) {
+      console.error('❌ Failed to create database user:', dbUserError)
+    } else {
+      console.log('✅ Created database user record')
+    }
   }
 
   // Step 3: Verify admin can bypass waitlist

@@ -90,12 +90,8 @@ export async function middleware(req: NextRequest) {
     return redirectResponse
   }
 
-  if (isAuthRoute && user) {
-    // Check for redirect param
-    const redirectTo = req.nextUrl.searchParams.get('redirect')
-    const destination = redirectTo || '/dashboard'
-    return redirectWithCookies(new URL(destination, req.url))
-  }
+  // Auth routes (login, signup) - allow access even if authenticated
+  // Users may want to re-login or access these pages directly
 
   // Protected routes require authentication
   if (!isPublicRoute && !user) {
@@ -109,8 +105,8 @@ export async function middleware(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // If authenticated, verify workspace access
-  if (user && !isPublicRoute && !pathname.startsWith('/onboarding')) {
+  // If authenticated, verify workspace access (skip for admin)
+  if (user && !isPublicRoute && !pathname.startsWith('/onboarding') && !isAdminEmail) {
     try {
       const { data: dbUser } = await supabase
         .from('users')
