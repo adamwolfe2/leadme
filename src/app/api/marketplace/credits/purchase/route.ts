@@ -6,6 +6,7 @@ import { z } from 'zod'
 import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
+import { validateCreditPurchase } from '@/lib/constants/credit-packages'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2024-06-20',
@@ -43,6 +44,23 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     const validated = purchaseSchema.parse(body)
+
+    // SECURITY: Validate against predefined packages to prevent price tampering
+    const validPackage = validateCreditPurchase({
+      packageId: validated.packageId,
+      credits: validated.credits,
+      amount: validated.amount,
+    })
+
+    if (!validPackage) {
+      return NextResponse.json(
+        {
+          error: 'Invalid package',
+          message: 'The requested package does not match available credit packages',
+        },
+        { status: 400 }
+      )
+    }
 
     // Create credit purchase record
     const repo = new MarketplaceRepository()
