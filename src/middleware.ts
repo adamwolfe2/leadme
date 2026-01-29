@@ -21,16 +21,18 @@ export async function middleware(req: NextRequest) {
   // Check for admin bypass cookie
   const hasAdminBypass = req.cookies.get('admin_bypass_waitlist')?.value === 'true'
 
-  // If on waitlist domain, redirect everything to the waitlist page
-  // except for the waitlist page itself, API routes, static assets, and admin bypass
-  if (isWaitlistDomain && !hasAdminBypass && !isAdminEmail) {
+  // If on waitlist domain without admin bypass cookie, redirect to waitlist
+  // Note: We check admin email after loading user, then set the bypass cookie
+  if (isWaitlistDomain && !hasAdminBypass) {
     const isWaitlistPath =
       pathname === '/waitlist' ||
       pathname.startsWith('/api/waitlist') ||
       pathname.startsWith('/api/admin/bypass-waitlist') ||
       pathname.startsWith('/api/health') ||
       pathname.startsWith('/_next') ||
-      pathname.startsWith('/auth/callback')
+      pathname.startsWith('/auth/callback') ||
+      pathname.startsWith('/login') ||
+      pathname.startsWith('/auth')
 
     if (!isWaitlistPath) {
       return NextResponse.redirect(new URL('/waitlist', req.url))
