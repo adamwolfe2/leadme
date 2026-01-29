@@ -50,8 +50,46 @@ export async function POST(req: NextRequest) {
       processed_at: new Date().toISOString(),
     })
 
-    // Handle payment success
-    if (event.type === 'checkout.session.completed') {
+    // WEBHOOK RETRY LOGIC: Wrap event processing in try-catch
+    try {
+      await processWebhookEvent(event, supabase)
+      return NextResponse.json({ received: true })
+    } catch (processingError: any) {
+      console.error(`[Webhook] Failed to process ${event.type}:`, processingError)
+
+      // Queue for retry with exponential backoff
+      try {
+        const { data: queueId } = await supabase.rpc('queue_webhook_retry', {
+          p_stripe_event_id: event.id,
+          p_event_type: event.type,
+          p_event_data: event as any,
+          p_error: processingError.message || 'Unknown error',
+        })
+
+        console.log(`[Webhook] Queued for retry: ${event.id}, queue_id: ${queueId}`)
+      } catch (queueError) {
+        console.error(`[Webhook] Failed to queue retry:`, queueError)
+      }
+
+      // Still return 500 to inform Stripe of failure
+      return NextResponse.json(
+        { error: 'Webhook processing failed, queued for retry' },
+        { status: 500 }
+      )
+    }
+  } catch (error: any) {
+    console.error('Webhook error:', error)
+    return NextResponse.json(
+      { error: error.message || 'Webhook handler failed' },
+      { status: 500 }
+    )
+  }
+}
+
+// Extract event processing logic into separate function for reuse in retry processor
+async function processWebhookEvent(event: Stripe.Event, supabase: any) {
+  // Handle payment success
+  if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session
       const purchaseType = session.metadata?.type
 
@@ -598,13 +636,4 @@ export async function POST(req: NextRequest) {
         })
       }
     }
-
-    return NextResponse.json({ received: true })
-  } catch (error: any) {
-    console.error('Webhook error:', error)
-    return NextResponse.json(
-      { error: error.message || 'Webhook handler failed' },
-      { status: 500 }
-    )
-  }
 }
