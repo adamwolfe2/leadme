@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useToast } from '@/lib/hooks/use-toast'
 
 interface PayoutRequest {
   id: string
@@ -31,6 +32,7 @@ interface PayoutStats {
 }
 
 export default function AdminPayoutsPage() {
+  const { toast } = useToast()
   const [payouts, setPayouts] = useState<PayoutRequest[]>([])
   const [stats, setStats] = useState<PayoutStats | null>(null)
   const [loading, setLoading] = useState(true)
@@ -83,11 +85,24 @@ export default function AdminPayoutsPage() {
         setAdminNotes('')
         setRejectionReason('')
         fetchPayouts()
+        toast({
+          title: 'Action completed',
+          description: `Payout ${action} successful`,
+          type: 'success',
+        })
       } else {
-        alert(data.error || 'Action failed')
+        toast({
+          title: 'Action failed',
+          description: data.error || 'Failed to process payout action',
+          type: 'error',
+        })
       }
     } catch (error) {
-      alert('Failed to process action')
+      toast({
+        title: 'Action failed',
+        description: 'An error occurred while processing the action',
+        type: 'error',
+      })
     }
     setProcessing(false)
   }
