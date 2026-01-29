@@ -17,9 +17,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 const purchaseSchema = z.object({
   leadIds: z.array(z.string().uuid()).min(1).max(100),
   paymentMethod: z.enum(['credits', 'stripe']).default('credits'),
+  idempotencyKey: z.string().uuid().optional(),
 })
 
 export async function POST(request: NextRequest) {
+  let idempotencyKey: string | undefined
+  let workspaceId: string | undefined
+
   try {
     const supabase = await createClient()
 
@@ -43,8 +47,49 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
     }
 
+    workspaceId = userData.workspace_id
+
     const body = await request.json()
     const validated = purchaseSchema.parse(body)
+    idempotencyKey = validated.idempotencyKey
+
+    // IDEMPOTENCY: Check if request already processed
+    if (validated.idempotencyKey) {
+      const adminClient = createAdminClient()
+      const { data: existingKey } = await adminClient
+        .from('api_idempotency_keys')
+        .select('status, response_data, completed_at')
+        .eq('idempotency_key', validated.idempotencyKey)
+        .eq('workspace_id', userData.workspace_id)
+        .eq('endpoint', '/api/marketplace/purchase')
+        .single()
+
+      if (existingKey) {
+        // Request already processed - return cached response
+        if (existingKey.status === 'completed' && existingKey.response_data) {
+          console.log(`Idempotent request detected: ${validated.idempotencyKey}`)
+          return NextResponse.json(existingKey.response_data)
+        }
+
+        // Request currently processing - return conflict
+        if (existingKey.status === 'processing') {
+          return NextResponse.json(
+            { error: 'Request already in progress. Please try again shortly.' },
+            { status: 409 }
+          )
+        }
+
+        // Request failed previously - allow retry (don't return early)
+      } else {
+        // Create new idempotency key record
+        await adminClient.from('api_idempotency_keys').insert({
+          idempotency_key: validated.idempotencyKey,
+          workspace_id: userData.workspace_id,
+          endpoint: '/api/marketplace/purchase',
+          status: 'processing',
+        })
+      }
+    }
 
     const repo = new MarketplaceRepository()
 
@@ -185,13 +230,29 @@ export async function POST(request: NextRequest) {
         // Don't fail the purchase if email fails
       }
 
-      return NextResponse.json({
+      const response = {
         success: true,
         purchase: completedPurchase,
         leads: purchasedLeads,
         totalPrice,
         creditsRemaining: balance - totalPrice,
-      })
+      }
+
+      // Update idempotency key with successful response
+      if (validated.idempotencyKey) {
+        const adminClient = createAdminClient()
+        await adminClient
+          .from('api_idempotency_keys')
+          .update({
+            status: 'completed',
+            response_data: response,
+            completed_at: new Date().toISOString(),
+          })
+          .eq('idempotency_key', validated.idempotencyKey)
+          .eq('workspace_id', userData.workspace_id)
+      }
+
+      return NextResponse.json(response)
     } else {
       // Stripe payment - create checkout session
       const adminClient = createAdminClient()
@@ -292,16 +353,50 @@ export async function POST(request: NextRequest) {
         })
         .eq('id', purchase.id)
 
-      return NextResponse.json({
+      const response = {
         success: true,
         checkoutUrl: session.url,
         purchaseId: purchase.id,
         totalPrice,
         leadCount: leads.length,
-      })
+      }
+
+      // Update idempotency key with Stripe session info
+      if (validated.idempotencyKey) {
+        const adminClient = createAdminClient()
+        await adminClient
+          .from('api_idempotency_keys')
+          .update({
+            status: 'completed',
+            response_data: response,
+            completed_at: new Date().toISOString(),
+          })
+          .eq('idempotency_key', validated.idempotencyKey)
+          .eq('workspace_id', userData.workspace_id)
+      }
+
+      return NextResponse.json(response)
     }
   } catch (error) {
     console.error('Failed to process purchase:', error)
+
+    // Mark idempotency key as failed to allow retry
+    if (idempotencyKey && workspaceId) {
+      try {
+        const adminClient = createAdminClient()
+        await adminClient
+          .from('api_idempotency_keys')
+          .update({
+            status: 'failed',
+            completed_at: new Date().toISOString(),
+          })
+          .eq('idempotency_key', idempotencyKey)
+          .eq('workspace_id', workspaceId)
+      } catch (idempotencyError) {
+        console.error('Failed to update idempotency key:', idempotencyError)
+      }
+    }
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request', details: error.errors },
