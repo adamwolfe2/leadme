@@ -2,11 +2,12 @@
 // Handles authentication and multi-tenant routing
 
 import { NextResponse, type NextRequest } from 'next/server'
-import { createClient } from '@/lib/supabase/middleware'
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
+import type { Database } from '@/types/database.types'
 
 export async function middleware(req: NextRequest) {
-  const client = createClient(req)
-  const { supabase } = client
+  const res = NextResponse.next()
+  const supabase = createMiddlewareClient<Database>({ req, res })
 
   const { pathname } = req.nextUrl
 
@@ -52,13 +53,26 @@ export async function middleware(req: NextRequest) {
   // Auth routes (login, signup) - redirect to dashboard if already authenticated
   const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/signup')
 
-  // Use getSession() instead of getUser() to avoid API calls on every request
-  // This reads directly from cookies which is much faster and more reliable
+  // Use getSession() to read session from cookies with proper middleware client
+  // This ensures cookies are passed correctly and headers are updated for token refresh
+  let session = null
   let user = null
   try {
-    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { session: authSession } } = await supabase.auth.getSession()
+    session = authSession
     if (session?.user) {
       user = session.user
+      // Log session presence (redact token for security)
+      console.log('Middleware session check:', {
+        pathname,
+        hasSession: !!session,
+        hasUser: !!user,
+        userEmail: user.email,
+        tokenPresent: !!session.access_token,
+        tokenPrefix: session.access_token?.substring(0, 10) + '...'
+      })
+    } else {
+      console.log('Middleware: No session found for', pathname)
     }
   } catch (e) {
     // If session read fails, treat as not authenticated
@@ -71,8 +85,8 @@ export async function middleware(req: NextRequest) {
   // Helper to create redirect with cookies preserved
   const redirectWithCookies = (url: URL) => {
     const redirectResponse = NextResponse.redirect(url)
-    // Copy cookies from supabase response to redirect response
-    client.response.cookies.getAll().forEach((cookie) => {
+    // Copy cookies from response to redirect response
+    res.cookies.getAll().forEach((cookie) => {
       redirectResponse.cookies.set(cookie.name, cookie.value, cookie)
     })
     return redirectResponse
@@ -125,12 +139,9 @@ export async function middleware(req: NextRequest) {
   //   ... workspace validation code removed for admin ...
   // }
 
-  // Get the response with updated cookies
-  const response = client.response
-
   // If user is admin on waitlist domain, set the bypass cookie
   if (isWaitlistDomain && isAdminEmail && !hasAdminBypass) {
-    response.cookies.set('admin_bypass_waitlist', 'true', {
+    res.cookies.set('admin_bypass_waitlist', 'true', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -141,10 +152,10 @@ export async function middleware(req: NextRequest) {
 
   // Add custom headers for subdomain information
   if (subdomain) {
-    response.headers.set('x-subdomain', subdomain)
+    res.headers.set('x-subdomain', subdomain)
   }
 
-  return response
+  return res
 }
 
 /**
