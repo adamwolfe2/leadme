@@ -19,7 +19,8 @@
     "test:routing": "tsx scripts/test-routing.ts",
     "test:routing:live": "tsx scripts/test-routing-live.ts",
     "validate": "pnpm typecheck && pnpm lint && pnpm test",
-    "seed:marketplace": "npx tsx scripts/seed-marketplace.ts"
+    "seed:marketplace": "npx tsx scripts/seed-marketplace.ts",
+    "seed:leads": "tsx scripts/seed-leads.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
