@@ -8,6 +8,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
 import { COMMISSION_CONFIG, calculateCommission } from '@/lib/services/commission.service'
 import { sendPurchaseConfirmationEmail } from '@/lib/email/service'
+import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import Stripe from 'stripe'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -48,6 +49,16 @@ export async function POST(request: NextRequest) {
     }
 
     workspaceId = userData.workspace_id
+
+    // RATE LIMITING: Check purchase rate limit (10 per minute per user)
+    const rateLimitResult = await withRateLimit(
+      request,
+      'marketplace-purchase',
+      `user:${user.id}`
+    )
+    if (rateLimitResult) {
+      return rateLimitResult
+    }
 
     const body = await request.json()
     const validated = purchaseSchema.parse(body)

@@ -7,6 +7,7 @@ import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
 import { validateCreditPurchase } from '@/lib/constants/credit-packages'
+import { withRateLimit } from '@/lib/middleware/rate-limiter'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2024-06-20',
@@ -40,6 +41,16 @@ export async function POST(request: NextRequest) {
 
     if (!userData?.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
+    }
+
+    // RATE LIMITING: Check purchase rate limit (10 per minute per user)
+    const rateLimitResult = await withRateLimit(
+      request,
+      'marketplace-purchase',
+      `user:${user.id}`
+    )
+    if (rateLimitResult) {
+      return rateLimitResult
     }
 
     const body = await request.json()
