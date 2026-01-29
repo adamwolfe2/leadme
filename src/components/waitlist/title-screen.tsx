@@ -7,6 +7,7 @@
 
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import Link from 'next/link'
 import { Building2, Users } from 'lucide-react'
 import { cardVariants, staggerContainerVariants, staggerItemVariants } from '@/lib/utils/waitlist-animations'
 import type { UserType } from '@/types/waitlist.types'
@@ -20,9 +21,17 @@ export function TitleScreen({ onSelectUserType }: TitleScreenProps) {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header with Logo */}
       <header className="p-6">
-        <div className="flex items-center gap-2.5">
-          <Image src="/cursive-logo.png" alt="Cursive" width={32} height={32} className="w-8 h-8" />
-          <span className="text-lg font-semibold text-foreground">Cursive</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <Image src="/cursive-logo.png" alt="Cursive" width={32} height={32} className="w-8 h-8" />
+            <span className="text-lg font-semibold text-foreground">Cursive</span>
+          </div>
+          <Link
+            href="/login"
+            className="px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors"
+          >
+            Admin Login
+          </Link>
         </div>
       </header>
 
