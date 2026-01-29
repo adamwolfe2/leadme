@@ -41,7 +41,8 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api/webhooks') || // Webhooks are authenticated differently
     pathname.startsWith('/api/waitlist') || // Waitlist API is public
-    pathname === '/api/health' // Health check endpoint for monitoring
+    pathname === '/api/health' || // Health check endpoint for monitoring
+    pathname.startsWith('/api/inngest') // Inngest routes
 
   // API routes (except webhooks and waitlist) require authentication
   const isApiRoute = pathname.startsWith('/api') &&
