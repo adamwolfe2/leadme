@@ -18,9 +18,6 @@ export const { GET, POST, PUT } = serve({
     // System Jobs
     functions.creditReset,
     functions.weeklyTrends,
-    functions.processRetryQueue,
-    functions.cleanupFailedJobs,
-    functions.onJobRetryRequested,
     functions.webhookRetryProcessor,
 
     // Marketplace Functions
