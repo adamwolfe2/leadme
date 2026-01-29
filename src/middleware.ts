@@ -58,6 +58,13 @@ export async function middleware(req: NextRequest) {
   let user = null
   try {
     const { data: { user: authUser }, error } = await supabase.auth.getUser()
+    console.log('Middleware auth check:', {
+      pathname,
+      hasUser: !!authUser,
+      hasError: !!error,
+      error: error?.message,
+      cookies: req.cookies.getAll().map(c => c.name)
+    })
     if (!error && authUser) {
       user = authUser
     }
