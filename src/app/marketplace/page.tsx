@@ -225,14 +225,14 @@ export default function MarketplacePage() {
         setTimeout(() => setShowSuccessMessage(false), 5000)
         toast({
           title: 'Purchase successful',
-          description: `${data.leads?.length || selectedLeads.size} lead(s) purchased successfully`,
+          message: `${data.leads?.length || selectedLeads.size} lead(s) purchased successfully`,
           type: 'success',
         })
       } else {
         const error = await response.json()
         toast({
           title: 'Purchase failed',
-          description: error.error || 'Failed to purchase leads. Please try again.',
+          message: error.error || 'Failed to purchase leads. Please try again.',
           type: 'error',
         })
       }
@@ -240,7 +240,7 @@ export default function MarketplacePage() {
       console.error('Purchase failed:', error)
       toast({
         title: 'Purchase failed',
-        description: 'An error occurred while purchasing leads. Please try again.',
+        message: 'An error occurred while purchasing leads. Please try again.',
         type: 'error',
       })
     } finally {

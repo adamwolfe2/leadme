@@ -87,20 +87,20 @@ export default function AdminPayoutsPage() {
         fetchPayouts()
         toast({
           title: 'Action completed',
-          description: `Payout ${action} successful`,
+          message: `Payout ${action} successful`,
           type: 'success',
         })
       } else {
         toast({
           title: 'Action failed',
-          description: data.error || 'Failed to process payout action',
+          message: data.error || 'Failed to process payout action',
           type: 'error',
         })
       }
     } catch (error) {
       toast({
         title: 'Action failed',
-        description: 'An error occurred while processing the action',
+        message: 'An error occurred while processing the action',
         type: 'error',
       })
     }

@@ -111,7 +111,7 @@ export default function CreditsPage() {
         const error = await response.json()
         toast({
           title: 'Purchase failed',
-          description: error.error || 'Failed to initiate credit purchase',
+          message: error.error || 'Failed to initiate credit purchase',
           type: 'error',
         })
       }
@@ -119,7 +119,7 @@ export default function CreditsPage() {
       console.error('Purchase failed:', error)
       toast({
         title: 'Purchase failed',
-        description: 'An error occurred. Please try again.',
+        message: 'An error occurred. Please try again.',
         type: 'error',
       })
     } finally {

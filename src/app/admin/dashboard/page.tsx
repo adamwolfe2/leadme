@@ -168,13 +168,13 @@ export default function AdminDashboard() {
       fetchLeads()
       toast({
         title: 'Upload successful',
-        description: 'CSV file uploaded and processed successfully',
+        message: 'CSV file uploaded and processed successfully',
         type: 'success',
       })
     } catch (error: any) {
       toast({
         title: 'Upload failed',
-        description: error.message || 'Failed to upload CSV file. Please try again.',
+        message: error.message || 'Failed to upload CSV file. Please try again.',
         type: 'error',
       })
     }

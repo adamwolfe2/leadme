@@ -179,14 +179,14 @@ export function LeadsTableToolbar({
       document.body.removeChild(a)
       toast({
         title: 'Export successful',
-        description: 'Leads exported successfully',
+        message: 'Leads exported successfully',
         type: 'success',
       })
     } catch (error) {
       console.error('Export error:', error)
       toast({
         title: 'Export failed',
-        description: 'Failed to export leads. Please try again.',
+        message: 'Failed to export leads. Please try again.',
         type: 'error',
       })
     } finally {
