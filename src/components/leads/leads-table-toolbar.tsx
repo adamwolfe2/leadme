@@ -127,8 +127,8 @@ export function LeadsTableToolbar({
   const statuses = [
     { value: 'new', label: 'New', color: 'bg-blue-100 text-blue-700' },
     { value: 'contacted', label: 'Contacted', color: 'bg-amber-100 text-amber-700' },
-    { value: 'qualified', label: 'Qualified', color: 'bg-emerald-100 text-emerald-700' },
-    { value: 'proposal', label: 'Proposal', color: 'bg-violet-100 text-violet-700' },
+    { value: 'qualified', label: 'Qualified', color: 'bg-blue-100 text-blue-700' },
+    { value: 'proposal', label: 'Proposal', color: 'bg-blue-100 text-blue-700' },
     { value: 'negotiation', label: 'Negotiation', color: 'bg-orange-100 text-orange-700' },
     { value: 'won', label: 'Won', color: 'bg-green-100 text-green-700' },
     { value: 'lost', label: 'Lost', color: 'bg-red-100 text-red-700' },
@@ -201,9 +201,9 @@ export function LeadsTableToolbar({
     <div className="space-y-4">
       {/* Bulk Actions Bar */}
       {selectedCount > 0 && (
-        <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-3">
+        <div className="rounded-lg bg-blue-50 border border-blue-200 px-4 py-3">
           <div className="flex items-center justify-between">
-            <span className="text-[13px] font-medium text-emerald-900">
+            <span className="text-[13px] font-medium text-blue-900">
               {selectedCount} lead{selectedCount > 1 ? 's' : ''} selected
             </span>
             <div className="flex items-center gap-2">
@@ -386,7 +386,7 @@ export function LeadsTableToolbar({
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               placeholder="Search companies, domains..."
-              className="block w-full rounded-md border-zinc-300 pl-10 pr-4 py-2 text-[13px] shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
+              className="block w-full rounded-md border-zinc-300 pl-10 pr-4 py-2 text-[13px] shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
 
@@ -398,7 +398,7 @@ export function LeadsTableToolbar({
             onChange={(e) =>
               table.getColumn('intent')?.setFilterValue(e.target.value || undefined)
             }
-            className="rounded-md border-zinc-300 px-3 py-2 text-[13px] shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
+            className="rounded-md border-zinc-300 px-3 py-2 text-[13px] shadow-sm focus:border-blue-500 focus:ring-blue-500"
           >
             <option value="">All Intent</option>
             <option value="hot">Hot</option>
@@ -414,7 +414,7 @@ export function LeadsTableToolbar({
             onChange={(e) =>
               table.getColumn('status')?.setFilterValue(e.target.value || undefined)
             }
-            className="rounded-md border-zinc-300 px-3 py-2 text-[13px] shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
+            className="rounded-md border-zinc-300 px-3 py-2 text-[13px] shadow-sm focus:border-blue-500 focus:ring-blue-500"
           >
             <option value="">All Statuses</option>
             <option value="completed">Completed</option>
@@ -484,7 +484,7 @@ export function LeadsTableToolbar({
                             type="checkbox"
                             checked={column.getIsVisible()}
                             onChange={column.getToggleVisibilityHandler()}
-                            className="h-4 w-4 rounded border-zinc-300 text-emerald-600 focus:ring-emerald-500"
+                            className="h-4 w-4 rounded border-zinc-300 text-blue-600 focus:ring-blue-500"
                           />
                           <span className="text-[13px] text-zinc-700 capitalize">
                             {column.id}
@@ -522,7 +522,7 @@ export function LeadsTableToolbar({
           <button
             onClick={handleExport}
             disabled={isExporting}
-            className="inline-flex items-center gap-2 rounded-md bg-emerald-600 px-3 py-2 text-[13px] font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-3 py-2 text-[13px] font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isExporting ? (
               <>

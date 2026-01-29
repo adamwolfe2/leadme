@@ -32,7 +32,7 @@ const roleLabels = {
 
 const roleColors = {
   owner: 'bg-amber-100 text-amber-700 ring-amber-200',
-  admin: 'bg-purple-100 text-purple-700 ring-purple-200',
+  admin: 'bg-blue-100 text-blue-700 ring-blue-200',
   member: 'bg-zinc-100 text-zinc-700 ring-zinc-200',
 }
 

@@ -75,20 +75,20 @@ export function TopicSearchStep({
 
       {/* Selected Topic */}
       {selectedTopicId && (
-        <div className="rounded-lg border-2 border-emerald-600 bg-emerald-50 p-4">
+        <div className="rounded-lg border-2 border-blue-600 bg-blue-50 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[12px] font-medium text-emerald-700">
+              <p className="text-[12px] font-medium text-blue-700">
                 Selected Topic
               </p>
-              <p className="mt-1 text-[15px] font-medium text-emerald-900">
+              <p className="mt-1 text-[15px] font-medium text-blue-900">
                 {selectedTopicName}
               </p>
             </div>
             <button
               type="button"
               onClick={() => onSelect(null as any, null as any)}
-              className="text-[13px] font-medium text-emerald-700 hover:text-emerald-800 transition-colors"
+              className="text-[13px] font-medium text-blue-700 hover:text-blue-800 transition-colors"
             >
               Change
             </button>
@@ -153,7 +153,7 @@ export function TopicSearchStep({
                       <div className="ml-4 flex items-center space-x-2">
                         {/* Trend Indicator */}
                         {topic.trend_direction === 'up' && (
-                          <span className="text-emerald-600 font-medium">↑</span>
+                          <span className="text-blue-600 font-medium">↑</span>
                         )}
                         {topic.trend_direction === 'down' && (
                           <span className="text-red-600 font-medium">↓</span>

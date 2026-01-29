@@ -212,7 +212,7 @@ export function ValidatedFormExample() {
           </h3>
           <div className="space-y-1">
             <p className="text-[13px] text-zinc-600">
-              Form Valid: <span className={isValid ? 'text-emerald-600' : 'text-red-600'}>
+              Form Valid: <span className={isValid ? 'text-blue-600' : 'text-red-600'}>
                 {isValid ? 'Yes' : 'No'}
               </span>
             </p>

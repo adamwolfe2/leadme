@@ -24,7 +24,7 @@ import type { LeadStatus } from '@/types/crm.types'
 const STATUS_OPTIONS: { value: LeadStatus; label: string; color: string }[] = [
   { value: 'new', label: 'New', color: 'bg-blue-100 text-blue-700' },
   { value: 'contacted', label: 'Contacted', color: 'bg-yellow-100 text-yellow-700' },
-  { value: 'qualified', label: 'Qualified', color: 'bg-purple-100 text-purple-700' },
+  { value: 'qualified', label: 'Qualified', color: 'bg-blue-100 text-blue-700' },
   { value: 'won', label: 'Won', color: 'bg-green-100 text-green-700' },
   { value: 'lost', label: 'Lost', color: 'bg-gray-100 text-gray-700' },
 ]

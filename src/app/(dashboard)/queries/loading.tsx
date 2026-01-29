@@ -18,7 +18,7 @@ export default function QueriesLoading() {
           <div key={i} className="p-6 bg-white border border-zinc-200 rounded-lg">
             <div className="flex items-start justify-between mb-4">
               <div className="h-5 w-36 bg-zinc-200 rounded" />
-              <div className="h-5 w-14 bg-emerald-100 rounded-full" />
+              <div className="h-5 w-14 bg-blue-100 rounded-full" />
             </div>
             <div className="space-y-2 mb-4">
               <div className="h-3 w-full bg-zinc-100 rounded" />

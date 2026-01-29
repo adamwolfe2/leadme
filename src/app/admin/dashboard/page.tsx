@@ -264,7 +264,7 @@ export default function AdminDashboard() {
                           <span
                             className={`inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md ${
                               rule.is_active
-                                ? 'bg-emerald-50 text-emerald-700'
+                                ? 'bg-blue-50 text-blue-700'
                                 : 'bg-zinc-100 text-zinc-600'
                             }`}
                           >
@@ -395,7 +395,7 @@ export default function AdminDashboard() {
                   <div className="space-y-1 text-[13px]">
                     <p className="text-zinc-600">Status: <span className="text-zinc-900 font-medium">{uploadJob.status}</span></p>
                     <p className="text-zinc-600">Total: <span className="text-zinc-900 font-medium">{uploadJob.total_records}</span></p>
-                    <p className="text-zinc-600">Successful: <span className="text-emerald-600 font-medium">{uploadJob.successful_records}</span></p>
+                    <p className="text-zinc-600">Successful: <span className="text-blue-600 font-medium">{uploadJob.successful_records}</span></p>
                     <p className="text-zinc-600">Failed: <span className="text-red-600 font-medium">{uploadJob.failed_records}</span></p>
                   </div>
                   {uploadJob.routing_summary && (

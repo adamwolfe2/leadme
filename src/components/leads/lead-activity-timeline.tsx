@@ -32,7 +32,7 @@ const activityIcons: Record<ActivityType, { icon: React.ReactNode; bg: string }>
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
     ),
-    bg: 'bg-purple-100 text-purple-600',
+    bg: 'bg-blue-100 text-purple-600',
   },
   email_opened: {
     icon: (
@@ -56,7 +56,7 @@ const activityIcons: Record<ActivityType, { icon: React.ReactNode; bg: string }>
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
       </svg>
     ),
-    bg: 'bg-emerald-100 text-emerald-600',
+    bg: 'bg-blue-100 text-blue-600',
   },
   call_logged: {
     icon: (
@@ -80,7 +80,7 @@ const activityIcons: Record<ActivityType, { icon: React.ReactNode; bg: string }>
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     ),
-    bg: 'bg-emerald-100 text-emerald-600',
+    bg: 'bg-blue-100 text-blue-600',
   },
   assigned: {
     icon: (

@@ -230,7 +230,7 @@ export default function MyLeadsPage() {
               <button
                 onClick={downloadLeads}
                 disabled={filteredLeads.length === 0}
-                className="h-10 px-4 text-[13px] font-medium bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-10 px-4 text-[13px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
@@ -419,7 +419,7 @@ export default function MyLeadsPage() {
                             <span
                               className={`px-2 py-1 text-[11px] font-medium rounded ${
                                 lead.intent_score_calculated >= 80
-                                  ? 'bg-emerald-100 text-emerald-700'
+                                  ? 'bg-blue-100 text-blue-700'
                                   : lead.intent_score_calculated >= 60
                                     ? 'bg-amber-100 text-amber-700'
                                     : 'bg-zinc-100 text-zinc-600'

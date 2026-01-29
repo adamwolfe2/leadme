@@ -58,7 +58,7 @@ export function QueriesList() {
         action={
           <Link
             href="/queries/new"
-            className="h-10 px-4 inline-flex items-center text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg transition-all duration-150"
+            className="h-10 px-4 inline-flex items-center text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all duration-150"
           >
             <svg
               className="-ml-0.5 mr-1.5 h-5 w-5"
@@ -100,7 +100,7 @@ export function QueriesList() {
             <span
               className={`ml-3 inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ring-1 ring-inset ${
                 query.status === 'active'
-                  ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20'
+                  ? 'bg-blue-50 text-blue-700 ring-blue-600/20'
                   : query.status === 'paused'
                     ? 'bg-amber-50 text-amber-700 ring-amber-600/20'
                     : 'bg-zinc-100 text-zinc-600 ring-zinc-500/20'

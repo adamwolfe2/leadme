@@ -157,7 +157,7 @@ export default function PartnerPayoutsPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'bg-emerald-100 text-emerald-700'
+        return 'bg-blue-100 text-blue-700'
       case 'approved':
       case 'processing':
         return 'bg-blue-100 text-blue-700'
@@ -197,7 +197,7 @@ export default function PartnerPayoutsPage() {
       <main className="max-w-5xl mx-auto px-6 py-8">
         {/* Success Message */}
         {success && (
-          <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-[13px] text-emerald-700">
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-[13px] text-blue-700">
             {success}
           </div>
         )}
@@ -234,13 +234,13 @@ export default function PartnerPayoutsPage() {
           </div>
           <div className="bg-white border border-zinc-200 rounded-lg p-4">
             <div className="text-[12px] text-zinc-600">Available Balance</div>
-            <div className="text-2xl font-medium text-emerald-600 mt-1">
+            <div className="text-2xl font-medium text-blue-600 mt-1">
               {formatCurrency(stats?.available_balance || 0)}
             </div>
           </div>
           <div className="bg-white border border-zinc-200 rounded-lg p-4">
             <div className="text-[12px] text-zinc-600">Lifetime Paid</div>
-            <div className="text-2xl font-medium text-violet-600 mt-1">
+            <div className="text-2xl font-medium text-blue-600 mt-1">
               {formatCurrency(stats?.lifetime_paid || 0)}
             </div>
           </div>
@@ -251,7 +251,7 @@ export default function PartnerPayoutsPage() {
           <button
             onClick={() => setShowRequestModal(true)}
             disabled={!stats?.stripe_connected || (stats?.available_balance || 0) < (stats?.payout_threshold || 50)}
-            className="h-10 px-6 text-[13px] font-medium bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-lg hover:from-violet-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="h-10 px-6 text-[13px] font-medium bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Request Payout
           </button>
@@ -337,7 +337,7 @@ export default function PartnerPayoutsPage() {
                   step="0.01"
                   min={stats?.payout_threshold || 50}
                   max={stats?.available_balance || 0}
-                  className="w-full h-10 pl-7 pr-3 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:border-violet-500"
+                  className="w-full h-10 pl-7 pr-3 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:border-blue-500"
                 />
               </div>
               <p className="text-[12px] text-zinc-500 mt-1">
@@ -359,7 +359,7 @@ export default function PartnerPayoutsPage() {
               <button
                 onClick={handleRequestPayout}
                 disabled={requesting}
-                className="flex-1 h-10 text-[13px] font-medium bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-lg hover:from-violet-700 hover:to-indigo-700 disabled:opacity-50"
+                className="flex-1 h-10 text-[13px] font-medium bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50"
               >
                 {requesting ? 'Submitting...' : 'Request Payout'}
               </button>

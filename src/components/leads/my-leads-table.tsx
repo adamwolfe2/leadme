@@ -162,7 +162,7 @@ export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
     return (
       <div className="rounded-lg border border-zinc-200 bg-white p-12">
         <div className="flex items-center justify-center">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-300 border-t-violet-600" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-300 border-t-blue-600" />
         </div>
       </div>
     )
@@ -180,7 +180,7 @@ export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
               className={cn(
                 'px-3 py-1.5 text-sm font-medium rounded-md transition-colors',
                 filter === status
-                  ? 'bg-violet-100 text-violet-700'
+                  ? 'bg-blue-100 text-blue-700'
                   : 'text-zinc-600 hover:bg-zinc-100'
               )}
             >
@@ -264,7 +264,7 @@ export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
                   <td className="px-4 py-3">
                     <div className="text-sm">
                       {assignment.matched_industry && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded bg-purple-50 text-purple-700 mr-1">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded bg-blue-50 text-blue-700 mr-1">
                           {assignment.matched_industry}
                         </span>
                       )}
@@ -397,7 +397,7 @@ function LeadDetailModal({
                 <p className="text-zinc-600">
                   <a
                     href={`mailto:${lead.email}`}
-                    className="text-violet-600 hover:underline"
+                    className="text-blue-600 hover:underline"
                   >
                     {lead.email}
                   </a>
@@ -407,7 +407,7 @@ function LeadDetailModal({
                 <p className="text-zinc-600">
                   <a
                     href={`tel:${lead.phone}`}
-                    className="text-violet-600 hover:underline"
+                    className="text-blue-600 hover:underline"
                   >
                     {lead.phone}
                   </a>
@@ -444,7 +444,7 @@ function LeadDetailModal({
             <h3 className="text-sm font-medium text-zinc-500 mb-3">Match Info</h3>
             <div className="flex flex-wrap gap-2">
               {assignment.matched_industry && (
-                <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-purple-50 text-purple-700 text-sm">
+                <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-sm">
                   Industry: {assignment.matched_industry}
                 </span>
               )}
@@ -489,7 +489,7 @@ function LeadDetailModal({
           {lead.email && (
             <a
               href={`mailto:${lead.email}`}
-              className="px-4 py-2 text-sm font-medium text-white bg-violet-600 rounded-lg hover:bg-violet-700"
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
             >
               Send Email
             </a>

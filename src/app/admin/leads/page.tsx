@@ -192,7 +192,7 @@ Jane,Smith,jane@example.com,555-987-6543,456 Oak Ave,Dallas,TX,75201,roofing,loo
                       <td className="px-5 py-3">
                         <span className={`inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md ${
                           lead.lead_score >= 80
-                            ? 'bg-emerald-100 text-emerald-700'
+                            ? 'bg-blue-100 text-blue-700'
                             : lead.lead_score >= 50
                             ? 'bg-amber-100 text-amber-700'
                             : 'bg-zinc-100 text-zinc-600'
@@ -285,10 +285,10 @@ Jane,Smith,jane@example.com,555-987-6543,456 Oak Ave,Dallas,TX,75201,roofing,loo
           {/* Upload Results */}
           {uploadResult && (
             <div className={`bg-white border rounded-lg p-6 ${
-              uploadResult.success ? 'border-emerald-200' : 'border-red-200'
+              uploadResult.success ? 'border-blue-200' : 'border-red-200'
             }`}>
               <h3 className={`text-[15px] font-medium mb-4 ${
-                uploadResult.success ? 'text-emerald-900' : 'text-red-900'
+                uploadResult.success ? 'text-blue-900' : 'text-red-900'
               }`}>
                 Upload {uploadResult.success ? 'Complete' : 'Failed'}
               </h3>
@@ -298,9 +298,9 @@ Jane,Smith,jane@example.com,555-987-6543,456 Oak Ave,Dallas,TX,75201,roofing,loo
                   <div className="text-[12px] text-zinc-600">Total Rows</div>
                   <div className="text-lg font-medium text-zinc-900">{uploadResult.total}</div>
                 </div>
-                <div className="bg-emerald-50 rounded-lg p-3">
-                  <div className="text-[12px] text-emerald-600">Successful</div>
-                  <div className="text-lg font-medium text-emerald-700">{uploadResult.successful}</div>
+                <div className="bg-blue-50 rounded-lg p-3">
+                  <div className="text-[12px] text-blue-600">Successful</div>
+                  <div className="text-lg font-medium text-blue-700">{uploadResult.successful}</div>
                 </div>
                 <div className="bg-red-50 rounded-lg p-3">
                   <div className="text-[12px] text-red-600">Failed</div>

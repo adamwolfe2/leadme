@@ -14,7 +14,7 @@ const statusBadgeVariants = cva(
         contacted:
           'bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300',
         qualified:
-          'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300',
+          'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-purple-300',
         won: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300',
         lost: 'bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
       },
@@ -37,7 +37,7 @@ const statusBadgeVariants = cva(
       {
         status: 'qualified',
         variant: 'outline',
-        className: 'border-purple-200 text-purple-700 dark:border-purple-800',
+        className: 'border-blue-200 text-blue-700 dark:border-blue-800',
       },
       {
         status: 'won',
@@ -62,7 +62,7 @@ const statusDotVariants = cva('h-1 w-1 rounded-full', {
     status: {
       new: 'bg-blue-500',
       contacted: 'bg-yellow-500',
-      qualified: 'bg-purple-500',
+      qualified: 'bg-blue-500',
       won: 'bg-green-500',
       lost: 'bg-gray-400',
     },

@@ -166,9 +166,9 @@ Test Company 3,Solar,WA,US,test3@test.com,test-workspace`
                 <div className="text-[13px] text-zinc-600 mb-1">Total Tests</div>
                 <div className="text-2xl font-semibold text-zinc-900">{results.length}</div>
               </div>
-              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-                <div className="text-[13px] text-emerald-700 mb-1">Successful</div>
-                <div className="text-2xl font-semibold text-emerald-700">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="text-[13px] text-blue-700 mb-1">Successful</div>
+                <div className="text-2xl font-semibold text-blue-700">
                   {results.filter(r => r.status >= 200 && r.status < 300).length}
                 </div>
               </div>
@@ -201,7 +201,7 @@ Test Company 3,Solar,WA,US,test3@test.com,test-workspace`
                     <span
                       className={`inline-flex items-center px-2.5 py-1 rounded-md text-[12px] font-medium ${
                         result.status >= 200 && result.status < 300
-                          ? 'bg-emerald-50 text-emerald-700'
+                          ? 'bg-blue-50 text-blue-700'
                           : 'bg-red-50 text-red-700'
                       }`}
                     >

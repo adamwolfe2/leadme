@@ -74,7 +74,7 @@ export function UserMenu() {
       case 'admin':
         return 'bg-blue-100 text-blue-700'
       case 'partner':
-        return 'bg-purple-100 text-purple-700'
+        return 'bg-blue-100 text-blue-700'
       default:
         return 'bg-muted text-muted-foreground'
     }

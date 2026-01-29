@@ -221,7 +221,7 @@ export default function PurchaseHistoryPage() {
                         <span
                           className={`px-2 py-1 text-[11px] font-medium rounded ${
                             purchase.status === 'completed'
-                              ? 'bg-emerald-100 text-emerald-700'
+                              ? 'bg-blue-100 text-blue-700'
                               : purchase.status === 'pending'
                                 ? 'bg-amber-100 text-amber-700'
                                 : 'bg-zinc-100 text-zinc-600'

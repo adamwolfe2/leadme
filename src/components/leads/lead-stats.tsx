@@ -117,17 +117,17 @@ export function LeadStats() {
         </div>
 
         {/* Total Leads */}
-        <div className="group relative overflow-hidden rounded-lg border border-zinc-200 bg-gradient-to-br from-emerald-50 to-emerald-100/50 p-6 shadow-sm">
-          <dt className="text-[13px] font-medium text-emerald-900">
+        <div className="group relative overflow-hidden rounded-lg border border-zinc-200 bg-gradient-to-br from-blue-50 to-blue-100/50 p-6 shadow-sm">
+          <dt className="text-[13px] font-medium text-blue-900">
             Total Leads
           </dt>
           <dd className="mt-2">
-            <span className="text-3xl font-semibold text-emerald-900">
+            <span className="text-3xl font-semibold text-blue-900">
               {formatNumber(total)}
             </span>
           </dd>
           <div className="mt-4">
-            <span className="text-xs text-emerald-700">
+            <span className="text-xs text-blue-700">
               {intentBreakdown.hot_count + intentBreakdown.warm_count > 0
                 ? `${Math.round(((intentBreakdown.hot_count + intentBreakdown.warm_count) / total) * 100)}% qualified`
                 : 'No qualified leads yet'}
@@ -224,7 +224,7 @@ export function LeadStats() {
                     <div className="text-zinc-500">Warm</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-semibold text-emerald-600">
+                    <div className="font-semibold text-blue-600">
                       {formatNumber(platform.total_leads)}
                     </div>
                     <div className="text-zinc-500">Total</div>

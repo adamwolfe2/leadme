@@ -43,8 +43,8 @@ function PersonAvatar({ name, className }: { name: string; className?: string })
   // Generate a consistent color based on name
   const colors = [
     'bg-blue-500',
-    'bg-emerald-500',
-    'bg-purple-500',
+    'bg-blue-500',
+    'bg-blue-500',
     'bg-amber-500',
     'bg-rose-500',
     'bg-cyan-500',

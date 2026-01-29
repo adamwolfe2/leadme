@@ -107,11 +107,11 @@ export function OnboardingChecklist() {
   if (!isVisible) return null
 
   return (
-    <div className="bg-gradient-to-r from-emerald-50 to-blue-50 border border-emerald-200 rounded-lg overflow-hidden">
+    <div className="bg-gradient-to-r from-blue-50 to-blue-50 border border-blue-200 rounded-lg overflow-hidden">
       {/* Header */}
       <div className="px-6 py-4 flex items-center justify-between bg-white/50 backdrop-blur-sm">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
             <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"
@@ -122,7 +122,7 @@ export function OnboardingChecklist() {
             </svg>
           </div>
           <div>
-            <h3 className="text-[15px] font-semibold text-zinc-900">Get Started with OpenInfo</h3>
+            <h3 className="text-[15px] font-semibold text-zinc-900">Get Started with Cursive</h3>
             <p className="text-[13px] text-zinc-600 mt-0.5">
               Complete these steps to unlock the full platform
             </p>
@@ -130,12 +130,12 @@ export function OnboardingChecklist() {
         </div>
         <div className="flex items-center gap-3">
           <div className="text-right">
-            <div className="text-[13px] font-medium text-emerald-700">
+            <div className="text-[13px] font-medium text-blue-700">
               {completedCount} of {totalCount} completed
             </div>
             <div className="w-32 h-2 bg-zinc-200 rounded-full mt-1 overflow-hidden">
               <div
-                className="h-full bg-emerald-600 rounded-full transition-all duration-300"
+                className="h-full bg-blue-600 rounded-full transition-all duration-300"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
@@ -179,8 +179,8 @@ export function OnboardingChecklist() {
                 onClick={() => toggleItemCompletion(item.id)}
                 className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
                   item.completed
-                    ? 'bg-emerald-600 border-emerald-600'
-                    : 'border-zinc-300 hover:border-emerald-600'
+                    ? 'bg-blue-600 border-blue-600'
+                    : 'border-zinc-300 hover:border-blue-600'
                 }`}
               >
                 {item.completed && (
@@ -213,9 +213,9 @@ export function OnboardingChecklist() {
 
       {/* Footer */}
       {isExpanded && completedCount === totalCount && (
-        <div className="px-6 py-4 bg-emerald-100 border-t border-emerald-200">
+        <div className="px-6 py-4 bg-blue-100 border-t border-blue-200">
           <div className="flex items-center gap-3">
-            <svg className="w-5 h-5 text-emerald-700 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-5 h-5 text-blue-700 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -224,14 +224,14 @@ export function OnboardingChecklist() {
               />
             </svg>
             <div className="flex-1">
-              <p className="text-[14px] font-medium text-emerald-900">All done!</p>
-              <p className="text-[13px] text-emerald-700 mt-0.5">
+              <p className="text-[14px] font-medium text-blue-900">All done!</p>
+              <p className="text-[13px] text-blue-700 mt-0.5">
                 You're all set. Start exploring the platform.
               </p>
             </div>
             <button
               onClick={dismiss}
-              className="h-9 px-4 text-[13px] font-medium bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg transition-colors"
+              className="h-9 px-4 text-[13px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors"
             >
               Dismiss
             </button>

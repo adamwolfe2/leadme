@@ -59,7 +59,7 @@ export function EmailRevealButton({
         >
           {revealedEmail}
         </a>
-        <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-emerald-50 text-emerald-700">
+        <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-blue-50 text-blue-700">
           Revealed
         </span>
       </div>

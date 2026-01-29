@@ -83,7 +83,7 @@ export function Sidebar({ items, workspace, className }: SidebarProps) {
                 />
               </div>
             ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-violet-100 to-indigo-100 text-violet-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-600">
                 <span className="text-sm font-bold">
                   {workspace.name?.charAt(0)?.toUpperCase() || 'B'}
                 </span>

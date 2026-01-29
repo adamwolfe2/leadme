@@ -126,11 +126,11 @@ export function ReviewStep({
       </div>
 
       {/* Info Box */}
-      <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-4">
+      <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
         <div className="flex">
           <div className="flex-shrink-0">
             <svg
-              className="h-5 w-5 text-emerald-600"
+              className="h-5 w-5 text-blue-600"
               viewBox="0 0 20 20"
               fill="currentColor"
             >
@@ -142,10 +142,10 @@ export function ReviewStep({
             </svg>
           </div>
           <div className="ml-3">
-            <h3 className="text-[13px] font-medium text-emerald-900">
+            <h3 className="text-[13px] font-medium text-blue-900">
               What happens next?
             </h3>
-            <div className="mt-2 text-[13px] text-emerald-800">
+            <div className="mt-2 text-[13px] text-blue-800">
               <ul className="list-disc space-y-1 pl-5">
                 <li>Your query will run daily to discover new leads</li>
                 <li>

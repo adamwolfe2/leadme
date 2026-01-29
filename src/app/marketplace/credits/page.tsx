@@ -89,17 +89,17 @@ export default function CreditsPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-8 py-8">
           {/* Success Message */}
           {showSuccess && (
-            <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg flex items-start gap-3">
-              <svg className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-3">
+              <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               <div>
-                <h3 className="text-[13px] font-medium text-emerald-900">Purchase Successful!</h3>
-                <p className="text-[13px] text-emerald-700 mt-1">
+                <h3 className="text-[13px] font-medium text-blue-900">Purchase Successful!</h3>
+                <p className="text-[13px] text-blue-700 mt-1">
                   {purchasedCredits > 0 ? `${purchasedCredits} credits` : 'Credits'} have been added to your account.
                 </p>
               </div>
-              <button onClick={() => setShowSuccess(false)} className="ml-auto text-emerald-600 hover:text-emerald-800">
+              <button onClick={() => setShowSuccess(false)} className="ml-auto text-blue-600 hover:text-blue-800">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -150,11 +150,11 @@ export default function CreditsPage() {
               <div
                 key={pkg.id}
                 className={`relative bg-white border rounded-lg p-6 ${
-                  pkg.popular ? 'border-emerald-500 ring-1 ring-emerald-500' : 'border-zinc-200'
+                  pkg.popular ? 'border-blue-500 ring-1 ring-blue-500' : 'border-zinc-200'
                 }`}
               >
                 {pkg.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-emerald-500 text-white text-[11px] font-medium rounded-full">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-blue-500 text-white text-[11px] font-medium rounded-full">
                     Most Popular
                   </div>
                 )}
@@ -172,7 +172,7 @@ export default function CreditsPage() {
                     ${pkg.pricePerCredit.toFixed(2)}/credit
                   </span>
                   {pkg.savings > 0 && (
-                    <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[11px] font-medium rounded">
+                    <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[11px] font-medium rounded">
                       Save {pkg.savings}%
                     </span>
                   )}
@@ -183,7 +183,7 @@ export default function CreditsPage() {
                   disabled={isPurchasing !== null}
                   className={`w-full h-10 text-[13px] font-medium rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed ${
                     pkg.popular
-                      ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                      ? 'bg-blue-600 text-white hover:bg-blue-700'
                       : 'bg-zinc-900 text-white hover:bg-zinc-800'
                   }`}
                 >

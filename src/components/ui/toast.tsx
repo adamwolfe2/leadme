@@ -22,8 +22,8 @@ export interface ToastProps {
 
 const toastStyles = {
   success: {
-    container: 'bg-emerald-50 border-emerald-200 text-emerald-900',
-    icon: 'text-emerald-600',
+    container: 'bg-blue-50 border-blue-200 text-blue-900',
+    icon: 'text-blue-600',
     iconComponent: CheckCircle,
   },
   error: {
@@ -145,7 +145,7 @@ export function Toast({
                 hover:no-underline transition-all
                 ${
                   type === 'success'
-                    ? 'text-emerald-700 hover:text-emerald-800'
+                    ? 'text-blue-700 hover:text-blue-800'
                     : type === 'error'
                       ? 'text-red-700 hover:text-red-800'
                       : type === 'warning'
@@ -166,7 +166,7 @@ export function Toast({
             flex-shrink-0 rounded p-1 transition-colors
             ${
               type === 'success'
-                ? 'hover:bg-emerald-100'
+                ? 'hover:bg-blue-100'
                 : type === 'error'
                   ? 'hover:bg-red-100'
                   : type === 'warning'
@@ -187,7 +187,7 @@ export function Toast({
             absolute bottom-0 left-0 h-1 rounded-b-lg transition-all
             ${
               type === 'success'
-                ? 'bg-emerald-600'
+                ? 'bg-blue-600'
                 : type === 'error'
                   ? 'bg-red-600'
                   : type === 'warning'

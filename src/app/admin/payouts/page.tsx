@@ -117,7 +117,7 @@ export default function AdminPayoutsPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'bg-emerald-100 text-emerald-700'
+        return 'bg-blue-100 text-blue-700'
       case 'approved':
         return 'bg-blue-100 text-blue-700'
       case 'processing':
@@ -177,7 +177,7 @@ export default function AdminPayoutsPage() {
         </div>
         <div className="bg-white border border-zinc-200 rounded-lg p-4">
           <div className="text-[12px] text-zinc-600">Paid This Month</div>
-          <div className="text-xl font-medium text-emerald-600 mt-1">
+          <div className="text-xl font-medium text-blue-600 mt-1">
             {formatCurrency(stats?.total_paid_this_month || 0)}
           </div>
         </div>
@@ -254,7 +254,7 @@ export default function AdminPayoutsPage() {
                               setSelectedPayout(payout)
                               setActionModal('approve')
                             }}
-                            className="px-3 py-1.5 text-[12px] font-medium bg-emerald-100 text-emerald-700 rounded hover:bg-emerald-200"
+                            className="px-3 py-1.5 text-[12px] font-medium bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
                           >
                             Approve
                           </button>

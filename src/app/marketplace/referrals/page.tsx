@@ -83,7 +83,7 @@ export default function ReferralsPage() {
           </div>
 
           {/* How it works */}
-          <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg p-6 mb-8 text-white">
+          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-6 mb-8 text-white">
             <h2 className="text-lg font-semibold mb-4">How it works</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="flex gap-3">
@@ -135,7 +135,7 @@ export default function ReferralsPage() {
                 >
                   {copied ? (
                     <>
-                      <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                       Copied!
@@ -199,7 +199,7 @@ export default function ReferralsPage() {
               {isLoading ? (
                 <div className="h-7 w-12 bg-zinc-100 rounded animate-pulse" />
               ) : (
-                <p className="text-xl font-semibold text-emerald-600">${stats?.totalCreditsEarned || 0}</p>
+                <p className="text-xl font-semibold text-blue-600">${stats?.totalCreditsEarned || 0}</p>
               )}
             </div>
           </div>

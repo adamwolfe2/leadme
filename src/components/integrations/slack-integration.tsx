@@ -61,7 +61,7 @@ export function SlackIntegration({ user, isPro }: SlackIntegrationProps) {
               onError={() => setLogoError(true)}
             />
           ) : (
-            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-lg font-bold">
+            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-pink-500 flex items-center justify-center text-white text-lg font-bold">
               SL
             </div>
           )}

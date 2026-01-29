@@ -92,7 +92,7 @@ export function CreditUsageWidget() {
         <span
           className={`inline-flex items-center rounded-full px-2 py-1 text-[11px] font-medium ${
             credits.plan === 'pro'
-              ? 'bg-emerald-100 text-emerald-700'
+              ? 'bg-blue-100 text-blue-700'
               : 'bg-zinc-100 text-zinc-700'
           }`}
         >
@@ -125,7 +125,7 @@ export function CreditUsageWidget() {
               isLowCredits
                 ? 'bg-amber-500'
                 : usagePercent > 50
-                  ? 'bg-emerald-500'
+                  ? 'bg-blue-500'
                   : 'bg-emerald-400'
             }`}
             style={{ width: `${usagePercent}%` }}

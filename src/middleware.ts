@@ -39,6 +39,12 @@ export async function middleware(req: NextRequest) {
     }
   }
 
+  // Admin-only routes
+  const isAdminRoute = pathname.startsWith('/admin')
+
+  // Partner-only routes
+  const isPartnerRoute = pathname.startsWith('/partner')
+
   // Public routes that don't require authentication
   const isPublicRoute =
     pathname.startsWith('/login') ||
@@ -105,8 +111,16 @@ export async function middleware(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // If authenticated, verify workspace access (skip for admin)
-  if (user && !isPublicRoute && !pathname.startsWith('/onboarding') && !isAdminEmail) {
+  // Admin routes require admin email
+  if (isAdminRoute && !isAdminEmail) {
+    return NextResponse.json(
+      { error: 'Admin access required' },
+      { status: 403 }
+    )
+  }
+
+  // If authenticated, verify workspace access (skip for admin and partner routes)
+  if (user && !isPublicRoute && !pathname.startsWith('/onboarding') && !isAdminEmail && !isPartnerRoute) {
     try {
       const { data: dbUser } = await supabase
         .from('users')

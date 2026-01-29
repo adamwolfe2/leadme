@@ -9,7 +9,7 @@ export default function LeadsLoading() {
           <div className="h-8 w-24 bg-zinc-200 rounded" />
           <div className="h-4 w-56 bg-zinc-100 rounded" />
         </div>
-        <div className="h-10 w-36 bg-violet-200 rounded-lg" />
+        <div className="h-10 w-36 bg-blue-200 rounded-lg" />
       </div>
 
       {/* Stats cards skeleton */}

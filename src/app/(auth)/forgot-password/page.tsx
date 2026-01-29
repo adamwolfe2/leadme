@@ -46,13 +46,13 @@ export default function ForgotPasswordPage() {
           </div>
 
           {/* Success Message */}
-          <div className="rounded-lg bg-emerald-50 p-4">
+          <div className="rounded-lg bg-blue-50 p-4">
             <div className="flex">
               <div className="ml-3">
-                <h3 className="text-[13px] font-medium text-emerald-700">
+                <h3 className="text-[13px] font-medium text-blue-700">
                   Password reset email sent
                 </h3>
-                <p className="mt-2 text-[13px] text-emerald-600">
+                <p className="mt-2 text-[13px] text-blue-600">
                   Click the link in the email to reset your password. The link will expire in 1 hour.
                 </p>
               </div>

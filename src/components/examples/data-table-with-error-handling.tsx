@@ -208,7 +208,7 @@ export function DataTableWithErrorHandling() {
                         setSelectedIds([])
                       }
                     }}
-                    className="h-4 w-4 rounded border-zinc-300 text-emerald-600 focus:ring-emerald-500"
+                    className="h-4 w-4 rounded border-zinc-300 text-blue-600 focus:ring-blue-500"
                   />
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase">
@@ -242,7 +242,7 @@ export function DataTableWithErrorHandling() {
                           setSelectedIds(selectedIds.filter((id) => id !== item.id))
                         }
                       }}
-                      className="h-4 w-4 rounded border-zinc-300 text-emerald-600 focus:ring-emerald-500"
+                      className="h-4 w-4 rounded border-zinc-300 text-blue-600 focus:ring-blue-500"
                     />
                   </td>
                   <td className="px-6 py-4 text-sm font-medium text-zinc-900">
@@ -252,7 +252,7 @@ export function DataTableWithErrorHandling() {
                     <span
                       className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
                         item.status === 'active'
-                          ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20'
+                          ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-600/20'
                           : 'bg-zinc-100 text-zinc-600 ring-1 ring-zinc-500/20'
                       }`}
                     >
@@ -263,7 +263,7 @@ export function DataTableWithErrorHandling() {
                     {new Date(item.created_at).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 text-sm">
-                    <button className="text-emerald-600 hover:text-emerald-700 font-medium">
+                    <button className="text-blue-600 hover:text-blue-700 font-medium">
                       View
                     </button>
                   </td>

@@ -61,7 +61,7 @@ export default function AdminAnalyticsPage() {
   const formatChange = (change: number) => {
     const isPositive = change >= 0
     return (
-      <span className={isPositive ? 'text-emerald-600' : 'text-red-600'}>
+      <span className={isPositive ? 'text-blue-600' : 'text-red-600'}>
         {isPositive ? '+' : ''}{change.toFixed(1)}%
       </span>
     )
@@ -129,7 +129,7 @@ export default function AdminAnalyticsPage() {
         </div>
         <div className="bg-white border border-zinc-200 rounded-lg p-4">
           <div className="text-[12px] text-zinc-600">Total Revenue</div>
-          <div className="text-2xl font-semibold text-emerald-600 mt-1">
+          <div className="text-2xl font-semibold text-blue-600 mt-1">
             {formatCurrency(analytics?.overview.total_revenue || 0)}
           </div>
           <div className="text-[12px] mt-1">
@@ -209,7 +209,7 @@ export default function AdminAnalyticsPage() {
             { label: 'Opened', value: analytics?.conversionFunnel.opened || 0, color: 'bg-indigo-500' },
             { label: 'Clicked', value: analytics?.conversionFunnel.clicked || 0, color: 'bg-blue-500' },
             { label: 'Replied', value: analytics?.conversionFunnel.replied || 0, color: 'bg-cyan-500' },
-            { label: 'Converted', value: analytics?.conversionFunnel.converted || 0, color: 'bg-emerald-500' },
+            { label: 'Converted', value: analytics?.conversionFunnel.converted || 0, color: 'bg-blue-500' },
           ].map((step, i, arr) => (
             <div key={i} className="flex-1 text-center">
               <div className={`mx-auto w-16 h-16 ${step.color} rounded-full flex items-center justify-center text-white font-semibold`}>
@@ -243,7 +243,7 @@ export default function AdminAnalyticsPage() {
                 <tr key={i} className="border-b border-zinc-100 last:border-0">
                   <td className="py-3 text-[13px] text-zinc-900">{partner.name}</td>
                   <td className="py-3 text-[13px] text-zinc-600 text-right">{formatNumber(partner.leads)}</td>
-                  <td className="py-3 text-[13px] text-emerald-600 text-right font-medium">
+                  <td className="py-3 text-[13px] text-blue-600 text-right font-medium">
                     {formatCurrency(partner.earnings)}
                   </td>
                 </tr>

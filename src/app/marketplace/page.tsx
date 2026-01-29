@@ -83,7 +83,7 @@ function getIntentBadge(score: number): { label: string; color: string } {
 }
 
 function getFreshnessBadge(score: number): { label: string; color: string } {
-  if (score >= 70) return { label: 'Fresh', color: 'bg-emerald-100 text-emerald-700' }
+  if (score >= 70) return { label: 'Fresh', color: 'bg-blue-100 text-blue-700' }
   if (score >= 40) return { label: 'Recent', color: 'bg-yellow-100 text-yellow-700' }
   return { label: 'Aged', color: 'bg-zinc-100 text-zinc-600' }
 }
@@ -279,17 +279,17 @@ export default function MarketplacePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8">
           {/* Success Message */}
           {showSuccessMessage && (
-            <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg flex items-start gap-3">
-              <svg className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-3">
+              <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               <div>
-                <h3 className="text-[13px] font-medium text-emerald-900">Purchase Successful!</h3>
-                <p className="text-[13px] text-emerald-700 mt-1">
+                <h3 className="text-[13px] font-medium text-blue-900">Purchase Successful!</h3>
+                <p className="text-[13px] text-blue-700 mt-1">
                   {purchasedLeadCount} lead{purchasedLeadCount !== 1 ? 's' : ''} purchased. View them in your purchase history.
                 </p>
               </div>
-              <button onClick={() => setShowSuccessMessage(false)} className="ml-auto text-emerald-600 hover:text-emerald-800">
+              <button onClick={() => setShowSuccessMessage(false)} className="ml-auto text-blue-600 hover:text-blue-800">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -321,7 +321,7 @@ export default function MarketplacePage() {
               </Link>
               <Link
                 href="/marketplace/credits"
-                className="h-9 px-4 text-[13px] font-medium bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg transition-all duration-150 inline-flex items-center"
+                className="h-9 px-4 text-[13px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all duration-150 inline-flex items-center"
               >
                 Buy Credits
               </Link>
@@ -551,7 +551,7 @@ export default function MarketplacePage() {
                     <button
                       onClick={purchaseSelected}
                       disabled={isPurchasing || getSelectedTotal() > credits}
-                      className="h-9 px-4 text-[13px] font-medium bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                      className="h-9 px-4 text-[13px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
                     >
                       {isPurchasing ? (
                         <>
@@ -649,7 +649,7 @@ export default function MarketplacePage() {
                                   {freshness.label}
                                 </span>
                                 {lead.verification_status === 'valid' && (
-                                  <span className="px-2 py-0.5 text-[11px] font-medium rounded bg-emerald-100 text-emerald-700">
+                                  <span className="px-2 py-0.5 text-[11px] font-medium rounded bg-blue-100 text-blue-700">
                                     Verified
                                   </span>
                                 )}

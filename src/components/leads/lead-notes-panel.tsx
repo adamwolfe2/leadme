@@ -42,9 +42,9 @@ const noteTypeIcons: Record<NoteType, React.ReactNode> = {
 const noteTypeColors: Record<NoteType, string> = {
   note: 'bg-zinc-100 text-zinc-600',
   call: 'bg-blue-100 text-blue-600',
-  email: 'bg-purple-100 text-purple-600',
+  email: 'bg-blue-100 text-purple-600',
   meeting: 'bg-orange-100 text-orange-600',
-  task: 'bg-emerald-100 text-emerald-600',
+  task: 'bg-blue-100 text-blue-600',
 }
 
 async function fetchNotes(leadId: string): Promise<{ notes: LeadNote[] }> {
@@ -173,7 +173,7 @@ export function LeadNotesPanel({ leadId, className }: LeadNotesPanelProps) {
               onChange={(e) => setNewNoteContent(e.target.value)}
               placeholder={`Add a ${selectedNoteType}...`}
               rows={3}
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
 
             {/* Submit Button */}
@@ -182,7 +182,7 @@ export function LeadNotesPanel({ leadId, className }: LeadNotesPanelProps) {
                 type="submit"
                 disabled={!newNoteContent.trim() || createMutation.isPending}
                 className={cn(
-                  'rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700',
+                  'rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700',
                   (!newNoteContent.trim() || createMutation.isPending) && 'opacity-50 cursor-not-allowed'
                 )}
               >

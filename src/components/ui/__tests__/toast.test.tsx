@@ -36,7 +36,7 @@ describe('Toast', () => {
 
     const toast = screen.getByRole('alert')
     expect(toast).toBeInTheDocument()
-    expect(toast).toHaveClass('bg-emerald-50', 'border-emerald-200')
+    expect(toast).toHaveClass('bg-blue-50', 'border-blue-200')
     expect(screen.getByText('Test message')).toBeInTheDocument()
   })
 
