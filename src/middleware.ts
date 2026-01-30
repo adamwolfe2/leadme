@@ -8,57 +8,22 @@ export async function middleware(req: NextRequest) {
   try {
     const { pathname } = req.nextUrl
 
-    // EXTENSIVE LOGGING FOR DEBUGGING
-    console.log('=== MIDDLEWARE START ===')
-    console.log('Pathname:', pathname)
-    console.log('Environment check:', {
-      hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-      hasSupabaseKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL?.slice(0, 30) + '...',
-    })
-
-    // Log ALL cookies
-    const allCookies = req.cookies.getAll()
-    console.log('Total cookies:', allCookies.length)
-    console.log('All cookie names:', allCookies.map(c => c.name))
-
-    // Find Supabase auth cookies specifically
-    const supabaseCookies = allCookies.filter(c =>
-      c.name.startsWith('sb-') ||
-      c.name.includes('auth-token') ||
-      c.name.includes('supabase')
-    )
-    console.log('Supabase cookies found:', supabaseCookies.map(c => ({
-      name: c.name,
-      hasValue: !!c.value,
-      valueLength: c.value?.length || 0,
-    })))
-
     // Create Supabase client using SSR pattern
     const client = createClient(req)
     const { supabase } = client
 
-    // CRITICAL: Refresh session to ensure cookies are up-to-date
-    // This is what actually writes sb-*-auth-token cookies to the response
+    // Refresh session to ensure cookies are up-to-date
     let session = null
     try {
       const result = await supabase.auth.getSession()
       session = result.data.session
 
-      console.log('getSession result:', {
-        hasSession: !!session,
-        userId: session?.user?.id || null,
-        userEmail: session?.user?.email || null,
-        error: result.error?.message || null,
-      })
-
+      // Admin bypass
       if (session?.user?.email === 'adam@meetcursive.com') {
-        console.log('✓ Admin email detected, bypassing all checks')
-        console.log('=== MIDDLEWARE END (admin bypass) ===')
         return client.response
       }
     } catch (e) {
-      console.error('✗ Failed to check admin session:', e)
+      console.error('Failed to check session:', e)
     }
 
     // Extract subdomain for multi-tenant routing
@@ -108,15 +73,6 @@ export async function middleware(req: NextRequest) {
     // Use the session we already fetched above (don't fetch again)
     const user = session?.user || null
 
-    console.log('Route classification:', {
-      isPublicRoute,
-      isApiRoute,
-      isAdminRoute,
-      isPartnerRoute,
-      hasAdminBypass,
-      hasUser: !!user,
-    })
-
     // Helper to create redirect with cookies preserved
     const redirectWithCookies = (url: URL) => {
       const redirectResponse = NextResponse.redirect(url)
@@ -141,8 +97,6 @@ export async function middleware(req: NextRequest) {
         pathname.startsWith('/auth')
 
       if (!isWaitlistPath) {
-        console.log('→ REDIRECT: Waitlist domain without bypass, redirecting to /waitlist')
-        console.log('=== MIDDLEWARE END (waitlist redirect) ===')
         return NextResponse.redirect(new URL('/waitlist', req.url))
       }
     }
@@ -150,19 +104,13 @@ export async function middleware(req: NextRequest) {
     // Auth routes (login, signup) - allow access even if authenticated
     // Users may want to re-login or access these pages directly
 
-    // ADMIN BYPASS: If user has admin bypass cookie, full access
-    // This allows admin to navigate the platform even if session has issues
+    // Admin bypass cookie allows full access
     if (hasAdminBypass) {
-      console.log('✓ Admin bypass cookie active, allowing access')
-      console.log('=== MIDDLEWARE END (bypass cookie) ===')
       return client.response
     }
 
     // Protected routes require authentication
     if (!isPublicRoute && !user) {
-      console.log('✗ REDIRECT TO LOGIN: Protected route without authentication')
-      console.log('Details:', { pathname, isPublicRoute, hasUser: !!user })
-      console.log('=== MIDDLEWARE END (login redirect) ===')
       const redirectUrl = new URL('/login', req.url)
       redirectUrl.searchParams.set('redirect', pathname)
       return redirectWithCookies(redirectUrl)
@@ -170,15 +118,11 @@ export async function middleware(req: NextRequest) {
 
     // API routes require authentication
     if (isApiRoute && !user) {
-      console.log('✗ 401 UNAUTHORIZED: API route without authentication')
-      console.log('=== MIDDLEWARE END (api 401) ===')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Admin routes require authentication (admin email already checked at top)
+    // Admin routes require authentication
     if (isAdminRoute && !user) {
-      console.log('✗ 403 FORBIDDEN: Admin route without authentication')
-      console.log('=== MIDDLEWARE END (admin 403) ===')
       return NextResponse.json(
         { error: 'Admin access required' },
         { status: 403 }
@@ -196,8 +140,6 @@ export async function middleware(req: NextRequest) {
       client.response.headers.set('x-subdomain', subdomain)
     }
 
-    console.log('✓ ACCESS GRANTED: Middleware passed all checks')
-    console.log('=== MIDDLEWARE END (success) ===')
     return client.response
   } catch (error) {
     console.error('Middleware invocation failed:', error)

@@ -3,6 +3,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { LeadsTableClient } from './components/LeadsTableClient'
 import { KeyboardShortcutsHelp } from './components/KeyboardShortcutsHelp'
