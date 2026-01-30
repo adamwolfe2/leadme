@@ -96,6 +96,7 @@ export function Sidebar({ items, workspace, className }: SidebarProps) {
                   src={faviconFallback}
                   alt={workspace.name}
                   className="h-6 w-6 object-contain"
+                  loading="lazy"
                   onError={() => setLogoError(true)}
                 />
               </div>

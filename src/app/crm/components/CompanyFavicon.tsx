@@ -47,6 +47,7 @@ export function CompanyFavicon({
       src={faviconUrl}
       alt={`${companyName || domain} logo`}
       className={cn('rounded object-cover', sizeClass, className)}
+      loading="lazy"
       onError={() => setImageError(true)}
     />
   )
