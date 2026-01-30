@@ -4,9 +4,21 @@ import { Providers } from '@/components/providers'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Cursive - Buyer-Intent Lead Generation',
-  description: 'Get buyer-intent leads from enrichment platforms delivered to your dashboard. Auto-routed by location and industry.',
-  keywords: ['lead generation', 'buyer intent', 'service industry leads', 'HVAC leads', 'roofing leads', 'plumbing leads'],
+  title: 'Cursive - AI Intent Systems That Never Sleep',
+  description:
+    'Cursive identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.',
+  keywords: [
+    'lead generation',
+    'AI intent',
+    'buyer intent',
+    'automated outbound',
+    'lead enrichment',
+    'sales automation',
+    'service industry leads',
+    'HVAC leads',
+    'roofing leads',
+    'plumbing leads',
+  ],
   authors: [{ name: 'Cursive' }],
   robots: {
     index: true,
@@ -16,6 +28,29 @@ export const metadata: Metadata = {
     icon: '/logo.png',
     shortcut: '/logo.png',
     apple: '/logo.png',
+  },
+  openGraph: {
+    type: 'website',
+    url: 'https://meetcursive.com',
+    title: 'Cursive - AI Intent Systems That Never Sleep',
+    description:
+      'Cursive identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.',
+    siteName: 'Cursive',
+    images: [
+      {
+        url: '/cursive-logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Cursive - AI Intent Systems',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Cursive - AI Intent Systems That Never Sleep',
+    description:
+      'Cursive identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.',
+    images: ['/cursive-logo.png'],
   },
 }
 
