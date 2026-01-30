@@ -1,9 +1,12 @@
 'use client'
 
 import { ReactNode } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { animationVariants } from '@/lib/animations/variants'
+import { useAnimationProps } from '@/hooks/use-reduced-motion'
 
 interface RecordDrawerProps {
   isOpen: boolean
@@ -28,24 +31,28 @@ export function RecordDrawer({
   footer,
   className,
 }: RecordDrawerProps) {
-  return (
-    <>
-      {/* Overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm transition-opacity"
-          onClick={onClose}
-        />
-      )}
+  const overlayAnimation = useAnimationProps(animationVariants.fadeInFast)
+  const drawerAnimation = useAnimationProps(animationVariants.drawerSlideRight)
 
-      {/* Drawer */}
-      <aside
-        className={cn(
-          'fixed right-0 top-0 z-50 flex h-full w-96 transform flex-col border-l border-gray-200 bg-white shadow-2xl transition-transform duration-300 ease-in-out',
-          isOpen ? 'translate-x-0' : 'translate-x-full',
-          className
-        )}
-      >
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Overlay */}
+          <motion.div
+            className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
+            onClick={onClose}
+            {...overlayAnimation}
+          />
+
+          {/* Drawer */}
+          <motion.aside
+            className={cn(
+              'fixed right-0 top-0 z-50 flex h-full w-96 flex-col border-l border-gray-200 bg-white shadow-2xl',
+              className
+            )}
+            {...drawerAnimation}
+          >
         {/* Header */}
         <div className="flex items-start justify-between border-b border-gray-200 p-6">
           <div className="flex-1">
@@ -71,7 +78,9 @@ export function RecordDrawer({
         {footer && (
           <div className="border-t border-gray-200 p-4">{footer}</div>
         )}
-      </aside>
-    </>
+          </motion.aside>
+        </>
+      )}
+    </AnimatePresence>
   )
 }
