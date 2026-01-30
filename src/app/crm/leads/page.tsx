@@ -30,15 +30,24 @@ export default async function CRMLeadsPage() {
               <div className="px-3 py-2.5 bg-gradient-cursive text-white rounded-lg font-medium shadow-sm">
                 Leads
               </div>
-              <div className="px-3 py-2.5 text-muted-foreground hover:bg-gradient-cursive-subtle rounded-lg cursor-pointer transition-all">
+              <Link
+                href="/crm/companies"
+                className="block px-3 py-2.5 text-muted-foreground hover:bg-gradient-cursive-subtle rounded-lg transition-all"
+              >
                 Companies
-              </div>
-              <div className="px-3 py-2.5 text-muted-foreground hover:bg-gradient-cursive-subtle rounded-lg cursor-pointer transition-all">
+              </Link>
+              <Link
+                href="/crm/contacts"
+                className="block px-3 py-2.5 text-muted-foreground hover:bg-gradient-cursive-subtle rounded-lg transition-all"
+              >
                 Contacts
-              </div>
-              <div className="px-3 py-2.5 text-muted-foreground hover:bg-gradient-cursive-subtle rounded-lg cursor-pointer transition-all">
+              </Link>
+              <Link
+                href="/crm/deals"
+                className="block px-3 py-2.5 text-muted-foreground hover:bg-gradient-cursive-subtle rounded-lg transition-all"
+              >
                 Deals
-              </div>
+              </Link>
             </nav>
           </div>
         </aside>
