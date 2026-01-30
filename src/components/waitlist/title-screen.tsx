@@ -22,10 +22,10 @@ export function TitleScreen({ onSelectUserType }: TitleScreenProps) {
       {/* Header with Logo */}
       <header className="p-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
+          <Link href="https://meetcursive.com" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
             <Image src="/cursive-logo.png" alt="Cursive" width={32} height={32} className="w-8 h-8" />
             <span className="text-lg font-semibold text-foreground">Cursive</span>
-          </div>
+          </Link>
           <Link
             href="/login"
             className="px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors"
@@ -48,7 +48,9 @@ export function TitleScreen({ onSelectUserType }: TitleScreenProps) {
             variants={staggerItemVariants}
             className="flex justify-center mb-8"
           >
-            <Image src="/cursive-logo.png" alt="Cursive" width={96} height={96} className="w-24 h-24" />
+            <Link href="https://meetcursive.com" className="hover:opacity-80 transition-opacity">
+              <Image src="/cursive-logo.png" alt="Cursive" width={96} height={96} className="w-24 h-24" />
+            </Link>
           </motion.div>
 
           {/* Headline */}
