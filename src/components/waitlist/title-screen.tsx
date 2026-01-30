@@ -69,7 +69,7 @@ export function TitleScreen({ onSelectUserType }: TitleScreenProps) {
             </div>
 
             {/* User Type Cards */}
-            <div className="flex flex-col gap-3 max-w-xl mx-auto">
+            <div className="flex flex-col gap-3 max-w-md mx-auto">
               {/* Business Card */}
               <motion.button
                 onClick={() => onSelectUserType('business')}
