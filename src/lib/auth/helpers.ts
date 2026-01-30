@@ -1,5 +1,6 @@
 // Authentication Helper Functions
 
+import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import type { User } from '@/types'
 
@@ -8,6 +9,27 @@ import type { User } from '@/types'
  * Returns null if not authenticated
  */
 export async function getCurrentUser(): Promise<User | null> {
+  // Check for admin bypass cookie first (for demo purposes)
+  const cookieStore = await cookies()
+  const hasAdminBypass = cookieStore.get('admin_bypass_waitlist')?.value === 'true'
+
+  if (hasAdminBypass) {
+    // Return mock admin user
+    return {
+      id: '00000000-0000-0000-0000-000000000000',
+      auth_user_id: '00000000-0000-0000-0000-000000000000',
+      email: 'adam@meetcursive.com',
+      full_name: 'Admin (Bypass Mode)',
+      role: 'owner',
+      plan: 'pro',
+      workspace_id: '00000000-0000-0000-0000-000000000000',
+      daily_credit_limit: 10000,
+      daily_credits_used: 0,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    } as User
+  }
+
   const supabase = await createClient()
 
   const {
