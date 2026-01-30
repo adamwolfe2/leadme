@@ -312,6 +312,19 @@ export type Events = {
       }
     }
   }
+
+  // Lead Routing Events
+  'lead/routing.retry.trigger': {
+    data: {
+      limit?: number
+    }
+  }
+  'lead/routing.health-check': {
+    data: {
+      workspaceId: string
+    }
+  }
+
   // EmailBison webhook events
   'emailbison/email-sent': {
     data: {

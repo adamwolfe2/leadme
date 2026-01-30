@@ -3,122 +3,324 @@
  *
  * Routes leads to correct workspaces based on industry, geography, and custom rules.
  * Supports multi-tenant white-label platforms with vertical-specific routing.
+ *
+ * SECURITY HARDENING (P0):
+ * - Atomic operations using PostgreSQL locks (prevents race conditions)
+ * - Cross-partner deduplication
+ * - Retry queue for failed routing
+ * - State machine tracking (pending → routing → routed → failed)
+ * - RLS-compliant workspace filtering
  */
 
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
+import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import type { Database } from '@/types/database'
+import crypto from 'crypto'
 
 type Lead = Database['public']['Tables']['leads']['Row']
 type RoutingRule = Database['public']['Tables']['lead_routing_rules']['Row']
 type Workspace = Database['public']['Tables']['workspaces']['Row']
 
 export interface RouteLeadParams {
-  leadData: Partial<Lead>
+  leadId: string
   sourceWorkspaceId: string
   userId: string
+  maxRetries?: number
 }
 
 export interface RoutingResult {
-  destinationWorkspaceId: string
+  success: boolean
+  destinationWorkspaceId: string | null
   matchedRuleId: string | null
   matchedRuleName: string | null
   routingReason: string
   confidence: number
+  isDuplicate?: boolean
+  duplicateLeadId?: string
+  error?: string
 }
 
 export interface BulkRouteResult {
   total: number
   routed: Record<string, number> // workspaceId -> count
   unrouted: number
-  errors: Array<{ index: number; error: string }>
+  failed: number
+  duplicates: number
+  errors: Array<{ index: number; leadId: string; error: string }>
 }
 
 export class LeadRoutingService {
   /**
-   * Route a single lead to the correct workspace
+   * Route a single lead to the correct workspace (ATOMIC)
+   *
+   * Process:
+   * 1. Acquire routing lock (prevents double-processing)
+   * 2. Check for cross-partner duplicates
+   * 3. Fetch and evaluate routing rules
+   * 4. Complete routing or queue for retry on failure
    */
   static async routeLead(params: RouteLeadParams): Promise<RoutingResult> {
-    const supabase = await createClient()
-    const { leadData, sourceWorkspaceId, userId } = params
+    const supabase = createAdminClient() // Use admin client for atomic operations
+    const { leadId, sourceWorkspaceId, userId, maxRetries = 3 } = params
 
-    // Extract routing attributes from lead data
-    const industry = leadData.company_industry
-    const companySize = leadData.company_size
-    const location = leadData.company_location as any
-    const country = location?.country || 'US'
-    const state = location?.state
+    // Generate lock owner ID for this routing operation
+    const lockOwnerId = crypto.randomUUID()
 
-    // Fetch all active routing rules for the source workspace
-    const { data: rules, error } = await supabase
-      .from('lead_routing_rules')
-      .select('*')
-      .eq('workspace_id', sourceWorkspaceId)
-      .eq('is_active', true)
-      .order('priority', { ascending: false })
+    try {
+      // STEP 1: Acquire routing lock (atomic operation)
+      const { data: lockAcquired, error: lockError } = await supabase.rpc(
+        'acquire_routing_lock',
+        {
+          p_lead_id: leadId,
+          p_lock_owner: lockOwnerId,
+        }
+      )
 
-    if (error) {
-      console.error('Error fetching routing rules:', error)
+      if (lockError || !lockAcquired) {
+        return {
+          success: false,
+          destinationWorkspaceId: null,
+          matchedRuleId: null,
+          matchedRuleName: null,
+          routingReason: 'Failed to acquire routing lock (already being processed)',
+          confidence: 0,
+          error: lockError?.message || 'Lock acquisition failed',
+        }
+      }
+
+      // STEP 2: Fetch lead data with RLS compliance
+      const { data: lead, error: leadError } = await supabase
+        .from('leads')
+        .select('*, contact_data')
+        .eq('id', leadId)
+        .eq('workspace_id', sourceWorkspaceId) // RLS: explicit workspace filter
+        .single()
+
+      if (leadError || !lead) {
+        await this.handleRoutingFailure(supabase, leadId, lockOwnerId, 'Lead not found', maxRetries)
+        return {
+          success: false,
+          destinationWorkspaceId: null,
+          matchedRuleId: null,
+          matchedRuleName: null,
+          routingReason: 'Lead not found',
+          confidence: 0,
+          error: leadError?.message || 'Lead not found',
+        }
+      }
+
+      // STEP 3: Check for cross-partner duplicates
+      if (lead.dedupe_hash) {
+        const { data: duplicate } = await supabase.rpc(
+          'check_cross_partner_duplicate',
+          {
+            p_dedupe_hash: lead.dedupe_hash,
+            p_source_workspace_id: sourceWorkspaceId,
+          }
+        )
+
+        if (duplicate && duplicate.length > 0) {
+          const duplicateLead = duplicate[0]
+          safeLog('[Lead Routing] Cross-partner duplicate detected', {
+            lead_id: leadId,
+            duplicate_lead_id: duplicateLead.duplicate_lead_id,
+            duplicate_workspace_id: duplicateLead.duplicate_workspace_id,
+          })
+
+          // Mark as routed (keep in source workspace but log duplicate)
+          await supabase.rpc('complete_routing', {
+            p_lead_id: leadId,
+            p_destination_workspace_id: sourceWorkspaceId,
+            p_matched_rule_id: null,
+            p_lock_owner: lockOwnerId,
+          })
+
+          return {
+            success: true,
+            destinationWorkspaceId: sourceWorkspaceId,
+            matchedRuleId: null,
+            matchedRuleName: null,
+            routingReason: 'Duplicate lead (already exists in partner network)',
+            confidence: 1.0,
+            isDuplicate: true,
+            duplicateLeadId: duplicateLead.duplicate_lead_id,
+          }
+        }
+      }
+
+      // STEP 4: Fetch active routing rules
+      const { data: rules, error: rulesError } = await supabase
+        .from('lead_routing_rules')
+        .select('*')
+        .eq('workspace_id', sourceWorkspaceId) // RLS: explicit workspace filter
+        .eq('is_active', true)
+        .order('priority', { ascending: false })
+
+      if (rulesError) {
+        await this.handleRoutingFailure(supabase, leadId, lockOwnerId, rulesError.message, maxRetries)
+        return {
+          success: false,
+          destinationWorkspaceId: null,
+          matchedRuleId: null,
+          matchedRuleName: null,
+          routingReason: 'Failed to fetch routing rules',
+          confidence: 0,
+          error: rulesError.message,
+        }
+      }
+
+      // STEP 5: Evaluate rules to find match
+      const matchedRule = rules?.find((rule) => this.doesLeadMatchRule(lead, rule))
+
+      let destinationWorkspaceId: string
+      let matchedRuleId: string | null = null
+      let matchedRuleName: string | null = null
+      let routingReason: string
+      let confidence: number
+
+      if (matchedRule && matchedRule.destination_workspace_id) {
+        // Rule matched
+        destinationWorkspaceId = matchedRule.destination_workspace_id
+        matchedRuleId = matchedRule.id
+        matchedRuleName = matchedRule.rule_name
+        routingReason = `Matched rule: ${matchedRule.rule_name}`
+        confidence = matchedRule.priority / 100
+      } else {
+        // No rule match - check workspace filters
+        const filterResult = await this.checkWorkspaceFilters(supabase, lead, sourceWorkspaceId)
+        destinationWorkspaceId = filterResult.match ? sourceWorkspaceId : sourceWorkspaceId
+        routingReason = filterResult.reason
+        confidence = filterResult.confidence
+      }
+
+      // STEP 6: Complete routing (atomic operation)
+      const { data: completed, error: completeError } = await supabase.rpc('complete_routing', {
+        p_lead_id: leadId,
+        p_destination_workspace_id: destinationWorkspaceId,
+        p_matched_rule_id: matchedRuleId,
+        p_lock_owner: lockOwnerId,
+      })
+
+      if (completeError || !completed) {
+        await this.handleRoutingFailure(
+          supabase,
+          leadId,
+          lockOwnerId,
+          completeError?.message || 'Failed to complete routing',
+          maxRetries
+        )
+        return {
+          success: false,
+          destinationWorkspaceId: null,
+          matchedRuleId: null,
+          matchedRuleName: null,
+          routingReason: 'Failed to complete routing transaction',
+          confidence: 0,
+          error: completeError?.message || 'Transaction failed',
+        }
+      }
+
+      safeLog('[Lead Routing] Successfully routed lead', {
+        lead_id: leadId,
+        destination_workspace_id: destinationWorkspaceId,
+        matched_rule_id: matchedRuleId,
+      })
+
       return {
-        destinationWorkspaceId: sourceWorkspaceId,
+        success: true,
+        destinationWorkspaceId,
+        matchedRuleId,
+        matchedRuleName,
+        routingReason,
+        confidence,
+      }
+    } catch (error: any) {
+      safeError('[Lead Routing] Unexpected error:', error)
+      await this.handleRoutingFailure(supabase, leadId, lockOwnerId, error.message, maxRetries)
+      return {
+        success: false,
+        destinationWorkspaceId: null,
         matchedRuleId: null,
         matchedRuleName: null,
-        routingReason: 'No routing rules found, using source workspace',
-        confidence: 0
+        routingReason: 'Unexpected routing error',
+        confidence: 0,
+        error: error.message,
       }
     }
+  }
 
-    // Find first matching rule
-    const matchedRule = rules?.find(rule =>
-      this.doesLeadMatchRule(leadData, rule)
-    )
-
-    if (matchedRule && matchedRule.destination_workspace_id) {
-      return {
-        destinationWorkspaceId: matchedRule.destination_workspace_id,
-        matchedRuleId: matchedRule.id,
-        matchedRuleName: matchedRule.rule_name,
-        routingReason: `Matched rule: ${matchedRule.rule_name}`,
-        confidence: matchedRule.priority / 100
-      }
+  /**
+   * Handle routing failure (queue for retry or mark as failed)
+   */
+  private static async handleRoutingFailure(
+    supabase: ReturnType<typeof createAdminClient>,
+    leadId: string,
+    lockOwnerId: string,
+    errorMessage: string,
+    maxRetries: number
+  ): Promise<void> {
+    try {
+      await supabase.rpc('fail_routing', {
+        p_lead_id: leadId,
+        p_error_message: errorMessage,
+        p_lock_owner: lockOwnerId,
+        p_max_attempts: maxRetries,
+      })
+    } catch (error: any) {
+      safeError('[Lead Routing] Failed to handle routing failure:', error)
     }
+  }
 
-    // No matching rule, check workspace allowed_industries and allowed_regions
+  /**
+   * Check if lead matches workspace filters (fallback when no rules match)
+   */
+  private static async checkWorkspaceFilters(
+    supabase: ReturnType<typeof createAdminClient>,
+    lead: Lead,
+    workspaceId: string
+  ): Promise<{ match: boolean; reason: string; confidence: number }> {
     const { data: workspace } = await supabase
       .from('workspaces')
       .select('allowed_industries, allowed_regions')
-      .eq('id', sourceWorkspaceId)
+      .eq('id', workspaceId)
       .single()
 
-    if (workspace) {
-      const allowedIndustries = workspace.allowed_industries || []
-      const allowedRegions = workspace.allowed_regions || []
-
-      // Check if lead matches workspace filters
-      const industryMatch = allowedIndustries.length === 0 ||
-        (industry && allowedIndustries.includes(industry))
-
-      const regionMatch = allowedRegions.length === 0 ||
-        (country && allowedRegions.includes(country)) ||
-        (state && allowedRegions.includes(state))
-
-      if (industryMatch && regionMatch) {
-        return {
-          destinationWorkspaceId: sourceWorkspaceId,
-          matchedRuleId: null,
-          matchedRuleName: null,
-          routingReason: 'Matches workspace filters',
-          confidence: 0.7
-        }
+    if (!workspace) {
+      return {
+        match: false,
+        reason: 'Workspace not found',
+        confidence: 0,
       }
     }
 
-    // Fallback: keep in source workspace
+    const allowedIndustries = workspace.allowed_industries || []
+    const allowedRegions = workspace.allowed_regions || []
+
+    const industry = lead.company_industry
+    const location = lead.company_location as any
+    const country = location?.country || 'US'
+    const state = location?.state
+
+    const industryMatch =
+      allowedIndustries.length === 0 || (industry && allowedIndustries.includes(industry))
+
+    const regionMatch =
+      allowedRegions.length === 0 ||
+      (country && allowedRegions.includes(country)) ||
+      (state && allowedRegions.includes(state))
+
+    if (industryMatch && regionMatch) {
+      return {
+        match: true,
+        reason: 'Matches workspace filters',
+        confidence: 0.7,
+      }
+    }
+
     return {
-      destinationWorkspaceId: sourceWorkspaceId,
-      matchedRuleId: null,
-      matchedRuleName: null,
-      routingReason: 'No matching rules or filters, kept in source workspace',
-      confidence: 0.5
+      match: false,
+      reason: 'No matching rules or filters, kept in source workspace',
+      confidence: 0.5,
     }
   }
 
@@ -197,38 +399,142 @@ export class LeadRoutingService {
    * Route multiple leads in bulk
    */
   static async routeLeadsBulk(
-    leads: Partial<Lead>[],
+    leadIds: string[],
     sourceWorkspaceId: string,
-    userId: string
+    userId: string,
+    maxRetries: number = 3
   ): Promise<BulkRouteResult> {
     const result: BulkRouteResult = {
-      total: leads.length,
+      total: leadIds.length,
       routed: {},
       unrouted: 0,
-      errors: []
+      failed: 0,
+      duplicates: 0,
+      errors: [],
     }
 
-    for (let i = 0; i < leads.length; i++) {
+    // Process leads sequentially to avoid overwhelming database
+    for (let i = 0; i < leadIds.length; i++) {
       try {
         const routingResult = await this.routeLead({
-          leadData: leads[i],
+          leadId: leadIds[i],
           sourceWorkspaceId,
-          userId
+          userId,
+          maxRetries,
         })
 
-        const destId = routingResult.destinationWorkspaceId
-        result.routed[destId] = (result.routed[destId] || 0) + 1
+        if (routingResult.success) {
+          if (routingResult.isDuplicate) {
+            result.duplicates++
+          }
 
-        if (destId === sourceWorkspaceId && !routingResult.matchedRuleId) {
-          result.unrouted++
+          const destId = routingResult.destinationWorkspaceId!
+          result.routed[destId] = (result.routed[destId] || 0) + 1
+
+          if (destId === sourceWorkspaceId && !routingResult.matchedRuleId) {
+            result.unrouted++
+          }
+        } else {
+          result.failed++
+          result.errors.push({
+            index: i,
+            leadId: leadIds[i],
+            error: routingResult.error || 'Unknown error',
+          })
         }
       } catch (error: any) {
+        result.failed++
         result.errors.push({
           index: i,
-          error: error.message
+          leadId: leadIds[i],
+          error: error.message,
         })
       }
     }
+
+    return result
+  }
+
+  /**
+   * Process leads from retry queue (called by Inngest worker)
+   */
+  static async processRetryQueue(limit: number = 100): Promise<{
+    processed: number
+    succeeded: number
+    failed: number
+    errors: Array<{ leadId: string; error: string }>
+  }> {
+    const supabase = createAdminClient()
+
+    // Fetch retry queue items that are ready for processing
+    const { data: queueItems, error: queueError } = await supabase
+      .from('lead_routing_queue')
+      .select('id, lead_id, workspace_id, attempt_number, max_attempts')
+      .lte('next_retry_at', new Date().toISOString())
+      .is('processed_at', null)
+      .limit(limit)
+
+    if (queueError || !queueItems) {
+      safeError('[Lead Routing] Failed to fetch retry queue:', queueError)
+      return { processed: 0, succeeded: 0, failed: 0, errors: [] }
+    }
+
+    const result = {
+      processed: queueItems.length,
+      succeeded: 0,
+      failed: 0,
+      errors: [] as Array<{ leadId: string; error: string }>,
+    }
+
+    for (const item of queueItems) {
+      try {
+        // Attempt routing with remaining retries
+        const routingResult = await this.routeLead({
+          leadId: item.lead_id,
+          sourceWorkspaceId: item.workspace_id,
+          userId: 'system', // System user for retry queue
+          maxRetries: item.max_attempts,
+        })
+
+        if (routingResult.success) {
+          result.succeeded++
+
+          // Mark queue item as processed
+          await supabase
+            .from('lead_routing_queue')
+            .update({ processed_at: new Date().toISOString() })
+            .eq('id', item.id)
+        } else {
+          result.failed++
+          result.errors.push({
+            leadId: item.lead_id,
+            error: routingResult.error || 'Routing failed',
+          })
+
+          // Update error count in queue
+          await supabase
+            .from('lead_routing_queue')
+            .update({
+              last_error: routingResult.error,
+              error_count: item.attempt_number + 1,
+            })
+            .eq('id', item.id)
+        }
+      } catch (error: any) {
+        result.failed++
+        result.errors.push({
+          leadId: item.lead_id,
+          error: error.message,
+        })
+        safeError('[Lead Routing] Error processing retry queue item:', error)
+      }
+    }
+
+    safeLog('[Lead Routing] Processed retry queue', {
+      total: result.processed,
+      succeeded: result.succeeded,
+      failed: result.failed,
+    })
 
     return result
   }
@@ -388,5 +694,114 @@ export class LeadRoutingService {
     })
 
     return stats
+  }
+
+  /**
+   * Cleanup stale routing locks (called periodically by cron job)
+   */
+  static async cleanupStaleLocks(): Promise<{ released: number }> {
+    const supabase = createAdminClient()
+
+    try {
+      const { data: released, error } = await supabase.rpc('release_stale_routing_locks')
+
+      if (error) {
+        safeError('[Lead Routing] Failed to cleanup stale locks:', error)
+        return { released: 0 }
+      }
+
+      if (released && released > 0) {
+        safeLog('[Lead Routing] Released stale locks', { count: released })
+      }
+
+      return { released: released || 0 }
+    } catch (error: any) {
+      safeError('[Lead Routing] Error cleaning up stale locks:', error)
+      return { released: 0 }
+    }
+  }
+
+  /**
+   * Mark expired leads (called periodically by cron job)
+   */
+  static async markExpiredLeads(): Promise<{ expired: number }> {
+    const supabase = createAdminClient()
+
+    try {
+      const { data: expired, error } = await supabase.rpc('mark_expired_leads')
+
+      if (error) {
+        safeError('[Lead Routing] Failed to mark expired leads:', error)
+        return { expired: 0 }
+      }
+
+      if (expired && expired > 0) {
+        safeLog('[Lead Routing] Marked expired leads', { count: expired })
+      }
+
+      return { expired: expired || 0 }
+    } catch (error: any) {
+      safeError('[Lead Routing] Error marking expired leads:', error)
+      return { expired: 0 }
+    }
+  }
+
+  /**
+   * Get routing health metrics
+   */
+  static async getRoutingHealth(workspaceId: string): Promise<{
+    pendingCount: number
+    routingCount: number
+    failedCount: number
+    retryQueueCount: number
+    staleLockCount: number
+  }> {
+    const supabase = createAdminClient()
+
+    const [pending, routing, failed, retryQueue, staleLocks] = await Promise.all([
+      // Pending leads
+      supabase
+        .from('leads')
+        .select('id', { count: 'exact', head: true })
+        .eq('workspace_id', workspaceId)
+        .eq('routing_status', 'pending'),
+
+      // Currently routing
+      supabase
+        .from('leads')
+        .select('id', { count: 'exact', head: true })
+        .eq('workspace_id', workspaceId)
+        .eq('routing_status', 'routing'),
+
+      // Failed routing
+      supabase
+        .from('leads')
+        .select('id', { count: 'exact', head: true })
+        .eq('workspace_id', workspaceId)
+        .eq('routing_status', 'failed'),
+
+      // Retry queue
+      supabase
+        .from('lead_routing_queue')
+        .select('id', { count: 'exact', head: true })
+        .eq('workspace_id', workspaceId)
+        .is('processed_at', null),
+
+      // Stale locks (routing for > 5 minutes)
+      supabase
+        .from('leads')
+        .select('id', { count: 'exact', head: true })
+        .eq('workspace_id', workspaceId)
+        .eq('routing_status', 'routing')
+        .lt('routing_locked_at', new Date(Date.now() - 5 * 60 * 1000).toISOString()),
+    ])
+
+    return {
+      pendingCount: pending.count || 0,
+      routingCount: routing.count || 0,
+      failedCount: failed.count || 0,
+      retryQueueCount: retryQueue.count || 0,
+      staleLockCount: staleLocks.count || 0,
+    }
   }
 }

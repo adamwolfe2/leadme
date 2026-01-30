@@ -30,3 +30,12 @@ export {
 
 // Webhook retry processor
 export { webhookRetryProcessor } from './webhook-retry-processor'
+
+// Lead routing retry and cleanup functions
+export {
+  processLeadRoutingRetryQueue,
+  triggerLeadRoutingRetry,
+  cleanupStaleRoutingLocks,
+  markExpiredLeads,
+  leadRoutingHealthCheck,
+} from './lead-routing-retry'
