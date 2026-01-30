@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     // Get payout details
     const { data: payout, error: payoutError } = await adminClient
       .from('partner_payouts')
-      .select(\`
+      .select(`
         *,
         partner:partners(
           id,
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
           pending_balance,
           total_paid_out
         )
-      \`)
+      `)
       .eq('id', payout_id)
       .single()
 
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
 
     if (payout.status !== 'pending') {
       return NextResponse.json(
-        { error: \`Payout already \${payout.status}\` },
+        { error: `Payout already ${payout.status}` },
         { status: 400 }
       )
     }
@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
         amount: Math.round(payout.amount * 100), // Convert to cents
         currency: 'usd',
         destination: payout.partner.stripe_account_id,
-        description: \`Commission payout for \${payout.lead_count} leads\`,
+        description: `Commission payout for ${payout.lead_count} leads`,
         metadata: {
           payout_id: payout.id,
           partner_id: payout.partner.id,
@@ -132,13 +132,13 @@ export async function POST(req: NextRequest) {
         })
         .eq('id', payout.partner.id)
 
-      console.log(\`✅ Payout approved and completed: \${payout_id}, Stripe transfer: \${transfer.id}\`)
+      console.log(`✅ Payout approved and completed: ${payout_id}, Stripe transfer: ${transfer.id}`)
 
       return NextResponse.json({
         success: true,
         payout_id,
         transfer_id: transfer.id,
-        message: \`Payout of $\${payout.amount.toFixed(2)} approved and transferred to \${payout.partner.name}\`,
+        message: `Payout of $${payout.amount.toFixed(2)} approved and transferred to ${payout.partner.name}`,
       })
     } catch (stripeError: any) {
       console.error('[Admin Payouts] Stripe transfer failed:', stripeError)
@@ -154,7 +154,7 @@ export async function POST(req: NextRequest) {
         .eq('id', payout_id)
 
       return NextResponse.json(
-        { error: \`Stripe transfer failed: \${stripeError.message}\` },
+        { error: `Stripe transfer failed: ${stripeError.message}` },
         { status: 500 }
       )
     }
