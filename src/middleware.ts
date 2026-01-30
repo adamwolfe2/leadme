@@ -113,12 +113,17 @@ export async function middleware(req: NextRequest) {
     // Auth routes (login, signup) - allow access even if authenticated
     // Users may want to re-login or access these pages directly
 
-    // ADMIN BYPASS: If user has admin bypass cookie, they can access everything
+    // ADMIN BYPASS: If user has admin bypass cookie OR admin email, full access
     // This allows admin to navigate the platform even if session has issues
-    if (hasAdminBypass || isAdminEmail) {
-      console.log('Middleware: Admin bypass active for', pathname)
-      // Admin can access everything - skip all auth checks
-      if (isWaitlistDomain && isAdminEmail && !hasAdminBypass) {
+    if (hasAdminBypass) {
+      console.log('Middleware: Admin bypass cookie active for', pathname)
+      return client.response
+    }
+
+    if (isAdminEmail) {
+      console.log('Middleware: Admin email bypass active for', pathname, '- User:', user?.email)
+      // Set the bypass cookie for future requests
+      if (isWaitlistDomain && !hasAdminBypass) {
         client.response.cookies.set('admin_bypass_waitlist', 'true', {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
