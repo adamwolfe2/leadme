@@ -19,6 +19,10 @@ interface Lead {
   workspace_id: string
   created_at: string
   workspace?: { name: string }
+  verification_status_admin?: string
+  rejection_reason?: string
+  rejection_code?: string
+  partner_id?: string
 }
 
 interface UploadResult {
@@ -31,9 +35,13 @@ interface UploadResult {
 }
 
 export default function AdminLeadsPage() {
-  const [activeTab, setActiveTab] = useState<'view' | 'upload'>('view')
+  const [activeTab, setActiveTab] = useState<'view' | 'upload' | 'verify'>('view')
   const [uploadResult, setUploadResult] = useState<UploadResult | null>(null)
   const [uploading, setUploading] = useState(false)
+  const [rejectDialogOpen, setRejectDialogOpen] = useState<string | null>(null)
+  const [rejectReason, setRejectReason] = useState('')
+  const [rejectCode, setRejectCode] = useState<string>('invalid_data')
+  const [actionLoading, setActionLoading] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
 
@@ -54,6 +62,82 @@ export default function AdminLeadsPage() {
       return data as Lead[]
     },
   })
+
+  // Fetch verification queue
+  const { data: verificationQueue, isLoading: queueLoading, refetch: refetchQueue } = useQuery({
+    queryKey: ['admin', 'verification-queue'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('leads')
+        .select(`
+          *,
+          workspace:workspaces(name)
+        `)
+        .in('verification_status_admin', ['pending', 'flagged'])
+        .order('created_at', { ascending: false })
+        .limit(100)
+
+      if (error) throw error
+      return data as Lead[]
+    },
+  })
+
+  // Handle approve lead
+  const handleApprove = async (leadId: string) => {
+    setActionLoading(leadId)
+    try {
+      const response = await fetch(`/api/admin/leads/${leadId}/approve`, {
+        method: 'POST',
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to approve lead')
+      }
+
+      await refetchQueue()
+      await refetch()
+    } catch (error: any) {
+      alert(error.message || 'Failed to approve lead')
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
+  // Handle reject lead
+  const handleReject = async (leadId: string) => {
+    if (!rejectReason.trim()) {
+      alert('Please provide a rejection reason')
+      return
+    }
+
+    setActionLoading(leadId)
+    try {
+      const response = await fetch(`/api/admin/leads/${leadId}/reject`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reason: rejectReason,
+          reasonCode: rejectCode,
+        }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to reject lead')
+      }
+
+      setRejectDialogOpen(null)
+      setRejectReason('')
+      setRejectCode('invalid_data')
+      await refetchQueue()
+      await refetch()
+    } catch (error: any) {
+      alert(error.message || 'Failed to reject lead')
+    } finally {
+      setActionLoading(null)
+    }
+  }
 
   // Handle CSV upload
   const handleFileUpload = async (file: File) => {
@@ -127,6 +211,21 @@ Jane,Smith,jane@example.com,555-987-6543,456 Oak Ave,Dallas,TX,75201,roofing,loo
             } whitespace-nowrap border-b-2 py-4 px-1 text-[13px] font-medium transition-colors`}
           >
             All Leads
+          </button>
+          <button
+            onClick={() => setActiveTab('verify')}
+            className={`${
+              activeTab === 'verify'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-zinc-600 hover:border-zinc-300 hover:text-zinc-900'
+            } whitespace-nowrap border-b-2 py-4 px-1 text-[13px] font-medium transition-colors relative`}
+          >
+            Verification Queue
+            {verificationQueue && verificationQueue.length > 0 && (
+              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-100 text-amber-800">
+                {verificationQueue.length}
+              </span>
+            )}
           </button>
           <button
             onClick={() => setActiveTab('upload')}
@@ -212,6 +311,180 @@ Jane,Smith,jane@example.com,555-987-6543,456 Oak Ave,Dallas,TX,75201,roofing,loo
               </table>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Verification Queue Tab */}
+      {activeTab === 'verify' && (
+        <div className="bg-white border border-zinc-200 rounded-lg shadow-sm">
+          <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
+            <div>
+              <h2 className="text-[15px] font-medium text-zinc-900">Leads Pending Verification</h2>
+              <p className="text-[12px] text-zinc-500 mt-0.5">Review and approve or reject leads from partners</p>
+            </div>
+            <span className="text-[13px] text-zinc-500">{verificationQueue?.length || 0} leads</span>
+          </div>
+
+          {queueLoading ? (
+            <div className="p-8 text-center text-zinc-500">Loading...</div>
+          ) : verificationQueue && verificationQueue.length === 0 ? (
+            <div className="p-12 text-center">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 mb-3">
+                <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <p className="text-[14px] font-medium text-zinc-900">All caught up!</p>
+              <p className="text-[13px] text-zinc-500 mt-1">No leads pending verification</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-zinc-50 border-b border-zinc-100">
+                  <tr>
+                    <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Name</th>
+                    <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Contact</th>
+                    <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Industry</th>
+                    <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Location</th>
+                    <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Score</th>
+                    <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Status</th>
+                    <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {verificationQueue?.map((lead) => (
+                    <tr key={lead.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
+                      <td className="px-5 py-3">
+                        <div className="text-[13px] font-medium text-zinc-900">
+                          {lead.first_name} {lead.last_name}
+                        </div>
+                        <div className="text-[12px] text-zinc-500">{lead.company_name}</div>
+                      </td>
+                      <td className="px-5 py-3">
+                        <div className="text-[13px] text-zinc-900">{lead.email}</div>
+                        <div className="text-[12px] text-zinc-500">{lead.phone}</div>
+                      </td>
+                      <td className="px-5 py-3 text-[13px] text-zinc-600">
+                        {lead.company_industry}
+                      </td>
+                      <td className="px-5 py-3 text-[13px] text-zinc-600">
+                        {lead.company_location?.city && `${lead.company_location.city}, `}
+                        {lead.company_location?.state}
+                      </td>
+                      <td className="px-5 py-3">
+                        <span className={`inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md ${
+                          lead.lead_score >= 80
+                            ? 'bg-blue-100 text-blue-700'
+                            : lead.lead_score >= 50
+                            ? 'bg-amber-100 text-amber-700'
+                            : 'bg-zinc-100 text-zinc-600'
+                        }`}>
+                          {lead.lead_score}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3">
+                        <span className={`inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md ${
+                          lead.verification_status_admin === 'flagged'
+                            ? 'bg-red-100 text-red-700'
+                            : 'bg-amber-100 text-amber-700'
+                        }`}>
+                          {lead.verification_status_admin === 'flagged' ? 'Flagged' : 'Pending'}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleApprove(lead.id)}
+                            disabled={actionLoading === lead.id}
+                            className="h-8 px-3 text-[12px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {actionLoading === lead.id ? 'Processing...' : 'Approve'}
+                          </button>
+                          <button
+                            onClick={() => setRejectDialogOpen(lead.id)}
+                            disabled={actionLoading === lead.id}
+                            className="h-8 px-3 text-[12px] font-medium border border-red-300 text-red-700 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Reject Dialog */}
+      {rejectDialogOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="px-6 py-4 border-b border-zinc-200">
+              <h3 className="text-[15px] font-medium text-zinc-900">Reject Lead</h3>
+              <p className="text-[13px] text-zinc-500 mt-1">Provide a reason for rejecting this lead</p>
+            </div>
+
+            <div className="px-6 py-4 space-y-4">
+              <div>
+                <label className="block text-[13px] font-medium text-zinc-700 mb-2">
+                  Reason Code
+                </label>
+                <select
+                  value={rejectCode}
+                  onChange={(e) => setRejectCode(e.target.value)}
+                  className="w-full h-9 px-3 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="invalid_data">Invalid Data</option>
+                  <option value="duplicate">Duplicate Lead</option>
+                  <option value="low_quality">Low Quality</option>
+                  <option value="incorrect_format">Incorrect Format</option>
+                  <option value="missing_information">Missing Information</option>
+                  <option value="outside_coverage">Outside Coverage Area</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[13px] font-medium text-zinc-700 mb-2">
+                  Detailed Reason
+                </label>
+                <textarea
+                  value={rejectReason}
+                  onChange={(e) => setRejectReason(e.target.value)}
+                  placeholder="Provide a detailed explanation for the partner..."
+                  rows={4}
+                  className="w-full px-3 py-2 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                />
+                <p className="text-[12px] text-zinc-500 mt-1">
+                  This will be sent to the partner via email
+                </p>
+              </div>
+            </div>
+
+            <div className="px-6 py-4 border-t border-zinc-200 flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setRejectDialogOpen(null)
+                  setRejectReason('')
+                  setRejectCode('invalid_data')
+                }}
+                disabled={actionLoading !== null}
+                className="h-9 px-4 text-[13px] font-medium border border-zinc-300 text-zinc-700 hover:bg-zinc-50 rounded-lg transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleReject(rejectDialogOpen)}
+                disabled={!rejectReason.trim() || actionLoading !== null}
+                className="h-9 px-4 text-[13px] font-medium bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {actionLoading === rejectDialogOpen ? 'Rejecting...' : 'Confirm Rejection'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

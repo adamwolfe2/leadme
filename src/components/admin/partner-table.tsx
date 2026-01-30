@@ -21,7 +21,8 @@ import {
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { format } from 'date-fns'
-import { Check, X, ExternalLink, Loader2 } from 'lucide-react'
+import { Check, X, ExternalLink, Loader2, Eye } from 'lucide-react'
+import Link from 'next/link'
 
 interface Partner {
   id: string
@@ -99,7 +100,7 @@ export function PartnerTable({
           {showStats && <TableHead>Stats</TableHead>}
           {showReason && <TableHead>Reason</TableHead>}
           <TableHead>Applied</TableHead>
-          {showApprovalActions && <TableHead>Actions</TableHead>}
+          <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -145,55 +146,62 @@ export function PartnerTable({
               </TableCell>
             )}
             <TableCell>{format(new Date(partner.created_at), 'MMM d, yyyy')}</TableCell>
-            {showApprovalActions && (
-              <TableCell>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    onClick={() => handleApprove(partner.id)}
-                    disabled={loading === partner.id}
-                  >
-                    {loading === partner.id ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <>
-                        <Check className="mr-1 h-4 w-4" /> Approve
-                      </>
-                    )}
-                  </Button>
+            <TableCell>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" asChild>
+                  <Link href={`/admin/partners/${partner.id}`}>
+                    <Eye className="mr-1 h-4 w-4" /> View
+                  </Link>
+                </Button>
+                {showApprovalActions && (
+                  <>
+                    <Button
+                      size="sm"
+                      onClick={() => handleApprove(partner.id)}
+                      disabled={loading === partner.id}
+                    >
+                      {loading === partner.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <>
+                          <Check className="mr-1 h-4 w-4" /> Approve
+                        </>
+                      )}
+                    </Button>
 
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button size="sm" variant="destructive">
-                        <X className="mr-1 h-4 w-4" /> Reject
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Reject {partner.company_name}</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <Textarea
-                          placeholder="Reason for rejection..."
-                          value={rejectReason}
-                          onChange={(e) => setRejectReason(e.target.value)}
-                        />
-                        <Button
-                          variant="destructive"
-                          onClick={() => handleReject(partner.id)}
-                          disabled={!rejectReason.trim() || loading === partner.id}
-                        >
-                          {loading === partner.id ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          ) : null}
-                          Confirm Rejection
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button size="sm" variant="destructive">
+                          <X className="mr-1 h-4 w-4" /> Reject
                         </Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              </TableCell>
-            )}
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Reject {partner.company_name}</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <Textarea
+                            placeholder="Reason for rejection..."
+                            value={rejectReason}
+                            onChange={(e) => setRejectReason(e.target.value)}
+                          />
+                          <Button
+                            variant="destructive"
+                            onClick={() => handleReject(partner.id)}
+                            disabled={!rejectReason.trim() || loading === partner.id}
+                          >
+                            {loading === partner.id ? (
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : null}
+                            Confirm Rejection
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </>
+                )}
+              </div>
+            </TableCell>
           </TableRow>
         ))}
         {partners.length === 0 && (
