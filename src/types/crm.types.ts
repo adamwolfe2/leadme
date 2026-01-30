@@ -1,82 +1,181 @@
-// CRM Types
-// Defines types for the CRM module
+/**
+ * CRM TypeScript Types
+ * For companies, contacts, deals, and activities
+ */
 
-export type LeadStatus = 'new' | 'contacted' | 'qualified' | 'won' | 'lost'
+// ============================================================================
+// BASE TYPES
+// ============================================================================
 
-export interface LeadFilters {
-  search?: string
-  status?: LeadStatus[]
-  industries?: string[]
-  states?: string[]
-  companySizes?: string[]
-  intentScoreMin?: number
-  intentScoreMax?: number
-  freshnessMin?: number
-  hasPhone?: boolean
-  hasVerifiedEmail?: boolean
-  assignedUserId?: string
-  tags?: string[]
-  page: number
-  pageSize: number
-  orderBy?: string
-  orderDirection?: 'asc' | 'desc'
-}
-
-export interface LeadTableRow {
+export interface Company {
   id: string
-  status: LeadStatus
-  first_name: string | null
-  last_name: string | null
-  email: string | null
-  phone: string | null
-  job_title: string | null
-  company_name: string | null
-  company_domain: string | null
-  company_industry: string | null
-  company_size: string | null
-  city: string | null
-  state: string | null
-  country: string | null
-  linkedin_url: string | null
-  intent_score_calculated: number | null
-  freshness_score: number | null
-  marketplace_price: number | null
-  verification_status: string | null
-  assigned_user_id: string | null
-  assigned_user?: {
-    id: string
-    full_name: string | null
-    email: string | null
-  } | null
-  tags: string[]
-  notes: string | null
+  workspace_id: string
+  name: string
+  domain?: string
+  industry?: string
+  employees_range?: string
+  revenue_range?: string
+  website?: string
+  phone?: string
+  email?: string
+  address_line1?: string
+  address_line2?: string
+  city?: string
+  state?: string
+  zip_code?: string
+  country?: string
+  linkedin_url?: string
+  twitter_url?: string
+  status: string
+  owner_user_id?: string
+  enriched_at?: string
+  enrichment_data?: Record<string, any>
   created_at: string
   updated_at: string
-  last_contacted_at: string | null
-  next_follow_up_at: string | null
+  created_by_user_id?: string
+  updated_by_user_id?: string
 }
 
-export interface BulkAction {
-  type: 'update_status' | 'assign' | 'add_tags' | 'remove_tags' | 'delete'
-  data: Record<string, unknown>
+export interface Contact {
+  id: string
+  workspace_id: string
+  company_id?: string
+  first_name?: string
+  last_name?: string
+  full_name?: string
+  title?: string
+  email?: string
+  phone?: string
+  mobile?: string
+  linkedin_url?: string
+  twitter_url?: string
+  status: string
+  owner_user_id?: string
+  seniority_level?: string
+  created_at: string
+  updated_at: string
+  created_by_user_id?: string
+  updated_by_user_id?: string
 }
 
-export interface ColumnVisibility {
-  [key: string]: boolean
+export interface Deal {
+  id: string
+  workspace_id: string
+  company_id?: string
+  contact_id?: string
+  name: string
+  description?: string
+  value: number
+  currency: string
+  stage: string
+  probability: number
+  close_date?: string
+  closed_at?: string
+  owner_user_id?: string
+  created_at: string
+  updated_at: string
+  created_by_user_id?: string
+  updated_by_user_id?: string
 }
 
-export type TableDensity = 'comfortable' | 'compact'
-
-export interface LeadUpdatePayload {
-  status?: LeadStatus
-  assigned_user_id?: string | null
-  tags?: string[]
-  notes?: string
-  last_contacted_at?: string
-  next_follow_up_at?: string
+export interface Activity {
+  id: string
+  workspace_id: string
+  activity_type: string
+  company_id?: string
+  contact_id?: string
+  deal_id?: string
+  subject?: string
+  body?: string
+  due_date?: string
+  completed_at?: string
+  owner_user_id?: string
+  created_at: string
+  updated_at: string
+  created_by_user_id?: string
 }
 
-export interface BulkUpdatePayload {
-  ids: string[]
-  updates: LeadUpdatePayload
+// ============================================================================
+// INSERT TYPES
+// ============================================================================
+
+export type CompanyInsert = Omit<Company, 'id' | 'created_at' | 'updated_at' | 'full_name'>
+export type ContactInsert = Omit<Contact, 'id' | 'created_at' | 'updated_at' | 'full_name'>
+export type DealInsert = Omit<Deal, 'id' | 'created_at' | 'updated_at'>
+export type ActivityInsert = Omit<Activity, 'id' | 'created_at' | 'updated_at'>
+
+// ============================================================================
+// UPDATE TYPES
+// ============================================================================
+
+export type CompanyUpdate = Partial<CompanyInsert>
+export type ContactUpdate = Partial<ContactInsert>
+export type DealUpdate = Partial<DealInsert>
+export type ActivityUpdate = Partial<ActivityInsert>
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+export type CompanyStatus = 'Active' | 'Prospect' | 'Inactive' | 'Lost'
+export type ContactStatus = 'Active' | 'Prospect' | 'Inactive' | 'Lost'
+export type DealStage = 'Qualified' | 'Proposal' | 'Negotiation' | 'Closed Won' | 'Closed Lost'
+export type ActivityType = 'call' | 'email' | 'meeting' | 'note' | 'task'
+export type SeniorityLevel = 'C-Level' | 'VP' | 'Director' | 'Manager' | 'Individual Contributor'
+
+// ============================================================================
+// FILTER & SORT TYPES
+// ============================================================================
+
+export interface CompanyFilters {
+  status?: CompanyStatus[]
+  industry?: string[]
+  owner_user_id?: string[]
+  search?: string
+}
+
+export interface ContactFilters {
+  status?: ContactStatus[]
+  company_id?: string[]
+  seniority_level?: SeniorityLevel[]
+  owner_user_id?: string[]
+  search?: string
+}
+
+export interface DealFilters {
+  stage?: DealStage[]
+  company_id?: string[]
+  contact_id?: string[]
+  owner_user_id?: string[]
+  probability_min?: number
+  probability_max?: number
+  value_min?: number
+  value_max?: number
+  search?: string
+}
+
+export type SortDirection = 'asc' | 'desc'
+
+export interface SortConfig {
+  field: string
+  direction: SortDirection
+}
+
+// ============================================================================
+// PAGINATION
+// ============================================================================
+
+export interface PaginationParams {
+  page: number
+  pageSize: number
+}
+
+export interface PaginatedResult<T> {
+  data: T[]
+  pagination: {
+    page: number
+    pageSize: number
+    totalCount: number
+    totalPages: number
+  }
 }
