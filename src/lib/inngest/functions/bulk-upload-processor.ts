@@ -81,27 +81,18 @@ export const processBulkUpload = inngest.createFunction(
               delivery_status: 'pending'
             }
 
-            // Route lead
-            const routingResult = await LeadRoutingService.routeLead({
-              leadData: leadData as any,
-              sourceWorkspaceId: workspaceId,
-              userId
-            })
-
-            leadData.workspace_id = routingResult.destinationWorkspaceId
-
-            // Generate fingerprint
+            // Generate fingerprint for deduplication
             const fingerprint = crypto
               .createHash('md5')
               .update(`${row.email}:${row.company_domain || row.company_name}`)
               .digest('hex')
 
-            // Check duplicate
+            // Check duplicate in source workspace
             const { data: existing } = await supabase
               .from('leads')
               .select('id')
               .eq('fingerprint', fingerprint)
-              .eq('workspace_id', leadData.workspace_id)
+              .eq('workspace_id', workspaceId)
               .single()
 
             if (existing) {
@@ -110,30 +101,44 @@ export const processBulkUpload = inngest.createFunction(
               continue
             }
 
-            // Insert lead
-            const { error: insertError } = await supabase
+            // Insert lead in pending routing status
+            const { data: insertedLead, error: insertError } = await supabase
               .from('leads')
               .insert({
                 ...leadData,
+                workspace_id: workspaceId, // Initial workspace (will be updated by routing)
                 fingerprint,
-                routing_rule_id: routingResult.matchedRuleId,
-                routing_metadata: {
-                  matched_rules: routingResult.matchedRuleId ? [routingResult.matchedRuleId] : [],
-                  routing_timestamp: new Date().toISOString(),
-                  original_workspace_id: workspaceId,
-                  routing_reason: routingResult.routingReason
-                }
+                routing_status: 'pending', // Pending routing
               })
+              .select('id')
+              .single()
 
-            if (insertError) {
+            if (insertError || !insertedLead) {
               results.failed++
-              results.errors.push({ row: i + batch.indexOf(row), error: insertError.message })
+              results.errors.push({ row: i + batch.indexOf(row), error: insertError?.message || 'Failed to insert lead' })
               continue
             }
 
-            results.successful++
-            const destId = routingResult.destinationWorkspaceId
-            results.routingSummary[destId] = (results.routingSummary[destId] || 0) + 1
+            // Route lead atomically (updates workspace_id and routing_status)
+            const routingResult = await LeadRoutingService.routeLead({
+              leadId: insertedLead.id,
+              sourceWorkspaceId: workspaceId,
+              userId,
+              maxRetries: 3
+            })
+
+            if (routingResult.success) {
+              results.successful++
+              const destId = routingResult.destinationWorkspaceId!
+              results.routingSummary[destId] = (results.routingSummary[destId] || 0) + 1
+            } else {
+              // Routing failed - lead is queued for retry
+              results.failed++
+              results.errors.push({
+                row: i + batch.indexOf(row),
+                error: `Routing failed: ${routingResult.error}`
+              })
+            }
 
           } catch (error: any) {
             results.failed++
@@ -239,30 +244,19 @@ export const enrichLeadFromDataShopper = inngest.createFunction(
       }
     })
 
-    // Route lead
-    const routingResult = await step.run('route-lead', async () => {
-      return await LeadRoutingService.routeLead({
-        leadData: leadData as any,
-        sourceWorkspaceId: workspaceId,
-        userId: workspaceId
-      })
-    })
-
-    leadData.workspace_id = routingResult.destinationWorkspaceId
-
-    // Generate fingerprint
+    // Generate fingerprint for deduplication
     const fingerprint = crypto
       .createHash('md5')
       .update(`${lead.email}:${lead.company_domain}`)
       .digest('hex')
 
-    // Check duplicate
+    // Check duplicate in source workspace
     const existing = await step.run('check-duplicate', async () => {
       const { data } = await supabase
         .from('leads')
         .select('id')
         .eq('fingerprint', fingerprint)
-        .eq('workspace_id', leadData.workspace_id)
+        .eq('workspace_id', workspaceId)
         .single()
       return data
     })
@@ -272,20 +266,15 @@ export const enrichLeadFromDataShopper = inngest.createFunction(
       return { skipped: true, reason: 'duplicate' }
     }
 
-    // Insert lead
+    // Insert lead in pending routing status
     const savedLead = await step.run('save-lead', async () => {
       const { data, error } = await supabase
         .from('leads')
         .insert({
           ...leadData,
+          workspace_id: workspaceId, // Initial workspace
           fingerprint,
-          routing_rule_id: routingResult.matchedRuleId,
-          routing_metadata: {
-            matched_rules: routingResult.matchedRuleId ? [routingResult.matchedRuleId] : [],
-            routing_timestamp: new Date().toISOString(),
-            original_workspace_id: workspaceId,
-            routing_reason: routingResult.routingReason
-          }
+          routing_status: 'pending', // Pending routing
         })
         .select()
         .single()
@@ -294,7 +283,26 @@ export const enrichLeadFromDataShopper = inngest.createFunction(
       return data
     })
 
-    return { leadId: savedLead.id }
+    // Route lead atomically
+    const routingResult = await step.run('route-lead', async () => {
+      return await LeadRoutingService.routeLead({
+        leadId: savedLead.id,
+        sourceWorkspaceId: workspaceId,
+        userId: workspaceId,
+        maxRetries: 3
+      })
+    })
+
+    if (!routingResult.success) {
+      console.error('[Bulk Upload] Lead routing failed:', routingResult.error)
+      // Lead is queued for retry - continue processing
+    }
+
+    return {
+      leadId: savedLead.id,
+      routed: routingResult.success,
+      destinationWorkspaceId: routingResult.destinationWorkspaceId
+    }
   }
 )
 
