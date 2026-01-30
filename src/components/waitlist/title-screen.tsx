@@ -48,13 +48,15 @@ export function TitleScreen({ onSelectUserType }: TitleScreenProps) {
             variants={staggerItemVariants}
             className="text-4xl md:text-5xl font-bold text-foreground text-center mb-4"
           >
-            AI Intent Systems That Never Sleep.
+            AI Intent Systems
+            <br />
+            That Never Sleep.
           </motion.h1>
 
           {/* Subhead */}
           <motion.p
             variants={staggerItemVariants}
-            className="text-lg text-muted-foreground text-center mb-12 max-w-xl mx-auto leading-relaxed"
+            className="text-base text-muted-foreground text-center mb-12 max-w-lg mx-auto leading-relaxed"
           >
             Cursive identifies real people actively searching for your service, enriches them with verified contact
             data, and activates them through automated outbound.
@@ -67,7 +69,7 @@ export function TitleScreen({ onSelectUserType }: TitleScreenProps) {
             </div>
 
             {/* User Type Cards */}
-            <div className="grid gap-4 md:gap-6">
+            <div className="flex flex-col gap-3 max-w-xl mx-auto">
               {/* Business Card */}
               <motion.button
                 onClick={() => onSelectUserType('business')}
@@ -75,14 +77,14 @@ export function TitleScreen({ onSelectUserType }: TitleScreenProps) {
                 initial="initial"
                 whileHover="hover"
                 whileTap="tap"
-                className="group relative bg-card border-2 border-border rounded-xl p-6 md:p-8 text-left transition-all hover:border-primary hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                className="group relative bg-card border-2 border-border rounded-xl px-5 py-4 text-left transition-all hover:border-primary hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
               >
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                    <Building2 className="h-6 w-6 text-primary" />
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                    <Building2 className="h-5 w-5 text-primary" />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-foreground mb-1">Request Access as a Business</h3>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base font-semibold text-foreground mb-0.5">Request Access as a Business</h3>
                     <p className="text-sm text-muted-foreground">Get qualified leads delivered daily</p>
                   </div>
                 </div>
@@ -95,14 +97,14 @@ export function TitleScreen({ onSelectUserType }: TitleScreenProps) {
                 initial="initial"
                 whileHover="hover"
                 whileTap="tap"
-                className="group relative bg-card border-2 border-border rounded-xl p-6 md:p-8 text-left transition-all hover:border-primary hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                className="group relative bg-card border-2 border-border rounded-xl px-5 py-4 text-left transition-all hover:border-primary hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
               >
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                    <Users className="h-6 w-6 text-primary" />
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                    <Users className="h-5 w-5 text-primary" />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-foreground mb-1">Request Access as a Partner</h3>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base font-semibold text-foreground mb-0.5">Request Access as a Partner</h3>
                     <p className="text-sm text-muted-foreground">Earn revenue from your lead database</p>
                   </div>
                 </div>
