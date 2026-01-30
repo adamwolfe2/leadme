@@ -103,6 +103,23 @@ export async function middleware(req: NextRequest) {
     // Auth routes (login, signup) - allow access even if authenticated
     // Users may want to re-login or access these pages directly
 
+    // ADMIN BYPASS: If user has admin bypass cookie, they can access everything
+    // This allows admin to navigate the platform even if session has issues
+    if (hasAdminBypass || isAdminEmail) {
+      console.log('Middleware: Admin bypass active for', pathname)
+      // Admin can access everything - skip all auth checks
+      if (isWaitlistDomain && isAdminEmail && !hasAdminBypass) {
+        client.response.cookies.set('admin_bypass_waitlist', 'true', {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          maxAge: 60 * 60 * 24 * 365, // 1 year
+          path: '/',
+        })
+      }
+      return client.response
+    }
+
     // Protected routes require authentication
     if (!isPublicRoute && !user) {
       const redirectUrl = new URL('/login', req.url)
@@ -128,17 +145,6 @@ export async function middleware(req: NextRequest) {
     // if (user && !isPublicRoute && !pathname.startsWith('/onboarding') && !isAdminEmail && !isPartnerRoute) {
     //   ... workspace validation code removed for admin ...
     // }
-
-    // If user is admin on waitlist domain, set the bypass cookie
-    if (isWaitlistDomain && isAdminEmail && !hasAdminBypass) {
-      client.response.cookies.set('admin_bypass_waitlist', 'true', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 365, // 1 year
-        path: '/',
-      })
-    }
 
     // Add custom headers for subdomain information
     if (subdomain) {
