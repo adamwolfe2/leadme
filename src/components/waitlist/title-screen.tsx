@@ -48,7 +48,7 @@ export function TitleScreen({ onSelectUserType }: TitleScreenProps) {
             variants={staggerItemVariants}
             className="flex justify-center mb-8"
           >
-            <Image src="/cursive-logo.png" alt="Cursive" width={64} height={64} className="w-16 h-16" />
+            <Image src="/cursive-logo.png" alt="Cursive" width={96} height={96} className="w-24 h-24" />
           </motion.div>
 
           {/* Headline */}
@@ -77,7 +77,7 @@ export function TitleScreen({ onSelectUserType }: TitleScreenProps) {
             </div>
 
             {/* User Type Cards */}
-            <div className="flex flex-col gap-3 max-w-lg mx-auto">
+            <div className="flex flex-col gap-3 items-center">
               {/* Business Card */}
               <motion.button
                 onClick={() => onSelectUserType('business')}
@@ -91,7 +91,7 @@ export function TitleScreen({ onSelectUserType }: TitleScreenProps) {
                   <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                     <Building2 className="h-5 w-5 text-primary" />
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div>
                     <h3 className="text-base font-semibold text-foreground mb-0.5">Request Access as a Business</h3>
                     <p className="text-sm text-muted-foreground">Get qualified leads delivered daily</p>
                   </div>
@@ -111,7 +111,7 @@ export function TitleScreen({ onSelectUserType }: TitleScreenProps) {
                   <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                     <Users className="h-5 w-5 text-primary" />
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div>
                     <h3 className="text-base font-semibold text-foreground mb-0.5">Request Access as a Partner</h3>
                     <p className="text-sm text-muted-foreground">Earn revenue from your lead database</p>
                   </div>
