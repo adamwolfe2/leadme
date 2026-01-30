@@ -449,10 +449,20 @@ export class CompanyEnrichmentService {
         onboarding_completed_at: new Date().toISOString(),
       }
 
-      // Set logo if we found one
-      if (result.data.logoUrl) {
-        updateData.logo_url = result.data.logoUrl
+      // CRITICAL: Always set branding.logo_url (use enriched logo or fallback to favicon)
+      // This ensures every workspace has branding displayed on the dashboard
+      const logoUrl = result.data.logoUrl || result.data.faviconUrl
+      if (logoUrl) {
+        updateData.branding = {
+          logo_url: logoUrl,
+          primary_color: result.data.primaryColor || '#3b82f6',
+          secondary_color: '#1e40af',
+        }
       }
+
+      // Always set website_url from domain so sidebar can show it
+      const websiteUrl = `https://${result.data.domain || domain}`
+      updateData.website_url = websiteUrl
 
       // Set company details
       if (result.data.employeeRange) {
@@ -463,6 +473,11 @@ export class CompanyEnrichmentService {
       }
       if (result.data.industry) {
         updateData.industry_vertical = result.data.industry
+      }
+
+      // Set company name if we have it
+      if (result.data.name) {
+        updateData.name = result.data.name
       }
 
       await supabase
