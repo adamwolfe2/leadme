@@ -2,33 +2,16 @@
 // Handles authentication and multi-tenant routing
 
 import { NextResponse, type NextRequest } from 'next/server'
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
-import type { Database } from '@/types/database.types'
+import { createClient } from '@/lib/supabase/middleware'
 
 export async function middleware(req: NextRequest) {
   try {
-    const res = NextResponse.next()
+    // Create Supabase client using SSR pattern
+    const client = createClient(req)
+    const { supabase } = client
     const { pathname } = req.nextUrl
 
-    // Check environment variables
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-    console.log('Middleware env check:', {
-      pathname,
-      supabaseUrlSet: !!supabaseUrl,
-      supabaseKeySet: !!supabaseKey,
-      supabaseUrlValue: supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : 'NOT SET',
-    })
-
-    if (!supabaseUrl || !supabaseKey) {
-      console.error('Middleware: Missing Supabase environment variables')
-      throw new Error('Missing Supabase environment variables')
-    }
-
-    // Create Supabase client with explicit env vars
-    const supabase = createMiddlewareClient<Database>({ req, res })
-    console.log('Middleware: Supabase client created successfully')
+    console.log('Middleware: Processing request for', pathname)
 
     // Extract subdomain for multi-tenant routing
     const hostname = req.headers.get('host') || ''
@@ -72,36 +55,17 @@ export async function middleware(req: NextRequest) {
     // Auth routes (login, signup) - redirect to dashboard if already authenticated
     const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/signup')
 
-    // Use getSession() to read session from cookies with proper middleware client
-    // This ensures cookies are passed correctly and headers are updated for token refresh
-    let session = null
+    // Use getSession() to read session from cookies - faster and more reliable
     let user = null
     try {
-      const { data: { session: authSession }, error: sessionError } = await supabase.auth.getSession()
-
-      if (sessionError) {
-        console.error('Middleware: getSession error', sessionError)
-      } else {
-        console.log('Middleware: Session retrieved successfully', { hasSession: !!authSession })
-      }
-
-      session = authSession
+      const { data: { session } } = await supabase.auth.getSession()
       if (session?.user) {
         user = session.user
-        // Log session presence (redact token for security)
-        console.log('Middleware session check:', {
-          pathname,
-          hasSession: !!session,
-          hasUser: !!user,
-          userEmail: user.email,
-          tokenPresent: !!session.access_token,
-          tokenPrefix: session.access_token?.substring(0, 10) + '...'
-        })
+        console.log('Middleware: Session found for', pathname, '- User:', user.email)
       } else {
         console.log('Middleware: No session found for', pathname)
       }
     } catch (e) {
-      // If session read fails, treat as not authenticated
       console.error('Middleware: Failed to read session', e)
     }
 
@@ -111,8 +75,8 @@ export async function middleware(req: NextRequest) {
     // Helper to create redirect with cookies preserved
     const redirectWithCookies = (url: URL) => {
       const redirectResponse = NextResponse.redirect(url)
-      // Copy cookies from response to redirect response
-      res.cookies.getAll().forEach((cookie) => {
+      // Copy cookies from supabase response to redirect response
+      client.response.cookies.getAll().forEach((cookie) => {
         redirectResponse.cookies.set(cookie.name, cookie.value, cookie)
       })
       return redirectResponse
@@ -167,7 +131,7 @@ export async function middleware(req: NextRequest) {
 
     // If user is admin on waitlist domain, set the bypass cookie
     if (isWaitlistDomain && isAdminEmail && !hasAdminBypass) {
-      res.cookies.set('admin_bypass_waitlist', 'true', {
+      client.response.cookies.set('admin_bypass_waitlist', 'true', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
@@ -178,10 +142,10 @@ export async function middleware(req: NextRequest) {
 
     // Add custom headers for subdomain information
     if (subdomain) {
-      res.headers.set('x-subdomain', subdomain)
+      client.response.headers.set('x-subdomain', subdomain)
     }
 
-    return res
+    return client.response
   } catch (error) {
     console.error('Middleware invocation failed:', error)
     console.error('Error details:', {
