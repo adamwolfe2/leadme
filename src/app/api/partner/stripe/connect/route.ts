@@ -1,40 +1,43 @@
+// Partner Stripe Connect API
+// Creates Stripe Connect account link for partner onboarding
+
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { PartnerRepository } from '@/lib/repositories/partner.repository'
 import Stripe from 'stripe'
 
-function getStripeClient(): Stripe {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2023-10-16',
-  })
-}
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2024-12-18.acacia',
+})
 
 export async function POST(request: NextRequest) {
   try {
-    const apiKey = request.headers.get('X-API-Key')
+    // Get current user
+    const user = await getCurrentUser()
 
-    if (!apiKey) {
-      return NextResponse.json({ error: 'API key required' }, { status: 401 })
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const supabase = await createClient()
-    const stripe = getStripeClient()
-
-    // Validate partner
-    const { data: partner, error: partnerError } = await supabase
-      .from('partners')
-      .select('*')
-      .eq('api_key', apiKey)
-      .eq('is_active', true)
-      .single()
-
-    if (partnerError || !partner) {
-      return NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
+    // Check if user is linked to a partner
+    if (!user.linked_partner_id) {
+      return NextResponse.json(
+        { error: 'Not a partner account' },
+        { status: 403 }
+      )
     }
 
-    // Check if partner already has Stripe account
-    let stripeAccountId = partner.stripe_account_id
+    const repo = new PartnerRepository()
+    const partner = await repo.findById(user.linked_partner_id)
 
-    if (!stripeAccountId) {
+    if (!partner) {
+      return NextResponse.json({ error: 'Partner not found' }, { status: 404 })
+    }
+
+    // Check if already has a Stripe account
+    let accountId = partner.stripe_connect_account_id
+
+    if (!accountId) {
       // Create new Stripe Connect account
       const account = await stripe.accounts.create({
         type: 'express',
@@ -43,103 +46,73 @@ export async function POST(request: NextRequest) {
         capabilities: {
           transfers: { requested: true },
         },
-        business_type: 'individual',
-        metadata: {
-          partner_id: partner.id,
+        business_profile: {
+          name: partner.company_name || partner.name,
+          support_email: partner.email,
         },
       })
 
-      stripeAccountId = account.id
+      accountId = account.id
 
-      // Save Stripe account ID
-      await supabase
-        .from('partners')
-        .update({
-          stripe_account_id: stripeAccountId,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', partner.id)
+      // Update partner with Stripe account ID
+      await repo.update(user.linked_partner_id, {
+        // @ts-expect-error - stripe_connect_account_id not in update type yet
+        stripe_connect_account_id: accountId,
+      })
     }
 
     // Create account link for onboarding
     const accountLink = await stripe.accountLinks.create({
-      account: stripeAccountId,
-      refresh_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://meetcursive.com'}/partner/payouts?stripe=refresh`,
-      return_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://meetcursive.com'}/partner/payouts?stripe=success`,
+      account: accountId,
+      refresh_url: `${process.env.NEXT_PUBLIC_APP_URL}/partner/settings`,
+      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/partner/settings?stripe_connected=true`,
       type: 'account_onboarding',
     })
 
-    return NextResponse.json({
-      success: true,
-      url: accountLink.url,
-    })
-  } catch (error: any) {
-    console.error('Stripe Connect error:', error)
+    return NextResponse.json({ url: accountLink.url })
+  } catch (error) {
+    console.error('Error creating Stripe Connect link:', error)
     return NextResponse.json(
-      { error: 'Failed to initiate Stripe connection' },
+      { error: 'Failed to create Stripe Connect link' },
       { status: 500 }
     )
   }
 }
 
-// Handle Stripe Connect status check
 export async function GET(request: NextRequest) {
   try {
-    const apiKey = request.headers.get('X-API-Key')
+    // Get current user
+    const user = await getCurrentUser()
 
-    if (!apiKey) {
-      return NextResponse.json({ error: 'API key required' }, { status: 401 })
+    if (!user || !user.linked_partner_id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const supabase = await createClient()
-    const stripe = getStripeClient()
+    const repo = new PartnerRepository()
+    const partner = await repo.findById(user.linked_partner_id)
 
-    // Validate partner
-    const { data: partner, error: partnerError } = await supabase
-      .from('partners')
-      .select('stripe_account_id, stripe_onboarding_complete')
-      .eq('api_key', apiKey)
-      .eq('is_active', true)
-      .single()
-
-    if (partnerError || !partner) {
-      return NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
+    if (!partner || !partner.stripe_connect_account_id) {
+      return NextResponse.json(
+        { error: 'No Stripe account connected' },
+        { status: 404 }
+      )
     }
 
-    if (!partner.stripe_account_id) {
-      return NextResponse.json({
-        success: true,
-        connected: false,
-        onboarding_complete: false,
-      })
-    }
-
-    // Check account status from Stripe
-    const account = await stripe.accounts.retrieve(partner.stripe_account_id)
-
-    const isComplete = account.details_submitted && account.payouts_enabled
-
-    // Update status if changed
-    if (isComplete !== partner.stripe_onboarding_complete) {
-      await supabase
-        .from('partners')
-        .update({
-          stripe_onboarding_complete: isComplete,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('stripe_account_id', partner.stripe_account_id)
-    }
+    // Get Stripe account details
+    const account = await stripe.accounts.retrieve(
+      partner.stripe_connect_account_id
+    )
 
     return NextResponse.json({
-      success: true,
-      connected: true,
-      onboarding_complete: isComplete,
-      payouts_enabled: account.payouts_enabled,
+      accountId: account.id,
+      chargesEnabled: account.charges_enabled,
+      payoutsEnabled: account.payouts_enabled,
+      detailsSubmitted: account.details_submitted,
     })
-  } catch (error: any) {
-    console.error('Stripe status check error:', error)
+  } catch (error) {
+    console.error('Error fetching Stripe Connect status:', error)
     return NextResponse.json(
-      { error: 'Failed to check Stripe status' },
+      { error: 'Failed to fetch Stripe Connect status' },
       { status: 500 }
     )
   }
