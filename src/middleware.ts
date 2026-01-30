@@ -13,6 +13,18 @@ export async function middleware(req: NextRequest) {
 
     console.log('Middleware: Processing request for', pathname)
 
+    // ADMIN BYPASS: Check session FIRST for admin email
+    // If admin, skip ALL auth checks immediately
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.user?.email === 'adam@meetcursive.com') {
+        console.log('Middleware: Admin email detected, bypassing all checks for', pathname)
+        return client.response
+      }
+    } catch (e) {
+      console.error('Middleware: Failed to check admin session', e)
+    }
+
     // Extract subdomain for multi-tenant routing
     const hostname = req.headers.get('host') || ''
     const host = hostname.split(':')[0] // Remove port if present
@@ -79,9 +91,6 @@ export async function middleware(req: NextRequest) {
       console.error('Middleware: Failed to read session', e)
     }
 
-    // Check if user is admin (adam@meetcursive.com) - they bypass waitlist
-    const isAdminEmail = user?.email === 'adam@meetcursive.com'
-
     // Helper to create redirect with cookies preserved
     const redirectWithCookies = (url: URL) => {
       const redirectResponse = NextResponse.redirect(url)
@@ -92,9 +101,9 @@ export async function middleware(req: NextRequest) {
       return redirectResponse
     }
 
-    // Waitlist enforcement (after checking admin status)
+    // Waitlist enforcement
     // If on waitlist domain without admin bypass cookie, redirect to waitlist
-    if (isWaitlistDomain && !hasAdminBypass && !isAdminEmail) {
+    if (isWaitlistDomain && !hasAdminBypass) {
       const isWaitlistPath =
         pathname === '/waitlist' ||
         pathname.startsWith('/api/waitlist') ||
@@ -113,25 +122,10 @@ export async function middleware(req: NextRequest) {
     // Auth routes (login, signup) - allow access even if authenticated
     // Users may want to re-login or access these pages directly
 
-    // ADMIN BYPASS: If user has admin bypass cookie OR admin email, full access
+    // ADMIN BYPASS: If user has admin bypass cookie, full access
     // This allows admin to navigate the platform even if session has issues
     if (hasAdminBypass) {
       console.log('Middleware: Admin bypass cookie active for', pathname)
-      return client.response
-    }
-
-    if (isAdminEmail) {
-      console.log('Middleware: Admin email bypass active for', pathname, '- User:', user?.email)
-      // Set the bypass cookie for future requests
-      if (isWaitlistDomain && !hasAdminBypass) {
-        client.response.cookies.set('admin_bypass_waitlist', 'true', {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          maxAge: 60 * 60 * 24 * 365, // 1 year
-          path: '/',
-        })
-      }
       return client.response
     }
 
@@ -147,8 +141,8 @@ export async function middleware(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Admin routes require admin email
-    if (isAdminRoute && !isAdminEmail) {
+    // Admin routes require authentication (admin email already checked at top)
+    if (isAdminRoute && !user) {
       return NextResponse.json(
         { error: 'Admin access required' },
         { status: 403 }
@@ -157,7 +151,7 @@ export async function middleware(req: NextRequest) {
 
     // DISABLED FOR NOW - Admin can access everything without workspace checks
     // If authenticated, verify workspace access (skip for admin and partner routes)
-    // if (user && !isPublicRoute && !pathname.startsWith('/onboarding') && !isAdminEmail && !isPartnerRoute) {
+    // if (user && !isPublicRoute && !pathname.startsWith('/onboarding') && !isPartnerRoute) {
     //   ... workspace validation code removed for admin ...
     // }
 
