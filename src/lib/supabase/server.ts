@@ -21,7 +21,9 @@ export const createClient = async () => {
             cookiesToSet.forEach(({ name, value, options }: { name: string; value: string; options?: any }) =>
               cookieStore.set(name, value, options)
             )
-          } catch {}
+          } catch {
+            // Ignore errors in Server Components (middleware handles session refresh)
+          }
         },
       },
     }

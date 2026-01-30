@@ -43,8 +43,9 @@ function LoginForm() {
       return
     }
 
-    router.push(redirect)
-    router.refresh()
+    // CRITICAL: Use window.location.href for full page reload to trigger middleware
+    // This ensures session cookies are properly set and validated
+    window.location.href = redirect
   }
 
   const handleGoogleLogin = async () => {

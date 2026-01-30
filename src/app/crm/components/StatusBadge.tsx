@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import type { LeadStatus } from '@/types/crm.types'
 
 const statusBadgeVariants = cva(
-  'inline-flex items-center gap-1 px-2 h-5 text-sm font-medium rounded whitespace-nowrap',
+  'inline-flex items-center gap-1.5 px-2 h-5 text-xs font-normal rounded whitespace-nowrap transition-colors',
   {
     variants: {
       status: {
@@ -57,7 +57,7 @@ const statusBadgeVariants = cva(
   }
 )
 
-const statusDotVariants = cva('h-1 w-1 rounded-full', {
+const statusDotVariants = cva('h-1.5 w-1.5 rounded-full', {
   variants: {
     status: {
       new: 'bg-blue-500',

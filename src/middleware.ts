@@ -38,8 +38,8 @@ export async function middleware(req: NextRequest) {
     const client = createClient(req)
     const { supabase } = client
 
-    // ADMIN BYPASS: Check session FIRST for admin email
-    // If admin, skip ALL auth checks immediately
+    // CRITICAL: Refresh session to ensure cookies are up-to-date
+    // This is what actually writes sb-*-auth-token cookies to the response
     let session = null
     try {
       const result = await supabase.auth.getSession()

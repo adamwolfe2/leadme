@@ -32,9 +32,12 @@ export function LeadAvatar({
 }: LeadAvatarProps) {
   const fullName = [firstName, lastName].filter(Boolean).join(' ') || email || 'Unknown'
 
+  // Use unavatar.io as fallback for profile images (like Twenty)
+  const avatarSrc = imageUrl || (email ? `https://unavatar.io/${email}` : undefined)
+
   return (
     <Avatar
-      src={imageUrl || undefined}
+      src={avatarSrc}
       name={fullName}
       size={sizeMap[size]}
       className={className}

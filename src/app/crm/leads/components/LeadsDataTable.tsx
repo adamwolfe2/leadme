@@ -106,14 +106,14 @@ export function LeadsDataTable({
     pageCount,
   })
 
-  // Row height based on density
-  const rowHeightClass = density === 'compact' ? 'h-9' : 'h-12'
+  // Row height based on density (Twenty-style: more compact)
+  const rowHeightClass = density === 'compact' ? 'h-8' : 'h-10'
 
   return (
     <div className="w-full space-y-4" role="region" aria-label="Leads table">
-      <ScrollArea className="h-[calc(100vh-240px)] rounded-md border">
+      <ScrollArea className="h-[calc(100vh-240px)] rounded-md border-border/10">
         <Table>
-          <TableHeader className="sticky top-0 bg-background z-10" role="rowgroup">
+          <TableHeader className="sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10" role="rowgroup">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="hover:bg-transparent">
                 {headerGroup.headers.map((header) => (
@@ -122,7 +122,6 @@ export function LeadsDataTable({
                     style={{
                       width: header.getSize() !== 150 ? header.getSize() : undefined,
                     }}
-                    className="h-10"
                   >
                     {header.isPlaceholder
                       ? null
@@ -149,7 +148,6 @@ export function LeadsDataTable({
                       style={{
                         width: cell.column.getSize() !== 150 ? cell.column.getSize() : undefined,
                       }}
-                      className="px-3"
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>

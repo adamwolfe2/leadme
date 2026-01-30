@@ -20,6 +20,8 @@ import { Badge } from '@/components/ui/badge'
 import { StatusBadge } from '@/app/crm/components/StatusBadge'
 import { LeadAvatar } from '@/app/crm/components/LeadAvatar'
 import { URLPill } from '@/app/crm/components/URLPill'
+import { CompanyFavicon } from '@/app/crm/components/CompanyFavicon'
+import { ScoreProgress } from '@/app/crm/components/ScoreProgress'
 import { InlineStatusEdit } from './InlineStatusEdit'
 import { InlineAssignUserEdit } from './InlineAssignUserEdit'
 import { InlineTagsEdit } from './InlineTagsEdit'
@@ -60,13 +62,6 @@ function formatPhone(phone: string | null): string {
   return phone
 }
 
-// Helper to get intent score color
-function getIntentScoreColor(score: number | null): string {
-  if (score === null) return 'text-gray-400'
-  if (score >= 70) return 'text-green-600 dark:text-green-400'
-  if (score >= 40) return 'text-yellow-600 dark:text-yellow-400'
-  return 'text-red-600 dark:text-red-400'
-}
 
 export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
   // Selection column
@@ -136,14 +131,14 @@ export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
       const fullName = [firstName, lastName].filter(Boolean).join(' ') || email || 'Unknown'
 
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <LeadAvatar
             firstName={firstName}
             lastName={lastName}
             email={email}
             size="sm"
           />
-          <span className="font-medium truncate">{fullName}</span>
+          <span className="font-normal truncate">{fullName}</span>
         </div>
       )
     },
@@ -169,10 +164,10 @@ export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
       const isVerified = row.original.verification_status === 'valid'
 
       return (
-        <div className="flex items-center gap-2">
-          <span className="text-sm truncate">{email || '-'}</span>
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs font-normal truncate">{email || '-'}</span>
           {isVerified && (
-            <Badge variant="secondary" className="text-[10px] px-1 py-0 h-4">
+            <Badge variant="secondary" className="text-[9px] px-1 py-0 h-3.5 font-normal">
               ✓
             </Badge>
           )}
@@ -187,7 +182,7 @@ export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
     accessorKey: 'phone',
     header: 'Phone',
     cell: ({ row }) => (
-      <span className="text-sm">{formatPhone(row.getValue('phone'))}</span>
+      <span className="text-xs font-normal">{formatPhone(row.getValue('phone'))}</span>
     ),
     size: 140,
     enableSorting: false,
@@ -212,8 +207,11 @@ export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
       const companyDomain = row.original.company_domain
 
       return (
-        <div className="flex flex-col gap-1">
-          <span className="font-medium truncate">{companyName || '-'}</span>
+        <div className="flex flex-col gap-0.5">
+          <div className="flex items-center gap-2">
+            <CompanyFavicon domain={companyDomain} companyName={companyName} />
+            <span className="font-normal truncate">{companyName || '-'}</span>
+          </div>
           {companyDomain && (
             <URLPill url={`https://${companyDomain}`} maxWidth={160} showIcon={false} />
           )}
@@ -238,7 +236,7 @@ export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
       </Button>
     ),
     cell: ({ row }) => (
-      <span className="text-sm truncate block">{row.getValue('job_title') || '-'}</span>
+      <span className="text-xs font-normal truncate block">{row.getValue('job_title') || '-'}</span>
     ),
     size: 160,
   },
@@ -250,11 +248,11 @@ export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
     cell: ({ row }) => {
       const industry = row.getValue('company_industry') as string | null
       return industry ? (
-        <Badge variant="outline" className="text-xs">
+        <Badge variant="outline" className="text-[11px] font-normal">
           {industry}
         </Badge>
       ) : (
-        <span className="text-muted-foreground">-</span>
+        <span className="text-xs text-muted-foreground">-</span>
       )
     },
     size: 140,
@@ -267,11 +265,11 @@ export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
     cell: ({ row }) => {
       const state = row.getValue('state') as string | null
       return state ? (
-        <Badge variant="secondary" className="text-xs font-mono">
+        <Badge variant="secondary" className="text-[10px] font-mono font-normal">
           {state}
         </Badge>
       ) : (
-        <span className="text-muted-foreground">-</span>
+        <span className="text-xs text-muted-foreground">-</span>
       )
     },
     size: 80,
@@ -282,7 +280,7 @@ export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
     accessorKey: 'company_size',
     header: 'Company Size',
     cell: ({ row }) => (
-      <span className="text-sm">{row.getValue('company_size') || '-'}</span>
+      <span className="text-xs font-normal">{row.getValue('company_size') || '-'}</span>
     ),
     size: 120,
   },
@@ -303,15 +301,7 @@ export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
     ),
     cell: ({ row }) => {
       const score = row.getValue('intent_score_calculated') as number | null
-      return (
-        <div className="flex items-center gap-2">
-          <span
-            className={cn('text-sm font-medium tabular-nums', getIntentScoreColor(score))}
-          >
-            {score !== null ? score : '-'}
-          </span>
-        </div>
-      )
+      return <ScoreProgress score={score} />
     },
     size: 100,
   },
@@ -332,11 +322,7 @@ export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
     ),
     cell: ({ row }) => {
       const score = row.getValue('freshness_score') as number | null
-      return (
-        <span className={cn('text-sm tabular-nums', getIntentScoreColor(score))}>
-          {score !== null ? score : '-'}
-        </span>
-      )
+      return <ScoreProgress score={score} />
     },
     size: 100,
   },
@@ -356,7 +342,7 @@ export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
       </Button>
     ),
     cell: ({ row }) => (
-      <span className="text-sm font-medium tabular-nums">
+      <span className="text-xs font-normal tabular-nums">
         {formatCurrency(row.getValue('marketplace_price'))}
       </span>
     ),
@@ -411,8 +397,8 @@ export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
       const date = new Date(row.getValue('created_at'))
       return (
         <div className="flex flex-col">
-          <span className="text-sm">{formatDistanceToNow(date, { addSuffix: true })}</span>
-          <span className="text-xs text-muted-foreground">{format(date, 'MMM d, yyyy')}</span>
+          <span className="text-xs font-normal">{formatDistanceToNow(date, { addSuffix: true })}</span>
+          <span className="text-[10px] text-muted-foreground/70">{format(date, 'MMM d, yyyy')}</span>
         </div>
       )
     },
