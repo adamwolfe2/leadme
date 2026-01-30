@@ -14,27 +14,8 @@ export const metadata = {
 }
 
 export default async function CRMLeadsPage() {
-  const supabase = await createClient()
-
-  // Check auth
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/login')
-  }
-
-  // Get user's workspace
-  const { data: userData } = await supabase
-    .from('users')
-    .select('workspace_id')
-    .eq('auth_user_id', user.id)
-    .single()
-
-  if (!userData?.workspace_id) {
-    redirect('/onboarding')
-  }
+  // Middleware already validated auth - no need to check again
+  // Just render the CRM interface
 
   return (
     <QueryProvider>

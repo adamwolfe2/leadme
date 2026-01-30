@@ -406,6 +406,28 @@ export default function BillingSettingsPage() {
                   <span className="text-muted-foreground">/month</span>
                 </div>
                 <p className="text-sm text-muted-foreground mt-1 line-through">$99/month</p>
+
+                {/* Integration Logos */}
+                <div className="mt-4">
+                  <p className="text-xs text-muted-foreground mb-2">Integrates with:</p>
+                  <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                    {Object.entries(INTEGRATION_LOGOS).map(([key, { src, alt }]) => (
+                      <div
+                        key={key}
+                        className="h-6 w-6 rounded bg-white/50 p-0.5 flex items-center justify-center"
+                        title={alt}
+                      >
+                        <Image
+                          src={src}
+                          alt={alt}
+                          width={20}
+                          height={20}
+                          className="object-contain"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               {/* Key Features - Compact horizontal grid */}
