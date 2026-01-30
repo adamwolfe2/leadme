@@ -7,6 +7,7 @@
 
 import { Resend } from 'resend'
 import { renderEmail } from './render'
+import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import {
   WelcomeEmail,
   QueryCompletedEmail,
@@ -85,14 +86,14 @@ export async function sendEmail(options: SendEmailOptions): Promise<EmailResult>
     })
 
     if (error) {
-      console.error('[Email] Send error:', error)
+      safeError('[Email] Send error:', error)
       return { success: false, error: error.message }
     }
 
-    console.log('[Email] Sent successfully:', data?.id)
+    safeLog('[Email] Sent successfully:', data?.id)
     return { success: true, messageId: data?.id }
   } catch (error) {
-    console.error('[Email] Send error:', error)
+    safeError('[Email] Send error:', error)
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',

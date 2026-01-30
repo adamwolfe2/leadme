@@ -8,6 +8,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // ============================================================================
 // TYPES
@@ -377,7 +378,7 @@ async function logVoiceCall(data: {
     .single()
 
   if (error) {
-    console.error('Failed to log voice call:', error)
+    safeError('Failed to log voice call:', error)
     return null
   }
 

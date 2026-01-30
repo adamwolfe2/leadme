@@ -2,6 +2,7 @@
 // Used for discovering companies with intent signals
 
 import { retryFetch } from '@/lib/utils/retry'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Configuration
 const DATASHOPPER_TIMEOUT = 30000
@@ -143,7 +144,7 @@ export class DataShopperClient {
 
       return await response.json()
     } catch (error: any) {
-      console.error('[DataShopper] Search error:', error)
+      safeError('[DataShopper] Search error:', error)
       throw new Error(`Failed to search companies: ${error.message}`)
     }
   }
@@ -178,7 +179,7 @@ export class DataShopperClient {
       const data = await response.json()
       return data.intent_signals || []
     } catch (error: any) {
-      console.error('[DataShopper] Intent signals error:', error)
+      safeError('[DataShopper] Intent signals error:', error)
       throw new Error(`Failed to get intent signals: ${error.message}`)
     }
   }

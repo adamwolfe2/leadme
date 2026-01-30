@@ -2,6 +2,7 @@
 // Used for enriching company data with contact information
 
 import { retryFetch, DEFAULT_TIMEOUT } from '@/lib/utils/retry'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Configuration
 const CLAY_TIMEOUT = 30000 // 30 seconds for enrichment requests
@@ -108,7 +109,7 @@ export class ClayClient {
 
       return await response.json()
     } catch (error: any) {
-      console.error('[Clay] Enrichment error:', error)
+      safeError('[Clay] Enrichment error:', error)
       throw new Error(`Failed to enrich company: ${error.message}`)
     }
   }
@@ -128,7 +129,7 @@ export class ClayClient {
       })
       return response.contacts
     } catch (error: any) {
-      console.error('[Clay] Find contacts error:', error)
+      safeError('[Clay] Find contacts error:', error)
       throw new Error(`Failed to find contacts: ${error.message}`)
     }
   }
@@ -160,7 +161,7 @@ export class ClayClient {
 
       return await response.json()
     } catch (error: any) {
-      console.error('[Clay] Email verification error:', error)
+      safeError('[Clay] Email verification error:', error)
       return { valid: false, reason: error.message }
     }
   }
@@ -201,7 +202,7 @@ export class ClayClient {
 
       return await response.json()
     } catch (error: any) {
-      console.error('[Clay] Batch enrichment error:', error)
+      safeError('[Clay] Batch enrichment error:', error)
       throw new Error(`Failed to batch enrich: ${error.message}`)
     }
   }
@@ -236,7 +237,7 @@ export class ClayClient {
 
       return await response.json()
     } catch (error: any) {
-      console.error('[Clay] Job status error:', error)
+      safeError('[Clay] Job status error:', error)
       throw new Error(`Failed to get job status: ${error.message}`)
     }
   }
