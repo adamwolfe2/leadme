@@ -19,22 +19,24 @@ export default async function CRMLeadsPage() {
 
   return (
     <QueryProvider>
-      <div className="flex h-screen">
-        {/* CRM Sidebar - TODO: Build in Week 2 */}
-        <aside className="w-64 border-r bg-muted/10">
+      <div className="flex h-screen bg-gradient-cursive-soft">
+        {/* CRM Sidebar - With Cursive Branding */}
+        <aside className="w-64 border-r border-blue-100/50 bg-white/80 backdrop-blur-sm">
           <div className="p-6">
-            <h2 className="text-xl font-semibold">CRM</h2>
-            <nav className="mt-6 space-y-2">
-              <div className="px-3 py-2 bg-background rounded-md font-medium">
+            <h2 className="text-xl font-semibold bg-gradient-cursive bg-clip-text text-transparent">
+              CRM
+            </h2>
+            <nav className="mt-6 space-y-1.5">
+              <div className="px-3 py-2.5 bg-gradient-cursive text-white rounded-lg font-medium shadow-sm">
                 Leads
               </div>
-              <div className="px-3 py-2 text-muted-foreground hover:bg-muted/50 rounded-md cursor-pointer">
+              <div className="px-3 py-2.5 text-muted-foreground hover:bg-gradient-cursive-subtle rounded-lg cursor-pointer transition-all">
                 Companies
               </div>
-              <div className="px-3 py-2 text-muted-foreground hover:bg-muted/50 rounded-md cursor-pointer">
+              <div className="px-3 py-2.5 text-muted-foreground hover:bg-gradient-cursive-subtle rounded-lg cursor-pointer transition-all">
                 Contacts
               </div>
-              <div className="px-3 py-2 text-muted-foreground hover:bg-muted/50 rounded-md cursor-pointer">
+              <div className="px-3 py-2.5 text-muted-foreground hover:bg-gradient-cursive-subtle rounded-lg cursor-pointer transition-all">
                 Deals
               </div>
             </nav>
@@ -44,16 +46,18 @@ export default async function CRMLeadsPage() {
         {/* Main Content */}
         <main className="flex-1 overflow-hidden">
           <div className="h-full flex flex-col">
-            {/* Header */}
-            <header className="border-b bg-background px-6 py-4">
+            {/* Header with Gradient */}
+            <header className="border-b border-blue-100/50 bg-white/80 backdrop-blur-sm px-6 py-5">
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-2xl font-semibold">Leads</h1>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <h1 className="text-2xl font-bold bg-gradient-cursive bg-clip-text text-transparent">
+                    Leads
+                  </h1>
+                  <p className="text-sm text-muted-foreground mt-1.5">
                     Manage your sales leads and contacts
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <TableViewControls />
                   <KeyboardShortcutsHelp />
                 </div>

@@ -62,21 +62,43 @@ export function LeadsTableClient() {
 function TableSkeleton() {
   return (
     <div className="space-y-4">
-      <div className="rounded-md border">
-        <div className="h-10 border-b flex items-center gap-4 px-4">
-          <Skeleton className="h-5 w-5" />
-          <Skeleton className="h-5 w-24" />
-          <Skeleton className="h-5 w-40" />
-          <Skeleton className="h-5 w-32" />
+      <div className="rounded-lg border border-blue-100/50 bg-white/80 backdrop-blur-sm overflow-hidden shadow-sm">
+        {/* Table Header Skeleton */}
+        <div className="h-12 border-b border-blue-100/50 bg-gradient-cursive-soft flex items-center gap-4 px-6">
+          <div className="shimmer-cursive h-4 w-4 rounded" />
+          <div className="shimmer-cursive h-4 w-32 rounded" />
+          <div className="shimmer-cursive h-4 w-48 rounded" />
+          <div className="shimmer-cursive h-4 w-24 rounded" />
+          <div className="shimmer-cursive h-4 w-20 rounded" />
+          <div className="flex-1" />
+          <div className="shimmer-cursive h-4 w-16 rounded" />
         </div>
+
+        {/* Table Rows Skeleton */}
         {Array.from({ length: 10 }).map((_, i) => (
-          <div key={i} className="h-12 border-b flex items-center gap-4 px-4">
-            <Skeleton className="h-5 w-5" />
-            <Skeleton className="h-5 w-24" />
-            <Skeleton className="h-5 w-40" />
-            <Skeleton className="h-5 w-32" />
+          <div
+            key={i}
+            className="h-14 border-b border-blue-50/50 flex items-center gap-4 px-6 hover:bg-gradient-cursive-subtle/50 transition-colors"
+          >
+            <div className="shimmer-cursive h-4 w-4 rounded" />
+            <div className="shimmer-cursive h-6 w-6 rounded-full" />
+            <div className="shimmer-cursive h-4 w-40 rounded" />
+            <div className="shimmer-cursive h-4 w-32 rounded" />
+            <div className="shimmer-cursive h-5 w-16 rounded-full" />
+            <div className="shimmer-cursive h-4 w-20 rounded" />
+            <div className="flex-1" />
+            <div className="shimmer-cursive h-8 w-8 rounded" />
           </div>
         ))}
+      </div>
+
+      {/* Empty State Message (for truly empty tables) */}
+      <div className="text-center py-8 px-4">
+        <div className="mx-auto w-fit mb-4">
+          <div className="shimmer-cursive h-16 w-16 rounded-full" />
+        </div>
+        <div className="shimmer-cursive h-6 w-48 rounded mx-auto mb-2" />
+        <div className="shimmer-cursive h-4 w-64 rounded mx-auto" />
       </div>
     </div>
   )

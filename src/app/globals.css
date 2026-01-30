@@ -477,9 +477,83 @@
     animation: spin 3s linear infinite;
   }
 
+  /* ========== CURSIVE BLUE GRADIENTS ========== */
+
   /* Gradient text */
   .text-gradient-enterprise {
     @apply bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent;
+  }
+
+  .text-gradient-cursive {
+    @apply bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-600 bg-clip-text text-transparent;
+  }
+
+  /* Background gradients */
+  .bg-gradient-cursive {
+    @apply bg-gradient-to-r from-blue-500 to-indigo-600;
+  }
+
+  .bg-gradient-cursive-soft {
+    @apply bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100;
+  }
+
+  .bg-gradient-cursive-subtle {
+    @apply bg-gradient-to-r from-primary/5 to-primary/10;
+  }
+
+  .bg-gradient-cursive-hover {
+    @apply bg-gradient-to-r from-blue-600 to-indigo-700;
+  }
+
+  .bg-gradient-cursive-muted {
+    @apply bg-gradient-to-br from-primary/10 to-primary/5;
+  }
+
+  /* Border gradients */
+  .border-gradient-cursive {
+    @apply border-2 border-transparent bg-origin-border;
+    background-image: linear-gradient(white, white),
+                      linear-gradient(to right, hsl(var(--primary)), hsl(217 91% 50%));
+    background-clip: padding-box, border-box;
+  }
+
+  /* Button gradients */
+  .btn-gradient-cursive {
+    @apply bg-gradient-to-r from-blue-500 to-indigo-600 text-white
+           hover:from-blue-600 hover:to-indigo-700
+           transition-all duration-200 shadow-sm hover:shadow-md;
+  }
+
+  .btn-gradient-cursive-outline {
+    @apply bg-gradient-to-r from-blue-500/10 to-indigo-600/10
+           border border-blue-500/20
+           text-primary hover:text-blue-600
+           hover:from-blue-500/20 hover:to-indigo-600/20
+           transition-all duration-200;
+  }
+
+  /* Card gradients */
+  .card-gradient-cursive {
+    @apply bg-gradient-to-br from-blue-50/50 via-white to-indigo-50/50
+           border border-blue-100/50;
+  }
+
+  .card-gradient-cursive-hover {
+    @apply transition-all duration-200
+           hover:from-blue-50 hover:via-white hover:to-indigo-50
+           hover:border-blue-200/50 hover:shadow-lg;
+  }
+
+  /* Shimmer effect for loading */
+  .shimmer-cursive {
+    @apply animate-pulse bg-gradient-to-r from-blue-100/50 via-indigo-100 to-blue-100/50;
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
   }
 
   /* Glass effect */
