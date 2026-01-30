@@ -34,20 +34,27 @@ export async function POST(req: NextRequest) {
     const eventId = event.id
     const { data: existingEvent } = await supabase
       .from('processed_webhook_events')
-      .select('id')
-      .eq('stripe_event_id', eventId)
+      .select('id, processed_at')
+      .eq('event_id', eventId)
+      .eq('source', 'stripe')
       .single()
 
     if (existingEvent) {
-      console.log(`Webhook event ${eventId} already processed, skipping`)
+      console.log(`[Stripe Webhook] Event ${eventId} already processed at ${existingEvent.processed_at}, skipping`)
       return NextResponse.json({ received: true, duplicate: true })
     }
 
     // Record event as being processed (before actual processing)
     await supabase.from('processed_webhook_events').insert({
-      stripe_event_id: eventId,
+      event_id: eventId,
+      source: 'stripe',
+      stripe_event_id: eventId, // Keep for backwards compatibility
       event_type: event.type,
       processed_at: new Date().toISOString(),
+      payload_summary: {
+        event_type: event.type,
+        created: event.created,
+      },
     })
 
     // WEBHOOK RETRY LOGIC: Wrap event processing in try-catch
@@ -355,10 +362,94 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
       console.log(`✅ Payment successful for lead ${leadId}`)
     }
 
-    // Handle payment failures
+    // Handle payment failures (one-time payments)
     if (event.type === 'payment_intent.payment_failed') {
       const paymentIntent = event.data.object as Stripe.PaymentIntent
-      console.error('Payment failed:', paymentIntent.id)
+      console.error('[Stripe Webhook] Payment failed:', paymentIntent.id)
+
+      // For now, just log - one-time payments don't need workspace access control
+      // The purchase will remain in 'pending' status, user can retry
+    }
+
+    // Handle invoice payment failures (subscriptions)
+    if (event.type === 'invoice.payment_failed') {
+      const invoice = event.data.object as Stripe.Invoice
+      const customerId = invoice.customer as string
+      const subscriptionId = invoice.subscription as string
+
+      console.error('[Stripe Webhook] Invoice payment failed:', invoice.id)
+
+      // Find workspace by customer ID
+      const { data: workspace } = await supabase
+        .from('workspaces')
+        .select('id, name, owner_user_id')
+        .eq('stripe_customer_id', customerId)
+        .single()
+
+      if (!workspace) {
+        console.error('[Stripe Webhook] Workspace not found for customer:', customerId)
+        return NextResponse.json({ received: true })
+      }
+
+      // Get subscription to check attempt count
+      const { data: subscription } = await supabase
+        .from('subscriptions')
+        .select('id, failed_payment_count, status')
+        .eq('stripe_subscription_id', subscriptionId)
+        .single()
+
+      const failedCount = (subscription?.failed_payment_count || 0) + 1
+
+      // Update subscription status and failed payment count
+      await supabase
+        .from('subscriptions')
+        .update({
+          status: 'past_due',
+          failed_payment_count: failedCount,
+          last_payment_failed_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('stripe_subscription_id', subscriptionId)
+
+      // After 3 failed attempts, disable workspace access
+      if (failedCount >= 3) {
+        console.log(`[Stripe Webhook] Disabling workspace ${workspace.id} after ${failedCount} failed payments`)
+
+        await supabase
+          .from('workspaces')
+          .update({
+            access_disabled: true,
+            access_disabled_reason: 'subscription_payment_failed',
+            access_disabled_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', workspace.id)
+      }
+
+      // Send payment failure notification email
+      try {
+        const { data: user } = await supabase
+          .from('users')
+          .select('email, full_name')
+          .eq('id', workspace.owner_user_id)
+          .single()
+
+        if (user) {
+          // TODO: Implement sendPaymentFailureEmail in email service
+          console.log(`[Stripe Webhook] Should send payment failure email to ${user.email} (attempt ${failedCount}/3)`)
+          // await sendPaymentFailureEmail(user.email, user.full_name || 'User', {
+          //   workspaceName: workspace.name,
+          //   attemptNumber: failedCount,
+          //   invoiceUrl: invoice.hosted_invoice_url,
+          //   willDisableAfter: 3 - failedCount,
+          // })
+        }
+      } catch (emailError) {
+        console.error('[Stripe Webhook] Failed to send payment failure email:', emailError)
+      }
+
+      console.log(`✅ Invoice payment failure handled: ${invoice.id}, attempt ${failedCount}/3`)
+      return NextResponse.json({ received: true })
     }
 
     // Handle refunds
@@ -536,11 +627,12 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
     if (event.type === 'customer.subscription.created' || event.type === 'customer.subscription.updated') {
       const subscription = event.data.object as Stripe.Subscription
       const customerId = subscription.customer as string
+      const newStatus = subscription.status
 
       // Find workspace by customer ID
       const { data: workspace } = await supabase
         .from('workspaces')
-        .select('id')
+        .select('id, access_disabled')
         .eq('stripe_customer_id', customerId)
         .single()
 
@@ -553,23 +645,70 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
           .or(`stripe_price_id_monthly.eq.${priceId},stripe_price_id_yearly.eq.${priceId}`)
           .single()
 
+        // Get existing subscription to check status change
+        const { data: existingSubscription } = await supabase
+          .from('subscriptions')
+          .select('status')
+          .eq('stripe_subscription_id', subscription.id)
+          .single()
+
+        const previousStatus = existingSubscription?.status
+
         // Update subscription
+        const subscriptionUpdate: any = {
+          workspace_id: workspace.id,
+          plan_id: plan?.id,
+          stripe_subscription_id: subscription.id,
+          stripe_customer_id: customerId,
+          status: newStatus,
+          current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+          current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+          cancel_at_period_end: subscription.cancel_at_period_end,
+          updated_at: new Date().toISOString(),
+        }
+
+        // Reset failed payment count if payment succeeds
+        if (newStatus === 'active' && previousStatus !== 'active') {
+          subscriptionUpdate.failed_payment_count = 0
+          subscriptionUpdate.last_payment_failed_at = null
+        }
+
         await supabase
           .from('subscriptions')
-          .upsert({
-            workspace_id: workspace.id,
-            plan_id: plan?.id,
-            stripe_subscription_id: subscription.id,
-            stripe_customer_id: customerId,
-            status: subscription.status,
-            current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-            current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-            cancel_at_period_end: subscription.cancel_at_period_end,
-            updated_at: new Date().toISOString(),
-          }, { onConflict: 'workspace_id' })
+          .upsert(subscriptionUpdate, { onConflict: 'workspace_id' })
 
-        // Update workspace plan
-        if (plan) {
+        // Handle status transitions
+        if (newStatus === 'active' && previousStatus !== 'active') {
+          // Subscription reactivated - re-enable workspace access
+          if (workspace.access_disabled) {
+            await supabase
+              .from('workspaces')
+              .update({
+                access_disabled: false,
+                access_disabled_reason: null,
+                access_disabled_at: null,
+                plan: plan?.name,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', workspace.id)
+
+            console.log(`✅ Workspace ${workspace.id} access re-enabled (subscription active)`)
+          }
+        } else if (['past_due', 'unpaid'].includes(newStatus)) {
+          // Subscription payment issues - log but don't disable yet (handled by invoice.payment_failed)
+          console.log(`⚠️ Subscription ${subscription.id} status changed to ${newStatus}`)
+        } else if (newStatus === 'canceled') {
+          // Subscription canceled - downgrade to free
+          await supabase
+            .from('workspaces')
+            .update({ plan: 'free' })
+            .eq('id', workspace.id)
+
+          console.log(`✅ Workspace ${workspace.id} downgraded to free (subscription canceled)`)
+        }
+
+        // Update workspace plan if not already handled
+        if (plan && newStatus === 'active') {
           await supabase
             .from('workspaces')
             .update({ plan: plan.name })

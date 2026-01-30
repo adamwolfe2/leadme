@@ -175,13 +175,15 @@ export async function POST(request: NextRequest) {
       index,
       email: row.email?.toLowerCase().trim() || '',
       companyDomain: row.company_domain?.toLowerCase().trim() || null,
+      companyName: row.company_name?.trim() || null,
       phone: row.phone || null,
     })).filter(l => l.email)
 
-    // Batch check for duplicates
+    // Batch check for duplicates (with fuzzy matching enabled)
     const duplicateResults = await batchCheckDuplicates(
       leadsToCheck,
-      partner.id
+      partner.id,
+      true // Enable fuzzy matching
     )
 
     // Process leads

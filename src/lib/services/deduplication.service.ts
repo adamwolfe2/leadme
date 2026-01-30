@@ -249,24 +249,27 @@ export async function storeRejectionLog(
 
 /**
  * Batch check for duplicates (more efficient for large uploads)
+ * Uses both exact hash matching and fuzzy matching for better duplicate detection
  */
 export async function batchCheckDuplicates(
   leads: Array<{
     email: string
     companyDomain?: string | null
     phone?: string | null
+    companyName?: string | null
   }>,
-  currentPartnerId: string
+  currentPartnerId: string,
+  useFuzzyMatching: boolean = true
 ): Promise<Map<string, DeduplicationResult>> {
   const supabase = createAdminClient()
 
   // Calculate hash keys for all leads
-  const hashMap = new Map<string, { email: string; index: number }>()
+  const hashMap = new Map<string, { email: string; companyName?: string | null; index: number }>()
   const results = new Map<string, DeduplicationResult>()
 
   leads.forEach((lead, index) => {
     const hashKey = calculateHashKey(lead.email, lead.companyDomain || null, lead.phone || null)
-    hashMap.set(hashKey, { email: lead.email, index })
+    hashMap.set(hashKey, { email: lead.email, companyName: lead.companyName, index })
     // Default to not duplicate
     results.set(lead.email, {
       isDuplicate: false,
@@ -276,7 +279,7 @@ export async function batchCheckDuplicates(
     })
   })
 
-  // Query for existing leads with matching hashes
+  // STEP 1: Check for exact hash duplicates
   const hashKeys = Array.from(hashMap.keys())
 
   // Batch query in chunks of 100
@@ -286,11 +289,12 @@ export async function batchCheckDuplicates(
 
     const { data: existingLeads, error } = await supabase
       .from('leads')
-      .select('id, partner_id, hash_key')
+      .select('id, partner_id, hash_key, email, company_name')
       .in('hash_key', chunk)
+      .is('is_deleted', false) // Exclude soft-deleted leads
 
     if (error) {
-      console.error('Batch duplicate check error:', error)
+      console.error('[Deduplication] Batch duplicate check error:', error)
       continue
     }
 
@@ -310,6 +314,62 @@ export async function batchCheckDuplicates(
         existingPartnerId: existing.partner_id || undefined,
         hashKey: existing.hash_key,
       })
+    }
+  }
+
+  // STEP 2: Fuzzy matching for leads that weren't exact duplicates
+  if (useFuzzyMatching) {
+    const nonDuplicateLeads = leads.filter(lead => !results.get(lead.email)?.isDuplicate)
+
+    for (const lead of nonDuplicateLeads) {
+      try {
+        // Use PostgreSQL function to find similar leads
+        const { data: similarLeads, error: fuzzyError } = await supabase
+          .rpc('find_similar_leads', {
+            p_company_name: lead.companyName || null,
+            p_email: lead.email,
+            p_linkedin_url: null,
+            p_similarity_threshold: 0.85, // 85% similarity
+            p_workspace_id: null, // Check across all workspaces
+          })
+
+        if (fuzzyError) {
+          console.error('[Deduplication] Fuzzy matching error for lead:', lead.email, fuzzyError)
+          continue
+        }
+
+        // If we found a similar lead, mark as duplicate
+        if (similarLeads && similarLeads.length > 0) {
+          const match = similarLeads[0] // Most similar lead
+          const { data: matchedLead } = await supabase
+            .from('leads')
+            .select('id, partner_id, hash_key')
+            .eq('id', match.lead_id)
+            .single()
+
+          if (matchedLead) {
+            const isSamePartner = matchedLead.partner_id === currentPartnerId
+            const isPlatformOwned = !matchedLead.partner_id
+
+            console.log(
+              `[Deduplication] Fuzzy match found: ${lead.email} matches ${match.matched_email} ` +
+              `(${Math.round(match.similarity_score * 100)}% similar on ${match.match_field})`
+            )
+
+            results.set(lead.email, {
+              isDuplicate: true,
+              isSamePartner,
+              isPlatformOwned,
+              existingLeadId: matchedLead.id,
+              existingPartnerId: matchedLead.partner_id || undefined,
+              hashKey: matchedLead.hash_key,
+            })
+          }
+        }
+      } catch (fuzzyError) {
+        console.error('[Deduplication] Fuzzy matching exception for lead:', lead.email, fuzzyError)
+        // Continue processing other leads even if fuzzy matching fails for one
+      }
     }
   }
 

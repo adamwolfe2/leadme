@@ -1,87 +1,105 @@
+/**
+ * Admin Partner Payouts API
+ * Manages partner commission payouts via Stripe transfers
+ */
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { requireAdmin } from '@/lib/auth/admin'
+import { createAdminClient } from '@/lib/supabase/admin'
 
-export async function GET(request: NextRequest) {
+/**
+ * GET /api/admin/payouts
+ * List all partner payouts (pending, approved, rejected, completed)
+ */
+export async function GET(req: NextRequest) {
   try {
-    // Check admin access (throws if not admin)
-    await requireAdmin()
-
-    const { searchParams } = new URL(request.url)
-    const status = searchParams.get('status') || 'pending'
-
     const supabase = await createClient()
 
+    // Check if user is admin
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { data: userData } = await supabase
+      .from('users')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single()
+
+    if (!userData?.is_admin) {
+      return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
+    }
+
+    // Get query parameters
+    const searchParams = req.nextUrl.searchParams
+    const status = searchParams.get('status') || 'all'
+    const partnerId = searchParams.get('partner_id')
+
+    const adminClient = createAdminClient()
+
     // Build query
-    let query = supabase
-      .from('payout_requests')
-      .select(`
+    let query = adminClient
+      .from('partner_payouts')
+      .select(\`
         *,
-        partner:partners (
+        partner:partners(
+          id,
           name,
           email,
-          company_name,
-          stripe_account_id
+          stripe_account_id,
+          payout_rate
         )
-      `)
-      .order('requested_at', { ascending: false })
+      \`)
+      .order('created_at', { ascending: false })
 
-    // Apply status filter
+    // Filter by status
     if (status !== 'all') {
       query = query.eq('status', status)
     }
 
-    const { data: payouts, error } = await query.limit(100)
+    // Filter by partner
+    if (partnerId) {
+      query = query.eq('partner_id', partnerId)
+    }
+
+    const { data: payouts, error } = await query
 
     if (error) {
-      console.error('Failed to fetch payouts:', error)
+      console.error('[Admin Payouts] Query error:', error)
       return NextResponse.json({ error: 'Failed to fetch payouts' }, { status: 500 })
     }
 
-    // Get stats
-    const { data: pendingStats } = await supabase
-      .from('payout_requests')
-      .select('amount')
-      .eq('status', 'pending')
-
-    const { data: approvedStats } = await supabase
-      .from('payout_requests')
-      .select('amount')
-      .eq('status', 'approved')
-
-    const { data: processingStats } = await supabase
-      .from('payout_requests')
-      .select('amount')
-      .eq('status', 'processing')
-
-    // Get this month's completed payouts
-    const thisMonthStart = new Date()
-    thisMonthStart.setDate(1)
-    thisMonthStart.setHours(0, 0, 0, 0)
-
-    const { data: thisMonthPayouts } = await supabase
-      .from('payout_requests')
-      .select('amount')
-      .eq('status', 'completed')
-      .gte('completed_at', thisMonthStart.toISOString())
-
-    const stats = {
-      pending_count: pendingStats?.length || 0,
-      pending_amount: pendingStats?.reduce((sum, p) => sum + Number(p.amount), 0) || 0,
-      approved_count: approvedStats?.length || 0,
-      approved_amount: approvedStats?.reduce((sum, p) => sum + Number(p.amount), 0) || 0,
-      processing_count: processingStats?.length || 0,
-      processing_amount: processingStats?.reduce((sum, p) => sum + Number(p.amount), 0) || 0,
-      total_paid_this_month: thisMonthPayouts?.reduce((sum, p) => sum + Number(p.amount), 0) || 0,
+    // Calculate totals
+    const totals = {
+      pending_amount: 0,
+      approved_amount: 0,
+      completed_amount: 0,
+      rejected_amount: 0,
     }
+
+    payouts?.forEach(payout => {
+      if (payout.status === 'pending') {
+        totals.pending_amount += payout.amount
+      } else if (payout.status === 'approved') {
+        totals.approved_amount += payout.amount
+      } else if (payout.status === 'completed') {
+        totals.completed_amount += payout.amount
+      } else if (payout.status === 'rejected') {
+        totals.rejected_amount += payout.amount
+      }
+    })
 
     return NextResponse.json({
       success: true,
-      payouts: payouts || [],
-      stats,
+      payouts,
+      totals,
     })
   } catch (error: any) {
-    console.error('Admin payouts error:', error)
-    return NextResponse.json({ error: 'Failed to fetch payouts' }, { status: 500 })
+    console.error('[Admin Payouts] Error:', error)
+    return NextResponse.json(
+      { error: error.message || 'Internal server error' },
+      { status: 500 }
+    )
   }
 }

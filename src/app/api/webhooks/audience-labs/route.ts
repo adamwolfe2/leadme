@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import crypto from 'crypto'
+import { calculateHashKey } from '@/lib/services/deduplication.service'
 
 // Types for Audience Labs webhook payload
 interface AudienceLabsLead {
@@ -96,7 +97,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { leads, workspace_id, import_job_id } = payload
+    const { leads, workspace_id, import_job_id, timestamp } = payload
 
     if (!leads || !Array.isArray(leads)) {
       return NextResponse.json(
@@ -107,6 +108,52 @@ export async function POST(req: NextRequest) {
 
     // Use admin client for database operations
     const supabase = createAdminClient()
+
+    // ============================================
+    // IDEMPOTENCY CHECK - Prevent duplicate processing
+    // ============================================
+    // Generate unique event ID from import_job_id or payload hash
+    const eventId = import_job_id || crypto.createHash('sha256')
+      .update(rawBody)
+      .digest('hex')
+
+    // Check if this event was already processed
+    const { data: existingEvent } = await supabase
+      .from('processed_webhook_events')
+      .select('id, processed_at')
+      .eq('event_id', eventId)
+      .eq('source', 'audience-labs')
+      .single()
+
+    if (existingEvent) {
+      console.log(`[Audience Labs Webhook] Event ${eventId} already processed at ${existingEvent.processed_at}`)
+      return NextResponse.json({
+        success: true,
+        message: 'Event already processed (idempotent)',
+        event_id: eventId,
+        processed_at: existingEvent.processed_at,
+      })
+    }
+
+    // Record that we're processing this event
+    const { error: insertEventError } = await supabase
+      .from('processed_webhook_events')
+      .insert({
+        event_id: eventId,
+        source: 'audience-labs',
+        processed_at: new Date().toISOString(),
+        payload_summary: {
+          lead_count: leads.length,
+          workspace_id,
+          import_job_id,
+          timestamp: timestamp || new Date().toISOString(),
+        },
+      })
+
+    if (insertEventError) {
+      console.error('[Audience Labs Webhook] Failed to record event processing:', insertEventError)
+      // Continue anyway - better to process twice than not at all
+    }
 
     // Verify workspace exists if provided
     let targetWorkspaceId = workspace_id
@@ -145,6 +192,7 @@ export async function POST(req: NextRequest) {
       total: leads.length,
       successful: 0,
       failed: 0,
+      duplicates_skipped: 0,
       lead_ids: [] as string[],
       errors: [] as string[],
       routing_summary: {} as Record<string, number>,
@@ -155,53 +203,98 @@ export async function POST(req: NextRequest) {
     for (let i = 0; i < leads.length; i += batchSize) {
       const batch = leads.slice(i, i + batchSize)
 
-      const leadsToInsert = batch.map((leadData) => ({
-        workspace_id: targetWorkspaceId,
-        company_name: leadData.company_name,
-        company_industry: leadData.company_industry || null,
-        company_location: leadData.location || null,
-        email: leadData.email || null,
-        first_name: leadData.first_name || null,
-        last_name: leadData.last_name || null,
-        job_title: leadData.job_title || null,
-        phone: leadData.phone || null,
-        linkedin_url: leadData.linkedin_url || null,
-        source: 'audience-labs',
-        enrichment_status: 'completed',
-        delivery_status: 'pending',
-        raw_data: {
-          import_job_id,
-          webhook_received_at: new Date().toISOString(),
-        },
-      }))
+      // Filter out duplicates before insertion
+      const leadsToInsert = []
 
-      const { data: insertedLeads, error: batchError } = await supabase
-        .from('leads')
-        .insert(leadsToInsert)
-        .select('id')
+      for (const leadData of batch) {
+        // Skip leads without required company_name
+        if (!leadData.company_name) {
+          results.failed++
+          results.errors.push('Lead missing company_name (required field)')
+          continue
+        }
 
-      if (batchError) {
-        console.error('[Audience Labs Webhook] Batch insert error:', batchError)
-        results.failed += batch.length
-        results.errors.push(`Batch ${Math.floor(i / batchSize) + 1} failed: ${batchError.message}`)
-        continue
-      }
-
-      results.successful += insertedLeads?.length || 0
-      results.failed += batch.length - (insertedLeads?.length || 0)
-
-      // Route each lead
-      for (const lead of insertedLeads || []) {
-        results.lead_ids.push(lead.id)
-
-        const { data: routedWorkspaceId } = await supabase
-          .rpc('route_lead_to_workspace', {
-            p_lead_id: lead.id,
-            p_source_workspace_id: targetWorkspaceId,
+        // Check for duplicates using PostgreSQL function (exact + fuzzy matching)
+        const { data: duplicateId, error: dupCheckError } = await supabase
+          .rpc('check_lead_duplicate', {
+            p_company_name: leadData.company_name,
+            p_email: leadData.email || null,
+            p_linkedin_url: leadData.linkedin_url || null,
+            p_phone: leadData.phone || null,
+            p_workspace_id: targetWorkspaceId,
+            p_use_fuzzy_matching: true,
           })
 
-        const routeKey = routedWorkspaceId || 'unmatched'
-        results.routing_summary[routeKey] = (results.routing_summary[routeKey] || 0) + 1
+        if (dupCheckError) {
+          console.error('[Audience Labs Webhook] Duplicate check error:', dupCheckError)
+          // Continue anyway - better to potentially insert duplicate than skip valid lead
+        }
+
+        if (duplicateId) {
+          console.log(`[Audience Labs Webhook] Skipping duplicate lead: ${leadData.company_name} (matches ${duplicateId})`)
+          results.duplicates_skipped++
+          continue
+        }
+
+        // Calculate hash for deduplication
+        const hashKey = calculateHashKey(
+          leadData.email || '',
+          null, // company_domain not provided by Audience Labs
+          leadData.phone || null
+        )
+
+        leadsToInsert.push({
+          workspace_id: targetWorkspaceId,
+          company_name: leadData.company_name,
+          company_industry: leadData.company_industry || null,
+          company_location: leadData.location || null,
+          email: leadData.email || null,
+          first_name: leadData.first_name || null,
+          last_name: leadData.last_name || null,
+          job_title: leadData.job_title || null,
+          phone: leadData.phone || null,
+          linkedin_url: leadData.linkedin_url || null,
+          source: 'audience-labs',
+          enrichment_status: 'completed',
+          delivery_status: 'pending',
+          dedupe_hash: hashKey,
+          raw_data: {
+            import_job_id,
+            webhook_received_at: new Date().toISOString(),
+          },
+        })
+      }
+
+      // Insert non-duplicate leads
+      if (leadsToInsert.length > 0) {
+        const { data: insertedLeads, error: batchError } = await supabase
+          .from('leads')
+          .insert(leadsToInsert)
+          .select('id')
+
+        if (batchError) {
+          console.error('[Audience Labs Webhook] Batch insert error:', batchError)
+          results.failed += leadsToInsert.length
+          results.errors.push(`Batch ${Math.floor(i / batchSize) + 1} failed: ${batchError.message}`)
+          continue
+        }
+
+        results.successful += insertedLeads?.length || 0
+        results.failed += leadsToInsert.length - (insertedLeads?.length || 0)
+
+        // Route each lead
+        for (const lead of insertedLeads || []) {
+          results.lead_ids.push(lead.id)
+
+          const { data: routedWorkspaceId } = await supabase
+            .rpc('route_lead_to_workspace', {
+              p_lead_id: lead.id,
+              p_source_workspace_id: targetWorkspaceId,
+            })
+
+          const routeKey = routedWorkspaceId || 'unmatched'
+          results.routing_summary[routeKey] = (results.routing_summary[routeKey] || 0) + 1
+        }
       }
     }
 
@@ -226,10 +319,11 @@ export async function POST(req: NextRequest) {
         total: results.total,
         successful: results.successful,
         failed: results.failed,
+        duplicates_skipped: results.duplicates_skipped,
         lead_ids: results.lead_ids,
         routing_summary: results.routing_summary,
       },
-      message: `Processed ${results.successful} of ${results.total} leads`,
+      message: `Processed ${results.successful} of ${results.total} leads (${results.duplicates_skipped} duplicates skipped)`,
     })
   } catch (error: any) {
     console.error('[Audience Labs Webhook] Error:', error)
