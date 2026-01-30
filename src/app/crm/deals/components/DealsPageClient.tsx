@@ -15,45 +15,14 @@ import { Badge } from '@/components/ui/badge'
 import { useCRMViewStore } from '@/lib/stores/crm-view-store'
 import { MobileMenu } from '@/components/ui/mobile-menu'
 import { formatDistanceToNow, format } from 'date-fns'
+import type { Deal } from '@/types/crm.types'
 
-// Mock data
-const mockDeals = [
-  {
-    id: '1',
-    name: 'Enterprise Plan - Acme Corp',
-    company: 'Acme Corp',
-    value: 50000,
-    stage: 'Proposal',
-    probability: 60,
-    closeDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
-    contact: 'Sarah Johnson',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 20),
-  },
-  {
-    id: '2',
-    name: 'Pro Plan - Tech Corp',
-    company: 'Tech Corp',
-    value: 25000,
-    stage: 'Negotiation',
-    probability: 80,
-    closeDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 15),
-    contact: 'Michael Chen',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10),
-  },
-  {
-    id: '3',
-    name: 'Starter Plan - Startup Inc',
-    company: 'Startup Inc',
-    value: 10000,
-    stage: 'Qualified',
-    probability: 40,
-    closeDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 45),
-    contact: 'Emily Rodriguez',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
-  },
-]
+interface DealsPageClientProps {
+  initialData: Deal[]
+}
 
-export function DealsPageClient() {
+export function DealsPageClient({ initialData }: DealsPageClientProps) {
+  const [deals] = useState<Deal[]>(initialData)
   const viewType = useCRMViewStore((state) => state.getViewType('deals'))
   const setViewType = useCRMViewStore((state) => state.setViewType)
 
@@ -104,21 +73,21 @@ export function DealsPageClient() {
       key: 'name',
       header: 'Deal',
       width: '30%',
-      render: (deal: typeof mockDeals[0]) => (
+      render: (deal: Deal) => (
         <div>
           <div className="font-medium text-gray-900">{deal.name}</div>
-          <div className="text-sm text-gray-500">{deal.company}</div>
+          <div className="text-sm text-gray-500">{deal.stage}</div>
         </div>
       ),
     },
     {
       key: 'value',
       header: 'Value',
-      width: '15%',
-      render: (deal: typeof mockDeals[0]) => (
+      width: '20%',
+      render: (deal: Deal) => (
         <div className="flex items-center gap-2">
           <DollarSign className="h-4 w-4 text-gray-400" />
-          <span className="font-medium text-gray-900">{formatCurrency(deal.value)}</span>
+          <span className="font-medium text-gray-900">{formatCurrency(deal.value || 0)}</span>
         </div>
       ),
     },
@@ -126,12 +95,13 @@ export function DealsPageClient() {
       key: 'stage',
       header: 'Stage',
       width: '15%',
-      render: (deal: typeof mockDeals[0]) => {
+      render: (deal: Deal) => {
         const colors = {
           Qualified: 'bg-blue-100 text-blue-800',
           Proposal: 'bg-purple-100 text-purple-800',
           Negotiation: 'bg-amber-100 text-amber-800',
-          Closed: 'bg-green-100 text-green-800',
+          'Closed Won': 'bg-green-100 text-green-800',
+          'Closed Lost': 'bg-red-100 text-red-800',
         }
         return (
           <Badge className={colors[deal.stage as keyof typeof colors] || ''}>
@@ -144,66 +114,66 @@ export function DealsPageClient() {
       key: 'probability',
       header: 'Probability',
       width: '10%',
-      render: (deal: typeof mockDeals[0]) => (
-        <span className="text-sm text-gray-700">{deal.probability}%</span>
+      render: (deal: Deal) => (
+        <span className="text-sm text-gray-700">{deal.probability || 0}%</span>
       ),
     },
     {
-      key: 'closeDate',
+      key: 'close_date',
       header: 'Close Date',
-      width: '15%',
-      render: (deal: typeof mockDeals[0]) => (
+      width: '25%',
+      render: (deal: Deal) => (
         <div className="flex items-center gap-2 text-sm text-gray-700">
           <Calendar className="h-4 w-4 text-gray-400" />
-          {format(deal.closeDate, 'MMM d, yyyy')}
+          {deal.close_date ? format(new Date(deal.close_date), 'MMM d, yyyy') : 'N/A'}
         </div>
       ),
     },
-    {
-      key: 'contact',
-      header: 'Contact',
-      width: '15%',
-      render: (deal: typeof mockDeals[0]) => (
-        <span className="text-sm text-gray-700">{deal.contact}</span>
-      ),
-    },
   ]
 
+  const qualifiedDeals = deals.filter((d) => d.stage === 'Qualified')
+  const proposalDeals = deals.filter((d) => d.stage === 'Proposal')
+  const negotiationDeals = deals.filter((d) => d.stage === 'Negotiation')
+  const closedWonDeals = deals.filter((d) => d.stage === 'Closed Won')
+  const closedLostDeals = deals.filter((d) => d.stage === 'Closed Lost')
+
   const boardColumns = [
-    { id: 'qualified', title: 'Qualified', color: '#3B82F6', count: 1 },
-    { id: 'proposal', title: 'Proposal', color: '#8B5CF6', count: 1 },
-    { id: 'negotiation', title: 'Negotiation', color: '#F59E0B', count: 1 },
-    { id: 'closed', title: 'Closed Won', color: '#10B981', count: 0 },
+    { id: 'qualified', title: 'Qualified', color: '#3B82F6', count: qualifiedDeals.length },
+    { id: 'proposal', title: 'Proposal', color: '#8B5CF6', count: proposalDeals.length },
+    { id: 'negotiation', title: 'Negotiation', color: '#F59E0B', count: negotiationDeals.length },
+    { id: 'closedWon', title: 'Closed Won', color: '#10B981', count: closedWonDeals.length },
+    { id: 'closedLost', title: 'Closed Lost', color: '#EF4444', count: closedLostDeals.length },
   ]
 
   const boardData = {
-    qualified: mockDeals.filter((d) => d.stage === 'Qualified'),
-    proposal: mockDeals.filter((d) => d.stage === 'Proposal'),
-    negotiation: mockDeals.filter((d) => d.stage === 'Negotiation'),
-    closed: mockDeals.filter((d) => d.stage === 'Closed'),
+    qualified: qualifiedDeals,
+    proposal: proposalDeals,
+    negotiation: negotiationDeals,
+    closedWon: closedWonDeals,
+    closedLost: closedLostDeals,
   }
 
-  const renderCard = (deal: typeof mockDeals[0]) => (
+  const renderCard = (deal: Deal) => (
     <div className="space-y-2">
       <div className="font-medium text-gray-900">{deal.name}</div>
-      <div className="text-sm text-gray-600">{deal.company}</div>
+      <div className="text-sm text-gray-600">{deal.stage}</div>
       <div className="flex items-center justify-between">
-        <span className="text-lg font-semibold text-gray-900">{formatCurrency(deal.value)}</span>
-        <span className="text-xs text-gray-500">{deal.probability}%</span>
+        <span className="text-lg font-semibold text-gray-900">{formatCurrency(deal.value || 0)}</span>
+        <span className="text-xs text-gray-500">{deal.probability || 0}%</span>
       </div>
       <div className="flex items-center gap-1 text-xs text-gray-500">
         <Calendar className="h-3 w-3" />
-        {format(deal.closeDate, 'MMM d')}
+        {deal.close_date ? format(new Date(deal.close_date), 'MMM d') : 'N/A'}
       </div>
     </div>
   )
 
-  const handleRowClick = (deal: typeof mockDeals[0]) => {
+  const handleRowClick = (deal: Deal) => {
     setSelectedDeal(deal.id)
     setDrawerOpen(true)
   }
 
-  const selectedDealData = mockDeals.find((d) => d.id === selectedDeal)
+  const selectedDealData = deals.find((d) => d.id === selectedDeal)
 
   return (
     <CRMPageContainer>
@@ -239,7 +209,7 @@ export function DealsPageClient() {
         />
 
         <div className="flex-1 overflow-hidden">
-          {mockDeals.length === 0 ? (
+          {deals.length === 0 ? (
             <EmptyState
               icon={<TrendingUp className="h-12 w-12" />}
               title="No deals yet"
@@ -257,7 +227,7 @@ export function DealsPageClient() {
             <>
               {viewType === 'table' && (
                 <CRMTableView
-                  data={mockDeals}
+                  data={deals}
                   columns={tableColumns}
                   onRowClick={handleRowClick}
                 />
@@ -280,7 +250,7 @@ export function DealsPageClient() {
         isOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         title={selectedDealData?.name || ''}
-        subtitle={selectedDealData?.company}
+        subtitle={selectedDealData?.stage}
       >
         <div className="space-y-6">
           <div>
@@ -289,7 +259,7 @@ export function DealsPageClient() {
               <div>
                 <span className="text-sm text-gray-500">Value: </span>
                 <span className="text-lg font-semibold text-gray-900">
-                  {selectedDealData && formatCurrency(selectedDealData.value)}
+                  {selectedDealData && formatCurrency(selectedDealData.value || 0)}
                 </span>
               </div>
               <div>
@@ -298,27 +268,25 @@ export function DealsPageClient() {
               </div>
               <div>
                 <span className="text-sm text-gray-500">Probability: </span>
-                <span className="text-sm text-gray-900">{selectedDealData?.probability}%</span>
+                <span className="text-sm text-gray-900">{selectedDealData?.probability || 0}%</span>
               </div>
               <div>
                 <span className="text-sm text-gray-500">Close Date: </span>
                 <span className="text-sm text-gray-900">
-                  {selectedDealData && format(selectedDealData.closeDate, 'MMMM d, yyyy')}
+                  {selectedDealData?.close_date
+                    ? format(new Date(selectedDealData.close_date), 'MMMM d, yyyy')
+                    : 'N/A'}
                 </span>
               </div>
               <div>
-                <span className="text-sm text-gray-500">Contact: </span>
-                <span className="text-sm text-gray-900">{selectedDealData?.contact}</span>
-              </div>
-              <div>
-                <span className="text-sm text-gray-500">Company: </span>
-                <span className="text-sm text-gray-900">{selectedDealData?.company}</span>
+                <span className="text-sm text-gray-500">Status: </span>
+                <span className="text-sm text-gray-900">{selectedDealData?.status || 'N/A'}</span>
               </div>
               <div>
                 <span className="text-sm text-gray-500">Created: </span>
                 <span className="text-sm text-gray-900">
                   {selectedDealData &&
-                    formatDistanceToNow(selectedDealData.createdAt, { addSuffix: true })}
+                    formatDistanceToNow(new Date(selectedDealData.created_at), { addSuffix: true })}
                 </span>
               </div>
             </div>
@@ -328,10 +296,10 @@ export function DealsPageClient() {
             <h3 className="mb-3 text-sm font-medium text-gray-500">Weighted Value</h3>
             <div className="text-2xl font-bold text-gray-900">
               {selectedDealData &&
-                formatCurrency(selectedDealData.value * (selectedDealData.probability / 100))}
+                formatCurrency((selectedDealData.value || 0) * ((selectedDealData.probability || 0) / 100))}
             </div>
             <p className="mt-1 text-xs text-gray-500">
-              Based on {selectedDealData?.probability}% probability
+              Based on {selectedDealData?.probability || 0}% probability
             </p>
           </div>
         </div>
