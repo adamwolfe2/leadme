@@ -20,6 +20,7 @@ import {
   Zap,
   Megaphone,
   ArrowUp,
+  XCircle,
 } from 'lucide-react'
 
 interface Creative {
@@ -69,6 +70,7 @@ export default function CreativesPage() {
 
   const [isLoading, setIsLoading] = useState(true)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [generationError, setGenerationError] = useState<string | null>(null)
 
   // Generation inputs
   const [selectedStyle, setSelectedStyle] = useState<string>(STYLE_PRESETS[0])
@@ -113,6 +115,7 @@ export default function CreativesPage() {
     if (!prompt.trim() || isGenerating) return
 
     setIsGenerating(true)
+    setGenerationError(null)
     try {
       const response = await fetch('/api/ai-studio/creatives', {
         method: 'POST',
@@ -137,7 +140,7 @@ export default function CreativesPage() {
       setCreatives([data.creative, ...creatives])
       setPrompt('')
     } catch (error: any) {
-      alert(error.message || 'Failed to generate creative')
+      setGenerationError(error.message || 'Failed to generate creative')
     } finally {
       setIsGenerating(false)
     }
@@ -178,6 +181,22 @@ export default function CreativesPage() {
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
+
+        {/* Error Message */}
+        {generationError && (
+          <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
+            <XCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm text-red-800">{generationError}</p>
+            </div>
+            <button
+              onClick={() => setGenerationError(null)}
+              className="text-red-600 hover:text-red-700"
+            >
+              <XCircle className="h-4 w-4" />
+            </button>
+          </div>
+        )}
 
         {/* Creatives Gallery */}
         <div>
@@ -227,142 +246,7 @@ export default function CreativesPage() {
         </div>
 
       </div>
-
-      {/* Creative Generator - Fixed Bottom Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg lg:left-64">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-            {/* Style Presets */}
-            <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-2">
-              {STYLE_PRESETS.map((style) => (
-                <button
-                  key={style}
-                  onClick={() => setSelectedStyle(style)}
-                  className={`px-4 py-2 rounded-lg whitespace-nowrap transition-all ${
-                    selectedStyle === style
-                      ? 'bg-blue-600 text-white shadow-md'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {style}
-                </button>
-              ))}
-              <button className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 whitespace-nowrap">
-                More
-              </button>
-            </div>
-
-            {/* Input Area */}
-            <div className="space-y-3">
-              <Input
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey && prompt.trim()) {
-                    e.preventDefault()
-                    handleGenerate()
-                  }
-                }}
-                placeholder="Describe your creative idea..."
-                className="text-base h-12"
-                disabled={isGenerating}
-              />
-
-              {/* Toolbar */}
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" className="gap-2">
-                  <ImageIcon className="h-4 w-4" />
-                  Images
-                </Button>
-
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
-                  <select
-                    value={selectedIcp}
-                    onChange={(e) => setSelectedIcp(e.target.value)}
-                    className="pl-9 pr-3 h-9 text-sm border border-gray-300 rounded-lg bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none cursor-pointer"
-                    style={{
-                      backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-                      backgroundPosition: 'right 0.5rem center',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundSize: '1.5em 1.5em',
-                    }}
-                  >
-                    <option value="">ICP</option>
-                    {profiles.map((profile) => (
-                      <option key={profile.id} value={profile.id}>
-                        {profile.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="relative">
-                  <Monitor className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
-                  <select
-                    value={selectedFormat}
-                    onChange={(e) => setSelectedFormat(e.target.value)}
-                    className="pl-9 pr-3 h-9 text-sm border border-gray-300 rounded-lg bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none cursor-pointer"
-                    style={{
-                      backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-                      backgroundPosition: 'right 0.5rem center',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundSize: '1.5em 1.5em',
-                    }}
-                  >
-                    {FORMATS.map((format) => (
-                      <option key={format.value} value={format.value}>
-                        {format.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Zap className="h-4 w-4" />
-                  Auto
-                </Button>
-
-                <div className="relative">
-                  <Megaphone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
-                  <select
-                    value={selectedOffer}
-                    onChange={(e) => setSelectedOffer(e.target.value)}
-                    className="pl-9 pr-3 h-9 text-sm border border-gray-300 rounded-lg bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none cursor-pointer"
-                    style={{
-                      backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-                      backgroundPosition: 'right 0.5rem center',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundSize: '1.5em 1.5em',
-                    }}
-                  >
-                    <option value="">Offer</option>
-                    {offers.map((offer) => (
-                      <option key={offer.id} value={offer.id}>
-                        {offer.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex-1" />
-
-                <Button
-                  onClick={handleGenerate}
-                  disabled={isGenerating || !prompt.trim()}
-                  className="bg-blue-600 hover:bg-blue-700 rounded-full h-10 w-10 p-0"
-                  size="icon"
-                >
-                  {isGenerating ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <ArrowUp className="h-5 w-5" />
-                  )}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   )
 }
+

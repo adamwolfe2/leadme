@@ -5,56 +5,74 @@
 
 import { Variants } from 'framer-motion'
 
-// Screen transition animations
+// Screen transition animations - Typeform-style slide up from bottom
 export const screenVariants: Variants = {
-  initial: (direction: number) => ({
-    x: direction > 0 ? '100%' : '-100%',
+  initial: {
+    y: '100%',
     opacity: 0,
-  }),
+  },
   animate: {
-    x: 0,
+    y: 0,
     opacity: 1,
     transition: {
-      duration: 0.3,
-      ease: [0.4, 0, 0.2, 1], // easeInOut
+      duration: 0.6,
+      ease: [0.25, 0.1, 0.25, 1], // smooth easeInOut
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
     },
   },
-  exit: (direction: number) => ({
-    x: direction > 0 ? '-100%' : '100%',
+  exit: {
+    y: '-100%',
     opacity: 0,
     transition: {
-      duration: 0.3,
-      ease: [0.4, 0, 0.2, 1],
+      duration: 0.4,
+      ease: [0.4, 0, 1, 1], // easeIn for exit
     },
-  }),
+  },
 }
 
-// Card hover animations
+// Card hover animations - smooth lift effect
 export const cardVariants: Variants = {
-  initial: { scale: 1 },
+  initial: {
+    scale: 1,
+    y: 0,
+  },
   hover: {
-    scale: 1.02,
+    scale: 1.015,
+    y: -2,
     transition: {
-      duration: 0.2,
+      duration: 0.25,
+      ease: [0.25, 0.1, 0.25, 1],
+    },
+  },
+  tap: {
+    scale: 0.98,
+    y: 0,
+    transition: {
+      duration: 0.1,
       ease: 'easeOut',
     },
   },
-  tap: {
-    scale: 0.98,
-  },
 }
 
-// Button click animations
+// Button click animations - subtle scale
 export const buttonVariants: Variants = {
-  initial: { scale: 1 },
+  initial: {
+    scale: 1,
+  },
   hover: {
-    scale: 1.01,
+    scale: 1.008,
     transition: {
-      duration: 0.15,
+      duration: 0.2,
+      ease: [0.25, 0.1, 0.25, 1],
     },
   },
   tap: {
     scale: 0.98,
+    transition: {
+      duration: 0.1,
+      ease: 'easeOut',
+    },
   },
 }
 
@@ -85,8 +103,41 @@ export const fadeInVariants: Variants = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.3,
+      duration: 0.5,
+      ease: [0.25, 0.1, 0.25, 1],
       delay: 0.2,
+    },
+  },
+}
+
+// Text reveal animation - subtle slide up with fade
+export const textRevealVariants: Variants = {
+  initial: {
+    opacity: 0,
+    y: 12,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.25, 0.1, 0.25, 1],
+    },
+  },
+}
+
+// Heading animation - larger slide up for headlines
+export const headingVariants: Variants = {
+  initial: {
+    opacity: 0,
+    y: 20,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.7,
+      ease: [0.25, 0.1, 0.25, 1],
     },
   },
 }
@@ -106,17 +157,18 @@ export const progressVariants: Variants = {
   }),
 }
 
-// Stagger children animation
+// Stagger children animation - smooth sequential reveal
 export const staggerContainerVariants: Variants = {
   initial: {},
   animate: {
     transition: {
-      staggerChildren: 0.1,
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
     },
   },
 }
 
-// Stagger item animation
+// Stagger item animation - smooth slide up
 export const staggerItemVariants: Variants = {
   initial: {
     opacity: 0,
@@ -126,7 +178,35 @@ export const staggerItemVariants: Variants = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.3,
+      duration: 0.5,
+      ease: [0.25, 0.1, 0.25, 1],
+    },
+  },
+}
+
+// Fast stagger for option buttons - very quick cascade
+export const fastStaggerContainerVariants: Variants = {
+  initial: {},
+  animate: {
+    transition: {
+      staggerChildren: 0.015, // 15ms between each button
+      delayChildren: 0.2, // slight delay after screen transition
+    },
+  },
+}
+
+// Option button stagger item - quick, smooth reveal
+export const optionItemVariants: Variants = {
+  initial: {
+    opacity: 0,
+    y: 15,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.35,
+      ease: [0.25, 0.1, 0.25, 1],
     },
   },
 }

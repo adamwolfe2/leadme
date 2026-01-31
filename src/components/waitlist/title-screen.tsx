@@ -9,7 +9,13 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Building2, Users } from 'lucide-react'
-import { cardVariants, staggerContainerVariants, staggerItemVariants } from '@/lib/utils/waitlist-animations'
+import {
+  cardVariants,
+  staggerContainerVariants,
+  staggerItemVariants,
+  headingVariants,
+  textRevealVariants,
+} from '@/lib/utils/waitlist-animations'
 import type { UserType } from '@/types/waitlist.types'
 
 interface TitleScreenProps {
@@ -55,7 +61,7 @@ export function TitleScreen({ onSelectUserType }: TitleScreenProps) {
 
           {/* Headline */}
           <motion.h1
-            variants={staggerItemVariants}
+            variants={headingVariants}
             className="text-4xl md:text-5xl font-bold text-foreground text-center mb-4"
           >
             AI Intent Systems
@@ -65,7 +71,7 @@ export function TitleScreen({ onSelectUserType }: TitleScreenProps) {
 
           {/* Subhead */}
           <motion.p
-            variants={staggerItemVariants}
+            variants={textRevealVariants}
             className="text-base text-muted-foreground text-center mb-12 max-w-lg mx-auto leading-relaxed"
           >
             Cursive identifies real people actively searching for your service, enriches them with verified contact

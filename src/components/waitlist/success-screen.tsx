@@ -7,7 +7,14 @@
 
 import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
-import { checkmarkVariants, fadeInVariants, buttonVariants } from '@/lib/utils/waitlist-animations'
+import {
+  checkmarkVariants,
+  staggerContainerVariants,
+  headingVariants,
+  textRevealVariants,
+  staggerItemVariants,
+  buttonVariants,
+} from '@/lib/utils/waitlist-animations'
 import type { UserType } from '@/types/waitlist.types'
 
 interface SuccessScreenProps {
@@ -30,7 +37,7 @@ export function SuccessScreen({ userType, email }: SuccessScreenProps) {
       animate="animate"
       className="min-h-screen bg-background flex items-center justify-center px-6 py-12"
     >
-      <div className="w-full max-w-2xl text-center">
+      <motion.div variants={staggerContainerVariants} className="w-full max-w-2xl text-center">
         {/* Animated Checkmark */}
         <motion.div variants={checkmarkVariants} className="flex justify-center mb-8">
           <div className="w-20 h-20 rounded-full bg-success/10 flex items-center justify-center">
@@ -39,21 +46,19 @@ export function SuccessScreen({ userType, email }: SuccessScreenProps) {
         </motion.div>
 
         {/* Headline */}
-        <motion.h1 variants={fadeInVariants} className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+        <motion.h1 variants={headingVariants} className="text-3xl md:text-4xl font-bold text-foreground mb-4">
           {headline}
         </motion.h1>
 
         {/* Subhead */}
-        <motion.p variants={fadeInVariants} className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto leading-relaxed">
+        <motion.p variants={textRevealVariants} className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto leading-relaxed">
           {subhead}
         </motion.p>
 
         {/* Optional CTAs */}
-        <motion.div variants={fadeInVariants} className="flex justify-center">
+        <motion.div variants={staggerItemVariants} className="flex justify-center">
           <motion.a
             href="https://meetcursive.com"
-            variants={buttonVariants}
-            initial="initial"
             whileHover="hover"
             whileTap="tap"
             className="inline-flex items-center justify-center h-12 px-6 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
@@ -61,7 +66,7 @@ export function SuccessScreen({ userType, email }: SuccessScreenProps) {
             Back to Homepage
           </motion.a>
         </motion.div>
-      </div>
+      </motion.div>
     </motion.div>
   )
 }

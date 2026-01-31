@@ -7,9 +7,17 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
+import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { fadeInVariants, buttonVariants } from '@/lib/utils/waitlist-animations'
+import {
+  staggerContainerVariants,
+  headingVariants,
+  textRevealVariants,
+  staggerItemVariants,
+  buttonVariants,
+} from '@/lib/utils/waitlist-animations'
 import { partnerFormSchema, partnerTypeOptions, partnerQ1Options, type PartnerFormData } from '@/lib/utils/waitlist-validation'
 import { BackButton } from './back-button'
 import { ProgressBar } from './progress-bar'
@@ -45,18 +53,31 @@ export function PartnerForm({ vslAnswers, onSubmit, onBack }: PartnerFormProps) 
     <motion.div
       initial="initial"
       animate="animate"
-      className="min-h-screen bg-background flex items-center justify-center px-6 py-12"
+      className="min-h-screen bg-background flex flex-col px-6 py-12"
     >
-      <div className="w-full max-w-2xl">
-        <BackButton onClick={onBack} />
+      {/* Logo Header */}
+      <header className="w-full max-w-2xl mx-auto mb-8">
+        <Link href="https://meetcursive.com" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
+          <Image src="/cursive-logo.png" alt="Cursive" width={32} height={32} className="w-8 h-8" />
+          <span className="text-lg font-semibold text-foreground">Cursive</span>
+        </Link>
+      </header>
 
-        <ProgressBar current={5} total={5} label="Step 5 of 5 - Almost There!" />
+      <div className="flex-1 flex items-center justify-center">
+        <div className="w-full max-w-2xl">
+          <BackButton onClick={onBack} />
 
-        <motion.div variants={fadeInVariants} className="bg-card border border-border rounded-xl p-6 md:p-8">
-          <h2 className="text-2xl font-bold text-foreground mb-2">Join the First 100 Partners</h2>
-          <p className="text-sm text-muted-foreground mb-6">Start earning recurring revenue with Cursive</p>
+          <ProgressBar current={5} total={5} label="Step 5 of 5 - Almost There!" />
 
-          <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
+        <motion.div variants={staggerContainerVariants} className="bg-card border border-border rounded-xl p-6 md:p-8">
+          <motion.h2 variants={headingVariants} className="text-2xl font-bold text-foreground mb-2">
+            Join the First 100 Partners
+          </motion.h2>
+          <motion.p variants={textRevealVariants} className="text-sm text-muted-foreground mb-6">
+            Start earning recurring revenue with Cursive
+          </motion.p>
+
+          <motion.form variants={staggerItemVariants} onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label htmlFor="firstName" className="block text-sm font-medium text-foreground mb-1.5">
@@ -210,8 +231,6 @@ export function PartnerForm({ vslAnswers, onSubmit, onBack }: PartnerFormProps) 
             <motion.button
               type="submit"
               disabled={isSubmitting}
-              variants={buttonVariants}
-              initial="initial"
               whileHover="hover"
               whileTap="tap"
               className="w-full h-14 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
@@ -229,8 +248,9 @@ export function PartnerForm({ vslAnswers, onSubmit, onBack }: PartnerFormProps) 
                 hey@meetcursive.com
               </a>
             </p>
-          </form>
+          </motion.form>
         </motion.div>
+        </div>
       </div>
     </motion.div>
   )
