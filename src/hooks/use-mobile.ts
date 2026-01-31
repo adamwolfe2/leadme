@@ -1,53 +1,44 @@
-'use client'
+/**
+ * Mobile Detection Hook
+ * Detects if the user is on a mobile device
+ */
 
 import { useEffect, useState } from 'react'
 
-/**
- * Hook to detect mobile viewport
- * Returns true if viewport is below lg breakpoint (1024px)
- */
-export function useMobile() {
+export function useMobile(breakpoint: number = 1024) {
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024)
+      setIsMobile(window.innerWidth < breakpoint)
     }
 
     // Check on mount
     checkMobile()
 
-    // Listen for resize
+    // Check on resize
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
-  }, [])
+  }, [breakpoint])
 
   return isMobile
 }
 
-/**
- * Hook to get current breakpoint
- * Returns 'mobile' | 'tablet' | 'desktop'
- */
-export function useBreakpoint() {
-  const [breakpoint, setBreakpoint] = useState<'mobile' | 'tablet' | 'desktop'>('desktop')
+export function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(false)
 
   useEffect(() => {
-    const checkBreakpoint = () => {
-      const width = window.innerWidth
-      if (width < 768) {
-        setBreakpoint('mobile')
-      } else if (width < 1024) {
-        setBreakpoint('tablet')
-      } else {
-        setBreakpoint('desktop')
-      }
-    }
+    const media = window.matchMedia(query)
 
-    checkBreakpoint()
-    window.addEventListener('resize', checkBreakpoint)
-    return () => window.removeEventListener('resize', checkBreakpoint)
-  }, [])
+    // Set initial value
+    setMatches(media.matches)
 
-  return breakpoint
+    // Listen for changes
+    const listener = (e: MediaQueryListEvent) => setMatches(e.matches)
+    media.addEventListener('change', listener)
+
+    return () => media.removeEventListener('change', listener)
+  }, [query])
+
+  return matches
 }

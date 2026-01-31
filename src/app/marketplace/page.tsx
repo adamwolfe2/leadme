@@ -429,12 +429,12 @@ export default function MarketplacePage() {
                   {/* State Filter */}
                   <fieldset className="mb-4">
                     <legend className="text-[12px] font-medium text-zinc-700 mb-2">State</legend>
-                    <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-5 gap-1.5" role="group" aria-label="State filters">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2" role="group" aria-label="State filters">
                       {STATES.slice(0, 10).map((state) => (
                         <button
                           key={state}
                           onClick={() => toggleFilter('states', state)}
-                          className={`h-11 lg:h-auto lg:px-2 lg:py-1 px-1 text-[11px] rounded flex items-center justify-center ${
+                          className={`h-11 min-w-[44px] lg:h-auto lg:px-2 lg:py-1 px-3 text-[11px] rounded flex items-center justify-center ${
                             filters.states.includes(state)
                               ? 'bg-zinc-900 text-white'
                               : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
@@ -611,12 +611,12 @@ export default function MarketplacePage() {
                       {/* State Filter */}
                       <fieldset>
                         <legend className="text-[13px] font-medium text-zinc-900 mb-3">State</legend>
-                        <div className="grid grid-cols-4 gap-2" role="group" aria-label="State filters">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2" role="group" aria-label="State filters">
                           {STATES.slice(0, 10).map((state) => (
                             <button
                               key={state}
                               onClick={() => toggleFilter('states', state)}
-                              className={`h-11 px-2 text-[12px] rounded flex items-center justify-center font-medium ${
+                              className={`h-11 min-w-[44px] px-3 text-[12px] rounded flex items-center justify-center font-medium ${
                                 filters.states.includes(state)
                                   ? 'bg-zinc-900 text-white'
                                   : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
@@ -748,7 +748,7 @@ export default function MarketplacePage() {
                       setOrderBy(newOrderBy)
                       setOrderDirection(newDirection)
                     }}
-                    className="h-9 px-3 text-[13px] border border-zinc-200 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-500"
+                    className="h-11 px-3 text-[13px] border border-zinc-200 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-500"
                   >
                     <option value="freshness_score-desc">Freshest first</option>
                     <option value="intent_score-desc">Highest intent first</option>
