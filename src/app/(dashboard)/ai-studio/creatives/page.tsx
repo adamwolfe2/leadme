@@ -23,13 +23,6 @@ import {
   ArrowUp,
   Lock,
 } from 'lucide-react'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { StudioLayout } from '@/components/ai-studio/studio-layout'
 
 interface Creative {
@@ -282,60 +275,75 @@ export default function CreativesPage() {
                   Images
                 </Button>
 
-                <Select value={selectedIcp} onValueChange={setSelectedIcp}>
-                  <SelectTrigger className="w-[140px] h-9">
-                    <div className="flex items-center gap-2">
-                      <User className="h-4 w-4" />
-                      <SelectValue placeholder="ICP" />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">No ICP</SelectItem>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                  <select
+                    value={selectedIcp}
+                    onChange={(e) => setSelectedIcp(e.target.value)}
+                    className="pl-9 pr-3 h-9 text-sm border border-gray-300 rounded-lg bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none cursor-pointer"
+                    style={{
+                      backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                      backgroundPosition: 'right 0.5rem center',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundSize: '1.5em 1.5em',
+                    }}
+                  >
+                    <option value="">ICP</option>
                     {profiles.map((profile) => (
-                      <SelectItem key={profile.id} value={profile.id}>
+                      <option key={profile.id} value={profile.id}>
                         {profile.name}
-                      </SelectItem>
+                      </option>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </select>
+                </div>
 
-                <Select value={selectedFormat} onValueChange={setSelectedFormat}>
-                  <SelectTrigger className="w-[120px] h-9">
-                    <div className="flex items-center gap-2">
-                      <Monitor className="h-4 w-4" />
-                      <SelectValue />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent>
+                <div className="relative">
+                  <Monitor className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                  <select
+                    value={selectedFormat}
+                    onChange={(e) => setSelectedFormat(e.target.value)}
+                    className="pl-9 pr-3 h-9 text-sm border border-gray-300 rounded-lg bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none cursor-pointer"
+                    style={{
+                      backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                      backgroundPosition: 'right 0.5rem center',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundSize: '1.5em 1.5em',
+                    }}
+                  >
                     {FORMATS.map((format) => (
-                      <SelectItem key={format.value} value={format.value}>
+                      <option key={format.value} value={format.value}>
                         {format.label}
-                      </SelectItem>
+                      </option>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </select>
+                </div>
 
                 <Button variant="outline" size="sm" className="gap-2">
                   <Zap className="h-4 w-4" />
                   Auto
                 </Button>
 
-                <Select value={selectedOffer} onValueChange={setSelectedOffer}>
-                  <SelectTrigger className="w-[140px] h-9">
-                    <div className="flex items-center gap-2">
-                      <Megaphone className="h-4 w-4" />
-                      <SelectValue placeholder="Offer" />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">No Offer</SelectItem>
+                <div className="relative">
+                  <Megaphone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                  <select
+                    value={selectedOffer}
+                    onChange={(e) => setSelectedOffer(e.target.value)}
+                    className="pl-9 pr-3 h-9 text-sm border border-gray-300 rounded-lg bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none cursor-pointer"
+                    style={{
+                      backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                      backgroundPosition: 'right 0.5rem center',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundSize: '1.5em 1.5em',
+                    }}
+                  >
+                    <option value="">Offer</option>
                     {offers.map((offer) => (
-                      <SelectItem key={offer.id} value={offer.id}>
+                      <option key={offer.id} value={offer.id}>
                         {offer.name}
-                      </SelectItem>
+                      </option>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </select>
+                </div>
 
                 <div className="flex-1" />
 
