@@ -9,8 +9,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Loader2, ArrowLeft, ArrowRight, CheckCircle2, XCircle, Palette, Type as TypeIcon, Image as ImageIcon } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { Loader2, ArrowLeft, ArrowRight, CheckCircle2, XCircle } from 'lucide-react'
 
 interface BrandData {
   colors: {
@@ -160,211 +159,164 @@ export default function BrandingPage() {
   const brandData = workspace.brand_data
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#F8F9FA]">
+      <div className="mx-auto max-w-6xl px-6 py-8">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+        <div className="mb-8">
           <Button
             onClick={() => router.push('/ai-studio')}
             variant="ghost"
-            className="mb-6 hover:bg-white/50"
-            size="lg"
+            className="mb-4"
+            size="sm"
           >
-            <ArrowLeft className="mr-2 h-5 w-5" />
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Back to AI Studio
           </Button>
 
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-white/50">
-            <div className="flex items-start gap-6">
-              {workspace.logo_url && (
-                <motion.img
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", delay: 0.1 }}
-                  src={workspace.logo_url}
-                  alt={workspace.name}
-                  className="h-20 w-20 rounded-xl object-contain bg-white border-2 border-gray-200 p-3 shadow-lg"
-                />
-              )}
-              <div className="flex-1">
-                <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-2">
-                  {workspace.name}
-                </h1>
-                <p className="text-gray-600 text-lg mb-4">{workspace.url}</p>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  <span className="text-green-600 font-semibold">Brand DNA extracted successfully</span>
+          <Card className="p-6 bg-white shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                {workspace.logo_url && (
+                  <img
+                    src={workspace.logo_url}
+                    alt={workspace.name}
+                    className="h-16 w-16 rounded object-contain bg-gray-50 border border-gray-200 p-2"
+                  />
+                )}
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900 mb-1">
+                    {workspace.name}
+                  </h1>
+                  <p className="text-sm text-gray-600">{workspace.url}</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    <span className="text-sm text-green-600">Brand DNA extracted</span>
+                  </div>
                 </div>
               </div>
 
               <Button
                 onClick={() => router.push(`/ai-studio/knowledge?workspace=${workspace.id}`)}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg"
-                size="lg"
+                className="bg-blue-600 hover:bg-blue-700"
               >
                 Next: Knowledge Base
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
-          </div>
-        </motion.div>
+          </Card>
+        </div>
 
-        {/* Brand Colors - Full Width Hero */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mb-8"
-        >
-          <Card className="p-8 bg-white/80 backdrop-blur-sm shadow-xl border-0">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl">
-                <Palette className="h-6 w-6 text-white" />
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900">Brand Colors</h2>
-            </div>
-
-            <div className="grid grid-cols-4 gap-6">
-              {Object.entries(brandData.colors).map(([name, color], index) => (
-                <motion.div
-                  key={name}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.3 + index * 0.1 }}
-                  className="group cursor-pointer"
-                >
-                  <div
-                    className="h-32 rounded-2xl shadow-lg transition-all duration-300 group-hover:scale-105 group-hover:shadow-2xl border-4 border-white"
-                    style={{ backgroundColor: color }}
-                  />
-                  <div className="mt-4 text-center">
-                    <p className="text-sm font-semibold text-gray-900 capitalize mb-1">{name}</p>
-                    <p className="text-xs font-mono text-gray-600 bg-gray-100 px-3 py-1 rounded-full inline-block">
-                      {color}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
+        {/* Logo Section */}
+        {workspace.logo_url && (
+          <Card className="p-6 bg-white shadow-sm border border-gray-200 mb-6">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+              Logo
+            </h2>
+            <div className="flex items-center justify-center bg-gray-50 rounded-lg p-8 border border-gray-200">
+              <img
+                src={workspace.logo_url}
+                alt={workspace.name}
+                className="h-24 w-auto object-contain"
+              />
             </div>
           </Card>
-        </motion.div>
+        )}
 
-        <div className="grid gap-8 lg:grid-cols-2">
-          {/* Typography */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <Card className="p-8 bg-white/80 backdrop-blur-sm shadow-xl border-0 h-full">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl">
-                  <TypeIcon className="h-6 w-6 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">Typography</h2>
-              </div>
+        {/* Typography */}
+        <Card className="p-6 bg-white shadow-sm border border-gray-200 mb-6">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+            Typography
+          </h2>
+          <div className="space-y-4">
+            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <p className="text-xs text-gray-500 mb-2">Heading Font</p>
+              <p
+                className="text-3xl font-bold text-gray-900"
+                style={{ fontFamily: brandData.typography.heading }}
+              >
+                {brandData.typography.heading}
+              </p>
+            </div>
+            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <p className="text-xs text-gray-500 mb-2">Body Font</p>
+              <p
+                className="text-xl text-gray-900"
+                style={{ fontFamily: brandData.typography.body }}
+              >
+                {brandData.typography.body}
+              </p>
+            </div>
+          </div>
+        </Card>
 
-              <div className="space-y-6">
-                <div className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border-2 border-blue-200">
-                  <p className="text-sm text-gray-600 mb-3 font-semibold">Heading Font</p>
-                  <p
-                    className="text-4xl font-bold text-gray-900"
-                    style={{ fontFamily: brandData.typography.heading }}
-                  >
-                    {brandData.typography.heading}
-                  </p>
-                </div>
-                <div className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border-2 border-purple-200">
-                  <p className="text-sm text-gray-600 mb-3 font-semibold">Body Font</p>
-                  <p
-                    className="text-2xl text-gray-900"
-                    style={{ fontFamily: brandData.typography.body }}
-                  >
-                    {brandData.typography.body}
-                  </p>
+        {/* Colors */}
+        <Card className="p-6 bg-white shadow-sm border border-gray-200 mb-6">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+            Colors
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {Object.entries(brandData.colors).map(([name, color]) => (
+              <div key={name}>
+                <div
+                  className="h-24 rounded-lg border border-gray-200 shadow-sm"
+                  style={{ backgroundColor: color }}
+                />
+                <div className="mt-2">
+                  <p className="text-sm font-medium text-gray-900 capitalize">{name}</p>
+                  <p className="text-xs font-mono text-gray-600">{color}</p>
                 </div>
               </div>
-            </Card>
-          </motion.div>
+            ))}
+          </div>
+        </Card>
 
-          {/* Value Proposition */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            <Card className="p-8 bg-gradient-to-br from-purple-500 to-pink-600 shadow-xl border-0 h-full flex items-center justify-center">
-              <div className="text-center">
-                <p className="text-white/80 text-sm font-semibold mb-4 uppercase tracking-wider">
-                  Value Proposition
-                </p>
-                <h3 className="text-3xl font-bold text-white leading-tight">
-                  {brandData.headline}
-                </h3>
-              </div>
-            </Card>
-          </motion.div>
-        </div>
+        {/* Value Proposition */}
+        <Card className="p-6 bg-white shadow-sm border border-gray-200 mb-6">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+            Value Proposition
+          </h2>
+          <p className="text-2xl font-bold text-gray-900 leading-tight">
+            {brandData.headline}
+          </p>
+        </Card>
 
         {/* Website Screenshot */}
         {brandData.screenshot && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="mt-8"
-          >
-            <Card className="p-8 bg-white/80 backdrop-blur-sm shadow-xl border-0">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-gradient-to-br from-green-500 to-teal-600 rounded-xl">
-                  <ImageIcon className="h-6 w-6 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">Website Preview</h2>
-              </div>
-              <div className="rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
-                <img
-                  src={brandData.screenshot}
-                  alt="Website screenshot"
-                  className="w-full"
-                />
-              </div>
-            </Card>
-          </motion.div>
+          <Card className="p-6 bg-white shadow-sm border border-gray-200 mb-6">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+              Website Preview
+            </h2>
+            <div className="rounded-lg overflow-hidden border border-gray-200">
+              <img
+                src={brandData.screenshot}
+                alt="Website screenshot"
+                className="w-full"
+              />
+            </div>
+          </Card>
         )}
 
         {/* Brand Images Gallery */}
         {brandData.images && brandData.images.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-            className="mt-8"
-          >
-            <Card className="p-8 bg-white/80 backdrop-blur-sm shadow-xl border-0">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Brand Imagery</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {brandData.images.slice(0, 8).map((image, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.8 + index * 0.05 }}
-                    className="aspect-square rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 border-4 border-white"
-                  >
-                    <img
-                      src={image}
-                      alt={`Brand image ${index + 1}`}
-                      className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-                    />
-                  </motion.div>
-                ))}
-              </div>
-            </Card>
-          </motion.div>
+          <Card className="p-6 bg-white shadow-sm border border-gray-200">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+              Brand Imagery
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {brandData.images.slice(0, 8).map((image, index) => (
+                <div
+                  key={index}
+                  className="aspect-square rounded-lg overflow-hidden border border-gray-200 shadow-sm"
+                >
+                  <img
+                    src={image}
+                    alt={`Brand image ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </Card>
         )}
       </div>
     </div>
