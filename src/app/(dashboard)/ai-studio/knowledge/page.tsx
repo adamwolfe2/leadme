@@ -10,7 +10,6 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Loader2, ArrowLeft, ArrowRight, BookOpen, Target, Megaphone, MessageSquare } from 'lucide-react'
-import { StudioLayout } from '@/components/ai-studio/studio-layout'
 
 interface KnowledgeBase {
   company_overview: string
@@ -91,150 +90,135 @@ export default function KnowledgePage() {
   const kb = workspace.knowledge_base
 
   return (
-    <StudioLayout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
+    <div className="min-h-screen bg-[#F8F9FA]">
+      <div className="mx-auto max-w-6xl px-6 py-8">
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <Button
+                onClick={() => router.push(`/ai-studio/branding?workspace=${workspaceId}`)}
+                variant="ghost"
+                size="sm"
+                className="mb-2"
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Branding
+              </Button>
+              <h1 className="text-2xl font-bold text-gray-900">Knowledge Base</h1>
+              <p className="text-sm text-gray-500">{workspace.name}</p>
+            </div>
+
             <Button
-              onClick={() => router.push(`/ai-studio/branding?workspace=${workspaceId}`)}
-              variant="ghost"
-              size="sm"
-              className="mb-2"
+              onClick={() => router.push(`/ai-studio/profiles?workspace=${workspaceId}`)}
+              className="bg-blue-600 hover:bg-blue-700"
             >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Branding
+              Next: Customer Profiles
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
-            <div className="flex items-center gap-3">
-              {workspace.logo_url && (
-                <img
-                  src={workspace.logo_url}
-                  alt={workspace.name}
-                  className="h-12 w-12 rounded-lg object-contain bg-white border border-gray-200 p-1"
-                />
-              )}
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Knowledge Base</h1>
-                <p className="text-sm text-gray-500">{workspace.name}</p>
-              </div>
-            </div>
           </div>
 
-          <Button
-            onClick={() => router.push(`/ai-studio/profiles?workspace=${workspaceId}`)}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            Next: Customer Profiles
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
-
-        {/* Company Overview */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <BookOpen className="h-5 w-5 text-blue-600" />
-            <h2 className="text-lg font-semibold text-gray-900">Company Overview</h2>
-          </div>
-          <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-            {kb.company_overview}
-          </p>
-        </Card>
-
-        {/* Products & Services */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Target className="h-5 w-5 text-blue-600" />
-            <h2 className="text-lg font-semibold text-gray-900">Products & Services</h2>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            {kb.products_services.map((product, index) => (
-              <Card key={index} className="p-4 bg-blue-50/50 border-blue-100">
-                <h3 className="font-semibold text-gray-900 mb-2">{product.name}</h3>
-                <p className="text-sm text-gray-600 mb-3">{product.description}</p>
-                <div className="pt-3 border-t border-blue-100">
-                  <p className="text-xs font-medium text-blue-600 mb-1">Target Audience</p>
-                  <p className="text-sm text-gray-700">{product.target_audience}</p>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </Card>
-
-        {/* Two Column Layout */}
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Target Audience */}
-          <Card className="p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Target className="h-5 w-5 text-blue-600" />
-              <h2 className="text-lg font-semibold text-gray-900">Target Audience</h2>
-            </div>
-            <p className="text-gray-700 leading-relaxed">
-              {kb.target_audience}
+          {/* Company Overview */}
+          <Card className="p-6 bg-white shadow-sm border border-gray-200">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+              Company Overview
+            </h2>
+            <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+              {kb.company_overview}
             </p>
           </Card>
 
-          {/* Brand Voice */}
-          <Card className="p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <MessageSquare className="h-5 w-5 text-blue-600" />
-              <h2 className="text-lg font-semibold text-gray-900">Brand Voice</h2>
-            </div>
-            <div className="space-y-3">
-              <div>
-                <p className="text-xs font-medium text-gray-500 mb-1">Tone</p>
-                <p className="text-sm text-gray-900">{kb.brand_voice.tone}</p>
-              </div>
-              <div>
-                <p className="text-xs font-medium text-gray-500 mb-1">Energy Level</p>
-                <p className="text-sm text-gray-900">{kb.brand_voice.energy_level}</p>
-              </div>
-              <div>
-                <p className="text-xs font-medium text-gray-500 mb-1">Communication Style</p>
-                <p className="text-sm text-gray-900">{kb.brand_voice.communication_style}</p>
-              </div>
+          {/* Products & Services */}
+          <Card className="p-6 bg-white shadow-sm border border-gray-200">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+              Products & Services
+            </h2>
+            <div className="grid gap-4 md:grid-cols-2">
+              {kb.products_services.map((product, index) => (
+                <div key={index} className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <h3 className="font-semibold text-gray-900 mb-2">{product.name}</h3>
+                  <p className="text-sm text-gray-600 mb-3">{product.description}</p>
+                  <div className="pt-3 border-t border-gray-200">
+                    <p className="text-xs font-medium text-gray-500 mb-1">Target Audience</p>
+                    <p className="text-sm text-gray-700">{product.target_audience}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </Card>
-        </div>
 
-        {/* Value Propositions */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Megaphone className="h-5 w-5 text-blue-600" />
-            <h2 className="text-lg font-semibold text-gray-900">Value Propositions</h2>
-          </div>
-          <div className="grid gap-3 md:grid-cols-3">
-            {kb.value_proposition.map((prop, index) => (
-              <div
-                key={index}
-                className="p-4 bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-lg"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="rounded-full bg-blue-600 text-white w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0">
-                    {index + 1}
-                  </div>
-                  <p className="text-sm text-gray-700 leading-relaxed">{prop}</p>
+          {/* Two Column Layout */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Target Audience */}
+            <Card className="p-6 bg-white shadow-sm border border-gray-200">
+              <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+                Target Audience
+              </h2>
+              <p className="text-gray-700 leading-relaxed">
+                {kb.target_audience}
+              </p>
+            </Card>
+
+            {/* Brand Voice */}
+            <Card className="p-6 bg-white shadow-sm border border-gray-200">
+              <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+                Brand Voice
+              </h2>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-xs font-medium text-gray-500 mb-1">Tone</p>
+                  <p className="text-sm text-gray-900">{kb.brand_voice.tone}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 mb-1">Energy Level</p>
+                  <p className="text-sm text-gray-900">{kb.brand_voice.energy_level}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 mb-1">Communication Style</p>
+                  <p className="text-sm text-gray-900">{kb.brand_voice.communication_style}</p>
                 </div>
               </div>
-            ))}
+            </Card>
           </div>
-        </Card>
 
-        {/* Key Messages */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <MessageSquare className="h-5 w-5 text-blue-600" />
-            <h2 className="text-lg font-semibold text-gray-900">Key Messages</h2>
-          </div>
-          <ul className="space-y-2">
-            {kb.key_messages.map((message, index) => (
-              <li key={index} className="flex items-start gap-3">
-                <span className="text-blue-600 mt-1">•</span>
-                <p className="text-gray-700 flex-1">{message}</p>
-              </li>
-            ))}
-          </ul>
-        </Card>
+          {/* Value Propositions */}
+          <Card className="p-6 bg-white shadow-sm border border-gray-200">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+              Value Propositions
+            </h2>
+            <div className="grid gap-3 md:grid-cols-3">
+              {kb.value_proposition.map((prop, index) => (
+                <div
+                  key={index}
+                  className="p-4 bg-gray-50 border border-gray-200 rounded-lg"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="rounded-full bg-blue-600 text-white w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                      {index + 1}
+                    </div>
+                    <p className="text-sm text-gray-700 leading-relaxed">{prop}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          {/* Key Messages */}
+          <Card className="p-6 bg-white shadow-sm border border-gray-200">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+              Key Messages
+            </h2>
+            <ul className="space-y-2">
+              {kb.key_messages.map((message, index) => (
+                <li key={index} className="flex items-start gap-3">
+                  <span className="text-blue-600 mt-1">•</span>
+                  <p className="text-gray-700 flex-1">{message}</p>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </div>
       </div>
-    </StudioLayout>
+    </div>
   )
 }
