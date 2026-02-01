@@ -734,6 +734,20 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
 
             console.log(`✅ Workspace ${workspace.id} access re-enabled (subscription active)`)
           }
+
+          // Enable marketplace access for all business users in workspace
+          await supabase
+            .from('users')
+            .update({
+              active_subscription: true,
+              subscription_plan_id: subscription.id,
+              subscription_start_date: new Date(subscription.current_period_start * 1000).toISOString(),
+              subscription_end_date: new Date(subscription.current_period_end * 1000).toISOString(),
+            })
+            .eq('workspace_id', workspace.id)
+            .in('role', ['owner', 'admin', 'member'])
+
+          console.log(`✅ Marketplace access enabled for workspace ${workspace.id} users`)
         } else if (['past_due', 'unpaid'].includes(newStatus)) {
           // Subscription payment issues - log but don't disable yet (handled by invoice.payment_failed)
           console.log(`⚠️ Subscription ${subscription.id} status changed to ${newStatus}`)
@@ -744,15 +758,41 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
             .update({ plan: 'free' })
             .eq('id', workspace.id)
 
+          // Disable marketplace access for all business users in workspace
+          await supabase
+            .from('users')
+            .update({
+              active_subscription: false,
+              subscription_end_date: new Date().toISOString(),
+            })
+            .eq('workspace_id', workspace.id)
+            .in('role', ['owner', 'admin', 'member'])
+
           console.log(`✅ Workspace ${workspace.id} downgraded to free (subscription canceled)`)
         }
 
         // Update workspace plan if not already handled
-        if (plan && newStatus === 'active') {
+        if (plan && (newStatus === 'active' || newStatus === 'trialing')) {
           await supabase
             .from('workspaces')
             .update({ plan: plan.name })
             .eq('id', workspace.id)
+
+          // Enable marketplace access for trialing subscriptions too
+          if (newStatus === 'trialing' && previousStatus !== 'trialing') {
+            await supabase
+              .from('users')
+              .update({
+                active_subscription: true,
+                subscription_plan_id: subscription.id,
+                subscription_start_date: new Date(subscription.current_period_start * 1000).toISOString(),
+                subscription_end_date: new Date(subscription.current_period_end * 1000).toISOString(),
+              })
+              .eq('workspace_id', workspace.id)
+              .in('role', ['owner', 'admin', 'member'])
+
+            console.log(`✅ Marketplace access enabled for workspace ${workspace.id} users (trial started)`)
+          }
         }
       }
     }
@@ -781,6 +821,18 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
           .from('workspaces')
           .update({ plan: 'free' })
           .eq('id', sub.workspace_id)
+
+        // Disable marketplace access for all business users in workspace
+        await supabase
+          .from('users')
+          .update({
+            active_subscription: false,
+            subscription_end_date: new Date().toISOString(),
+          })
+          .eq('workspace_id', sub.workspace_id)
+          .in('role', ['owner', 'admin', 'member'])
+
+        console.log(`✅ Marketplace access disabled for workspace ${sub.workspace_id} users (subscription deleted)`)
       }
     }
 

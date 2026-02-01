@@ -18,7 +18,7 @@ import {
   FloatingPortal,
 } from '@floating-ui/react'
 import { Check, Loader2 } from 'lucide-react'
-import { StatusBadge } from '@/app/crm/components/StatusBadge'
+import { StatusBadge } from '@/app/(dashboard)/crm/components/StatusBadge'
 import { useUpdateLead } from '@/lib/hooks/use-leads'
 import type { LeadStatus } from '@/types/crm.types'
 import { cn } from '@/lib/utils'

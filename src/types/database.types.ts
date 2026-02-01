@@ -54,6 +54,11 @@ export interface Database {
           daily_credits_used: number
           is_partner: boolean
           linked_partner_id: string | null
+          partner_approved: boolean
+          active_subscription: boolean
+          subscription_plan_id: string | null
+          subscription_start_date: string | null
+          subscription_end_date: string | null
           created_at: string
           updated_at: string
         }
@@ -69,6 +74,11 @@ export interface Database {
           daily_credits_used?: number
           is_partner?: boolean
           linked_partner_id?: string | null
+          partner_approved?: boolean
+          active_subscription?: boolean
+          subscription_plan_id?: string | null
+          subscription_start_date?: string | null
+          subscription_end_date?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -84,6 +94,11 @@ export interface Database {
           daily_credits_used?: number
           is_partner?: boolean
           linked_partner_id?: string | null
+          partner_approved?: boolean
+          active_subscription?: boolean
+          subscription_plan_id?: string | null
+          subscription_start_date?: string | null
+          subscription_end_date?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -198,6 +213,10 @@ export interface Database {
           secondary_email: string | null
           mobile_phone: string | null
           work_phone: string | null
+          // Partner attribution fields
+          uploaded_by_partner_id: string | null
+          upload_source: string | null
+          upload_date: string | null
         }
         Insert: {
           id?: string
@@ -250,6 +269,10 @@ export interface Database {
           secondary_email?: string | null
           mobile_phone?: string | null
           work_phone?: string | null
+          // Partner attribution fields
+          uploaded_by_partner_id?: string | null
+          upload_source?: string | null
+          upload_date?: string | null
         }
         Update: {
           id?: string
@@ -302,6 +325,10 @@ export interface Database {
           secondary_email?: string | null
           mobile_phone?: string | null
           work_phone?: string | null
+          // Partner attribution fields
+          uploaded_by_partner_id?: string | null
+          upload_source?: string | null
+          upload_date?: string | null
         }
       }
       lead_routing_rules: {
@@ -1240,9 +1267,132 @@ export interface Database {
           contacted_at?: string | null
         }
       }
+      lead_purchases: {
+        Row: {
+          id: string
+          lead_id: string
+          buyer_user_id: string
+          partner_id: string | null
+          purchase_price: number
+          partner_commission: number
+          platform_fee: number
+          purchased_at: string
+          stripe_payment_intent_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          lead_id: string
+          buyer_user_id: string
+          partner_id?: string | null
+          purchase_price: number
+          partner_commission: number
+          platform_fee: number
+          purchased_at?: string
+          stripe_payment_intent_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          lead_id?: string
+          buyer_user_id?: string
+          partner_id?: string | null
+          purchase_price?: number
+          partner_commission?: number
+          platform_fee?: number
+          purchased_at?: string
+          stripe_payment_intent_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      partner_credits: {
+        Row: {
+          partner_id: string
+          balance: number
+          total_earned: number
+          total_withdrawn: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          partner_id: string
+          balance?: number
+          total_earned?: number
+          total_withdrawn?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          partner_id?: string
+          balance?: number
+          total_earned?: number
+          total_withdrawn?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      partner_credit_transactions: {
+        Row: {
+          id: string
+          partner_id: string
+          amount: number
+          type: 'earned' | 'payout_request' | 'payout_completed' | 'adjustment'
+          lead_purchase_id: string | null
+          description: string | null
+          metadata: Json | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          partner_id: string
+          amount: number
+          type: 'earned' | 'payout_request' | 'payout_completed' | 'adjustment'
+          lead_purchase_id?: string | null
+          description?: string | null
+          metadata?: Json | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          partner_id?: string
+          amount?: number
+          type?: 'earned' | 'payout_request' | 'payout_completed' | 'adjustment'
+          lead_purchase_id?: string | null
+          description?: string | null
+          metadata?: Json | null
+          created_at?: string
+        }
+      }
     }
-    Views: {}
+    Views: {
+      partner_analytics: {
+        Row: {
+          partner_id: string
+          partner_name: string | null
+          partner_email: string
+          total_leads_uploaded: number
+          leads_sold: number
+          total_revenue: number
+          current_balance: number
+          lifetime_earnings: number
+          total_withdrawn: number
+          conversion_rate_percent: number | null
+          partner_since: string
+        }
+      }
+    }
     Functions: {
+      credit_partner_for_sale: {
+        Args: {
+          p_lead_purchase_id: string
+          p_partner_id: string
+          p_commission_amount: number
+        }
+        Returns: void
+      }
       route_lead_to_workspace: {
         Args: {
           p_lead_id: string
@@ -1604,4 +1754,59 @@ export interface CommissionCalculation {
   rate: number
   amount: number
   bonuses: string[]
+}
+// ============================================================================
+// PARTNER ATTRIBUTION SYSTEM TYPES
+// ============================================================================
+
+// Lead Purchase (tracking who bought which lead)
+export interface LeadPurchase {
+  id: string
+  lead_id: string
+  buyer_user_id: string
+  partner_id: string | null
+  purchase_price: number
+  partner_commission: number
+  platform_fee: number
+  purchased_at: string
+  stripe_payment_intent_id: string | null
+  created_at: string
+  updated_at: string
+}
+
+// Partner Credits (credit balance for each partner)
+export interface PartnerCredit {
+  partner_id: string
+  balance: number
+  total_earned: number
+  total_withdrawn: number
+  created_at: string
+  updated_at: string
+}
+
+// Partner Credit Transaction (transaction log)
+export interface PartnerCreditTransaction {
+  id: string
+  partner_id: string
+  amount: number
+  type: 'earned' | 'payout_request' | 'payout_completed' | 'adjustment'
+  lead_purchase_id: string | null
+  description: string | null
+  metadata: Json | null
+  created_at: string
+}
+
+// Partner Analytics (dashboard metrics from view)
+export interface PartnerAnalytics {
+  partner_id: string
+  partner_name: string | null
+  partner_email: string
+  total_leads_uploaded: number
+  leads_sold: number
+  total_revenue: number
+  current_balance: number
+  lifetime_earnings: number
+  total_withdrawn: number
+  conversion_rate_percent: number | null
+  partner_since: string
 }

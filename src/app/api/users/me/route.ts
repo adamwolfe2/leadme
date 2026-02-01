@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, success, validationError } from '@/lib/utils/api-error-handler'
+import { DAILY_CREDIT_LIMITS } from '@/lib/services/credit.service'
 
 // Generate a unique referral code
 function generateReferralCode(): string {
@@ -65,8 +66,15 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 3. Calculate credits remaining
-    const creditsRemaining = user.daily_credit_limit - user.daily_credits_used
+    // 3. Calculate credits remaining using plan-based limits
+    const limit = DAILY_CREDIT_LIMITS[user.plan as keyof typeof DAILY_CREDIT_LIMITS] || DAILY_CREDIT_LIMITS.free
+
+    // Check if daily reset is needed
+    const resetAt = new Date(user.daily_credits_reset_at || 0)
+    const now = new Date()
+    const creditsUsed = now > resetAt ? 0 : (user.daily_credits_used || 0)
+
+    const creditsRemaining = limit - creditsUsed
 
     // 4. Return response
     return success({
@@ -137,7 +145,11 @@ export async function PATCH(request: NextRequest) {
     }
 
     // 6. Return updated user
-    const creditsRemaining = updatedUser.daily_credit_limit - updatedUser.daily_credits_used
+    const limit = DAILY_CREDIT_LIMITS[updatedUser.plan as keyof typeof DAILY_CREDIT_LIMITS] || DAILY_CREDIT_LIMITS.free
+    const resetAt = new Date(updatedUser.daily_credits_reset_at || 0)
+    const now = new Date()
+    const creditsUsed = now > resetAt ? 0 : (updatedUser.daily_credits_used || 0)
+    const creditsRemaining = limit - creditsUsed
 
     return success({
       id: updatedUser.id,

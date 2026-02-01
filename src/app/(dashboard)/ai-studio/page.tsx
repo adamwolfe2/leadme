@@ -66,7 +66,7 @@ export default function AIStudioPage() {
 
   async function fetchUserName() {
     try {
-      const response = await fetch('/api/user/me')
+      const response = await fetch('/api/users/me')
       const data = await response.json()
       if (data.user?.full_name) {
         const firstName = data.user.full_name.split(' ')[0]

@@ -53,13 +53,20 @@ export function CampaignsList() {
       try {
         const params = activeTab !== 'all' ? `?status=${activeTab}&includeUsage=true` : '?includeUsage=true'
         const response = await fetch(`/api/campaigns${params}`)
-        if (response.ok) {
-          const result = await response.json()
-          setCampaigns(result.data || [])
-          setUsage(result.usage || null)
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}))
+          console.error('API Error:', response.status, errorData)
+          throw new Error(errorData.error || `HTTP ${response.status}`)
         }
+
+        const result = await response.json()
+        console.log('Campaigns loaded:', result)
+        setCampaigns(result.data || [])
+        setUsage(result.usage || null)
       } catch (error) {
         console.error('Failed to fetch campaigns:', error)
+        // Set loading to false even on error so we show empty state instead of skeleton
       } finally {
         setLoading(false)
       }

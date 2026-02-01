@@ -328,6 +328,8 @@ export default function OnboardingPage() {
         role: 'owner',
         plan: 'free',
         daily_credit_limit: 3,
+        active_subscription: false, // Will be set to true after Stripe subscription
+        partner_approved: false, // Only applies to partner role
       } as any)
 
       if (userError) {

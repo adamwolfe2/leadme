@@ -10,6 +10,7 @@ import { useDebounce } from '@/hooks/use-debounce'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { MobileFilters } from './components/MobileFilters'
+import { BuyLeadButton } from '@/components/marketplace/BuyLeadButton'
 
 // Types for marketplace leads
 interface MarketplaceLeadPreview {
@@ -884,6 +885,17 @@ export default function MarketplacePage() {
                                     </span>
                                   )}
                                 </div>
+                              </div>
+
+                              {/* Buy Lead Button */}
+                              <div className="mt-3">
+                                <BuyLeadButton
+                                  lead={lead}
+                                  onPurchaseComplete={() => {
+                                    // Refresh leads list
+                                    fetchLeads()
+                                  }}
+                                />
                               </div>
                             </div>
                           </div>

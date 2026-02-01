@@ -1,0 +1,102 @@
+/**
+ * Lead Purchase API - Create Payment Intent
+ * POST /api/leads/[leadId]/purchase
+ */
+
+import { NextRequest, NextResponse } from 'next/server'
+import { createServerClient } from '@/lib/supabase/server'
+import Stripe from 'stripe'
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2024-11-20.acacia',
+})
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { leadId: string } }
+) {
+  try {
+    const supabase = await createServerClient()
+
+    // Get authenticated user
+    const { data: { user: authUser } } = await supabase.auth.getUser()
+    if (!authUser) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+    }
+
+    // Get user profile with subscription check
+    const { data: user } = await supabase
+      .from('users')
+      .select('id, role, active_subscription, workspace_id')
+      .eq('auth_user_id', authUser.id)
+      .single()
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    // Verify business user with active subscription
+    if (!['owner', 'admin', 'member'].includes(user.role)) {
+      return NextResponse.json(
+        { error: 'Only business users can purchase leads' },
+        { status: 403 }
+      )
+    }
+
+    if (!user.active_subscription) {
+      return NextResponse.json(
+        { error: 'Active subscription required to purchase leads' },
+        { status: 403 }
+      )
+    }
+
+    // Get lead and verify not already sold
+    const { data: lead, error: leadError } = await supabase
+      .from('leads')
+      .select('id, business_name, industry, uploaded_by_partner_id, status')
+      .eq('id', params.leadId)
+      .single()
+
+    if (leadError || !lead) {
+      return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
+    }
+
+    if (lead.status === 'sold') {
+      return NextResponse.json(
+        { error: 'This lead has already been sold' },
+        { status: 400 }
+      )
+    }
+
+    // Create Stripe payment intent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: 2000, // $20.00
+      currency: 'usd',
+      automatic_payment_methods: { enabled: true },
+      metadata: {
+        type: 'lead_purchase',
+        lead_id: params.leadId,
+        buyer_user_id: user.id,
+        buyer_workspace_id: user.workspace_id,
+        partner_id: lead.uploaded_by_partner_id || 'none',
+        company_name: lead.business_name || 'Unknown',
+      },
+      description: `Lead purchase: ${lead.business_name || 'Unknown'} (${lead.industry || 'N/A'})`,
+    })
+
+    console.log(
+      `✅ Payment intent created for lead ${params.leadId}: ${paymentIntent.id}`
+    )
+
+    return NextResponse.json({
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
+    })
+  } catch (error) {
+    console.error('[Lead Purchase] Error creating payment intent:', error)
+    return NextResponse.json(
+      { error: 'Failed to create payment intent' },
+      { status: 500 }
+    )
+  }
+}

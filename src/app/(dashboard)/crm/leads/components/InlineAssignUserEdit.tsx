@@ -18,7 +18,7 @@ import {
   FloatingPortal,
 } from '@floating-ui/react'
 import { Check, Loader2, UserX } from 'lucide-react'
-import { LeadAvatar } from '@/app/crm/components/LeadAvatar'
+import { LeadAvatar } from '@/app/(dashboard)/crm/components/LeadAvatar'
 import { useUpdateLead } from '@/lib/hooks/use-leads'
 import { cn } from '@/lib/utils'
 

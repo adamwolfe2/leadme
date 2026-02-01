@@ -38,10 +38,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { StatusBadge } from '@/app/crm/components/StatusBadge'
-import { LeadAvatar } from '@/app/crm/components/LeadAvatar'
-import { CompanyFavicon } from '@/app/crm/components/CompanyFavicon'
-import { ScoreProgress } from '@/app/crm/components/ScoreProgress'
+import { StatusBadge } from '@/app/(dashboard)/crm/components/StatusBadge'
+import { LeadAvatar } from '@/app/(dashboard)/crm/components/LeadAvatar'
+import { CompanyFavicon } from '@/app/(dashboard)/crm/components/CompanyFavicon'
+import { ScoreProgress } from '@/app/(dashboard)/crm/components/ScoreProgress'
 import { useToast } from '@/lib/hooks/use-toast'
 import { formatDistanceToNow, format } from 'date-fns'
 import type { LeadTableRow } from '@/types/crm.types'

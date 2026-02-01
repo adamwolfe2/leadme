@@ -112,7 +112,7 @@ export function OnboardingChecklist() {
       {/* Header */}
       <div className="px-6 py-4 flex items-center justify-between bg-white/50 backdrop-blur-sm">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-blue-400 rounded-lg flex items-center justify-center p-1.5">
+          <div className="w-10 h-10 bg-white border border-zinc-200 rounded-lg flex items-center justify-center p-1.5 shadow-sm">
             <Image
               src="/cursive-logo.png"
               alt="Cursive Logo"

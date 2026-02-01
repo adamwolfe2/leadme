@@ -88,41 +88,36 @@ export async function POST(request: NextRequest) {
   const adminClient = createAdminClient()
 
   try {
-    const apiKey = request.headers.get('X-API-Key')
+    // Get authenticated user session
+    const supabase = await createClient()
+    const { data: { user: authUser } } = await supabase.auth.getUser()
 
-    if (!apiKey) {
-      return NextResponse.json({ error: 'API key required' }, { status: 401 })
+    if (!authUser) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
 
-    const supabase = await createClient()
-
-    // Validate partner
-    const { data: partner, error: partnerError } = await supabase
-      .from('partners')
-      .select('id, name, payout_rate, is_active, status, stripe_onboarding_complete')
-      .eq('api_key', apiKey)
+    // Get user with access control fields
+    const { data: user } = await supabase
+      .from('users')
+      .select('id, role, partner_approved, email, full_name')
+      .eq('auth_user_id', authUser.id)
       .single()
 
-    if (partnerError || !partner) {
-      return NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    // Comprehensive partner approval check
-    if (!partner.is_active) {
+    // Verify user is a partner
+    if (user.role !== 'partner') {
       return NextResponse.json({
-        error: 'Partner account is not active. Please contact support.'
+        error: 'Only partners can upload leads. Please sign up as a partner.'
       }, { status: 403 })
     }
 
-    if (partner.status !== 'active') {
+    // Verify partner is approved (auto-approved on signup, but check anyway)
+    if (!user.partner_approved) {
       return NextResponse.json({
-        error: `Partner account status is '${partner.status}'. Only active partners can upload leads.`
-      }, { status: 403 })
-    }
-
-    if (!partner.stripe_onboarding_complete) {
-      return NextResponse.json({
-        error: 'Stripe Connect onboarding must be completed before uploading leads.'
+        error: 'Partner account is not approved. Please contact support.'
       }, { status: 403 })
     }
 
@@ -193,7 +188,7 @@ export async function POST(request: NextRequest) {
     const { data: uploadBatch, error: batchError } = await adminClient
       .from('partner_upload_batches')
       .insert({
-        partner_id: partner.id,
+        partner_id: user.id, // Use authenticated partner user ID
         file_name: file.name,
         file_size_bytes: file.size,
         file_type: file.type || 'text/csv',
@@ -226,7 +221,7 @@ export async function POST(request: NextRequest) {
     // Batch check for duplicates (with fuzzy matching enabled)
     const duplicateResults = await batchCheckDuplicates(
       leadsToCheck,
-      partner.id,
+      user.id, // Use authenticated partner user ID
       true // Enable fuzzy matching
     )
 
@@ -375,7 +370,7 @@ export async function POST(request: NextRequest) {
         // Prepare lead for insertion
         leadsToInsert.push({
           workspace_id: null, // Will be set when lead is purchased or routed
-          partner_id: partner.id,
+          partner_id: user.id, // CRITICAL: Set to authenticated partner user ID
           upload_batch_id: batchId,
           first_name: validatedRow.first_name,
           last_name: validatedRow.last_name,
@@ -402,6 +397,10 @@ export async function POST(request: NextRequest) {
           source: 'partner',
           enrichment_status: 'pending',
           delivery_status: 'pending',
+          // Partner attribution (Phase 2) - CRITICAL FOR COMMISSION TRACKING
+          uploaded_by_partner_id: user.id, // ← THIS IS CRITICAL - enables partner attribution and commission
+          upload_source: 'csv_upload',
+          upload_date: new Date().toISOString(),
         })
 
         results.successful++
@@ -462,14 +461,13 @@ export async function POST(request: NextRequest) {
       })
       .eq('id', batchId)
 
-    // Update partner statistics
-    await adminClient
-      .from('partners')
+    // Update user's last upload timestamp (partner statistics tracked in partner_analytics view)
+    await supabase
+      .from('users')
       .update({
-        total_leads_uploaded: adminClient.sql`total_leads_uploaded + ${results.successful}`,
-        last_upload_at: new Date().toISOString(),
-      } as never)
-      .eq('id', partner.id)
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', user.id)
 
     // Return response
     return NextResponse.json({
