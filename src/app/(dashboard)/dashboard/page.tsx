@@ -61,16 +61,16 @@ export default async function DashboardPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
-            <p className="text-sm text-gray-500">{workspace?.name || 'Your Workspace'}</p>
+            <h1 className="text-lg sm:text-xl font-semibold text-gray-900">Dashboard</h1>
+            <p className="text-xs sm:text-sm text-gray-500">{workspace?.name || 'Your Workspace'}</p>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">{user.email}</span>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <span className="hidden sm:inline text-sm text-gray-600">{user.email}</span>
             <Link
               href="/auth/signout"
-              className="text-sm text-gray-600 hover:text-gray-900"
+              className="text-xs sm:text-sm text-gray-600 hover:text-gray-900"
             >
               Sign out
             </Link>
@@ -79,33 +79,33 @@ export default async function DashboardPage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Onboarding Checklist */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <OnboardingChecklist />
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <p className="text-sm text-gray-500">Total Leads</p>
-            <p className="text-3xl font-semibold text-gray-900 mt-1">{leadsCount || 0}</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+            <p className="text-xs sm:text-sm text-gray-500">Total Leads</p>
+            <p className="text-2xl sm:text-3xl font-semibold text-gray-900 mt-1">{leadsCount || 0}</p>
           </div>
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <p className="text-sm text-gray-500">Industry</p>
-            <p className="text-3xl font-semibold text-gray-900 mt-1">{workspace?.industry_vertical || 'Not set'}</p>
+          <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+            <p className="text-xs sm:text-sm text-gray-500">Industry</p>
+            <p className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900 mt-1 truncate">{workspace?.industry_vertical || 'Not set'}</p>
           </div>
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <p className="text-sm text-gray-500">Plan</p>
-            <p className="text-3xl font-semibold text-gray-900 mt-1 capitalize">{user.plan || 'Free'}</p>
+          <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+            <p className="text-xs sm:text-sm text-gray-500">Plan</p>
+            <p className="text-2xl sm:text-3xl font-semibold text-gray-900 mt-1 capitalize">{user.plan || 'Free'}</p>
           </div>
         </div>
 
         {/* Recent Leads */}
         <div className="bg-white rounded-lg border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="font-semibold text-gray-900">Recent Leads</h2>
-            <Link href="/leads" className="text-sm text-blue-600 hover:underline">
+          <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center justify-between">
+            <h2 className="text-sm sm:text-base font-semibold text-gray-900">Recent Leads</h2>
+            <Link href="/leads" className="text-xs sm:text-sm text-blue-600 hover:underline">
               View all
             </Link>
           </div>
@@ -113,12 +113,12 @@ export default async function DashboardPage() {
           {recentLeads && recentLeads.length > 0 ? (
             <div className="divide-y divide-gray-100">
               {recentLeads.map((lead: any) => (
-                <div key={lead.id} className="px-6 py-4 flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-gray-900">{lead.company_name || lead.contact_name || 'Unknown'}</p>
-                    <p className="text-sm text-gray-500">{lead.contact_email || lead.industry || 'No details'}</p>
+                <div key={lead.id} className="px-4 sm:px-6 py-3 sm:py-4 flex items-start sm:items-center justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm sm:text-base text-gray-900 truncate">{lead.company_name || lead.contact_name || 'Unknown'}</p>
+                    <p className="text-xs sm:text-sm text-gray-500 truncate">{lead.contact_email || lead.industry || 'No details'}</p>
                   </div>
-                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                  <span className={`px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap flex-shrink-0 ${
                     lead.status === 'new' ? 'bg-blue-100 text-blue-700' :
                     lead.status === 'contacted' ? 'bg-yellow-100 text-yellow-700' :
                     lead.status === 'qualified' ? 'bg-green-100 text-green-700' :
@@ -130,22 +130,22 @@ export default async function DashboardPage() {
               ))}
             </div>
           ) : (
-            <div className="px-6 py-12 text-center">
-              <p className="text-gray-500 mb-4">No leads yet</p>
-              <p className="text-sm text-gray-400">Leads will appear here once they are added to your workspace</p>
+            <div className="px-4 sm:px-6 py-8 sm:py-12 text-center">
+              <p className="text-sm sm:text-base text-gray-500 mb-2 sm:mb-4">No leads yet</p>
+              <p className="text-xs sm:text-sm text-gray-400">Leads will appear here once they are added to your workspace</p>
             </div>
           )}
         </div>
 
         {/* Quick Links */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Link href="/leads" className="bg-white rounded-lg border border-gray-200 p-6 hover:border-blue-300 transition-colors">
-            <h3 className="font-semibold text-gray-900">View Leads</h3>
-            <p className="text-sm text-gray-500 mt-1">Browse and manage your leads</p>
+        <div className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <Link href="/leads" className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 hover:border-blue-300 transition-colors">
+            <h3 className="text-sm sm:text-base font-semibold text-gray-900">View Leads</h3>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">Browse and manage your leads</p>
           </Link>
-          <Link href="/settings" className="bg-white rounded-lg border border-gray-200 p-6 hover:border-blue-300 transition-colors">
-            <h3 className="font-semibold text-gray-900">Settings</h3>
-            <p className="text-sm text-gray-500 mt-1">Manage your account and workspace</p>
+          <Link href="/settings" className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 hover:border-blue-300 transition-colors">
+            <h3 className="text-sm sm:text-base font-semibold text-gray-900">Settings</h3>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">Manage your account and workspace</p>
           </Link>
         </div>
       </main>
