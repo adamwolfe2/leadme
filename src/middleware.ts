@@ -80,7 +80,8 @@ export async function middleware(req: NextRequest) {
 
     // Waitlist enforcement
     // If on waitlist domain without admin bypass cookie, redirect to waitlist
-    if (isWaitlistDomain && !hasAdminBypass) {
+    // BUT allow authenticated users to access the platform
+    if (isWaitlistDomain && !hasAdminBypass && !user) {
       const isWaitlistPath =
         pathname === '/waitlist' ||
         pathname.startsWith('/api/waitlist') ||
@@ -89,6 +90,9 @@ export async function middleware(req: NextRequest) {
         pathname.startsWith('/_next') ||
         pathname.startsWith('/auth/callback') ||
         pathname.startsWith('/login') ||
+        pathname.startsWith('/signup') ||
+        pathname.startsWith('/onboarding') ||
+        pathname.startsWith('/role-selection') ||
         pathname.startsWith('/auth')
 
       if (!isWaitlistPath) {
