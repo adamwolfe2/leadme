@@ -13,7 +13,6 @@ import { Button } from '@/components/ui/button'
 import { FileUploader } from '@/components/ui/file-uploader'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle, CheckCircle2, Download } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
 
 interface ImportLeadsDialogProps {
   open: boolean
@@ -30,7 +29,6 @@ export function ImportLeadsDialog({ open, onOpenChange, onSuccess }: ImportLeads
     failed: number
     errors?: string[]
   } | null>(null)
-  const { toast } = useToast()
 
   const handleUpload = async (uploadFiles: File[]) => {
     if (uploadFiles.length === 0) return
@@ -56,18 +54,9 @@ export function ImportLeadsDialog({ open, onOpenChange, onSuccess }: ImportLeads
       setResult(data)
 
       if (data.success) {
-        toast({
-          title: 'Import successful',
-          description: `Successfully imported ${data.imported} lead(s)`,
-        })
         onSuccess?.()
       }
     } catch (error) {
-      toast({
-        title: 'Import failed',
-        description: error instanceof Error ? error.message : 'Failed to import leads',
-        variant: 'destructive',
-      })
       setResult({
         success: false,
         imported: 0,

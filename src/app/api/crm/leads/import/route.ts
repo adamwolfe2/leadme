@@ -45,6 +45,8 @@ const leadSchema = z.object({
   city: z.string().optional(),
   state: z.string().optional(),
   source: z.string().optional(),
+  company_industry: z.string().optional(),
+  business_type: z.string().optional(),
 })
 
 export async function POST(req: NextRequest) {
@@ -83,6 +85,9 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Generate upload batch ID for tracking
+    const uploadBatchId = crypto.randomUUID()
+
     // Validate and import leads
     const leadRepo = new CRMLeadRepository()
     const results: { success: boolean; row: number; error?: string }[] = []
@@ -94,19 +99,25 @@ export async function POST(req: NextRequest) {
         // Validate row data
         const validatedData = leadSchema.parse(row)
 
-        // Create lead
+        // Create lead with full tracking
         await leadRepo.create({
           workspace_id: user.workspace_id,
+          uploaded_by_user_id: user.id,
+          upload_batch_id: uploadBatchId,
+          partner_id: user.partner_id || null,
           email: validatedData.email,
           first_name: validatedData.first_name || null,
           last_name: validatedData.last_name || null,
           phone: validatedData.phone || null,
           company_name: validatedData.company_name || null,
+          company_industry: validatedData.company_industry || null,
+          business_type: validatedData.business_type || null,
           title: validatedData.title || null,
           city: validatedData.city || null,
           state: validatedData.state || null,
           source: validatedData.source || 'import',
           status: 'new',
+          created_at: new Date().toISOString(),
         })
 
         results.push({ success: true, row: i + 2 }) // +2 for header and 0-index

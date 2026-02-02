@@ -23,10 +23,12 @@ export function LeadsPageClient({ initialData }: LeadsPageClientProps) {
   const selectedLeadData = leads.find((l) => l.id === selectedLead)
 
   return (
-    <div className="flex h-full flex-col p-4 md:p-6 lg:p-8">
-      <div className="mx-auto w-full max-w-[1600px]">
-        {/* Enhanced square-ui inspired table */}
-        <EnhancedLeadsTable data={leads} onRowClick={handleRowClick} />
+    <>
+      <div className="flex h-full flex-col p-4 md:p-6 lg:p-8">
+        <div className="mx-auto w-full max-w-[1600px]">
+          {/* Enhanced square-ui inspired table */}
+          <EnhancedLeadsTable data={leads} onRowClick={handleRowClick} />
+        </div>
       </div>
 
       {/* Record Drawer */}
@@ -138,7 +140,6 @@ export function LeadsPageClient({ initialData }: LeadsPageClientProps) {
           )}
         </div>
       </RecordDrawer>
-      </div>
-    </div>
+    </>
   )
 }
