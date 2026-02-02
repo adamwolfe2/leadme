@@ -157,7 +157,7 @@ export default async function PricingPage() {
                 Start Free
               </a>
               <a
-                href="https://calendly.com/meet-cursive/demo"
+                href="https://cal.com/adamwolfe/cursive-ai-audit"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-colors"
