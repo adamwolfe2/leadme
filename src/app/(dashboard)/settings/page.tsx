@@ -24,7 +24,7 @@ export default function ProfileSettingsPage() {
   const [errorMessage, setErrorMessage] = useState('')
 
   // Fetch current user
-  const { data: userData, isLoading } = useQuery({
+  const { data: userData, isLoading, isError, error } = useQuery({
     queryKey: ['user', 'me'],
     queryFn: async () => {
       const response = await fetch('/api/users/me')
@@ -121,6 +121,19 @@ export default function ProfileSettingsPage() {
         <Skeleton className="h-10 w-48" />
         <SkeletonCard />
         <SkeletonCard />
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="space-y-6">
+        <Alert variant="destructive">
+          <AlertDescription>
+            {error?.message || 'Failed to load user settings. Please refresh the page.'}
+          </AlertDescription>
+        </Alert>
+        <Button onClick={() => router.refresh()}>Retry</Button>
       </div>
     )
   }
