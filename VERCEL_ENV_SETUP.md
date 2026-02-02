@@ -22,6 +22,12 @@ FAL_KEY=8efc197a-415d-49e3-8c01-75da065f249b:1a6a53bb03edb80ed1845f16d7e06e4e
 ```
 **Used for:** AI-powered ad creative generation with Flux model
 
+### 4. OpenAI API (Brand Knowledge Generation)
+```
+OPENAI_API_KEY=your_openai_api_key_here
+```
+**Used for:** Analyzing website content and generating brand knowledge base, customer profiles, and offers
+
 ---
 
 ## How to Add in Vercel
@@ -32,7 +38,7 @@ FAL_KEY=8efc197a-415d-49e3-8c01-75da065f249b:1a6a53bb03edb80ed1845f16d7e06e4e
 4. Enter value
 5. Select "Production", "Preview", and "Development"
 6. Click "Save"
-7. Repeat for all three variables
+7. Repeat for all four variables
 8. **Redeploy** the app to apply the new variables
 
 ---
