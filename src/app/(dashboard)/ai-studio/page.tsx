@@ -118,14 +118,24 @@ export default function AIStudioPage() {
       // Poll for progress and update loading steps based on actual status
       const workspaceId = data.workspaceId
       let currentStep = 0
+      let consecutiveErrors = 0
+      const MAX_CONSECUTIVE_ERRORS = 3
 
       pollInterval = setInterval(async () => {
         try {
           const progressRes = await fetch('/api/ai-studio/workspaces')
+
+          if (!progressRes.ok) {
+            throw new Error(`API returned ${progressRes.status}`)
+          }
+
           const progressData = await progressRes.json()
           const workspace = progressData.workspaces?.find((w: any) => w.id === workspaceId)
 
           if (!workspace) return
+
+          // Reset error counter on successful response
+          consecutiveErrors = 0
 
           // Update screenshot when available
           if (workspace.brand_data?.screenshot && !screenshot) {
@@ -161,6 +171,15 @@ export default function AIStudioPage() {
           }
         } catch (error) {
           console.error('Polling error:', error)
+          consecutiveErrors++
+
+          // Stop polling after too many consecutive errors
+          if (consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+            if (pollInterval) clearInterval(pollInterval)
+            if (timeoutId) clearTimeout(timeoutId)
+            setIsExtracting(false)
+            setExtractionError('Unable to check extraction status. Please refresh the page and try again.')
+          }
         }
       }, 2000) // Poll every 2 seconds
 
