@@ -17,13 +17,14 @@ import { formatDistanceToNow } from 'date-fns'
 interface ContactsTableProps {
   data: Contact[]
   onRowClick?: (contact: Contact) => void
+  onCreateClick?: () => void
 }
 
 /**
  * Twenty.com style Contacts Table
  * Clean, minimal design matching Companies/Leads view
  */
-export function ContactsTable({ data, onRowClick }: ContactsTableProps) {
+export function ContactsTable({ data, onRowClick, onCreateClick }: ContactsTableProps) {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set())
   const [allSelected, setAllSelected] = useState(false)
 
@@ -140,6 +141,7 @@ export function ContactsTable({ data, onRowClick }: ContactsTableProps) {
           {/* New record button */}
           <Button
             size="sm"
+            onClick={onCreateClick}
             className="h-7 gap-1.5 bg-gray-900 px-2.5 text-sm font-normal hover:bg-gray-800"
           >
             <Plus className="h-3.5 w-3.5" />

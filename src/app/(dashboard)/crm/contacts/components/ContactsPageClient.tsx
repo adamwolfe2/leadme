@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import { ContactsTable } from '@/components/crm/table/ContactsTable'
 import { RecordDrawer } from '@/components/crm/drawer/RecordDrawer'
+import { CreateContactDialog } from './CreateContactDialog'
 import { formatDistanceToNow } from 'date-fns'
+import { useRouter } from 'next/navigation'
 import type { Contact } from '@/types/crm.types'
 
 interface ContactsPageClientProps {
@@ -11,13 +13,27 @@ interface ContactsPageClientProps {
 }
 
 export function ContactsPageClient({ initialData }: ContactsPageClientProps) {
+  const router = useRouter()
   const [contacts] = useState<Contact[]>(initialData)
   const [selectedContact, setSelectedContact] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
   const handleRowClick = (contact: Contact) => {
     setSelectedContact(contact.id)
     setDrawerOpen(true)
+  }
+
+  const handleCreateClick = () => {
+    setCreateDialogOpen(true)
+  }
+
+  const handleDialogClose = (created: boolean) => {
+    setCreateDialogOpen(false)
+    if (created) {
+      // Refresh the page to show new contact
+      router.refresh()
+    }
   }
 
   const selectedContactData = contacts.find((c) => c.id === selectedContact)
@@ -28,7 +44,20 @@ export function ContactsPageClient({ initialData }: ContactsPageClientProps) {
   return (
     <div className="flex h-full flex-col">
       {/* Twenty.com style table */}
-      <ContactsTable data={contacts} onRowClick={handleRowClick} />
+      <ContactsTable
+        data={contacts}
+        onRowClick={handleRowClick}
+        onCreateClick={handleCreateClick}
+      />
+
+      {/* Create Contact Dialog */}
+      <CreateContactDialog
+        open={createDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) handleDialogClose(false)
+          else setCreateDialogOpen(true)
+        }}
+      />
 
       {/* Record Drawer */}
       <RecordDrawer

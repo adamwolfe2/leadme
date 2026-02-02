@@ -3,7 +3,9 @@
 import { useState, useMemo } from 'react'
 import { DragDropKanbanBoard } from '@/components/crm/board/DragDropKanbanBoard'
 import { RecordDrawer } from '@/components/crm/drawer/RecordDrawer'
+import { CreateDealDialog } from './CreateDealDialog'
 import { formatDistanceToNow, format } from 'date-fns'
+import { useRouter } from 'next/navigation'
 import { DollarSign, Calendar } from 'lucide-react'
 import type { Deal } from '@/types/crm.types'
 
@@ -12,9 +14,11 @@ interface DealsPageClientProps {
 }
 
 export function DealsPageClient({ initialData }: DealsPageClientProps) {
+  const router = useRouter()
   const [deals, setDeals] = useState<Deal[]>(initialData)
   const [selectedDeal, setSelectedDeal] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -82,6 +86,17 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
     setDrawerOpen(true)
   }
 
+  const handleAddCard = (columnId: string) => {
+    setCreateDialogOpen(true)
+  }
+
+  const handleDialogClose = (created: boolean) => {
+    setCreateDialogOpen(false)
+    if (created) {
+      router.refresh()
+    }
+  }
+
   const renderCard = (deal: Deal) => (
     <div className="space-y-2">
       <div className="font-medium text-gray-900">{deal.name}</div>
@@ -112,6 +127,16 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
         renderCard={renderCard}
         onCardClick={handleRowClick}
         onCardMove={handleCardMove}
+        onAddCard={handleAddCard}
+      />
+
+      {/* Create Deal Dialog */}
+      <CreateDealDialog
+        open={createDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) handleDialogClose(false)
+          else setCreateDialogOpen(true)
+        }}
       />
 
       {/* Record Drawer */}

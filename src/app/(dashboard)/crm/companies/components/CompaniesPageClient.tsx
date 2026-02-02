@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import { CompaniesTable } from '@/components/crm/table/CompaniesTable'
 import { RecordDrawer } from '@/components/crm/drawer/RecordDrawer'
+import { CreateCompanyDialog } from './CreateCompanyDialog'
 import { formatDistanceToNow } from 'date-fns'
+import { useRouter } from 'next/navigation'
 import type { Company } from '@/types/crm.types'
 
 interface CompaniesPageClientProps {
@@ -11,13 +13,26 @@ interface CompaniesPageClientProps {
 }
 
 export function CompaniesPageClient({ initialData }: CompaniesPageClientProps) {
+  const router = useRouter()
   const [companies] = useState<Company[]>(initialData)
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
   const handleRowClick = (company: Company) => {
     setSelectedCompany(company.id)
     setDrawerOpen(true)
+  }
+
+  const handleCreateClick = () => {
+    setCreateDialogOpen(true)
+  }
+
+  const handleDialogClose = (created: boolean) => {
+    setCreateDialogOpen(false)
+    if (created) {
+      router.refresh()
+    }
   }
 
   const selectedCompanyData = companies.find((c) => c.id === selectedCompany)
@@ -25,7 +40,20 @@ export function CompaniesPageClient({ initialData }: CompaniesPageClientProps) {
   return (
     <div className="flex h-full flex-col">
       {/* Twenty.com style table */}
-      <CompaniesTable data={companies} onRowClick={handleRowClick} />
+      <CompaniesTable
+        data={companies}
+        onRowClick={handleRowClick}
+        onCreateClick={handleCreateClick}
+      />
+
+      {/* Create Company Dialog */}
+      <CreateCompanyDialog
+        open={createDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) handleDialogClose(false)
+          else setCreateDialogOpen(true)
+        }}
+      />
 
       {/* Record Drawer */}
       <RecordDrawer

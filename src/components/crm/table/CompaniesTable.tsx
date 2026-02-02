@@ -17,13 +17,14 @@ import { formatDistanceToNow } from 'date-fns'
 interface CompaniesTableProps {
   data: Company[]
   onRowClick?: (company: Company) => void
+  onCreateClick?: () => void
 }
 
 /**
  * Twenty.com style Companies Table
  * Clean, minimal design matching People view
  */
-export function CompaniesTable({ data, onRowClick }: CompaniesTableProps) {
+export function CompaniesTable({ data, onRowClick, onCreateClick }: CompaniesTableProps) {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set())
   const [allSelected, setAllSelected] = useState(false)
 
@@ -143,6 +144,7 @@ export function CompaniesTable({ data, onRowClick }: CompaniesTableProps) {
           {/* New record button */}
           <Button
             size="sm"
+            onClick={onCreateClick}
             className="h-7 gap-1.5 bg-gray-900 px-2.5 text-sm font-normal hover:bg-gray-800"
           >
             <Plus className="h-3.5 w-3.5" />
