@@ -1,6 +1,6 @@
 /**
  * Notifications Components Index
- * OpenInfo Platform
+ * Cursive Platform
  */
 
 export {

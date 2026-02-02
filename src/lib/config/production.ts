@@ -1,6 +1,6 @@
 /**
  * Production Optimization Utilities
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Helpers for production deployment and optimization.
  */

@@ -1,6 +1,6 @@
 # SEO Optimization Guide
 
-Comprehensive guide to OpenInfo's SEO strategy and implementation.
+Comprehensive guide to Cursive's SEO strategy and implementation.
 
 ## Overview
 
@@ -100,8 +100,8 @@ import { FAQSchema } from '@/components/seo/structured-data'
 <FAQSchema
   faqs={[
     {
-      question: 'What is OpenInfo?',
-      answer: 'OpenInfo is a B2B intent lead intelligence platform...',
+      question: 'What is Cursive?',
+      answer: 'Cursive is a B2B intent lead intelligence platform...',
     },
     {
       question: 'How does pricing work?',
@@ -155,7 +155,7 @@ For social sharing:
 ```html
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://openinfo.com" />
-<meta property="og:title" content="OpenInfo - B2B Intent Lead Intelligence" />
+<meta property="og:title" content="Cursive - B2B Intent Lead Intelligence" />
 <meta property="og:description" content="..." />
 <meta property="og:image" content="https://openinfo.com/og-image.png" />
 ```
@@ -172,7 +172,7 @@ For social sharing:
 ```html
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@openinfo" />
-<meta name="twitter:title" content="OpenInfo" />
+<meta name="twitter:title" content="Cursive" />
 <meta name="twitter:description" content="..." />
 <meta name="twitter:image" content="https://openinfo.com/og-image.png" />
 ```
@@ -236,7 +236,7 @@ Target metrics:
 ```tsx
 // app/page.tsx
 export const metadata = {
-  title: 'OpenInfo - Identify Companies Researching Your Topics',
+  title: 'Cursive - Identify Companies Researching Your Topics',
   description: 'Track B2B intent signals and identify companies actively researching specific topics. Get enriched lead data delivered automatically. Free plan includes 3 leads per day.',
 }
 
@@ -248,7 +248,7 @@ export default function Home() {
 
       <h1>Identify companies researching your topics</h1>
       <p>
-        OpenInfo tracks B2B intent signals to help you discover companies
+        Cursive tracks B2B intent signals to help you discover companies
         actively researching specific topics...
       </p>
     </>
@@ -273,7 +273,7 @@ const articleSchema = {
   headline: 'How to Generate B2B Leads with Intent Data',
   author: {
     '@type': 'Person',
-    name: 'OpenInfo Team',
+    name: 'Cursive Team',
   },
   datePublished: '2024-01-22',
   image: 'https://openinfo.com/blog/intent-data.png',
@@ -304,7 +304,7 @@ For local business listings:
 ```typescript
 const localBusinessSchema = {
   '@type': 'LocalBusiness',
-  name: 'OpenInfo',
+  name: 'Cursive',
   address: {
     '@type': 'PostalAddress',
     streetAddress: '...',
@@ -375,9 +375,9 @@ Track:
 Format: `Primary Keyword - Secondary Keyword | Brand`
 
 ```
-OpenInfo - B2B Intent Lead Intelligence Platform
-Pricing Plans - Find Your Perfect Plan | OpenInfo
-Lead Generation Dashboard - Track Your Leads | OpenInfo
+Cursive - B2B Intent Lead Intelligence Platform
+Pricing Plans - Find Your Perfect Plan | Cursive
+Lead Generation Dashboard - Track Your Leads | Cursive
 ```
 
 ### Meta Descriptions

@@ -1,6 +1,6 @@
 # Quick Reference: Error Handling & Loading States
 
-Fast reference for using error boundaries and loading states in OpenInfo.
+Fast reference for using error boundaries and loading states in Cursive.
 
 ## Basic Usage
 

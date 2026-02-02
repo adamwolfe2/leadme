@@ -1,6 +1,6 @@
 /**
  * Environment Configuration
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Type-safe environment variable access and validation.
  */

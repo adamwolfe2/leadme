@@ -1,6 +1,6 @@
 /**
  * Button Component Tests
- * OpenInfo Platform
+ * Cursive Platform
  */
 
 import { describe, it, expect, vi } from 'vitest'

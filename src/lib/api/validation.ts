@@ -1,6 +1,6 @@
 /**
  * API Validation Utilities
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Zod schemas and validation helpers for API routes.
  */

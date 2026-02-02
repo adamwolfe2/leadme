@@ -1,6 +1,6 @@
 /**
  * Geocoding Service
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Converts addresses to lat/lng coordinates using multiple providers
  * with caching and fallback strategies.

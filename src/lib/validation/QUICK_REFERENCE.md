@@ -1,6 +1,6 @@
 # Form Validation Quick Reference
 
-Quick copy-paste examples for common form validation patterns in OpenInfo.
+Quick copy-paste examples for common form validation patterns in Cursive.
 
 ## Basic Setup
 

@@ -2,7 +2,7 @@
 
 /**
  * User Management Components
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Admin tools for managing users and workspaces.
  */

@@ -1,6 +1,6 @@
 # Development Guidelines
 
-This file contains critical guidelines for developing the OpenInfo platform. Follow these principles rigorously.
+This file contains critical guidelines for developing the Cursive platform. Follow these principles rigorously.
 
 ## Critical Principles
 

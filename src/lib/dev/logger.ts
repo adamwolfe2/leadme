@@ -1,6 +1,6 @@
 /**
  * Developer Logger
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Structured logging utilities for development and debugging.
  */

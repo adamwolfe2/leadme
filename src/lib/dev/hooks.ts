@@ -1,6 +1,6 @@
 /**
  * Development React Hooks
- * OpenInfo Platform
+ * Cursive Platform
  *
  * React hooks for debugging and development.
  */

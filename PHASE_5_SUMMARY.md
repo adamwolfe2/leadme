@@ -2,7 +2,7 @@
 
 ## Overview
 
-Added comprehensive error boundaries, loading states, skeleton loaders, and retry logic throughout OpenInfo. All async operations now have proper error handling, loading indicators, and retry capabilities.
+Added comprehensive error boundaries, loading states, skeleton loaders, and retry logic throughout Cursive. All async operations now have proper error handling, loading indicators, and retry capabilities.
 
 ## Components Created
 

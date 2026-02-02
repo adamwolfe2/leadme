@@ -1,6 +1,6 @@
 # Rate Limiting & Credit System
 
-Comprehensive guide to the OpenInfo platform's rate limiting and credit tracking system.
+Comprehensive guide to the Cursive platform's rate limiting and credit tracking system.
 
 ## Overview
 

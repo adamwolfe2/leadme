@@ -1,6 +1,6 @@
 /**
  * Report Generation Utilities
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Generate various reports from analytics data.
  */

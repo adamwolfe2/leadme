@@ -178,7 +178,7 @@ INNGEST_SIGNING_KEY=your_inngest_signing_key
 
 # App
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_APP_NAME=OpenInfo
+NEXT_PUBLIC_APP_NAME=Cursive
 ```
 
 ### Optional

@@ -1,6 +1,6 @@
 /**
  * API Response Utilities
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Standardized response helpers for API routes.
  */

@@ -2,7 +2,7 @@
 
 /**
  * Lazy Loading Utilities
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Utilities for code splitting and lazy loading components.
  */

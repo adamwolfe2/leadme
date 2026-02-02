@@ -2,7 +2,7 @@
 
 /**
  * Chart Components
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Reusable chart components for analytics visualization.
  * These components render data in various chart formats.

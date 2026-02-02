@@ -1,6 +1,6 @@
 /**
  * Test Setup File
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Global test configuration, mocks, and utilities.
  */

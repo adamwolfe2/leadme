@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     // This endpoint currently returns success but doesn't send emails
     // const resend = new Resend(process.env.RESEND_API_KEY)
     // await resend.emails.send({
-    //   from: 'OpenInfo <noreply@openinfo.com>',
+    //   from: 'Cursive <noreply@openinfo.com>',
     //   to: validated.to,
     //   subject: validated.subject,
     //   react: EmailTemplate({ template: validated.template, data: validated.data })

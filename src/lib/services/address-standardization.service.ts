@@ -1,6 +1,6 @@
 /**
  * Address Standardization Service
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Normalizes and standardizes address data including:
  * - US state names/abbreviations

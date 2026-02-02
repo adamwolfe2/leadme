@@ -2,7 +2,7 @@
  * Form Components
  *
  * Reusable form components with built-in validation styling
- * and consistent design following OpenInfo's zinc/emerald/red palette
+ * and consistent design following Cursive's zinc/emerald/red palette
  */
 
 export { FormField } from './form-field'

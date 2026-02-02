@@ -1,6 +1,6 @@
 # API Routes Summary
 
-Complete list of all API routes in the OpenInfo platform.
+Complete list of all API routes in the Cursive platform.
 
 ## Authentication Required Routes
 

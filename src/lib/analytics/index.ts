@@ -1,6 +1,6 @@
 /**
  * Analytics Library Index
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Export all analytics utilities, reports, and hooks.
  */

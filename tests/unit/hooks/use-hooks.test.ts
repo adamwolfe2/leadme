@@ -1,6 +1,6 @@
 /**
  * Custom Hooks Tests
- * OpenInfo Platform
+ * Cursive Platform
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'

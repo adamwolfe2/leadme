@@ -1,6 +1,6 @@
 # Error Handling Guide
 
-Comprehensive guide to error handling in OpenInfo platform.
+Comprehensive guide to error handling in Cursive platform.
 
 ## Overview
 

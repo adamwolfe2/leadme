@@ -1,6 +1,6 @@
 /**
  * Utility Types
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Advanced TypeScript utility types for better developer experience.
  */

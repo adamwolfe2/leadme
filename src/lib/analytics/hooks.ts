@@ -1,6 +1,6 @@
 /**
  * Analytics Hooks
- * OpenInfo Platform
+ * Cursive Platform
  *
  * React hooks for analytics data fetching and state management.
  */

@@ -1,6 +1,6 @@
 /**
  * Keyboard Shortcuts System
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Global keyboard shortcut management and utilities.
  */

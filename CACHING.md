@@ -1,6 +1,6 @@
 # Caching Strategy Guide
 
-Comprehensive guide to OpenInfo's caching system using Vercel KV (Redis).
+Comprehensive guide to Cursive's caching system using Vercel KV (Redis).
 
 ## Overview
 

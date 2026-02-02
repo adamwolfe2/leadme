@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { LeadsTableClient } from './components/LeadsTableClient'
+import { LeadsDashboard } from './components/LeadsDashboard'
 import { KeyboardShortcutsHelp } from './components/KeyboardShortcutsHelp'
 import { TableViewControls } from './components/TableViewControls'
 import { MobileMenu } from '@/components/ui/mobile-menu'
@@ -88,9 +89,15 @@ export default async function CRMLeadsPage() {
               </div>
             </header>
 
-            {/* Table with filters */}
-            <div className="flex-1 p-6 overflow-hidden">
-              <LeadsTableClient />
+            {/* Dashboard and Table */}
+            <div className="flex-1 p-6 overflow-auto">
+              <div className="space-y-6">
+                {/* Dashboard with Stats and Charts */}
+                <LeadsDashboard />
+
+                {/* Leads Table */}
+                <LeadsTableClient />
+              </div>
             </div>
           </div>
         </main>

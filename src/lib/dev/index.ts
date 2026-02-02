@@ -1,6 +1,6 @@
 /**
  * Development Utilities Index
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Export all development and debugging utilities.
  */

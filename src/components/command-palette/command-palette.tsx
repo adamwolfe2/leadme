@@ -2,7 +2,7 @@
 
 /**
  * Command Palette Component
- * OpenInfo Platform
+ * Cursive Platform
  *
  * VS Code-style command palette for quick navigation and actions.
  */

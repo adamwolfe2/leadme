@@ -2,7 +2,7 @@
 
 ## Overview
 
-A professional, fully-featured toast notification system for OpenInfo that provides beautiful, accessible, and functional notifications throughout the application.
+A professional, fully-featured toast notification system for Cursive that provides beautiful, accessible, and functional notifications throughout the application.
 
 ## Features
 
@@ -343,7 +343,7 @@ Custom API with full control:
 - **Icon**: Info (lucide-react)
 
 ### Typography
-- All text uses `text-[13px]` for consistency with OpenInfo design system
+- All text uses `text-[13px]` for consistency with Cursive design system
 - Titles use `font-medium`
 - Messages use normal weight with `leading-relaxed`
 
@@ -472,4 +472,4 @@ For issues or questions, see the integration examples or demo page.
 
 **Version**: 1.0.0
 **Last Updated**: 2026-01-23
-**Author**: OpenInfo Platform Team
+**Author**: Cursive Platform Team

@@ -1,6 +1,6 @@
 /**
  * Lead Import Process API
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Process and save validated CSV data to database.
  */

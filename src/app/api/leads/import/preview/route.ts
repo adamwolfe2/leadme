@@ -1,6 +1,6 @@
 /**
  * Lead Import Preview API
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Preview and validate CSV data before importing to database.
  */

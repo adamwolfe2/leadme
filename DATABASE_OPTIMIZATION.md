@@ -1,6 +1,6 @@
 ## Database Optimization Guide
 
-Comprehensive guide to OpenInfo's database indexing and optimization strategy.
+Comprehensive guide to Cursive's database indexing and optimization strategy.
 
 ## Overview
 

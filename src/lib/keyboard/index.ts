@@ -1,6 +1,6 @@
 /**
  * Keyboard Shortcuts Library Index
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Export all keyboard shortcut utilities and hooks.
  */

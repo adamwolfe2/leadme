@@ -1,6 +1,6 @@
 ## Comprehensive Logging Guide
 
-Complete guide to the OpenInfo platform's structured logging system.
+Complete guide to the Cursive platform's structured logging system.
 
 ## Overview
 

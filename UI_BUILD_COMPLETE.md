@@ -78,7 +78,7 @@
 - Consistent navigation across all pages
 - Active state highlighting (blue underline)
 - Three main sections: Admin Dashboard, Marketplace, API Tests
-- OpenInfo branding
+- Cursive branding
 - Responsive design
 
 ---
@@ -310,7 +310,7 @@ Texas Roofing Co,Roofing,TX,US,contact@texasroofing.com,default
 All pages have consistent navigation bar at the top:
 
 ```
-[OpenInfo] | Admin Dashboard | Marketplace | API Tests
+[Cursive] | Admin Dashboard | Marketplace | API Tests
 ```
 
 - **Admin Dashboard** → `/admin/dashboard`

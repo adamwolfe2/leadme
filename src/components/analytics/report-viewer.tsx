@@ -2,7 +2,7 @@
 
 /**
  * Report Viewer Components
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Components for viewing and exporting analytics reports.
  */

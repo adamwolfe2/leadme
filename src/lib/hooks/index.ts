@@ -1,6 +1,6 @@
 /**
  * Performance-Optimized React Hooks
- * OpenInfo Platform
+ * Cursive Platform
  *
  * A collection of reusable hooks for performance, state management, and UX.
  */

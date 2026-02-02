@@ -2,7 +2,7 @@
 
 /**
  * Application Providers
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Combines all providers needed for the application in the correct order.
  */

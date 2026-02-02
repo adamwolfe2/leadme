@@ -1,6 +1,6 @@
 /**
  * Command Palette Components Index
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Export all command palette and keyboard shortcut components.
  */

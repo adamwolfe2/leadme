@@ -1,6 +1,6 @@
 /**
  * Distance Calculation & Proximity Service
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Calculate distances between coordinates and find leads
  * within a specified radius of a user's location.

@@ -1,10 +1,10 @@
-# OpenInfo Platform - Project Summary
+# Cursive Platform - Project Summary
 
 Complete B2B Intent Lead Intelligence Platform built with Next.js 15, Supabase, and modern web technologies.
 
 ## 🎯 Project Overview
 
-**OpenInfo** is a multi-tenant B2B lead intelligence platform that identifies companies actively researching specific topics and delivers enriched contact data automatically.
+**Cursive** is a multi-tenant B2B lead intelligence platform that identifies companies actively researching specific topics and delivers enriched contact data automatically.
 
 ### Key Features
 

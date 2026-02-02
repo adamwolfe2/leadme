@@ -1,6 +1,6 @@
 /**
  * Performance Optimization Utilities
- * OpenInfo Platform Marketing Site
+ * Cursive Platform Marketing Site
  *
  * Utilities for optimizing Core Web Vitals and performance.
  */

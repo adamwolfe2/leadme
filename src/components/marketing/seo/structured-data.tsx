@@ -1,6 +1,6 @@
 /**
  * Structured Data Components
- * OpenInfo Platform Marketing Site
+ * Cursive Platform Marketing Site
  *
  * Components for rendering JSON-LD structured data.
  */

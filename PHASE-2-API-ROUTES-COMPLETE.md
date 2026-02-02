@@ -5,7 +5,7 @@
 
 ## Summary
 
-All API routes for the OpenInfo platform have been built and standardized following the best practices outlined in `CLAUDE.md`. Every route now follows a consistent pattern with proper authentication, validation, error handling, and workspace isolation.
+All API routes for the Cursive platform have been built and standardized following the best practices outlined in `CLAUDE.md`. Every route now follows a consistent pattern with proper authentication, validation, error handling, and workspace isolation.
 
 ## What Was Accomplished
 

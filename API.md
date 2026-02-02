@@ -1,6 +1,6 @@
 # API Documentation
 
-Complete reference for OpenInfo's REST API.
+Complete reference for Cursive's REST API.
 
 ## Base URL
 

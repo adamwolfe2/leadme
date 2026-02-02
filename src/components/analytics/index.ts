@@ -1,6 +1,6 @@
 /**
  * Analytics Components Index
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Export all analytics and reporting components.
  */

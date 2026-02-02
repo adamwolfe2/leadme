@@ -1,6 +1,6 @@
 /**
  * Card Component Tests
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Tests for Card component and its sub-components.
  * Updated to match actual component implementation.

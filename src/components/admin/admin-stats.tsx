@@ -2,7 +2,7 @@
 
 /**
  * Admin Statistics Components
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Dashboard statistics and metrics for administrators.
  */

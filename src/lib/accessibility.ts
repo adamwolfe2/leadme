@@ -1,5 +1,5 @@
 /**
- * Accessibility Utilities for OpenInfo Platform
+ * Accessibility Utilities for Cursive Platform
  *
  * This file contains helper functions and constants for accessibility compliance.
  */

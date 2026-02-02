@@ -1,6 +1,6 @@
 /**
  * Mock Utilities
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Reusable mocks for testing.
  */

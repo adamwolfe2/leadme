@@ -1,6 +1,6 @@
 /**
  * Test Utilities Index
- * OpenInfo Platform
+ * Cursive Platform
  */
 
 export * from './render'

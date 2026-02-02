@@ -1,4 +1,4 @@
-# Critical Phases Roadmap - OpenInfo Platform
+# Critical Phases Roadmap - Cursive Platform
 
 **Created:** 2026-01-29
 **Status:** Priority Planning

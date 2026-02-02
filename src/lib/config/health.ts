@@ -1,6 +1,6 @@
 /**
  * Health Check Utilities
- * OpenInfo Platform
+ * Cursive Platform
  *
  * System health monitoring and diagnostic utilities.
  */

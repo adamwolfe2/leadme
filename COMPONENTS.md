@@ -1,6 +1,6 @@
 # UI Component Library
 
-Comprehensive guide to OpenInfo's reusable UI components.
+Comprehensive guide to Cursive's reusable UI components.
 
 ## Overview
 

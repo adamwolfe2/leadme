@@ -1,6 +1,6 @@
 # Database Migrations
 
-This directory contains all Supabase database migrations for the OpenInfo platform.
+This directory contains all Supabase database migrations for the Cursive platform.
 
 ## Migration Files (Phase 1)
 

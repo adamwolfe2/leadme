@@ -1,6 +1,6 @@
 /**
  * Debug Utilities
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Development debugging helpers and inspection tools.
  */

@@ -1,6 +1,6 @@
 /**
  * Smart Field Mapper Service
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Automatically maps messy CSV headers to standardized database fields
  * using fuzzy matching, synonyms, and pattern recognition.

@@ -1,6 +1,6 @@
 /**
  * Email Module Index
- * OpenInfo Platform
+ * Cursive Platform
  */
 
 // Service functions

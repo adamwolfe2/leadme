@@ -1,6 +1,6 @@
 /**
  * Common Zod Schemas
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Reusable validation schemas for API routes.
  */

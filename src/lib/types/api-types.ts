@@ -1,6 +1,6 @@
 /**
  * API Types
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Standardized types for API routes, webhooks, and responses.
  */

@@ -1,6 +1,6 @@
 /**
  * Types Index
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Export all utility types and type helpers.
  */

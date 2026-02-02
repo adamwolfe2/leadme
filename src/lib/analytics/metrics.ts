@@ -1,6 +1,6 @@
 /**
  * Analytics Metrics Utilities
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Core metrics calculation, aggregation, and time-series utilities.
  */

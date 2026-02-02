@@ -8,7 +8,7 @@
 |----------|-------------|---------|----------|
 | `NODE_ENV` | Environment mode | `development` | No |
 | `NEXT_PUBLIC_APP_URL` | Public app URL | `http://localhost:3000` | Yes |
-| `NEXT_PUBLIC_APP_NAME` | Application name | `OpenInfo` | No |
+| `NEXT_PUBLIC_APP_NAME` | Application name | `Cursive` | No |
 
 ### Database
 

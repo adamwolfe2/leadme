@@ -1,6 +1,6 @@
 /**
  * Test Rendering Utilities
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Custom render function that wraps components with necessary providers.
  */

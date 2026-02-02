@@ -2,7 +2,7 @@
 
 /**
  * Keyboard Shortcuts Help Modal
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Modal showing all available keyboard shortcuts.
  */

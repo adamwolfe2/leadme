@@ -2,7 +2,7 @@
 
 /**
  * Notification Center Component
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Real-time notifications with toast integration.
  */

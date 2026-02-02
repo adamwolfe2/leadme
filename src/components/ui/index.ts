@@ -1,5 +1,5 @@
 // Enterprise UI Component Library
-// OpenInfo Platform
+// Cursive Platform
 
 export * from './alert'
 export * from './avatar'

@@ -1,6 +1,6 @@
 # Error Handling & Loading States
 
-Comprehensive guide to error boundaries, loading states, and retry logic in OpenInfo.
+Comprehensive guide to error boundaries, loading states, and retry logic in Cursive.
 
 ## Table of Contents
 

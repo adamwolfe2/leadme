@@ -1,6 +1,6 @@
 /**
  * Lead Data Processor Service
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Comprehensive data validation, auto-correction, and normalization
  * for lead imports. This is the main entry point that orchestrates

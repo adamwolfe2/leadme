@@ -1,6 +1,6 @@
 /**
  * API Testing Utilities
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Helpers for testing API routes.
  */

@@ -1,5 +1,5 @@
 /**
- * OpenInfo Enterprise Design System
+ * Cursive Enterprise Design System
  *
  * This file contains all design tokens and constants for the enterprise UI.
  * Use these values for consistency across all components.

@@ -62,5 +62,5 @@ This sets a bypass cookie that allows navigation without session checks.
 - Backgrounds: blue-50
 
 ## Branding
-- Platform name: "Cursive" (NO "OpenInfo" anywhere)
+- Platform name: "Cursive" (NO "Cursive" anywhere)
 - All references updated

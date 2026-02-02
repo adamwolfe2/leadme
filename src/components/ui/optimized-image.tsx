@@ -2,7 +2,7 @@
 
 /**
  * Optimized Image Component
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Wraps Next.js Image with loading states, error handling, and defaults.
  */

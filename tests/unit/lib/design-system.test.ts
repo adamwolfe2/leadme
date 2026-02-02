@@ -1,6 +1,6 @@
 /**
  * Design System Tests
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Tests for design system utilities and helpers.
  * Note: Some helpers are in @/lib/utils (cn with tailwind-merge),

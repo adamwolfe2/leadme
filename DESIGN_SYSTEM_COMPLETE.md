@@ -84,7 +84,7 @@ className="w-full h-9 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 b
 - Professional typography (text-[13px] font-medium)
 - Active state with zinc-900 border-bottom
 - Hover states on inactive links
-- OpenInfo branding
+- Cursive branding
 
 **Design Highlights**:
 - Height: h-14

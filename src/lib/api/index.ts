@@ -1,6 +1,6 @@
 /**
  * API Utilities Index
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Export all API utilities for easy importing.
  */

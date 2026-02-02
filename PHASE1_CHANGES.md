@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-Completed a comprehensive authentication flow for OpenInfo platform with professional design system, security best practices, and proper error handling. All authentication pages now follow the zinc/emerald/red color scheme with consistent typography and spacing.
+Completed a comprehensive authentication flow for Cursive platform with professional design system, security best practices, and proper error handling. All authentication pages now follow the zinc/emerald/red color scheme with consistent typography and spacing.
 
 ---
 

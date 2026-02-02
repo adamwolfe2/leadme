@@ -1,6 +1,6 @@
 /**
  * Admin Components Index
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Export all admin dashboard and management components.
  */

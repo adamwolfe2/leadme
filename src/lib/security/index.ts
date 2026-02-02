@@ -1,6 +1,6 @@
 /**
  * Security Utilities
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Comprehensive security utilities for the application.
  */

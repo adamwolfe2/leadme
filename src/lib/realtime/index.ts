@@ -1,6 +1,6 @@
 /**
  * Real-time Utilities
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Supabase real-time subscriptions and live update hooks.
  */

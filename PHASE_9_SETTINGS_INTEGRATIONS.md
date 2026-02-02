@@ -448,7 +448,7 @@ async function sendSlackNotification(webhookUrl: string, lead: Lead) {
               type: 'button',
               text: {
                 type: 'plain_text',
-                text: 'View in OpenInfo',
+                text: 'View in Cursive',
               },
               url: `https://app.openinfo.com/leads/${lead.id}`,
             },

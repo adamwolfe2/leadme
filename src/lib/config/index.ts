@@ -1,6 +1,6 @@
 /**
  * Configuration Utilities Index
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Export all configuration and production utilities.
  */

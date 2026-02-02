@@ -1,6 +1,6 @@
-# Deployment Guide - OpenInfo Platform
+# Deployment Guide - Cursive Platform
 
-Complete guide for deploying the OpenInfo platform to Vercel with Supabase, Stripe, and all integrations.
+Complete guide for deploying the Cursive platform to Vercel with Supabase, Stripe, and all integrations.
 
 ## Prerequisites
 
@@ -218,7 +218,7 @@ INNGEST_SIGNING_KEY=your_inngest_signing_key
 #### App Configuration
 ```
 NEXT_PUBLIC_APP_URL=https://your-domain.vercel.app
-NEXT_PUBLIC_APP_NAME=OpenInfo
+NEXT_PUBLIC_APP_NAME=Cursive
 ```
 
 #### Optional (Slack Integration)

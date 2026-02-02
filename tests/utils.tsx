@@ -1,6 +1,6 @@
 /**
  * Test Utilities
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Custom render function and testing utilities that extend @testing-library/react.
  */

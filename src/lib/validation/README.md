@@ -1,6 +1,6 @@
 # Form Validation with Zod & React Hook Form
 
-Comprehensive form validation system for OpenInfo using Zod schemas and react-hook-form.
+Comprehensive form validation system for Cursive using Zod schemas and react-hook-form.
 
 ## Overview
 

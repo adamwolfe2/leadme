@@ -1,6 +1,6 @@
 # Setup Guide
 
-This guide walks through setting up all external services required for the OpenInfo platform.
+This guide walks through setting up all external services required for the Cursive platform.
 
 ## 1. Supabase Setup
 
@@ -69,7 +69,7 @@ INNGEST_SIGNING_KEY=
 
 # App settings
 NEXT_PUBLIC_APP_URL=https://your-domain.vercel.app
-NEXT_PUBLIC_APP_NAME=OpenInfo
+NEXT_PUBLIC_APP_NAME=Cursive
 ```
 
 ## 3. Stripe Setup

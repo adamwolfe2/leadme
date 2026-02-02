@@ -1,6 +1,6 @@
 /**
  * Keyboard Hooks
- * OpenInfo Platform
+ * Cursive Platform
  *
  * React hooks for keyboard shortcut management.
  */

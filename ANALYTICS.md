@@ -1,6 +1,6 @@
 # Analytics Integration Guide
 
-Comprehensive guide to OpenInfo's analytics and tracking system using PostHog.
+Comprehensive guide to Cursive's analytics and tracking system using PostHog.
 
 ## Overview
 

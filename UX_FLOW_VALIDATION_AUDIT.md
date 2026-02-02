@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-This audit examined user experience, navigation flows, accessibility, and design consistency across the OpenInfo platform. While individual features are well-implemented, there are significant inconsistencies in design patterns, accessibility gaps, and navigation issues that impact the overall user experience.
+This audit examined user experience, navigation flows, accessibility, and design consistency across the Cursive platform. While individual features are well-implemented, there are significant inconsistencies in design patterns, accessibility gaps, and navigation issues that impact the overall user experience.
 
 ### Key Findings:
 - ⚠️ **Design System Inconsistency**: Only 40% of pages use the standardized component library
@@ -826,7 +826,7 @@ Admin Dashboard → Monitor → Test → Debug
 
 ## Conclusion
 
-The OpenInfo platform has **solid individual features** with good form validation and loading states, but suffers from **inconsistent design patterns**, **critical accessibility issues**, and **incomplete navigation**.
+The Cursive platform has **solid individual features** with good form validation and loading states, but suffers from **inconsistent design patterns**, **critical accessibility issues**, and **incomplete navigation**.
 
 ### Strengths:
 - Excellent form validation (react-hook-form + Zod)

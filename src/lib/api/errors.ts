@@ -1,6 +1,6 @@
 /**
  * API Error Classes
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Custom error types for API routes with proper error handling.
  */

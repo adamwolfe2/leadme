@@ -1,6 +1,6 @@
 # Database Migrations Guide
 
-This document describes all database migrations for the OpenInfo platform.
+This document describes all database migrations for the Cursive platform.
 
 ## Migration Overview
 
