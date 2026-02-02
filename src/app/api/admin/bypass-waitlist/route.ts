@@ -55,6 +55,9 @@ export async function POST(req: NextRequest) {
 
     return response
   } catch (error) {
+    // Log the actual error for debugging
+    console.error('[Admin Bypass] Error:', error)
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request', details: error.errors },
@@ -63,7 +66,10 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'Failed to process request' },
+      {
+        error: 'Failed to process request',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }
