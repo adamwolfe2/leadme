@@ -12,6 +12,7 @@ import {
   type RejectionLogEntry,
 } from '@/lib/services/deduplication.service'
 import { calculateIntentScore, calculateFreshnessScore, calculateMarketplacePrice } from '@/lib/services/lead-scoring.service'
+import { withRateLimit } from '@/lib/middleware/rate-limiter'
 
 // Input validation for lead data
 const leadSchema = z.object({
@@ -95,6 +96,10 @@ export async function POST(request: NextRequest) {
     if (!authUser) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
+
+    // RATE LIMITING: Check partner upload rate limit
+    const rateLimitResult = await withRateLimit(request, 'partner-upload')
+    if (rateLimitResult) return rateLimitResult
 
     // Get user with access control fields
     const { data: user } = await supabase

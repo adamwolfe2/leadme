@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
+import Stripe from 'stripe'
 import { getStripeClient } from '@/lib/stripe/client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import {
   sendPurchaseConfirmationEmail,
   sendCreditPurchaseConfirmationEmail,
-  sendPaymentFailedEmail
+  sendPaymentFailedEmail,
+  sendPayoutCompletedEmail,
+  sendPayoutFailedEmail
 } from '@/lib/email/service'
 
 export async function POST(req: NextRequest) {
@@ -91,6 +94,12 @@ export async function POST(req: NextRequest) {
 
 // Extract event processing logic into separate function for reuse in retry processor
 async function processWebhookEvent(event: Stripe.Event, supabase: any) {
+  console.log(`[Stripe Webhook] Processing event: ${event.type} (${event.id})`)
+
+  // ============================================================================
+  // CHECKOUT & PAYMENT EVENTS
+  // ============================================================================
+
   // Handle payment success
   if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session
@@ -389,16 +398,114 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
       console.log(`✅ Payment successful for lead ${leadId}`)
     }
 
-    // Handle payment failures (one-time payments)
-    if (event.type === 'payment_intent.payment_failed') {
-      const paymentIntent = event.data.object as Stripe.PaymentIntent
-      console.error('[Stripe Webhook] Payment failed:', paymentIntent.id)
+  // ============================================================================
+  // PAYMENT_INTENT EVENTS
+  // ============================================================================
 
-      // For now, just log - one-time payments don't need workspace access control
-      // The purchase will remain in 'pending' status, user can retry
+  // Handle payment intent succeeded (for direct charges, not checkout)
+  if (event.type === 'payment_intent.succeeded') {
+    const paymentIntent = event.data.object as Stripe.PaymentIntent
+    console.log(`[Stripe Webhook] Payment intent succeeded: ${paymentIntent.id}`)
+
+    // Check if this is for a marketplace purchase
+    const { data: marketplacePurchase } = await supabase
+      .from('marketplace_purchases')
+      .select('id, status, buyer_workspace_id, buyer_user_id, total_leads')
+      .eq('stripe_payment_intent_id', paymentIntent.id)
+      .single()
+
+    if (marketplacePurchase && marketplacePurchase.status === 'pending') {
+      // Complete the purchase (idempotency handled by status check)
+      await supabase
+        .from('marketplace_purchases')
+        .update({
+          status: 'completed',
+          completed_at: new Date().toISOString(),
+        })
+        .eq('id', marketplacePurchase.id)
+
+      console.log(`✅ Marketplace purchase ${marketplacePurchase.id} marked completed via payment_intent.succeeded`)
     }
 
-    // Handle invoice payment failures (subscriptions)
+    // Check if this is for a credit purchase
+    const { data: creditPurchase } = await supabase
+      .from('credit_purchases')
+      .select('id, status, workspace_id, credits')
+      .eq('stripe_payment_intent_id', paymentIntent.id)
+      .single()
+
+    if (creditPurchase && creditPurchase.status === 'pending') {
+      // Complete the credit purchase
+      await supabase
+        .from('credit_purchases')
+        .update({
+          status: 'completed',
+          completed_at: new Date().toISOString(),
+        })
+        .eq('id', creditPurchase.id)
+
+      console.log(`✅ Credit purchase ${creditPurchase.id} marked completed via payment_intent.succeeded`)
+    }
+
+    return
+  }
+
+  // Handle payment failures (one-time payments)
+  if (event.type === 'payment_intent.payment_failed') {
+    const paymentIntent = event.data.object as Stripe.PaymentIntent
+    const errorMessage = paymentIntent.last_payment_error?.message || 'Unknown error'
+    console.error(`[Stripe Webhook] Payment failed: ${paymentIntent.id} - ${errorMessage}`)
+
+    // Check if this is for a marketplace purchase
+    const { data: marketplacePurchase } = await supabase
+      .from('marketplace_purchases')
+      .select('id, status, buyer_user_id')
+      .eq('stripe_payment_intent_id', paymentIntent.id)
+      .single()
+
+    if (marketplacePurchase) {
+      // Update purchase status to failed
+      await supabase
+        .from('marketplace_purchases')
+        .update({
+          status: 'failed',
+          error_message: errorMessage,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', marketplacePurchase.id)
+
+      console.log(`✅ Marketplace purchase ${marketplacePurchase.id} marked as failed`)
+    }
+
+    // Check if this is for a credit purchase
+    const { data: creditPurchase } = await supabase
+      .from('credit_purchases')
+      .select('id, status, user_id')
+      .eq('stripe_payment_intent_id', paymentIntent.id)
+      .single()
+
+    if (creditPurchase) {
+      // Update credit purchase status to failed
+      await supabase
+        .from('credit_purchases')
+        .update({
+          status: 'failed',
+          error_message: errorMessage,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', creditPurchase.id)
+
+      console.log(`✅ Credit purchase ${creditPurchase.id} marked as failed`)
+    }
+
+    return
+  }
+
+  // ============================================================================
+  // SUBSCRIPTION EVENTS
+  // ============================================================================
+
+  // Handle invoice payment failures (subscriptions)
     if (event.type === 'invoice.payment_failed') {
       const invoice = event.data.object as Stripe.Invoice
       const customerId = invoice.customer as string
@@ -828,35 +935,244 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
       }
     }
 
-    // Handle invoice paid
-    if (event.type === 'invoice.paid') {
-      const invoice = event.data.object as Stripe.Invoice
-      const customerId = invoice.customer as string
+  // Handle invoice paid
+  if (event.type === 'invoice.paid') {
+    const invoice = event.data.object as Stripe.Invoice
+    const customerId = invoice.customer as string
 
-      const { data: workspace } = await supabase
-        .from('workspaces')
+    const { data: workspace } = await supabase
+      .from('workspaces')
+      .select('id')
+      .eq('stripe_customer_id', customerId)
+      .single()
+
+    if (workspace) {
+      const { data: subscription } = await supabase
+        .from('subscriptions')
         .select('id')
-        .eq('stripe_customer_id', customerId)
+        .eq('workspace_id', workspace.id)
         .single()
 
-      if (workspace) {
-        const { data: subscription } = await supabase
-          .from('subscriptions')
-          .select('id')
-          .eq('workspace_id', workspace.id)
-          .single()
-
-        await supabase.from('invoices').insert({
-          workspace_id: workspace.id,
-          subscription_id: subscription?.id,
-          stripe_invoice_id: invoice.id,
-          amount: (invoice.amount_paid || 0) / 100,
-          currency: invoice.currency,
-          status: 'paid',
-          invoice_number: invoice.number,
-          invoice_pdf_url: invoice.invoice_pdf,
-          paid_at: new Date().toISOString(),
-        })
-      }
+      await supabase.from('invoices').insert({
+        workspace_id: workspace.id,
+        subscription_id: subscription?.id,
+        stripe_invoice_id: invoice.id,
+        amount: (invoice.amount_paid || 0) / 100,
+        currency: invoice.currency,
+        status: 'paid',
+        invoice_number: invoice.number,
+        invoice_pdf_url: invoice.invoice_pdf,
+        paid_at: new Date().toISOString(),
+      })
     }
+
+    return
+  }
+
+  // ============================================================================
+  // PARTNER PAYOUT EVENTS (Stripe Connect Transfers)
+  // ============================================================================
+
+  // Handle transfer created (payout initiated to partner)
+  if (event.type === 'transfer.created') {
+    const transfer = event.data.object as Stripe.Transfer
+    console.log(`[Stripe Webhook] Transfer created: ${transfer.id} - ${transfer.amount / 100} ${transfer.currency}`)
+
+    // Get partner from Stripe account ID
+    const { data: partner } = await supabase
+      .from('partners')
+      .select('id, email, company_name, pending_balance')
+      .eq('stripe_account_id', transfer.destination)
+      .single()
+
+    if (!partner) {
+      console.error(`[Stripe Webhook] Partner not found for Stripe account: ${transfer.destination}`)
+      return
+    }
+
+    // Create or update payout request record
+    const payoutAmount = transfer.amount / 100
+    const { data: existingPayout } = await supabase
+      .from('payout_requests')
+      .select('id')
+      .eq('stripe_payout_id', transfer.id)
+      .single()
+
+    if (!existingPayout) {
+      // Create new payout request
+      await supabase
+        .from('payout_requests')
+        .insert({
+          partner_id: partner.id,
+          amount: payoutAmount,
+          status: 'processing',
+          stripe_payout_id: transfer.id,
+          requested_at: new Date(transfer.created * 1000).toISOString(),
+        })
+
+      console.log(`✅ Payout request created for partner ${partner.id}: $${payoutAmount}`)
+    } else {
+      // Update existing payout to processing
+      await supabase
+        .from('payout_requests')
+        .update({
+          status: 'processing',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', existingPayout.id)
+
+      console.log(`✅ Payout request ${existingPayout.id} updated to processing`)
+    }
+
+    return
+  }
+
+  // Handle transfer paid (payout completed)
+  if (event.type === 'transfer.paid') {
+    const transfer = event.data.object as Stripe.Transfer
+    console.log(`[Stripe Webhook] Transfer paid: ${transfer.id}`)
+
+    // Get partner from Stripe account ID
+    const { data: partner } = await supabase
+      .from('partners')
+      .select('id, email, company_name, pending_balance, available_balance')
+      .eq('stripe_account_id', transfer.destination)
+      .single()
+
+    if (!partner) {
+      console.error(`[Stripe Webhook] Partner not found for Stripe account: ${transfer.destination}`)
+      return
+    }
+
+    const payoutAmount = transfer.amount / 100
+
+    // Update payout request to completed
+    const { data: payout } = await supabase
+      .from('payout_requests')
+      .select('id, amount')
+      .eq('stripe_payout_id', transfer.id)
+      .single()
+
+    if (payout) {
+      await supabase
+        .from('payout_requests')
+        .update({
+          status: 'completed',
+          completed_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', payout.id)
+
+      console.log(`✅ Payout request ${payout.id} marked as completed`)
+    }
+
+    // Update partner balances - move from available to paid
+    await supabase
+      .from('partners')
+      .update({
+        available_balance: Math.max(0, (partner.available_balance || 0) - payoutAmount),
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', partner.id)
+
+    // Update partner earnings to paid_out status
+    await supabase
+      .from('partner_earnings')
+      .update({
+        status: 'paid_out',
+      })
+      .eq('partner_id', partner.id)
+      .eq('status', 'available')
+      .lte('created_at', new Date().toISOString()) // Only earnings created before this payout
+
+    console.log(`✅ Partner ${partner.id} balance updated: $${payoutAmount} transferred`)
+
+    // Send payout completed email
+    try {
+      // Get leads count from earnings
+      const { count: leadsCount } = await supabase
+        .from('partner_earnings')
+        .select('*', { count: 'exact', head: true })
+        .eq('partner_id', partner.id)
+        .eq('status', 'paid_out')
+
+      await sendPayoutCompletedEmail(
+        partner.email,
+        partner.company_name,
+        {
+          amount: payoutAmount,
+          currency: transfer.currency.toUpperCase(),
+          leadsCount: leadsCount || 0,
+          periodStart: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Approximate 30 days ago
+          periodEnd: new Date(),
+          payoutId: transfer.id,
+        }
+      )
+
+      console.log(`✅ Payout completion email sent to ${partner.email}`)
+    } catch (emailError) {
+      console.error('[Stripe Webhook] Failed to send payout email:', emailError)
+      // Don't fail the webhook if email fails
+    }
+
+    return
+  }
+
+  // Handle transfer failed (payout failed)
+  if (event.type === 'transfer.failed') {
+    const transfer = event.data.object as Stripe.Transfer
+    const failureMessage = transfer.failure_message || 'Unknown error'
+    console.error(`[Stripe Webhook] Transfer failed: ${transfer.id} - ${failureMessage}`)
+
+    // Get partner from Stripe account ID
+    const { data: partner } = await supabase
+      .from('partners')
+      .select('id, email, company_name, available_balance')
+      .eq('stripe_account_id', transfer.destination)
+      .single()
+
+    if (!partner) {
+      console.error(`[Stripe Webhook] Partner not found for Stripe account: ${transfer.destination}`)
+      return
+    }
+
+    const payoutAmount = transfer.amount / 100
+
+    // Update payout request to rejected/failed
+    await supabase
+      .from('payout_requests')
+      .update({
+        status: 'rejected',
+        rejection_reason: `Transfer failed: ${failureMessage}`,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('stripe_payout_id', transfer.id)
+
+    // Funds should remain in available_balance since transfer failed
+    console.log(`✅ Payout request marked as failed for partner ${partner.id}`)
+
+    // Send payout failed notification email
+    try {
+      await sendPayoutFailedEmail(partner.email, partner.company_name, {
+        amount: payoutAmount,
+        currency: transfer.currency.toUpperCase(),
+        reason: failureMessage,
+        payoutId: transfer.id,
+      })
+
+      console.log(`✅ Payout failure email sent to ${partner.email}`)
+    } catch (emailError) {
+      console.error('[Stripe Webhook] Failed to send payout failure email:', emailError)
+      // Don't fail the webhook if email fails
+    }
+
+    return
+  }
+
+  // ============================================================================
+  // UNHANDLED EVENT TYPES
+  // ============================================================================
+
+  // Log unhandled events but return 200 so Stripe doesn't retry
+  console.log(`[Stripe Webhook] Unhandled event type: ${event.type}`)
 }

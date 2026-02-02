@@ -22,6 +22,7 @@ import {
   PartnerRejectedEmail,
   PurchaseConfirmationEmail,
   PayoutCompletedEmail,
+  PayoutFailedEmail,
   CreditPurchaseConfirmationEmail,
 } from './templates'
 
@@ -558,6 +559,43 @@ export async function sendCreditPurchaseConfirmationEmail(
     tags: [
       { name: 'category', value: 'marketplace' },
       { name: 'type', value: 'credit_purchase' },
+    ],
+  })
+}
+
+/**
+ * Send payout failed notification
+ */
+export async function sendPayoutFailedEmail(
+  email: string,
+  partnerName: string,
+  payoutDetails: {
+    amount: number
+    currency: string
+    reason: string
+    payoutId: string
+  }
+): Promise<EmailResult> {
+  const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL}/partner/payouts`
+
+  const html = await renderEmail(
+    PayoutFailedEmail({
+      partnerName,
+      amount: payoutDetails.amount,
+      currency: payoutDetails.currency,
+      reason: payoutDetails.reason,
+      payoutId: payoutDetails.payoutId,
+      dashboardUrl,
+    })
+  )
+
+  return sendEmail({
+    to: email,
+    subject: `Payout Failed - Action Required`,
+    html,
+    tags: [
+      { name: 'category', value: 'partner' },
+      { name: 'type', value: 'payout_failed' },
     ],
   })
 }

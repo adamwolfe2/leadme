@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getStripeClient } from '@/lib/stripe/client'
+import { withRateLimit } from '@/lib/middleware/rate-limiter'
 
 export async function POST(
   request: NextRequest,
@@ -20,6 +21,10 @@ export async function POST(
     if (!authUser) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
+
+    // RATE LIMITING: Check purchase rate limit
+    const rateLimitResult = await withRateLimit(request, 'marketplace-purchase')
+    if (rateLimitResult) return rateLimitResult
 
     // Get user profile with subscription check
     const { data: user } = await supabase

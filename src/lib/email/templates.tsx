@@ -1130,3 +1130,111 @@ export function CreditPurchaseConfirmationEmail({
     </EmailLayout>
   )
 }
+
+interface PayoutFailedEmailProps {
+  partnerName: string
+  amount: number
+  currency: string
+  reason: string
+  payoutId: string
+  dashboardUrl: string
+}
+
+export function PayoutFailedEmail({
+  partnerName,
+  amount,
+  currency,
+  reason,
+  payoutId,
+  dashboardUrl,
+}: PayoutFailedEmailProps) {
+  return (
+    <EmailLayout preview={`Payout of $${amount.toFixed(2)} failed`}>
+      <Heading>Payout Failed</Heading>
+
+      <Text>Hi {partnerName},</Text>
+
+      <Text>
+        We attempted to process a payout to your connected Stripe account, but unfortunately it failed.
+      </Text>
+
+      <table
+        width="100%"
+        cellPadding="0"
+        cellSpacing="0"
+        style={{
+          backgroundColor: '#fef2f2',
+          borderRadius: '8px',
+          padding: '16px',
+          marginBottom: '24px',
+          border: '1px solid #fca5a5',
+        }}
+      >
+        <tbody>
+          <tr>
+            <td style={{ textAlign: 'center', padding: '16px' }}>
+              <div style={{ fontSize: '14px', color: '#dc2626', marginBottom: '8px' }}>Failed Payout Amount</div>
+              <div style={{ fontSize: '32px', fontWeight: 700, color: '#991b1b' }}>
+                ${amount.toFixed(2)} {currency.toUpperCase()}
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table
+        width="100%"
+        cellPadding="0"
+        cellSpacing="0"
+        style={{
+          backgroundColor: '#f9fafb',
+          borderRadius: '8px',
+          padding: '16px',
+          marginBottom: '24px',
+        }}
+      >
+        <tbody>
+          <tr>
+            <td style={{ padding: '8px 16px', borderBottom: '1px solid #e5e7eb' }}>
+              <div style={{ fontSize: '12px', color: '#6b7280' }}>Failure Reason</div>
+              <div style={{ fontSize: '14px', color: '#dc2626', marginTop: '4px' }}>{reason}</div>
+            </td>
+          </tr>
+          <tr>
+            <td style={{ padding: '8px 16px' }}>
+              <div style={{ fontSize: '12px', color: '#6b7280' }}>Payout ID</div>
+              <div style={{ fontSize: '14px', fontFamily: 'monospace', color: '#4b5563' }}>{payoutId}</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <Text>
+        <strong>What happens next:</strong>
+      </Text>
+
+      <ul style={{ marginLeft: '20px', marginBottom: '24px' }}>
+        <li style={{ marginBottom: '8px' }}>
+          Your earnings remain in your available balance - no funds were lost
+        </li>
+        <li style={{ marginBottom: '8px' }}>
+          Please check your Stripe Connect account settings
+        </li>
+        <li style={{ marginBottom: '8px' }}>
+          Ensure your bank account details are correct and up to date
+        </li>
+        <li style={{ marginBottom: '8px' }}>
+          Once fixed, you can request a new payout from your dashboard
+        </li>
+      </ul>
+
+      <div style={{ textAlign: 'center', margin: '24px 0' }}>
+        <Button href={dashboardUrl}>View Partner Dashboard</Button>
+      </div>
+
+      <Text style={{ color: '#6b7280', fontSize: '12px' }}>
+        If you need help resolving this issue, please contact our support team.
+      </Text>
+    </EmailLayout>
+  )
+}
