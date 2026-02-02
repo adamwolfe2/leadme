@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { TwentyStyleTable } from '@/components/crm/table/TwentyStyleTable'
+import { EnhancedLeadsTable } from '@/components/crm/table/EnhancedLeadsTable'
 import { RecordDrawer } from '@/components/crm/drawer/RecordDrawer'
 import { formatDistanceToNow } from 'date-fns'
 import type { LeadTableRow } from '@/types/crm.types'
@@ -23,9 +23,9 @@ export function LeadsPageClient({ initialData }: LeadsPageClientProps) {
   const selectedLeadData = leads.find((l) => l.id === selectedLead)
 
   return (
-    <div className="flex h-full flex-col">
-      {/* Twenty.com style table */}
-      <TwentyStyleTable data={leads} onRowClick={handleRowClick} />
+    <div className="flex h-full flex-col p-6">
+      {/* Enhanced square-ui inspired table */}
+      <EnhancedLeadsTable data={leads} onRowClick={handleRowClick} />
 
       {/* Record Drawer */}
       <RecordDrawer
