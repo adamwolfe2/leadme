@@ -25,16 +25,6 @@ export default function WelcomePage() {
   const [companyName, setCompanyName] = useState('')
 
   useEffect(() => {
-    // Check for waitlist mode - if on waitlist domain without bypass, send to waitlist
-    const hostname = window.location.hostname
-    const isWaitlistDomain = hostname === 'leads.meetcursive.com'
-    const hasAdminBypass = document.cookie.includes('admin_bypass_waitlist=true')
-
-    if (isWaitlistDomain && !hasAdminBypass) {
-      router.push('/waitlist')
-      return
-    }
-
     checkUserStatus()
   }, [])
 
@@ -44,7 +34,16 @@ export default function WelcomePage() {
       const { data: { session } } = await supabase.auth.getSession()
 
       if (!session) {
-        router.push('/login')
+        // Not authenticated - check if on waitlist domain
+        const hostname = window.location.hostname
+        const isWaitlistDomain = hostname === 'leads.meetcursive.com'
+        const hasAdminBypass = document.cookie.includes('admin_bypass_waitlist=true')
+
+        if (isWaitlistDomain && !hasAdminBypass) {
+          router.push('/waitlist')
+        } else {
+          router.push('/login')
+        }
         return
       }
 
