@@ -8,10 +8,11 @@ export async function middleware(req: NextRequest) {
   try {
     const { pathname } = req.nextUrl
 
-    // Quick check for static files - skip all middleware
+    // Quick check for static files and test endpoints - skip all middleware
     if (
       pathname.startsWith('/_next/static') ||
       pathname.startsWith('/_next/image') ||
+      pathname.startsWith('/api/test-simple') || // Test endpoint bypass
       pathname.match(/\.(ico|png|jpg|jpeg|gif|webp|svg)$/)
     ) {
       return NextResponse.next()
