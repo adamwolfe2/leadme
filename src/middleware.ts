@@ -116,8 +116,8 @@ export async function middleware(req: NextRequest) {
     }
 
     // Waitlist enforcement
-    // If on waitlist domain without admin bypass cookie or disabled waitlist, redirect to waitlist
-    if (isWaitlistDomain && !hasAdminBypass && !isWaitlistDisabled) {
+    // If on waitlist domain without admin bypass cookie, disabled waitlist, or authenticated user, redirect to waitlist
+    if (isWaitlistDomain && !hasAdminBypass && !isWaitlistDisabled && !user) {
       const isWaitlistPath =
         pathname === '/waitlist' ||
         pathname.startsWith('/api/waitlist') ||
