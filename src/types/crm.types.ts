@@ -197,8 +197,12 @@ export interface LeadTableRow {
   phone?: string
   company_name?: string
   company_industry?: string
+  business_type?: string
+  title?: string
+  city?: string
   state?: string
   company_size?: string
+  source?: string
   status: LeadStatus
   assigned_user_id?: string
   assigned_user?: {
@@ -215,6 +219,7 @@ export interface LeadTableRow {
   last_contacted_at?: string
   next_follow_up_at?: string
   notes?: string
+  linkedin_url?: string
 }
 
 export interface LeadFilters extends PaginationParams {

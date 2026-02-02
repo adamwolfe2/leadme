@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { ImportLeadsDialog } from '@/components/crm/dialogs/ImportLeadsDialog'
 import { CreateLeadDialog } from '@/components/crm/dialogs/CreateLeadDialog'
+import { EditLeadDialog } from '@/components/crm/dialogs/EditLeadDialog'
 import {
   Table,
   TableBody,
@@ -80,6 +81,8 @@ export function EnhancedLeadsTable({
   const [pageSize, setPageSize] = React.useState(20)
   const [importDialogOpen, setImportDialogOpen] = React.useState(false)
   const [createDialogOpen, setCreateDialogOpen] = React.useState(false)
+  const [editDialogOpen, setEditDialogOpen] = React.useState(false)
+  const [editingLead, setEditingLead] = React.useState<LeadTableRow | null>(null)
 
   const hasActiveFilters = statusFilter !== 'all' || sourceFilter !== 'all'
 
@@ -402,7 +405,13 @@ export function EnhancedLeadsTable({
                             <Eye className="size-4 mr-2" />
                             View Details
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setEditingLead(lead)
+                              setEditDialogOpen(true)
+                            }}
+                          >
                             <Pencil className="size-4 mr-2" />
                             Edit Lead
                           </DropdownMenuItem>
@@ -553,6 +562,16 @@ export function EnhancedLeadsTable({
       <CreateLeadDialog
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}
+        onSuccess={() => {
+          window.location.reload()
+        }}
+      />
+
+      {/* Edit Dialog */}
+      <EditLeadDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        lead={editingLead}
         onSuccess={() => {
           window.location.reload()
         }}
