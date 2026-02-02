@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ContactsTable } from '@/components/crm/table/ContactsTable'
+import { EnhancedContactsTable } from '@/components/crm/table/EnhancedContactsTable'
 import { RecordDrawer } from '@/components/crm/drawer/RecordDrawer'
 import { CreateContactDialog } from './CreateContactDialog'
 import { formatDistanceToNow } from 'date-fns'
@@ -42,9 +42,9 @@ export function ContactsPageClient({ initialData }: ContactsPageClientProps) {
     'Unnamed Contact'
 
   return (
-    <div className="flex h-full flex-col">
-      {/* Twenty.com style table */}
-      <ContactsTable
+    <div className="flex h-full flex-col p-6">
+      {/* Enhanced square-ui inspired table */}
+      <EnhancedContactsTable
         data={contacts}
         onRowClick={handleRowClick}
         onCreateClick={handleCreateClick}

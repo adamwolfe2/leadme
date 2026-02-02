@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CompaniesTable } from '@/components/crm/table/CompaniesTable'
+import { EnhancedCompaniesTable } from '@/components/crm/table/EnhancedCompaniesTable'
 import { RecordDrawer } from '@/components/crm/drawer/RecordDrawer'
 import { CreateCompanyDialog } from './CreateCompanyDialog'
 import { formatDistanceToNow } from 'date-fns'
@@ -38,9 +38,9 @@ export function CompaniesPageClient({ initialData }: CompaniesPageClientProps) {
   const selectedCompanyData = companies.find((c) => c.id === selectedCompany)
 
   return (
-    <div className="flex h-full flex-col">
-      {/* Twenty.com style table */}
-      <CompaniesTable
+    <div className="flex h-full flex-col p-6">
+      {/* Enhanced square-ui inspired table */}
+      <EnhancedCompaniesTable
         data={companies}
         onRowClick={handleRowClick}
         onCreateClick={handleCreateClick}
