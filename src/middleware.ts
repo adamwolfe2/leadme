@@ -55,15 +55,17 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/_next') ||
       pathname.startsWith('/api/webhooks') || // Webhooks are authenticated differently
       pathname.startsWith('/api/waitlist') || // Waitlist API is public
-      pathname.startsWith('/api/admin/set-bypass') || // Admin bypass cookie endpoint
+      pathname.startsWith('/api/admin/bypass-waitlist') || // Admin bypass endpoint
       pathname.startsWith('/api/debug') || // Debug endpoints
       pathname === '/api/health' || // Health check endpoint for monitoring
       pathname.startsWith('/api/inngest') // Inngest routes
 
-    // API routes (except webhooks and waitlist) require authentication
+    // API routes (except webhooks, waitlist, and bypass) require authentication
     const isApiRoute = pathname.startsWith('/api') &&
       !pathname.startsWith('/api/webhooks') &&
-      !pathname.startsWith('/api/waitlist')
+      !pathname.startsWith('/api/waitlist') &&
+      !pathname.startsWith('/api/admin/bypass-waitlist') &&
+      pathname !== '/api/health'
 
     // Auth routes (login, signup) - redirect to dashboard if already authenticated
     const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/signup')
