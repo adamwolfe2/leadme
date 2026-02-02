@@ -17,18 +17,42 @@ const extractSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('[Brand Extract] Request received')
+
+    // Check if API keys are set
+    if (!process.env.FIRECRAWL_API_KEY) {
+      console.error('[Brand Extract] FIRECRAWL_API_KEY not set')
+      return NextResponse.json(
+        { error: 'Firecrawl API key not configured. Please contact support.' },
+        { status: 500 }
+      )
+    }
+
+    if (!process.env.ANTHROPIC_API_KEY && !process.env.OPENAI_API_KEY) {
+      console.error('[Brand Extract] No AI API key set')
+      return NextResponse.json(
+        { error: 'AI API key not configured. Please contact support.' },
+        { status: 500 }
+      )
+    }
+
     // 1. Authentication
     const user = await getCurrentUser()
     if (!user) {
+      console.log('[Brand Extract] User not authenticated')
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
 
+    console.log(`[Brand Extract] User authenticated: ${user.id}`)
+
     // 2. Validate input
     const body = await request.json()
     const { url } = extractSchema.parse(body)
+
+    console.log(`[Brand Extract] URL to extract: ${url}`)
 
     if (!isValidUrl(url)) {
       return NextResponse.json(
