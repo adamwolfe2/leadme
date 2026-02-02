@@ -3,7 +3,7 @@
  * Database access layer for partner attribution and credits
  */
 
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import type {
   PartnerAnalytics,
   PartnerCredit,
@@ -16,7 +16,7 @@ export class PartnerRepository {
    * Get partner analytics (dashboard metrics)
    */
   async getPartnerAnalytics(partnerId: string): Promise<PartnerAnalytics | null> {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     const { data, error } = await supabase
       .from('partner_analytics')
@@ -40,7 +40,7 @@ export class PartnerRepository {
     limit: number = 50,
     offset: number = 0
   ) {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     const { data, error, count } = await supabase
       .from('leads')
@@ -92,7 +92,7 @@ export class PartnerRepository {
     limit: number = 50,
     offset: number = 0
   ) {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     const { data, error, count } = await supabase
       .from('lead_purchases')
@@ -129,7 +129,7 @@ export class PartnerRepository {
    * Get partner's credit balance
    */
   async getPartnerCredits(partnerId: string): Promise<PartnerCredit | null> {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     const { data, error } = await supabase
       .from('partner_credits')
@@ -165,7 +165,7 @@ export class PartnerRepository {
     limit: number = 50,
     offset: number = 0
   ) {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     const { data, error, count } = await supabase
       .from('partner_credit_transactions')
@@ -196,7 +196,7 @@ export class PartnerRepository {
     partnerId: string,
     commissionAmount: number
   ): Promise<void> {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     const { error } = await supabase.rpc('credit_partner_for_sale', {
       p_lead_purchase_id: leadPurchaseId,
@@ -224,7 +224,7 @@ export class PartnerRepository {
     platform_fee: number
     stripe_payment_intent_id: string | null
   }): Promise<LeadPurchase> {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     const { data, error } = await supabase
       .from('lead_purchases')
@@ -262,7 +262,7 @@ export class PartnerRepository {
    * Admin analytics
    */
   async getPlatformRevenue() {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     const { data, error } = await supabase
       .from('lead_purchases')

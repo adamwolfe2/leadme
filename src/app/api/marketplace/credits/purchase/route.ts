@@ -3,15 +3,11 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
 import { validateCreditPurchase } from '@/lib/constants/credit-packages'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2024-06-20',
-})
+import { getStripeClient } from '@/lib/stripe/client'
 
 const purchaseSchema = z.object({
   packageId: z.string(),
@@ -21,6 +17,7 @@ const purchaseSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    const stripe = getStripeClient()
     const supabase = await createClient()
 
     // Auth check

@@ -71,4 +71,17 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
 )
 Avatar.displayName = 'Avatar'
 
-export { Avatar, avatarVariants }
+// AvatarFallback component for compatibility with Radix-style usage
+const AvatarFallback = React.forwardRef<
+  HTMLSpanElement,
+  React.HTMLAttributes<HTMLSpanElement>
+>(({ className, ...props }, ref) => (
+  <span
+    ref={ref}
+    className={cn('flex h-full w-full items-center justify-center', className)}
+    {...props}
+  />
+))
+AvatarFallback.displayName = 'AvatarFallback'
+
+export { Avatar, AvatarFallback, avatarVariants }

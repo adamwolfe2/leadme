@@ -3,10 +3,11 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import Stripe from 'stripe'
+import { getStripeClient } from '@/lib/stripe/client'
 
 export async function GET(request: NextRequest) {
   try {
+    const stripe = getStripeClient()
     const partnerId = request.nextUrl.searchParams.get('partner_id')
 
     if (!partnerId) {
@@ -38,19 +39,6 @@ export async function GET(request: NextRequest) {
         message: 'Stripe account not connected',
       })
     }
-
-    // Check Stripe account status
-    if (!process.env.STRIPE_SECRET_KEY) {
-      return NextResponse.json(
-        { error: 'Stripe not configured' },
-        { status: 500 }
-      )
-    }
-
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-12-18.acacia',
-      typescript: true,
-    })
 
     const account = await stripe.accounts.retrieve(partner.stripe_account_id)
 

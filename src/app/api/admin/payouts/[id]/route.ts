@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { requireAdmin, getCurrentAdminId } from '@/lib/auth/admin'
-import Stripe from 'stripe'
-
-function getStripeClient(): Stripe {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2023-10-16',
-  })
-}
+import { getStripeClient } from '@/lib/stripe/client'
 
 export async function PATCH(
   request: NextRequest,

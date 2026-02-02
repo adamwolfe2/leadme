@@ -4,14 +4,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { PartnerRepository } from '@/lib/repositories/partner.repository'
-import Stripe from 'stripe'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
-})
+import { getStripeClient } from '@/lib/stripe/client'
 
 export async function POST(request: NextRequest) {
   try {
+    const stripe = getStripeClient()
     // Get current user
     const user = await getCurrentUser()
 
@@ -80,6 +77,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    const stripe = getStripeClient()
     // Get current user
     const user = await getCurrentUser()
 

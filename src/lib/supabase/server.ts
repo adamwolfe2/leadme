@@ -29,3 +29,21 @@ export const createClient = async () => {
     }
   )
 }
+
+// Admin client for service role operations (bypasses RLS)
+export const createAdminClient = () => {
+  return createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return []
+        },
+        setAll() {
+          // No-op for admin client
+        },
+      },
+    }
+  )
+}

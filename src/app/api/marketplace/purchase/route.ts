@@ -9,11 +9,7 @@ import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository
 import { COMMISSION_CONFIG, calculateCommission } from '@/lib/services/commission.service'
 import { sendPurchaseConfirmationEmail } from '@/lib/email/service'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
-import Stripe from 'stripe'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
-})
+import { getStripeClient } from '@/lib/stripe/client'
 
 const purchaseSchema = z.object({
   leadIds: z.array(z.string().uuid()).min(1).max(100),
@@ -304,6 +300,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(response)
     } else {
       // Stripe payment - create checkout session
+      const stripe = getStripeClient()
       const adminClient = createAdminClient()
 
       // Create pending purchase record

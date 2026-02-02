@@ -3,13 +3,9 @@
 
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
-import Stripe from 'stripe'
+import { getStripeClient } from '@/lib/stripe/client'
 import { COMMISSION_CONFIG, processPendingCommissions, getPartnersEligibleForPayout } from '@/lib/services/commission.service'
 import { sendPayoutCompletedEmail } from '@/lib/email/service'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
-})
 
 /**
  * Weekly partner payout job
@@ -143,6 +139,7 @@ async function processPartnerPayout(partner: {
 
   try {
     // Create Stripe Transfer
+    const stripe = getStripeClient()
     const transfer = await stripe.transfers.create({
       amount: amountCents,
       currency: 'usd',

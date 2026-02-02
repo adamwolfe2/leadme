@@ -5,7 +5,7 @@
 
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Select } from '@/components/ui/select'
+import { Select } from '@/components/ui/select-radix'
 import { useCRMStore } from '@/lib/crm/crm-state'
 
 interface PaginationControlsProps {

@@ -12,7 +12,7 @@ import { cn } from '@/lib/design-system'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Select } from '@/components/ui/select'
+import { Select } from '@/components/ui/select-radix'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatNumber, formatPercentage, formatCurrency } from '@/lib/design-system'
 import {

@@ -5,19 +5,16 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
-import Stripe from 'stripe'
+import { createClient } from '@/lib/supabase/server'
+import { getStripeClient } from '@/lib/stripe/client'
 import { PartnerRepository } from '@/lib/db/repositories/partner.repository'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-11-20.acacia',
-})
 
 export async function POST(
   request: NextRequest,
   { params }: { params: { leadId: string } }
 ) {
   try {
+    const stripe = getStripeClient()
     const body = await request.json()
     const { paymentIntentId } = body
 
@@ -50,7 +47,7 @@ export async function POST(
       )
     }
 
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     // Check if already recorded (idempotency)
     const { data: existingPurchase } = await supabase

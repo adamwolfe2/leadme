@@ -23,7 +23,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/components/ui/select-radix'
 import { useToast } from '@/lib/hooks/use-toast'
 
 const stageOptions = ['Qualified', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'] as const

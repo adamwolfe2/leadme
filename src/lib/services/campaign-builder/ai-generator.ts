@@ -7,9 +7,18 @@
 import Anthropic from '@anthropic-ai/sdk'
 import type { CampaignDraft, GeneratedEmail } from '@/types/campaign-builder'
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
-})
+let anthropic: Anthropic | null = null
+
+function getAnthropicClient(): Anthropic {
+  if (!anthropic) {
+    const apiKey = process.env.ANTHROPIC_API_KEY
+    if (!apiKey) {
+      throw new Error('ANTHROPIC_API_KEY environment variable is not set')
+    }
+    anthropic = new Anthropic({ apiKey })
+  }
+  return anthropic
+}
 
 const MODEL = 'claude-3-5-sonnet-20241022'
 
@@ -23,7 +32,8 @@ export async function generateEmailSequence(
   const prompt = customPrompt || buildGenerationPrompt(draft)
 
   try {
-    const response = await anthropic.messages.create({
+    const client = getAnthropicClient()
+    const response = await client.messages.create({
       model: MODEL,
       max_tokens: 4000,
       temperature: 0.7, // Creative but consistent
@@ -219,7 +229,8 @@ Return ONLY a JSON object with this structure:
 
 Generate the improved email now. Return ONLY the JSON object, no other text.`
 
-  const response = await anthropic.messages.create({
+  const client = getAnthropicClient()
+  const response = await client.messages.create({
     model: MODEL,
     max_tokens: 1500,
     temperature: 0.8, // More creative for regeneration

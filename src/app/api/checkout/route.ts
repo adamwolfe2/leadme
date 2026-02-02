@@ -9,7 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
-import Stripe from 'stripe'
+import { getStripeClient } from '@/lib/stripe/client'
 import { z } from 'zod'
 
 // Request validation schema
@@ -67,6 +67,7 @@ async function getAuthenticatedUser() {
 
 export async function POST(req: NextRequest) {
   try {
+    const stripe = getStripeClient()
     // Authenticate user
     const user = await getAuthenticatedUser()
     if (!user) {
@@ -88,18 +89,6 @@ export async function POST(req: NextRequest) {
     }
 
     const { leadId, buyerEmail, buyerName, companyName } = validation.data
-
-    // Initialize Stripe
-    if (!process.env.STRIPE_SECRET_KEY) {
-      return NextResponse.json(
-        { error: 'Payment system not configured' },
-        { status: 500 }
-      )
-    }
-
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-12-18.acacia',
-    })
 
     // Create admin Supabase client for database operations
     const cookieStore = await cookies()

@@ -4,7 +4,7 @@
  */
 
 import { redirect } from 'next/navigation'
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { PartnerRepository } from '@/lib/db/repositories/partner.repository'
 import { StatsCards } from '@/components/partner/StatsCards'
 import { UploadedLeadsTable } from '@/components/partner/UploadedLeadsTable'
@@ -14,7 +14,7 @@ import Link from 'next/link'
 export const dynamic = 'force-dynamic'
 
 export default async function PartnerDashboard() {
-  const supabase = await createServerClient()
+  const supabase = await createClient()
 
   // Get authenticated user
   const {

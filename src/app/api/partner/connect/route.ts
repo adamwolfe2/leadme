@@ -3,7 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import Stripe from 'stripe'
+import { getStripeClient } from '@/lib/stripe/client'
 import { z } from 'zod'
 
 const connectSchema = z.object({
@@ -12,6 +12,7 @@ const connectSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    const stripe = getStripeClient()
     // Validate input
     const body = await request.json()
     const { partnerId } = connectSchema.parse(body)
@@ -31,20 +32,6 @@ export async function POST(request: NextRequest) {
         { status: 404 }
       )
     }
-
-    // Initialize Stripe
-    if (!process.env.STRIPE_SECRET_KEY) {
-      console.error('[Stripe Connect] Missing STRIPE_SECRET_KEY')
-      return NextResponse.json(
-        { error: 'Stripe not configured' },
-        { status: 500 }
-      )
-    }
-
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-12-18.acacia',
-      typescript: true,
-    })
 
     let accountId = partner.stripe_account_id
 

@@ -3,7 +3,6 @@
 
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
-import Stripe from 'stripe'
 
 export const webhookRetryProcessor = inngest.createFunction(
   {
