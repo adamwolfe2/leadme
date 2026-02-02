@@ -29,6 +29,9 @@ export async function middleware(req: NextRequest) {
     // Check if this is the leads.meetcursive.com domain (waitlist mode)
     const isWaitlistDomain = host === 'leads.meetcursive.com'
 
+    // Check if waitlist is disabled via environment variable
+    const isWaitlistDisabled = process.env.DISABLE_WAITLIST === 'true'
+
     // Check for admin bypass cookie
     const hasAdminBypass = req.cookies.get('admin_bypass_waitlist')?.value === 'true'
 
@@ -84,8 +87,8 @@ export async function middleware(req: NextRequest) {
     }
 
     // Waitlist enforcement
-    // If on waitlist domain without admin bypass cookie, redirect to waitlist
-    if (isWaitlistDomain && !hasAdminBypass) {
+    // If on waitlist domain without admin bypass cookie or disabled waitlist, redirect to waitlist
+    if (isWaitlistDomain && !hasAdminBypass && !isWaitlistDisabled) {
       const isWaitlistPath =
         pathname === '/waitlist' ||
         pathname.startsWith('/api/waitlist') ||
