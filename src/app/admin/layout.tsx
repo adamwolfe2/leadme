@@ -64,28 +64,22 @@ export default async function AdminLayout({
                   Accounts
                 </Link>
                 <Link
+                  href="/admin/waitlist"
+                  className="text-sm text-zinc-300 hover:text-white transition-colors"
+                >
+                  Waitlist
+                </Link>
+                <Link
+                  href="/admin/support"
+                  className="text-sm text-zinc-300 hover:text-white transition-colors"
+                >
+                  Support
+                </Link>
+                <Link
                   href="/admin/leads"
                   className="text-sm text-zinc-300 hover:text-white transition-colors"
                 >
                   Leads
-                </Link>
-                <Link
-                  href="/admin/partners"
-                  className="text-sm text-zinc-300 hover:text-white transition-colors"
-                >
-                  Partners
-                </Link>
-                <Link
-                  href="/admin/marketplace"
-                  className="text-sm text-zinc-300 hover:text-white transition-colors"
-                >
-                  Marketplace
-                </Link>
-                <Link
-                  href="/admin/payouts"
-                  className="text-sm text-zinc-300 hover:text-white transition-colors"
-                >
-                  Payouts
                 </Link>
                 <Link
                   href="/admin/analytics"

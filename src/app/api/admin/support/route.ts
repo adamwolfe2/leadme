@@ -1,0 +1,40 @@
+import { NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { isAdmin } from '@/lib/auth/roles'
+
+export async function GET() {
+  try {
+    // Check admin authentication
+    const supabase = await createClient()
+    const { data: { session } } = await supabase.auth.getSession()
+
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const hasAdminAccess = await isAdmin(session.user)
+    if (!hasAdminAccess) {
+      return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
+    }
+
+    // Fetch all support messages using admin client
+    const adminSupabase = createAdminClient()
+    const { data, error } = await adminSupabase
+      .from('support_messages')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    return NextResponse.json({ messages: data })
+  } catch (error) {
+    console.error('[Admin] Support messages fetch error:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch support messages' },
+      { status: 500 }
+    )
+  }
+}
