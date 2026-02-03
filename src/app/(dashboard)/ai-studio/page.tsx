@@ -102,6 +102,8 @@ export default function AIStudioPage() {
     let timeoutId: NodeJS.Timeout | null = null
 
     try {
+      console.log('[AI Studio] Starting extraction for:', url.trim())
+
       // Start extraction
       const response = await fetch('/api/ai-studio/brand/extract', {
         method: 'POST',
@@ -109,7 +111,10 @@ export default function AIStudioPage() {
         body: JSON.stringify({ url: url.trim() }),
       })
 
+      console.log('[AI Studio] Response status:', response.status)
+
       const data = await response.json()
+      console.log('[AI Studio] Response data:', data)
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to extract brand DNA')
@@ -117,6 +122,7 @@ export default function AIStudioPage() {
 
       // Poll for progress and update loading steps based on actual status
       const workspaceId = data.workspaceId
+      console.log('[AI Studio] Got workspace ID:', workspaceId)
       let currentStep = 0
       let consecutiveErrors = 0
       const MAX_CONSECUTIVE_ERRORS = 3
@@ -132,7 +138,12 @@ export default function AIStudioPage() {
           const progressData = await progressRes.json()
           const workspace = progressData.workspaces?.find((w: any) => w.id === workspaceId)
 
-          if (!workspace) return
+          if (!workspace) {
+            console.log('[AI Studio] Workspace not found in polling, waiting...')
+            return
+          }
+
+          console.log('[AI Studio] Workspace status:', workspace.extraction_status)
 
           // Reset error counter on successful response
           consecutiveErrors = 0
@@ -183,12 +194,13 @@ export default function AIStudioPage() {
         }
       }, 2000) // Poll every 2 seconds
 
-      // Safety timeout: stop polling after 2 minutes
+      // Safety timeout: stop polling after 30 seconds
       timeoutId = setTimeout(() => {
+        console.log('[AI Studio] Timeout reached, stopping extraction')
         if (pollInterval) clearInterval(pollInterval)
         setIsExtracting(false)
-        setExtractionError('Extraction is taking longer than expected. Please check back in a moment.')
-      }, 120000)
+        setExtractionError('Extraction timed out after 30 seconds. This usually means the API is overloaded or the API keys are not configured correctly. Please try again in a moment.')
+      }, 30000)
 
     } catch (error: any) {
       if (pollInterval) clearInterval(pollInterval)
