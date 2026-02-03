@@ -25,7 +25,16 @@ export interface BrandDNA {
   heading_font: string
   body_font: string
   headline: string
+  tagline: string
+  value_propositions: string[]
+  brand_personality: string[]
   images: string[]
+  hero_images: string[]
+  product_images: string[]
+  team_images: string[]
+  icon_urls: string[]
+  og_image: string | null
+  meta_description: string
 }
 
 export interface FirecrawlResult {
@@ -58,7 +67,7 @@ export async function extractBrandDNA(url: string): Promise<FirecrawlResult> {
 
     console.log(`[Firecrawl] Scrape completed, extracting structured data...`)
 
-    // 2. Extract structured brand data with LLM
+    // 2. Extract comprehensive brand intelligence with LLM
     const extractionSchema = {
       type: 'object',
       properties: {
@@ -68,47 +77,84 @@ export async function extractBrandDNA(url: string): Promise<FirecrawlResult> {
         },
         logo_url: {
           type: 'string',
-          description: 'URL to the company logo image (if found)'
+          description: 'URL to the company logo image (typically in header or footer)'
         },
         favicon_url: {
           type: 'string',
-          description: 'URL to the favicon (if found)'
+          description: 'URL to the favicon icon'
         },
         primary_color: {
           type: 'string',
-          description: 'Primary brand color in hex format (e.g., #0082FB)'
+          description: 'Primary brand color in hex format (most dominant brand color, often used in CTAs and headers)'
         },
         secondary_color: {
           type: 'string',
-          description: 'Secondary brand color in hex format'
+          description: 'Secondary brand color in hex format (supporting color)'
         },
         accent_color: {
           type: 'string',
-          description: 'Accent brand color in hex format'
+          description: 'Accent brand color in hex format (used for highlights and emphasis)'
         },
         background_color: {
           type: 'string',
-          description: 'Background color in hex format'
+          description: 'Primary background color in hex format'
         },
         heading_font: {
           type: 'string',
-          description: 'Font family used for headings'
+          description: 'Font family used for headings and titles'
         },
         body_font: {
           type: 'string',
-          description: 'Font family used for body text'
+          description: 'Font family used for body text and paragraphs'
         },
         headline: {
           type: 'string',
-          description: 'Main value proposition or tagline from the website'
+          description: 'Main hero headline or H1 from the homepage'
         },
-        images: {
+        tagline: {
+          type: 'string',
+          description: 'Company tagline or slogan (short memorable phrase)'
+        },
+        value_propositions: {
           type: 'array',
           items: { type: 'string' },
-          description: 'Array of relevant image URLs (max 10)'
+          description: 'Key value propositions and benefits (3-5 main points the company emphasizes)'
+        },
+        brand_personality: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Brand personality traits (e.g., professional, playful, innovative, trustworthy)'
+        },
+        hero_images: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'URLs of hero/banner images from homepage'
+        },
+        product_images: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'URLs of product or service images'
+        },
+        team_images: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'URLs of team or people images'
+        },
+        icon_urls: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'URLs of icons used on the site (feature icons, social icons, etc.)'
+        },
+        og_image: {
+          type: 'string',
+          description: 'Open Graph image URL (social media preview image)'
+        },
+        meta_description: {
+          type: 'string',
+          description: 'Meta description from the site (concise company description)'
         },
       },
-      required: ['company_name', 'primary_color', 'headline']
+      required: ['company_name', 'primary_color', 'headline', 'tagline', 'meta_description']
     }
 
     const extractResult = await firecrawl.scrapeUrl(normalizedUrl, {
@@ -120,7 +166,7 @@ export async function extractBrandDNA(url: string): Promise<FirecrawlResult> {
 
     console.log(`[Firecrawl] Brand DNA extracted successfully`)
 
-    // 3. Return combined result
+    // 3. Return combined result with comprehensive brand intelligence
     return {
       url: normalizedUrl,
       markdown: scrapeResult.markdown || '',
@@ -138,7 +184,16 @@ export async function extractBrandDNA(url: string): Promise<FirecrawlResult> {
         heading_font: extractResult.extract?.heading_font || 'Inter',
         body_font: extractResult.extract?.body_font || 'Inter',
         headline: extractResult.extract?.headline || '',
+        tagline: extractResult.extract?.tagline || '',
+        value_propositions: extractResult.extract?.value_propositions || [],
+        brand_personality: extractResult.extract?.brand_personality || [],
         images: (extractResult.extract?.images || []).slice(0, 10),
+        hero_images: extractResult.extract?.hero_images || [],
+        product_images: extractResult.extract?.product_images || [],
+        team_images: extractResult.extract?.team_images || [],
+        icon_urls: extractResult.extract?.icon_urls || [],
+        og_image: extractResult.extract?.og_image || null,
+        meta_description: extractResult.extract?.meta_description || '',
       }
     }
   } catch (error: any) {
