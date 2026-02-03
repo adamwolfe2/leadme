@@ -4,6 +4,7 @@ import { Package, ArrowRight, CheckCircle, Zap, TrendingUp, Sparkles } from 'luc
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
 import { ServiceTierCard } from '@/components/services/ServiceTierCard'
 import { GradientCard } from '@/components/ui/gradient-card'
+import { ServicePageTracker } from '@/components/analytics/ServicePageTracker'
 
 export const metadata = {
   title: 'Services | Cursive',
@@ -25,6 +26,7 @@ export default async function ServicesPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-white">
+      <ServicePageTracker page="hub" />
       {/* Hero Section */}
       <div className="border-b border-zinc-200 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

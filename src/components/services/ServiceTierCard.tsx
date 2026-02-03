@@ -1,6 +1,9 @@
+'use client'
+
 import Link from 'next/link'
 import { ArrowRight, CheckCircle } from 'lucide-react'
 import type { Database } from '@/types/supabase'
+import { trackCTAClick } from '@/lib/analytics/service-tier-events'
 
 type ServiceTier = Database['public']['Tables']['service_tiers']['Row']
 
@@ -91,6 +94,10 @@ export function ServiceTierCard({ tier, featured = false }: ServiceTierCardProps
             <Link
               href="/services/contact"
               className="block w-full text-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+              onClick={() => trackCTAClick(tier.slug, 'services_hub', 'Contact Sales', {
+                tier_name: tier.name,
+                tier_price: tier.monthly_price_min
+              })}
             >
               Contact Sales
             </Link>
@@ -102,6 +109,10 @@ export function ServiceTierCard({ tier, featured = false }: ServiceTierCardProps
                   ? 'bg-blue-600 hover:bg-blue-700 text-white'
                   : 'bg-zinc-900 hover:bg-zinc-800 text-white'
               }`}
+              onClick={() => trackCTAClick(tier.slug, 'services_hub', 'Get Started', {
+                tier_name: tier.name,
+                tier_price: tier.monthly_price_min
+              })}
             >
               Get Started
             </Link>

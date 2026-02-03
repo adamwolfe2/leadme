@@ -1,10 +1,11 @@
 'use client'
 
-import { ReactNode } from 'react'
+import { ReactNode, useEffect } from 'react'
 import Link from 'next/link'
 import { Lock, ArrowRight, Sparkles } from 'lucide-react'
 import { useFeature } from '@/lib/hooks/use-tier'
 import type { ProductTierFeatures } from '@/types'
+import { trackFeatureLock } from '@/lib/analytics/service-tier-events'
 
 interface FeatureLockProps {
   feature: keyof ProductTierFeatures
@@ -34,6 +35,13 @@ export function FeatureLock({
   showBlur = true
 }: FeatureLockProps) {
   const { hasAccess, isLoading } = useFeature(feature)
+
+  // Track when feature lock is displayed
+  useEffect(() => {
+    if (!isLoading && !hasAccess) {
+      trackFeatureLock('displayed', feature, requiredTier)
+    }
+  }, [hasAccess, isLoading, feature, requiredTier])
 
   // Show loading state
   if (isLoading) {
@@ -86,6 +94,7 @@ export function FeatureLock({
             <Link
               href={`/services/${requiredTierSlug}`}
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+              onClick={() => trackFeatureLock('upgrade_clicked', feature, requiredTier)}
             >
               Learn More
               <ArrowRight className="h-4 w-4" />
@@ -93,6 +102,7 @@ export function FeatureLock({
             <Link
               href="/services"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-zinc-300 hover:border-zinc-400 text-zinc-700 font-medium rounded-lg transition-colors"
+              onClick={() => trackFeatureLock('upgrade_clicked', feature, requiredTier)}
             >
               Compare Plans
             </Link>
