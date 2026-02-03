@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { useTier } from '@/lib/hooks/use-tier'
+import { InlineFeatureLock } from '@/components/gates/FeatureLock'
+import { ServiceLimitBanner } from '@/components/limits/ServiceLimitBanner'
 
 interface Campaign {
   id: string
@@ -122,28 +124,21 @@ export function CampaignsList() {
             { label: 'Campaigns' },
           ]}
         />
-        <div className="mt-6 rounded-lg border border-dashed border-zinc-300 bg-zinc-50/50 p-12 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-zinc-100">
-            <svg className="h-8 w-8 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-          </div>
-          <h3 className="mt-4 text-lg font-medium text-zinc-900">Campaigns require a paid plan</h3>
-          <p className="mt-2 text-sm text-zinc-500 max-w-md mx-auto">
-            Create and manage email outreach campaigns to connect with your leads at scale.
-            Upgrade to a paid plan to unlock this feature.
-          </p>
-          {canUpgrade && (
-            <Link
-              href="/settings/billing"
-              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        <InlineFeatureLock
+          feature="campaigns"
+          requiredTier="Cursive Outbound"
+          requiredTierSlug="cursive-outbound"
+        />
+        <div className="mt-6 rounded-lg border border-dashed border-zinc-300 bg-zinc-50/50 p-12 text-center opacity-50 pointer-events-none">
+          <EmptyState
+            icon={() => (
+              <svg className="h-12 w-12 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
-              Upgrade to Starter
-            </Link>
-          )}
+            )}
+            title="No campaigns yet"
+            description="Create your first email outreach campaign"
+          />
         </div>
       </PageContainer>
     )
@@ -186,15 +181,17 @@ export function CampaignsList() {
       />
 
       {/* Limit warning */}
+      <ServiceLimitBanner resource="campaigns" threshold={80} dismissible />
+
       {atLimit && (
-        <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
+        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
           <div className="flex items-start gap-3">
-            <svg className="h-5 w-5 text-amber-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-5 w-5 text-red-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
             <div className="flex-1">
-              <h3 className="text-sm font-medium text-amber-800">Campaign limit reached</h3>
-              <p className="mt-1 text-sm text-amber-700">
+              <h3 className="text-sm font-medium text-red-800">Campaign limit reached</h3>
+              <p className="mt-1 text-sm text-red-700">
                 You've reached your {tierName} plan limit of {usage?.limit} campaigns.
                 {canUpgrade && ' Upgrade to create more campaigns.'}
               </p>

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/empty-state'
+import { AgentsListWrapper } from '@/components/agents/agents-list-wrapper'
 
 export default async function AgentsPage() {
   const user = await getCurrentUser()
@@ -42,8 +43,9 @@ export default async function AgentsPage() {
         }
       />
 
-      {/* Info Card */}
-      <Card className="mb-6 p-4 bg-primary/5 border-primary/20">
+      <AgentsListWrapper>
+        {/* Info Card */}
+        <Card className="mb-6 p-4 bg-primary/5 border-primary/20">
         <div className="flex items-start gap-3">
           <svg className="h-5 w-5 text-primary mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -124,6 +126,7 @@ export default async function AgentsPage() {
           ))}
         </div>
       )}
+      </AgentsListWrapper>
     </PageContainer>
   )
 }
