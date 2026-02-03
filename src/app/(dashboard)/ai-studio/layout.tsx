@@ -1,9 +1,22 @@
 import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { StudioSidebar } from '@/components/ai-studio/studio-sidebar'
 
 export default function AIStudioLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  return <ErrorBoundary>{children}</ErrorBoundary>
+  return (
+    <ErrorBoundary>
+      <div className="flex h-screen">
+        {/* AI Studio Sidebar */}
+        <StudioSidebar />
+
+        {/* Main Content */}
+        <main className="flex-1 overflow-y-auto">
+          {children}
+        </main>
+      </div>
+    </ErrorBoundary>
+  )
 }
