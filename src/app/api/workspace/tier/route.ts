@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
+import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
 import type { ProductTierFeatures } from '@/types'
 
 // Default free tier features
@@ -37,7 +38,14 @@ export async function GET(request: NextRequest) {
 
     const supabase = await createClient()
 
-    // Get workspace tier info
+    // Check for active service subscription first (new service tier system)
+    const serviceSubscription = await serviceTierRepository.getWorkspaceActiveSubscription(user.workspace_id)
+    let serviceTierData = null
+    if (serviceSubscription) {
+      serviceTierData = await serviceTierRepository.getTierById(serviceSubscription.service_tier_id)
+    }
+
+    // Get workspace tier info (legacy product tier system)
     const { data: tierInfo } = await supabase
       .from('workspace_tiers')
       .select(`
@@ -110,27 +118,61 @@ export async function GET(request: NextRequest) {
       price_yearly: number
     } | null
 
-    // Merge default features with tier features and any overrides
-    const features: ProductTierFeatures = {
+    // Merge features: service tier takes precedence over product tier
+    let features: ProductTierFeatures = {
       ...DEFAULT_FEATURES,
       ...(productTier?.features || {}),
       ...(tierInfo?.feature_overrides || {}),
     }
 
-    // Calculate effective limits (with overrides)
-    const dailyLimit = tierInfo?.daily_lead_limit_override ?? productTier?.daily_lead_limit ?? 3
-    const monthlyLimit = tierInfo?.monthly_lead_limit_override ?? productTier?.monthly_lead_limit ?? null
+    // If service tier exists, map its platform_features to ProductTierFeatures
+    if (serviceTierData && serviceTierData.platform_features) {
+      const platformFeatures = serviceTierData.platform_features as any
+      features = {
+        ...features,
+        campaigns: platformFeatures.campaigns || false,
+        ai_agents: platformFeatures.ai_agents || false,
+        api_access: platformFeatures.api_access || false,
+        team_members: platformFeatures.team_seats || 1,
+        white_label: platformFeatures.white_label || false,
+        custom_domains: platformFeatures.custom_integrations || false,
+        dedicated_support: true, // All service tiers get dedicated support
+      }
+    }
+
+    // Calculate effective limits
+    let dailyLimit = tierInfo?.daily_lead_limit_override ?? productTier?.daily_lead_limit ?? 3
+    let monthlyLimit = tierInfo?.monthly_lead_limit_override ?? productTier?.monthly_lead_limit ?? null
+
+    // Service tier limits override product tier limits
+    if (serviceTierData && serviceTierData.platform_features) {
+      const platformFeatures = serviceTierData.platform_features as any
+      if (platformFeatures.daily_lead_limit !== undefined) {
+        dailyLimit = platformFeatures.daily_lead_limit === -1 ? 999999 : platformFeatures.daily_lead_limit
+      }
+    }
+
+    // Determine which tier to display (service tier takes precedence)
+    const displayTier = serviceTierData || productTier
+    const tierName = serviceTierData?.name || productTier?.name || 'Free'
+    const tierSlug = serviceTierData?.slug || productTier?.slug || 'free'
 
     return NextResponse.json({
       success: true,
       tier: {
-        id: productTier?.id || 'free',
-        name: productTier?.name || 'Free',
-        slug: productTier?.slug || 'free',
+        id: displayTier?.id || 'free',
+        name: tierName,
+        slug: tierSlug,
         features,
         priceMonthly: productTier?.price_monthly || 0,
         priceYearly: productTier?.price_yearly || 0,
       },
+      serviceTier: serviceTierData ? {
+        id: serviceTierData.id,
+        name: serviceTierData.name,
+        slug: serviceTierData.slug,
+        monthlyPrice: serviceSubscription?.monthly_price,
+      } : null,
       limits: {
         daily: dailyLimit,
         monthly: monthlyLimit,
