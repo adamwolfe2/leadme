@@ -131,9 +131,13 @@ export async function GET(request: NextRequest) {
       features = {
         ...features,
         campaigns: platformFeatures.campaigns || false,
+        templates: platformFeatures.campaigns || false, // Templates enabled with campaigns
         ai_agents: platformFeatures.ai_agents || false,
         api_access: platformFeatures.api_access || false,
+        integrations: platformFeatures.api_access || false, // Integrations enabled with API access
         team_members: platformFeatures.team_seats || 1,
+        max_campaigns: platformFeatures.campaigns ? -1 : 0, // Unlimited campaigns if enabled
+        max_templates: platformFeatures.campaigns ? -1 : 0, // Unlimited templates if campaigns enabled
         white_label: platformFeatures.white_label || false,
         custom_domains: platformFeatures.custom_integrations || false,
         dedicated_support: true, // All service tiers get dedicated support
