@@ -5,7 +5,7 @@
 
 import * as fal from '@fal-ai/client'
 import type { BrandDNA } from './firecrawl'
-import type { CustomerProfile } from './knowledge'
+import type { CustomerProfile, KnowledgeBase } from './knowledge'
 
 function configureFal() {
   if (!process.env.FAL_KEY) {
@@ -23,13 +23,17 @@ export type StylePreset =
   | 'Handcrafted Perfection'
   | 'Timeless Style'
 
+export type QualityLevel = 'fast' | 'balanced' | 'high'
+
 export interface GenerateCreativeInput {
   prompt: string
   brandData: BrandDNA
+  knowledgeBase?: KnowledgeBase | null
   icp?: CustomerProfile | null
   offer?: { name: string; description: string } | null
   stylePreset?: StylePreset
   format?: CreativeFormat
+  quality?: QualityLevel
 }
 
 export interface GenerateCreativeOutput {
@@ -43,37 +47,46 @@ export interface GenerateCreativeOutput {
 export async function generateAdCreative({
   prompt,
   brandData,
+  knowledgeBase,
   icp,
   offer,
   stylePreset,
-  format = 'square'
+  format = 'square',
+  quality = 'high'
 }: GenerateCreativeInput): Promise<GenerateCreativeOutput> {
   try {
     configureFal()
-    console.log('[ImageGen] Generating ad creative...')
+    console.log('[ImageGen] Generating ad creative with quality:', quality)
 
-    // Build enhanced prompt
+    // Build enhanced prompt with full brand intelligence
     const enhancedPrompt = buildPrompt({
       userPrompt: prompt,
       brandData,
+      knowledgeBase,
       icp,
       offer,
       stylePreset,
     })
 
-    console.log('[ImageGen] Enhanced prompt:', enhancedPrompt)
+    console.log('[ImageGen] Enhanced prompt:', enhancedPrompt.slice(0, 200) + '...')
 
     // Image dimensions based on format
     const dimensions = getImageDimensions(format)
 
-    // Generate with Flux Schnell (fast, cost-effective)
-    const result = await fal.subscribe('fal-ai/flux/schnell', {
+    // Select model and settings based on quality
+    const { model, steps } = getQualitySettings(quality)
+
+    console.log('[ImageGen] Using model:', model, 'with', steps, 'steps')
+
+    // Generate with Flux (Pro for quality, Dev for balanced, Schnell for fast)
+    const result = await fal.subscribe(model, {
       input: {
         prompt: enhancedPrompt,
         image_size: dimensions,
-        num_inference_steps: 4, // Fast generation (4 steps for Schnell)
+        num_inference_steps: steps,
         num_images: 1,
-        enable_safety_checker: false, // We're generating ads, not problematic content
+        enable_safety_checker: false, // We're generating professional ads
+        guidance_scale: quality === 'high' ? 3.5 : 3.0, // Higher guidance for better brand adherence
       }
     }) as any
 
@@ -96,67 +109,132 @@ export async function generateAdCreative({
 }
 
 /**
- * Build enhanced prompt from user input and context
+ * Get model and steps based on quality level
+ */
+function getQualitySettings(quality: QualityLevel): { model: string; steps: number } {
+  switch (quality) {
+    case 'fast':
+      return {
+        model: 'fal-ai/flux/schnell',  // Fastest, 4 steps
+        steps: 4
+      }
+    case 'balanced':
+      return {
+        model: 'fal-ai/flux/dev',  // Balanced quality/speed, 20 steps
+        steps: 20
+      }
+    case 'high':
+      return {
+        model: 'fal-ai/flux-pro',  // Highest quality, 30 steps
+        steps: 30
+      }
+  }
+}
+
+/**
+ * Build comprehensive prompt with full brand intelligence
  */
 function buildPrompt({
   userPrompt,
   brandData,
+  knowledgeBase,
   icp,
   offer,
   stylePreset,
 }: {
   userPrompt: string
   brandData: BrandDNA
+  knowledgeBase?: KnowledgeBase | null
   icp?: CustomerProfile | null
   offer?: { name: string; description: string } | null
   stylePreset?: StylePreset
 }): string {
-  let basePrompt = `Create a professional social media ad for ${brandData.company_name}. `
+  // Start with company context
+  let prompt = `Professional advertisement for ${brandData.company_name}`
+
+  // Add tagline if available
+  if (brandData.tagline) {
+    prompt += ` - "${brandData.tagline}"`
+  }
+  prompt += '. '
+
+  // Add brand voice and personality (from knowledge base)
+  if (knowledgeBase?.brand_voice) {
+    prompt += `Brand personality: ${knowledgeBase.brand_voice.tone}, ${knowledgeBase.brand_voice.energy_level}. `
+    prompt += `Communication style: ${knowledgeBase.brand_voice.communication_style}. `
+  } else if (brandData.brand_personality.length > 0) {
+    prompt += `Brand personality: ${brandData.brand_personality.join(', ')}. `
+  }
 
   // Add style preset
   if (stylePreset) {
     const styleGuides: Record<StylePreset, string> = {
-      'Write with Elegance': 'Style: Elegant, sophisticated, minimal design with serif fonts, clean layouts, and refined aesthetics. ',
-      'Flow of Creativity': 'Style: Creative, flowing shapes, abstract backgrounds, vibrant gradients, and artistic elements. ',
-      'Handcrafted Perfection': 'Style: Hand-drawn elements, artisanal feel, organic textures, warm and authentic. ',
-      'Timeless Style': 'Style: Classic, timeless design, clean layouts, traditional elegance, enduring appeal. ',
+      'Write with Elegance': 'Visual style: Elegant, sophisticated, minimal design with refined typography, clean layouts, and premium aesthetics. ',
+      'Flow of Creativity': 'Visual style: Creative, flowing organic shapes, abstract artistic backgrounds, vibrant gradients, and dynamic elements. ',
+      'Handcrafted Perfection': 'Visual style: Hand-drawn artisanal elements, organic textures, warm authentic feel, crafted details. ',
+      'Timeless Style': 'Visual style: Classic, timeless design with enduring elegance, clean layouts, traditional refinement. ',
     }
-    basePrompt += styleGuides[stylePreset]
+    prompt += styleGuides[stylePreset]
   }
 
-  // Add brand colors
-  basePrompt += `Brand colors: primary ${brandData.primary_color}, secondary ${brandData.secondary_color}. `
+  // Comprehensive color palette
+  prompt += `Color palette: Primary ${brandData.primary_color}, Secondary ${brandData.secondary_color}, Accent ${brandData.accent_color}, Background ${brandData.background_color}. `
+  prompt += `These colors MUST be prominently featured and accurately matched. `
 
-  // Add ICP context
+  // Typography direction
+  prompt += `Typography style: Headings in ${brandData.heading_font}, Body text in ${brandData.body_font}. `
+
+  // Target audience context (critical for relevance)
   if (icp) {
-    basePrompt += `Target audience: ${icp.name} (${icp.title}), demographics: ${icp.demographics.age_range}, ${icp.demographics.location}. `
+    prompt += `Target audience: ${icp.name} (${icp.title}). `
+    prompt += `Demographics: ${icp.demographics.age_range}, ${icp.demographics.income_level}, ${icp.demographics.location}. `
+    prompt += `Pain points: ${icp.pain_points.slice(0, 2).join(', ')}. `
+    prompt += `Goals: ${icp.goals.slice(0, 2).join(', ')}. `
+  } else if (knowledgeBase?.target_audience) {
+    prompt += `Target audience: ${knowledgeBase.target_audience.slice(0, 200)}. `
   }
 
-  // Add offer context
+  // Offer/product context
   if (offer) {
-    basePrompt += `Promoting: ${offer.name} - ${offer.description}. `
+    prompt += `Featuring: ${offer.name} - ${offer.description}. `
+  } else if (knowledgeBase?.products_services[0]) {
+    const product = knowledgeBase.products_services[0]
+    prompt += `Featuring: ${product.name} - ${product.description.slice(0, 150)}. `
   }
 
-  // Add user's creative direction
-  basePrompt += userPrompt + '. '
+  // Value proposition (why should they care?)
+  if (knowledgeBase?.value_proposition && knowledgeBase.value_proposition.length > 0) {
+    prompt += `Key benefit: ${knowledgeBase.value_proposition[0]}. `
+  } else if (brandData.value_propositions.length > 0) {
+    prompt += `Key benefit: ${brandData.value_propositions[0]}. `
+  }
 
-  // Add technical requirements for ad format
-  basePrompt += `Professional commercial photography style, high quality, modern, clean composition. Include space for headline text overlay at top or bottom. Ensure brand colors are prominently featured. Photo-realistic, sharp focus, professional lighting.`
+  // User's creative direction (most important)
+  prompt += `\n\nCREATIVE DIRECTION: ${userPrompt}\n\n`
 
-  return basePrompt
+  // Technical quality requirements
+  prompt += `Technical requirements: Professional commercial photography style, ultra high quality, 8K resolution, modern composition, perfect lighting (studio quality or natural golden hour). `
+  prompt += `Sharp focus, depth of field, cinematic color grading. `
+  prompt += `Include clear space for text overlay (headline area at top or bottom third). `
+  prompt += `Composition should follow rule of thirds. `
+  prompt += `Photo-realistic, not illustrated or cartoon style. `
+  prompt += `Professional marketing photography that converts. `
+  prompt += `Avoid any text, words, or letters in the image itself. `
+
+  return prompt
 }
 
 /**
- * Get image dimensions for format
+ * Get exact pixel dimensions for optimal quality
  */
-function getImageDimensions(format: CreativeFormat): { width: number; height: number } | string {
+function getImageDimensions(format: CreativeFormat): { width: number; height: number } {
   const dimensions = {
-    square: 'square',      // 1:1 - Instagram feed, Facebook feed
-    story: 'portrait_16_9',        // 9:16 - Instagram story, TikTok
-    landscape: 'landscape_16_9',    // 16:9 - Facebook cover, Twitter header
+    square: { width: 1024, height: 1024 },       // 1:1 - Instagram feed, Facebook post (1080x1080)
+    story: { width: 1080, height: 1920 },        // 9:16 - Instagram Stories, TikTok, Reels
+    landscape: { width: 1200, height: 628 },     // 1.91:1 - Facebook link preview, Twitter/X card
   }
 
-  return dimensions[format] as any
+  return dimensions[format]
 }
 
 /**

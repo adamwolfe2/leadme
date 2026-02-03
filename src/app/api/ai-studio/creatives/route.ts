@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient()
 
-    // 1. Get workspace with brand data
+    // 1. Get workspace with brand data and knowledge base
     const { data: workspace, error: workspaceError } = await supabase
       .from('brand_workspaces')
       .select('*, customer_profiles(*), offers(*)')
@@ -79,6 +79,8 @@ export async function POST(request: NextRequest) {
       throw new Error('Workspace not found')
     }
 
+    console.log('[Creatives] Generating with full brand intelligence')
+
     // 2. Get selected ICP and offer
     const icp = icpId
       ? workspace.customer_profiles?.find((p: any) => p.id === icpId)
@@ -88,14 +90,16 @@ export async function POST(request: NextRequest) {
       ? workspace.offers?.find((o: any) => o.id === offerId)
       : null
 
-    // 3. Generate creative with AI
+    // 3. Generate creative with comprehensive brand intelligence
     const result = await generateAdCreative({
       prompt,
       brandData: workspace.brand_data,
+      knowledgeBase: workspace.knowledge_base,  // Full brand intelligence
       icp,
       offer,
       stylePreset,
       format,
+      quality: 'high',  // Always use high quality for best results
     })
 
     // 4. Save creative to database
