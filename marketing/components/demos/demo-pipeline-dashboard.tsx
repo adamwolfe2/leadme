@@ -1,3 +1,7 @@
+"use client"
+
+import { motion } from "framer-motion"
+
 export function DemoPipelineDashboard() {
   return (
     <div className="space-y-6">
@@ -7,32 +11,33 @@ export function DemoPipelineDashboard() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
-          <div className="text-xs text-gray-600 mb-1">Emails Sent</div>
-          <div className="text-2xl text-[#007AFF]">2,847</div>
-          <div className="text-xs text-gray-600 mt-1">Last 30 days</div>
-        </div>
-
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
-          <div className="text-xs text-gray-600 mb-1">Pipeline Value</div>
-          <div className="text-2xl text-[#007AFF]">$2.4M</div>
-          <div className="text-xs text-green-600 mt-1">↑ 18%</div>
-        </div>
-
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
-          <div className="text-xs text-gray-600 mb-1">Open Rate</div>
-          <div className="text-2xl text-[#007AFF]">67%</div>
-          <div className="text-xs text-green-600 mt-1">↑ +4.1%</div>
-        </div>
-
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
-          <div className="text-xs text-gray-600 mb-1">Active Responses</div>
-          <div className="text-2xl text-[#007AFF]">341</div>
-          <div className="text-xs text-gray-600 mt-1">12% reply rate</div>
-        </div>
+        {[
+          { label: "Emails Sent", value: "2,847", subtitle: "Last 30 days" },
+          { label: "Pipeline Value", value: "$2.4M", subtitle: "↑ 18%", isGreen: true },
+          { label: "Open Rate", value: "67%", subtitle: "↑ +4.1%", isGreen: true },
+          { label: "Active Responses", value: "341", subtitle: "12% reply rate" },
+        ].map((stat, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200"
+          >
+            <div className="text-xs text-gray-600 mb-1">{stat.label}</div>
+            <div className="text-2xl text-[#007AFF]">{stat.value}</div>
+            <div className={`text-xs mt-1 ${stat.isGreen ? 'text-green-600' : 'text-gray-600'}`}>{stat.subtitle}</div>
+          </motion.div>
+        ))}
       </div>
 
-      <div className="bg-white rounded-lg p-4 border border-gray-200">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        className="bg-white rounded-lg p-4 border border-gray-200"
+      >
         <div className="text-sm text-gray-900 mb-4">Top Lead Sources</div>
         <div className="space-y-3">
           {[
@@ -47,16 +52,19 @@ export function DemoPipelineDashboard() {
                 <span className="text-gray-700">{item.source}</span>
                 <span className="text-gray-900 font-medium">{item.percent}%</span>
               </div>
-              <div className="w-full bg-gray-100 rounded-full h-2">
-                <div
-                  className="h-2 rounded-full transition-all"
-                  style={{ width: `${item.percent}%`, backgroundColor: item.color }}
+              <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${item.percent}%` }}
+                  transition={{ duration: 0.6, delay: 0.4 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                  className="h-2 rounded-full"
+                  style={{ backgroundColor: item.color }}
                 />
               </div>
             </div>
           ))}
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }

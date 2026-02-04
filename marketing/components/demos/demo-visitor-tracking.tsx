@@ -1,3 +1,7 @@
+"use client"
+
+import { motion } from "framer-motion"
+
 export function DemoVisitorTracking() {
   return (
     <div className="space-y-6">
@@ -8,14 +12,24 @@ export function DemoVisitorTracking() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200"
+        >
           <div className="text-3xl text-[#007AFF] mb-1">127</div>
           <div className="text-sm text-gray-600">Visitors Identified Today</div>
-        </div>
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200"
+        >
           <div className="text-3xl text-[#007AFF] mb-1">8</div>
           <div className="text-sm text-gray-600">Live Visitors Now</div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Live Visitors */}
@@ -31,7 +45,14 @@ export function DemoVisitorTracking() {
             { name: "Mike Chen", email: "m.chen@techstart.io", phone: "(555) 789-0123", location: "New York, NY", page: "/features" },
             { name: "Emily Rodriguez", email: "emily@saasco.com", phone: "(555) 456-7890", location: "Austin, TX", page: "/demo" },
           ].map((visitor, i) => (
-            <div key={i} className="bg-gradient-to-r from-blue-50 to-transparent rounded-lg p-3 border border-blue-100">
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: 0.2 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+              whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+              className="bg-gradient-to-r from-blue-50 to-transparent rounded-lg p-3 border border-blue-100 cursor-pointer"
+            >
               <div className="flex items-start justify-between mb-2">
                 <div>
                   <div className="text-gray-900 font-medium">{visitor.name}</div>
@@ -47,7 +68,7 @@ export function DemoVisitorTracking() {
                 <div className="text-gray-600">{visitor.phone}</div>
                 <div className="text-[#007AFF]">Viewing: {visitor.page}</div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

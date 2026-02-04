@@ -14,7 +14,7 @@ export default function HomePage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="text-center max-w-5xl mx-auto mb-16"
           >
             <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6 leading-tight">
@@ -24,7 +24,7 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-3xl mx-auto">
-              <span className="font-cursive text-4xl text-[#007AFF]">Cursive</span> identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.
+              <span className="font-cursive text-4xl text-gray-900">Cursive</span> identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.
             </p>
             <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
               Get started. It's FREE!
@@ -33,9 +33,9 @@ export default function HomePage() {
 
           {/* Interactive Features Showcase */}
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
           >
             <InteractiveFeaturesShowcase />
           </motion.div>
@@ -46,10 +46,10 @@ export default function HomePage() {
       <section className="py-20 bg-[#F7F9FB]">
         <Container>
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900 mb-2 whitespace-nowrap">
               Everything you need to run
             </h2>
-            <p className="font-cursive text-3xl lg:text-4xl text-gray-500">
+            <p className="font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 whitespace-nowrap">
               outbound at scale
             </p>
           </div>
@@ -60,8 +60,8 @@ export default function HomePage() {
                 key={feature.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: index * 0.05, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                 className="bg-white rounded-xl border border-gray-200 p-8"
               >
                 <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center mb-4">
@@ -150,24 +150,86 @@ export default function HomePage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 bg-white">
+      <section className="relative py-32 bg-white overflow-hidden">
         <Container>
-          <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-12 text-center text-white max-w-4xl mx-auto">
-            <h2 className="text-4xl lg:text-5xl font-light mb-4">
-              Ready to Get Started?
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="text-center relative z-10 mb-16"
+          >
+            <h2 className="text-5xl lg:text-7xl font-light text-gray-900 mb-4 leading-tight">
+              We know who's searching
             </h2>
-            <p className="text-lg mb-8 opacity-90">
-              Book a call to see how <span className="font-cursive text-2xl opacity-80">Cursive</span> can transform your pipeline.
+            <p className="font-cursive text-6xl lg:text-8xl text-gray-900 mb-12">
+              with Cursive
             </p>
             <Button
               size="lg"
-              className="bg-white text-[#007AFF] hover:bg-gray-100"
               href="https://cal.com/adamwolfe/cursive-ai-audit"
               target="_blank"
+              className="bg-[#007AFF] text-white hover:bg-[#0066DD]"
             >
-              Book a Call
+              Get Started. It's FREE!
             </Button>
-          </div>
+          </motion.div>
+
+          {/* Dashboard Screenshot with Fade */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="relative max-w-6xl mx-auto"
+          >
+            <div className="relative rounded-xl overflow-hidden shadow-2xl border border-gray-200">
+              {/* Browser Chrome */}
+              <div className="bg-gray-100 px-4 py-3 flex items-center gap-1.5 border-b border-gray-200">
+                <div className="w-3 h-3 rounded-full bg-gray-300" />
+                <div className="w-3 h-3 rounded-full bg-gray-300" />
+                <div className="w-3 h-3 rounded-full bg-gray-300" />
+              </div>
+
+              {/* Dashboard Screenshot Placeholder */}
+              <div className="bg-white p-8">
+                <div className="space-y-6">
+                  {/* Dashboard Header */}
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-2xl text-gray-900">Pipeline Dashboard</h3>
+                    <div className="flex gap-2">
+                      <div className="px-3 py-1.5 bg-green-100 text-green-700 text-sm rounded">Live</div>
+                    </div>
+                  </div>
+
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-4 gap-4">
+                    {[
+                      { label: "Total Leads", value: "2,847" },
+                      { label: "Active Campaigns", value: "12" },
+                      { label: "Response Rate", value: "42%" },
+                      { label: "Meetings Booked", value: "87" },
+                    ].map((stat, i) => (
+                      <div key={i} className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+                        <div className="text-xs text-gray-600 mb-1">{stat.label}</div>
+                        <div className="text-2xl text-[#007AFF]">{stat.value}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Chart Placeholder */}
+                  <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 h-48 flex items-end justify-between gap-2">
+                    {[40, 65, 45, 80, 55, 90, 70, 85].map((height, i) => (
+                      <div key={i} className="flex-1 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t" style={{ height: `${height}%` }} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Fade to White at Bottom */}
+              <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
+            </div>
+          </motion.div>
         </Container>
       </section>
     </main>

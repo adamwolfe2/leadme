@@ -1,3 +1,7 @@
+"use client"
+
+import { motion } from "framer-motion"
+
 export function DemoMarketplace() {
   return (
     <div className="space-y-6">
@@ -11,7 +15,14 @@ export function DemoMarketplace() {
           { title: "SaaS Founders - Series A", leads: "500", price: "$250", verified: "99%", tag: "Popular" },
           { title: "VP Marketing - Tech", leads: "1,000", price: "$450", verified: "98%", tag: "New" },
         ].map((list, i) => (
-          <div key={i} className="bg-gradient-to-br from-blue-50 to-transparent rounded-xl p-6 border border-blue-200 hover:shadow-lg hover:border-[#007AFF] transition-all">
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+            whileHover={{ y: -4, scale: 1.02, transition: { duration: 0.2 } }}
+            className="bg-gradient-to-br from-blue-50 to-transparent rounded-xl p-6 border border-blue-200 hover:shadow-lg hover:border-[#007AFF] transition-all cursor-pointer"
+          >
             <div className="flex items-start justify-between mb-3">
               <div className="text-sm text-gray-900 font-medium">{list.title}</div>
               <span className="px-2 py-1 bg-[#007AFF] text-white text-xs rounded">
@@ -41,7 +52,12 @@ export function DemoMarketplace() {
         ))}
       </div>
 
-      <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200"
+      >
         <div className="flex items-center gap-2 mb-4">
           <svg className="w-5 h-5 text-[#007AFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -50,13 +66,19 @@ export function DemoMarketplace() {
         </div>
         <div className="grid grid-cols-2 gap-2">
           {["Full name and title", "Verified email address", "Company details", "LinkedIn profile"].map((item, i) => (
-            <div key={i} className="flex items-center gap-2 text-xs text-gray-700 bg-white rounded px-3 py-2">
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.2, delay: 0.4 + i * 0.05, ease: [0.22, 1, 0.36, 1] }}
+              className="flex items-center gap-2 text-xs text-gray-700 bg-white rounded px-3 py-2"
+            >
               <div className="w-1.5 h-1.5 rounded-full bg-[#007AFF]" />
               {item}
-            </div>
+            </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }

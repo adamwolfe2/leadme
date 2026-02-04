@@ -1,3 +1,7 @@
+"use client"
+
+import { motion } from "framer-motion"
+
 export function DemoAIStudio() {
   return (
     <div className="space-y-6">
@@ -7,7 +11,12 @@ export function DemoAIStudio() {
       </div>
 
       {/* URL Input */}
-      <div className="bg-white rounded-lg p-4 border-2 border-[#007AFF] shadow-sm">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        className="bg-white rounded-lg p-4 border-2 border-[#007AFF] shadow-sm"
+      >
         <div className="text-xs text-gray-600 mb-2">Enter Your Website URL</div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           <input
@@ -30,8 +39,11 @@ export function DemoAIStudio() {
           { label: "Collected your logo", status: "complete" },
           { label: "Creating media assets", status: "active" },
         ].map((step, i) => (
-          <div
+          <motion.div
             key={i}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
             className={`flex items-center gap-3 p-3 rounded-lg border ${
               step.status === "complete"
                 ? "bg-green-50 border-green-200"
@@ -53,7 +65,12 @@ export function DemoAIStudio() {
       </div>
 
       {/* Knowledge Base */}
-      <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200"
+      >
         <div className="flex items-center gap-2 mb-3">
           <svg className="w-5 h-5 text-[#007AFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -73,7 +90,13 @@ export function DemoAIStudio() {
       </div>
 
       {/* Generated Campaign */}
-      <div className="bg-white rounded-lg p-4 border border-gray-200">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+        className="bg-white rounded-lg p-4 border border-gray-200 cursor-pointer"
+      >
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm text-gray-900 font-medium">Personalized Email Campaign Ready</span>
           <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">Ready</span>

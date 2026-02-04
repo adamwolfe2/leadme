@@ -1,3 +1,7 @@
+"use client"
+
+import { motion } from "framer-motion"
+
 export function DemoPeopleSearch() {
   return (
     <div className="space-y-6">
@@ -6,7 +10,12 @@ export function DemoPeopleSearch() {
         <p className="text-gray-600">Find and verify B2B contacts instantly</p>
       </div>
 
-      <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+      >
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-4">
           <input
             type="text"
@@ -19,7 +28,7 @@ export function DemoPeopleSearch() {
           </button>
         </div>
         <div className="text-xs text-gray-600">500M+ verified contacts</div>
-      </div>
+      </motion.div>
 
       <div className="space-y-3">
         {[
@@ -27,7 +36,14 @@ export function DemoPeopleSearch() {
           { name: "Mike Rodriguez", title: "Head of Sales", company: "TechStart", badge: "Verified", badgeColor: "bg-blue-100 text-[#007AFF]" },
           { name: "Emily Johnson", title: "CEO", company: "GrowthCo", badge: "Enriched", badgeColor: "bg-purple-100 text-purple-700" },
         ].map((contact, i) => (
-          <div key={i} className="bg-white rounded-lg p-4 border border-gray-200 flex items-center justify-between hover:shadow-sm transition-shadow">
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+            whileHover={{ scale: 1.02, y: -2, transition: { duration: 0.2 } }}
+            className="bg-white rounded-lg p-4 border border-gray-200 flex items-center justify-between cursor-pointer"
+          >
             <div>
               <div className="text-sm text-gray-900 font-medium mb-0.5">{contact.name}</div>
               <div className="text-xs text-gray-600">{contact.title} at {contact.company}</div>
@@ -35,7 +51,7 @@ export function DemoPeopleSearch() {
             <div className={`px-2 py-1 ${contact.badgeColor} text-xs rounded flex-shrink-0 ml-3`}>
               {contact.badge}
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>
