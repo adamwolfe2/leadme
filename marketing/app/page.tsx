@@ -49,7 +49,7 @@ export default function HomePage() {
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Everything you need to run
             </h2>
-            <p className="font-[var(--font-great-vibes)] text-5xl lg:text-6xl text-[#007AFF]">
+            <p className="font-[var(--font-great-vibes)] text-3xl lg:text-4xl text-gray-500">
               outbound at scale
             </p>
           </div>
@@ -107,7 +107,7 @@ export default function HomePage() {
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-2">
               Trusted by Growth Teams
             </h2>
-            <p className="font-[var(--font-great-vibes)] text-5xl lg:text-6xl text-[#007AFF]">
+            <p className="font-[var(--font-great-vibes)] text-3xl lg:text-4xl text-gray-500">
               Who Move Fast
             </p>
           </div>
@@ -146,7 +146,7 @@ export default function HomePage() {
               Ready to Get Started?
             </h2>
             <p className="text-lg mb-8 opacity-90">
-              Book a call to see how <span className="font-[var(--font-great-vibes)] text-3xl">Cursive</span> can transform your pipeline.
+              Book a call to see how <span className="font-[var(--font-great-vibes)] text-2xl opacity-80">Cursive</span> can transform your pipeline.
             </p>
             <Button
               size="lg"
