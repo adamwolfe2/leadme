@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
-import { Check, ArrowRight, Sparkles, HelpCircle } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import { useState } from "react"
 
 export default function PricingPage() {
@@ -12,7 +12,7 @@ export default function PricingPage() {
   return (
     <main className="overflow-hidden">
       {/* Hero Section */}
-      <section className="relative py-24 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <section className="relative py-24 bg-white">
         <Container>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -20,9 +20,9 @@ export default function PricingPage() {
             transition={{ duration: 0.8 }}
             className="text-center max-w-4xl mx-auto"
           >
-            <h1 className="text-5xl lg:text-6xl font-bold mb-6">
+            <h1 className="text-5xl lg:text-6xl font-light text-gray-900 mb-6">
               Transparent Pricing
-              <span className="block font-[var(--font-great-vibes)] text-6xl lg:text-7xl text-primary mt-2">
+              <span className="block font-[var(--font-great-vibes)] text-6xl lg:text-7xl text-[#007AFF] mt-2">
                 No Surprises
               </span>
             </h1>
@@ -35,7 +35,7 @@ export default function PricingPage() {
       </section>
 
       {/* Pricing Cards */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-[#F7F9FB]">
         <Container>
           <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* Cursive Data */}
@@ -43,37 +43,37 @@ export default function PricingPage() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white rounded-2xl p-8 border-2 border-gray-200 hover:border-primary transition-all duration-300 hover:shadow-xl"
+              className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-[#007AFF] transition-all duration-300 hover:shadow-lg"
             >
               <div className="mb-6">
-                <h3 className="text-2xl font-bold mb-2">Cursive Data</h3>
+                <h3 className="text-2xl font-light text-gray-900 mb-2"><span className="font-[var(--font-great-vibes)] text-3xl text-[#007AFF]">Cursive</span> Data</h3>
                 <p className="text-gray-600">Perfect for teams with existing outbound processes</p>
               </div>
 
               <div className="mb-8">
-                <div className="text-4xl font-bold text-primary mb-2">Starting at $1,000<span className="text-lg text-gray-600">/mo</span></div>
+                <div className="text-4xl font-light text-[#007AFF] mb-2">Starting at $1,000<span className="text-lg text-gray-600">/mo</span></div>
                 <p className="text-sm text-gray-500">500-2,000 leads per month</p>
               </div>
 
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
                   <span className="text-gray-700">Verified & enriched contacts</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
                   <span className="text-gray-700">Custom ICP targeting</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
                   <span className="text-gray-700">Monthly refresh</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
                   <span className="text-gray-700">CSV export</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
                   <span className="text-gray-700">Dedicated manager</span>
                 </li>
               </ul>
@@ -91,54 +91,53 @@ export default function PricingPage() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl p-8 border-2 border-primary shadow-2xl relative transform lg:scale-105"
+              className="bg-[#007AFF] rounded-2xl p-8 border-2 border-[#007AFF] shadow-xl relative transform lg:scale-105"
             >
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <div className="bg-white text-primary px-4 py-1 rounded-full text-sm font-semibold shadow-lg flex items-center gap-2">
-                  <Sparkles className="w-4 h-4" />
+                <div className="bg-white text-[#007AFF] px-4 py-1 rounded-full text-sm shadow-lg">
                   Most Popular
                 </div>
               </div>
 
               <div className="mb-6 text-white">
-                <h3 className="text-2xl font-bold mb-2">Cursive Outbound</h3>
-                <p className="text-blue-100">Done-for-you email campaigns</p>
+                <h3 className="text-2xl font-light mb-2"><span className="font-[var(--font-great-vibes)] text-3xl">Cursive</span> Outbound</h3>
+                <p className="opacity-90">Done-for-you email campaigns</p>
               </div>
 
               <div className="mb-8 text-white">
-                <div className="text-4xl font-bold mb-2">$3,000<span className="text-lg text-blue-100">/mo</span></div>
-                <p className="text-sm text-blue-100">$2,500 one-time setup</p>
+                <div className="text-4xl font-light mb-2">$3,000<span className="text-lg opacity-90">/mo</span></div>
+                <p className="text-sm opacity-90">$2,500 one-time setup</p>
               </div>
 
               <ul className="space-y-3 mb-8 text-white">
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <div className="w-1.5 h-1.5 bg-white rounded-full mt-2 flex-shrink-0" />
                   <span>AI-powered personalization</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <div className="w-1.5 h-1.5 bg-white rounded-full mt-2 flex-shrink-0" />
                   <span>Email infrastructure setup</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <div className="w-1.5 h-1.5 bg-white rounded-full mt-2 flex-shrink-0" />
                   <span>500 leads included</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <div className="w-1.5 h-1.5 bg-white rounded-full mt-2 flex-shrink-0" />
                   <span>A/B testing & optimization</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <div className="w-1.5 h-1.5 bg-white rounded-full mt-2 flex-shrink-0" />
                   <span>Weekly strategy calls</span>
                 </li>
               </ul>
 
-              <Button className="w-full bg-white text-primary hover:bg-gray-100" href="https://buy.stripe.com/your-outbound-link" target="_blank">
+              <Button className="w-full bg-white text-[#007AFF] hover:bg-gray-100" href="https://buy.stripe.com/your-outbound-link" target="_blank">
                 Get Started
                 <ArrowRight className="w-4 h-4" />
               </Button>
 
-              <p className="text-xs text-center text-blue-100 mt-4">2-week setup • Cancel anytime</p>
+              <p className="text-xs text-center opacity-90 mt-4">2-week setup • Cancel anytime</p>
             </motion.div>
 
             {/* Cursive Pipeline */}
@@ -146,37 +145,37 @@ export default function PricingPage() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="bg-white rounded-2xl p-8 border-2 border-gray-200 hover:border-primary transition-all duration-300 hover:shadow-xl"
+              className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-[#007AFF] transition-all duration-300 hover:shadow-lg"
             >
               <div className="mb-6">
-                <h3 className="text-2xl font-bold mb-2">Cursive Pipeline</h3>
+                <h3 className="text-2xl font-light text-gray-900 mb-2"><span className="font-[var(--font-great-vibes)] text-3xl text-[#007AFF]">Cursive</span> Pipeline</h3>
                 <p className="text-gray-600">Full-stack AI SDR solution</p>
               </div>
 
               <div className="mb-8">
-                <div className="text-4xl font-bold text-primary mb-2">$5,000<span className="text-lg text-gray-600">/mo</span></div>
+                <div className="text-4xl font-light text-[#007AFF] mb-2">$5,000<span className="text-lg text-gray-600">/mo</span></div>
                 <p className="text-sm text-gray-500">$5,000 one-time setup</p>
               </div>
 
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
                   <span className="text-gray-700">Everything in Outbound</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
                   <span className="text-gray-700">AI SDR agents</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
                   <span className="text-gray-700">Multi-channel campaigns</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
                   <span className="text-gray-700">Unlimited enrichment</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
                   <span className="text-gray-700">API access</span>
                 </li>
               </ul>
@@ -192,21 +191,21 @@ export default function PricingPage() {
 
           {/* Add-Ons Row */}
           <div className="mt-16 max-w-6xl mx-auto">
-            <h3 className="text-2xl font-bold text-center mb-8">Add-Ons & Power-Ups</h3>
+            <h3 className="text-2xl font-light text-gray-900 text-center mb-8">Add-Ons & Power-Ups</h3>
             <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 text-center border border-gray-200">
-                <div className="text-2xl font-bold text-primary mb-2">$750/mo</div>
-                <div className="text-sm font-medium mb-2">Website Visitor Tracking</div>
+              <div className="bg-white rounded-xl p-6 text-center border border-gray-200">
+                <div className="text-2xl font-light text-[#007AFF] mb-2">$750/mo</div>
+                <div className="text-sm text-gray-900 mb-2">Website Visitor Tracking</div>
                 <div className="text-xs text-gray-600">+ $0.50 per identified visitor</div>
               </div>
-              <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 text-center border border-gray-200">
-                <div className="text-2xl font-bold text-primary mb-2">$1,500/mo</div>
-                <div className="text-sm font-medium mb-2">Visitor Retargeting</div>
+              <div className="bg-white rounded-xl p-6 text-center border border-gray-200">
+                <div className="text-2xl font-light text-[#007AFF] mb-2">$1,500/mo</div>
+                <div className="text-sm text-gray-900 mb-2">Visitor Retargeting</div>
                 <div className="text-xs text-gray-600">Requires Visitor Tracking</div>
               </div>
-              <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 text-center border border-gray-200">
-                <div className="text-2xl font-bold text-primary mb-2">$2,000/mo</div>
-                <div className="text-sm font-medium mb-2">White Label Platform</div>
+              <div className="bg-white rounded-xl p-6 text-center border border-gray-200">
+                <div className="text-2xl font-light text-[#007AFF] mb-2">$2,000/mo</div>
+                <div className="text-sm text-gray-900 mb-2">White Label Platform</div>
                 <div className="text-xs text-gray-600">Includes 10 user seats</div>
               </div>
             </div>
@@ -215,13 +214,13 @@ export default function PricingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-24 bg-white">
         <Container>
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-4xl lg:text-5xl font-bold mb-4">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 Frequently Asked
-                <span className="block font-[var(--font-great-vibes)] text-5xl lg:text-6xl text-primary mt-2">
+                <span className="block font-[var(--font-great-vibes)] text-5xl lg:text-6xl text-[#007AFF] mt-2">
                   Questions
                 </span>
               </h2>
@@ -239,18 +238,15 @@ export default function PricingPage() {
                 >
                   <button
                     onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                    className="w-full px-6 py-5 flex items-start justify-between text-left hover:bg-gray-50 transition-colors"
+                    className="w-full px-6 py-5 flex items-start justify-between text-left hover:bg-[#F7F9FB] transition-colors"
                   >
-                    <div className="flex items-start gap-4 flex-1">
-                      <HelpCircle className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" />
-                      <span className="font-semibold text-lg">{faq.question}</span>
-                    </div>
+                    <span className="font-light text-lg text-gray-900 flex-1">{faq.question}</span>
                     <div className="text-gray-400 ml-4">
                       {openFaq === index ? "−" : "+"}
                     </div>
                   </button>
                   {openFaq === index && (
-                    <div className="px-6 pb-5 pl-16">
+                    <div className="px-6 pb-5">
                       <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
                     </div>
                   )}
@@ -262,18 +258,18 @@ export default function PricingPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-[#F7F9FB]">
         <Container>
-          <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl p-12 text-center text-white shadow-2xl max-w-4xl mx-auto">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
+          <div className="bg-[#007AFF] rounded-3xl p-12 text-center text-white shadow-lg max-w-4xl mx-auto">
+            <h2 className="text-4xl lg:text-5xl font-light mb-4">
               Ready to 3x Your Pipeline?
             </h2>
             <p className="text-xl mb-8 opacity-90">
-              Book a call. We'll audit your current lead gen and show you exactly how Cursive can help.
+              Book a call. We'll audit your current lead gen and show you exactly how <span className="font-[var(--font-great-vibes)] text-2xl">Cursive</span> can help.
             </p>
             <Button
               size="lg"
-              className="bg-white text-primary hover:bg-gray-100"
+              className="bg-white text-[#007AFF] hover:bg-gray-100"
               href="https://cal.com/adamwolfe/cursive-ai-audit"
               target="_blank"
             >

@@ -3,13 +3,13 @@
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
-import { ArrowRight, Target, Zap, Heart } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 
 export default function AboutPage() {
   return (
     <main className="overflow-hidden">
       {/* Hero Section */}
-      <section className="relative py-24 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <section className="relative py-24 bg-white">
         <Container>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -17,14 +17,14 @@ export default function AboutPage() {
             transition={{ duration: 0.8 }}
             className="text-center max-w-4xl mx-auto"
           >
-            <h1 className="text-5xl lg:text-6xl font-bold mb-6">
+            <h1 className="text-5xl lg:text-6xl font-light text-gray-900 mb-6">
               We Got Tired of Bad Lead Data
-              <span className="block font-[var(--font-great-vibes)] text-6xl lg:text-7xl text-primary mt-2">
+              <span className="block font-[var(--font-great-vibes)] text-6xl lg:text-7xl text-[#007AFF] mt-2">
                 So We Built Something Better
               </span>
             </h1>
             <p className="text-xl text-gray-600 leading-relaxed">
-              Cursive started because we were tired of paying for lead lists that didn't convert.
+              <span className="font-[var(--font-great-vibes)] text-2xl text-[#007AFF]">Cursive</span> started because we were tired of paying for lead lists that didn't convert.
               Outdated contacts. Generic emails. No personalization. No results.
             </p>
           </motion.div>
@@ -32,28 +32,26 @@ export default function AboutPage() {
       </section>
 
       {/* Story Section */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-[#F7F9FB]">
         <Container>
           <div className="max-w-4xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="prose prose-lg prose-blue max-w-none"
+              className="space-y-6"
             >
-              <p className="text-xl text-gray-700 leading-relaxed mb-6">
-                So we built what we wished existed: <span className="font-semibold text-primary">verified data</span>,{" "}
-                <span className="font-semibold text-primary">AI-powered outreach</span>, and{" "}
-                <span className="font-semibold text-primary">done-for-you campaigns</span> that actually work.
+              <p className="text-xl text-gray-700 leading-relaxed">
+                So we built what we wished existed: verified data, AI-powered outreach, and done-for-you campaigns that actually work.
               </p>
 
-              <p className="text-xl text-gray-700 leading-relaxed mb-6">
-                Today, Cursive powers pipeline for hundreds of B2B companies—from bootstrapped startups
+              <p className="text-xl text-gray-700 leading-relaxed">
+                Today, <span className="font-[var(--font-great-vibes)] text-2xl text-[#007AFF]">Cursive</span> powers pipeline for hundreds of B2B companies—from bootstrapped startups
                 to growth-stage companies scaling fast.
               </p>
 
               <p className="text-xl text-gray-700 leading-relaxed">
-                We don't sell software. <span className="font-semibold text-primary">We sell results.</span>
+                We don't sell software. We sell results.
               </p>
             </motion.div>
           </div>
@@ -61,12 +59,12 @@ export default function AboutPage() {
       </section>
 
       {/* Mission Section */}
-      <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-24 bg-white">
         <Container>
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Our Mission
-              <span className="block font-[var(--font-great-vibes)] text-5xl lg:text-6xl text-primary mt-2">
+              <span className="block font-[var(--font-great-vibes)] text-5xl lg:text-6xl text-[#007AFF] mt-2">
                 Make Lead Gen Effortless
               </span>
             </h2>
@@ -83,12 +81,12 @@ export default function AboutPage() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="bg-white rounded-2xl p-8 text-center border border-gray-200 shadow-lg"
+                className="bg-white rounded-2xl p-8 text-center border border-gray-200"
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <span className="text-white text-2xl font-bold">1</span>
+                <div className="w-16 h-16 bg-[#007AFF] rounded-full flex items-center justify-center mx-auto mb-6">
+                  <span className="text-white text-2xl font-light">1</span>
                 </div>
-                <h3 className="text-xl font-bold mb-3">Buy the Data</h3>
+                <h3 className="text-xl font-light text-gray-900 mb-3">Buy the Data</h3>
                 <p className="text-gray-600">
                   Get verified lead lists and run campaigns yourself
                 </p>
@@ -99,12 +97,12 @@ export default function AboutPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="bg-white rounded-2xl p-8 text-center border border-gray-200 shadow-lg"
+                className="bg-white rounded-2xl p-8 text-center border border-gray-200"
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <span className="text-white text-2xl font-bold">2</span>
+                <div className="w-16 h-16 bg-[#007AFF] rounded-full flex items-center justify-center mx-auto mb-6">
+                  <span className="text-white text-2xl font-light">2</span>
                 </div>
-                <h3 className="text-xl font-bold mb-3">Let Us Run It</h3>
+                <h3 className="text-xl font-light text-gray-900 mb-3">Let Us Run It</h3>
                 <p className="text-gray-600">
                   Done-for-you campaigns, managed end-to-end
                 </p>
@@ -115,12 +113,12 @@ export default function AboutPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
-                className="bg-white rounded-2xl p-8 text-center border border-gray-200 shadow-lg"
+                className="bg-white rounded-2xl p-8 text-center border border-gray-200"
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <span className="text-white text-2xl font-bold">3</span>
+                <div className="w-16 h-16 bg-[#007AFF] rounded-full flex items-center justify-center mx-auto mb-6">
+                  <span className="text-white text-2xl font-light">3</span>
                 </div>
-                <h3 className="text-xl font-bold mb-3">Full Pipeline</h3>
+                <h3 className="text-xl font-light text-gray-900 mb-3">Full Pipeline</h3>
                 <p className="text-gray-600">
                   We build your entire pipeline, AI-powered and automated
                 </p>
@@ -135,12 +133,12 @@ export default function AboutPage() {
       </section>
 
       {/* Values Section */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-[#F7F9FB]">
         <Container>
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Our
-              <span className="block font-[var(--font-great-vibes)] text-5xl lg:text-6xl text-primary mt-2">
+              <span className="block font-[var(--font-great-vibes)] text-5xl lg:text-6xl text-[#007AFF] mt-2">
                 Values
               </span>
             </h2>
@@ -153,10 +151,10 @@ export default function AboutPage() {
               viewport={{ once: true }}
               className="text-center"
             >
-              <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Zap className="w-8 h-8 text-primary" />
+              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-200">
+                <div className="w-3 h-3 bg-[#007AFF] rounded-full" />
               </div>
-              <h3 className="text-2xl font-bold mb-3">Speed Over Perfection</h3>
+              <h3 className="text-2xl font-light text-gray-900 mb-3">Speed Over Perfection</h3>
               <p className="text-gray-600 leading-relaxed">
                 We ship fast, test fast, and iterate fast. Your pipeline can't wait for perfect.
               </p>
@@ -169,10 +167,10 @@ export default function AboutPage() {
               transition={{ delay: 0.1 }}
               className="text-center"
             >
-              <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Target className="w-8 h-8 text-purple-600" />
+              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-200">
+                <div className="w-3 h-3 bg-[#007AFF] rounded-full" />
               </div>
-              <h3 className="text-2xl font-bold mb-3">Quality Over Quantity</h3>
+              <h3 className="text-2xl font-light text-gray-900 mb-3">Quality Over Quantity</h3>
               <p className="text-gray-600 leading-relaxed">
                 We'd rather send you 100 perfect leads than 10,000 garbage contacts.
               </p>
@@ -185,12 +183,12 @@ export default function AboutPage() {
               transition={{ delay: 0.2 }}
               className="text-center"
             >
-              <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Heart className="w-8 h-8 text-green-600" />
+              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-200">
+                <div className="w-3 h-3 bg-[#007AFF] rounded-full" />
               </div>
-              <h3 className="text-2xl font-bold mb-3">Transparency Always</h3>
+              <h3 className="text-2xl font-light text-gray-900 mb-3">Transparency Always</h3>
               <p className="text-gray-600 leading-relaxed">
-                No hidden fees. No long contracts. No bullshit.
+                No hidden fees. No long contracts. No nonsense.
               </p>
             </motion.div>
           </div>
@@ -198,12 +196,12 @@ export default function AboutPage() {
       </section>
 
       {/* Team Section */}
-      <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-24 bg-white">
         <Container>
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Who
-              <span className="block font-[var(--font-great-vibes)] text-5xl lg:text-6xl text-primary mt-2">
+              <span className="block font-[var(--font-great-vibes)] text-5xl lg:text-6xl text-[#007AFF] mt-2">
                 We Are
               </span>
             </h2>
@@ -213,10 +211,10 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-xl p-12 max-w-4xl mx-auto border border-gray-200 text-center">
+          <div className="bg-white rounded-2xl shadow-sm p-12 max-w-4xl mx-auto border border-gray-200 text-center">
             <p className="text-xl text-gray-700 leading-relaxed mb-8">
               Started by founders who were tired of wasting money on bad data and ineffective outbound tools.
-              We built Cursive to solve our own problem—then realized every B2B company faces the same challenges.
+              We built <span className="font-[var(--font-great-vibes)] text-2xl text-[#007AFF]">Cursive</span> to solve our own problem—then realized every B2B company faces the same challenges.
             </p>
             <p className="text-xl text-gray-700 leading-relaxed">
               Now we're on a mission to make high-quality lead generation accessible to every company,
@@ -227,21 +225,21 @@ export default function AboutPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-[#F7F9FB]">
         <Container>
-          <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl p-12 text-center text-white shadow-2xl max-w-4xl mx-auto">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
+          <div className="bg-[#007AFF] rounded-3xl p-12 text-center text-white shadow-lg max-w-4xl mx-auto">
+            <h2 className="text-4xl lg:text-5xl font-light mb-4">
               Let's Build Your Pipeline
               <span className="block font-[var(--font-great-vibes)] text-5xl lg:text-6xl mt-2">
                 Together
               </span>
             </h2>
             <p className="text-xl mb-8 opacity-90">
-              Book a call and we'll show you exactly how Cursive can transform your lead generation.
+              Book a call and we'll show you exactly how <span className="font-[var(--font-great-vibes)] text-2xl">Cursive</span> can transform your lead generation.
             </p>
             <Button
               size="lg"
-              className="bg-white text-primary hover:bg-gray-100"
+              className="bg-white text-[#007AFF] hover:bg-gray-100"
               href="https://cal.com/adamwolfe/cursive-ai-audit"
               target="_blank"
             >

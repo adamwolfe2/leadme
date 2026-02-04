@@ -3,149 +3,105 @@
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
-import { VisitorTrackingFlow } from "@/components/demos/visitor-tracking-flow"
-import { PipelineDashboard } from "@/components/demos/pipeline-dashboard"
-import { LeadSequenceFlow } from "@/components/demos/lead-sequence-flow"
+import { InteractiveFeaturesShowcase } from "@/components/demos/interactive-features-showcase"
 
 export default function HomePage() {
   return (
-    <main className="bg-[#F7F9FB]">
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-[#F7F9FB]">
+    <main className="bg-white">
+      {/* Hero Section with Interactive Demo */}
+      <section className="pt-32 pb-20 bg-white">
         <Container>
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <h1 className="text-5xl lg:text-6xl font-light text-gray-900 mb-6 leading-tight">
-                AI Intent Systems
-                <span className="block text-gray-500 mt-2">
-                  That Never Sleep.
-                </span>
-              </h1>
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                <span className="font-[var(--font-great-vibes)] text-3xl text-[#007AFF]">Cursive</span> identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.
-              </p>
-              <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
-                Free AI Audit
-              </Button>
-            </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center max-w-5xl mx-auto mb-16"
+          >
+            <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6 leading-tight">
+              AI Intent Systems
+              <span className="block text-gray-500 mt-2">
+                That Never Sleep.
+              </span>
+            </h1>
+            <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-3xl mx-auto">
+              <span className="font-[var(--font-great-vibes)] text-3xl text-[#007AFF]">Cursive</span> identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.
+            </p>
+            <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
+              Get started. It's FREE!
+            </Button>
+          </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="hidden lg:block"
-            >
-              <PipelineDashboard />
-            </motion.div>
-          </div>
+          {/* Interactive Features Showcase */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <InteractiveFeaturesShowcase />
+          </motion.div>
         </Container>
       </section>
 
-      {/* Enterprise Features, Startup Speed */}
-      <section className="py-20 bg-white">
+      {/* Core Features Grid */}
+      <section className="py-20 bg-[#F7F9FB]">
         <Container>
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-2">
-              Enterprise Features
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+              Everything you need to run
             </h2>
             <p className="font-[var(--font-great-vibes)] text-5xl lg:text-6xl text-[#007AFF]">
-              Startup Speed
+              outbound at scale
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {coreFeatures.map((feature, index) => (
               <motion.div
                 key={feature.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="text-center"
+                className="bg-white rounded-xl border border-gray-200 p-8"
               >
-                <div className="w-12 h-12 mx-auto mb-4 flex items-center justify-center">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    className="w-8 h-8 text-[#007AFF]"
-                  >
-                    <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                    <path d="M2 17l10 5 10-5" />
-                    <path d="M2 12l10 5 10-5" />
-                  </svg>
-                </div>
-                <h3 className="text-lg text-gray-900 mb-2">{feature.title}</h3>
-                <p className="text-gray-600 text-sm">{feature.description}</p>
+                <h3 className="text-xl text-gray-900 mb-3">{feature.title}</h3>
+                <p className="text-gray-600 text-sm mb-6">{feature.description}</p>
+                <ul className="space-y-2">
+                  {feature.items.map((item, i) => (
+                    <li key={i} className="flex items-center gap-2 text-sm text-gray-600">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#007AFF] flex-shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </motion.div>
             ))}
           </div>
         </Container>
       </section>
 
-      {/* Visitor Tracking Flow */}
-      <section className="py-20 bg-[#F7F9FB]">
-        <Container>
-          <div className="text-center mb-12">
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-              Every visitor identified,
-            </h2>
-            <p className="font-[var(--font-great-vibes)] text-5xl lg:text-6xl text-[#007AFF] mb-8">
-              enriched, and scored
-            </p>
-            <p className="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto mb-12">
-              Custom pixel sits above your site, identifies anonymous visitors, enriches with contact data, and triggers intent scoring. Feeds directly into your CRM—no manual data entry.
-            </p>
-          </div>
-          <VisitorTrackingFlow />
-        </Container>
-      </section>
-
-      {/* Lead Sequence */}
+      {/* Stats Section */}
       <section className="py-20 bg-white">
         <Container>
-          <div className="text-center mb-12">
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-              Automated sequences that
-            </h2>
-            <p className="font-[var(--font-great-vibes)] text-5xl lg:text-6xl text-[#007AFF] mb-8">
-              actually convert
-            </p>
-            <p className="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto mb-12">
-              Multi-touch campaigns across email, SMS, and calls. The AI learns from every interaction and optimizes in real-time.
-            </p>
-          </div>
-          <LeadSequenceFlow />
-        </Container>
-      </section>
-
-      {/* Stats */}
-      <section className="py-20 bg-[#F7F9FB]">
-        <Container>
           <div className="grid md:grid-cols-3 gap-12 text-center max-w-4xl mx-auto">
-            <div>
-              <div className="text-5xl font-light text-gray-900 mb-2">500M+</div>
-              <div className="text-gray-600">Verified Contacts</div>
-            </div>
-            <div>
-              <div className="text-5xl font-light text-gray-900 mb-2">99%</div>
-              <div className="text-gray-600">Data Accuracy</div>
-            </div>
-            <div>
-              <div className="text-5xl font-light text-gray-900 mb-2">24/7</div>
-              <div className="text-gray-600">AI Agents Active</div>
-            </div>
+            {stats.map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <div className="text-5xl font-light text-gray-900 mb-2">{stat.value}</div>
+                <div className="text-gray-600">{stat.label}</div>
+              </motion.div>
+            ))}
           </div>
         </Container>
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-[#F7F9FB]">
         <Container>
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-2">
@@ -164,7 +120,7 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-lg p-8 border border-gray-200"
+                className="bg-white rounded-xl p-8 border border-gray-200"
               >
                 <p className="text-gray-700 mb-6 leading-relaxed">&ldquo;{testimonial.quote}&rdquo;</p>
                 <div className="flex items-center gap-3">
@@ -183,7 +139,7 @@ export default function HomePage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 bg-[#F7F9FB]">
+      <section className="py-20 bg-white">
         <Container>
           <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-12 text-center text-white max-w-4xl mx-auto">
             <h2 className="text-4xl lg:text-5xl font-light mb-4">
@@ -207,24 +163,75 @@ export default function HomePage() {
   )
 }
 
-// Features Data
-const features = [
+// Core Features Data
+const coreFeatures = [
   {
     title: "Pixel Lead Tracking",
-    description: "Every visitor identified, enriched, and scored",
+    description: "Identify every website visitor and track their journey",
+    items: [
+      "Anonymous visitor identification",
+      "Company enrichment",
+      "Intent scoring",
+      "CRM auto-sync"
+    ]
   },
   {
-    title: "Database Reactivation",
-    description: "Wake up dormant leads with intent signals",
+    title: "AI-Powered Outreach",
+    description: "Automated sequences that actually convert",
+    items: [
+      "Multi-touch campaigns",
+      "Brand voice training",
+      "Reply detection",
+      "Meeting booking"
+    ]
   },
   {
-    title: "Multitouch Outreach",
-    description: "Automated sequences across email and LinkedIn",
+    title: "People Search",
+    description: "500M+ verified B2B contacts at your fingertips",
+    items: [
+      "Advanced filtering",
+      "Email verification",
+      "Phone numbers",
+      "LinkedIn profiles"
+    ]
   },
   {
-    title: "Ask CursiveCore",
-    description: "AI assistant trained on your entire pipeline",
+    title: "Pipeline Dashboard",
+    description: "Real-time metrics and deal tracking",
+    items: [
+      "Live pipeline view",
+      "Conversion analytics",
+      "Lead source tracking",
+      "Revenue forecasting"
+    ]
   },
+  {
+    title: "Lead Marketplace",
+    description: "Purchase verified lead lists on demand",
+    items: [
+      "Pre-built lists",
+      "Custom targeting",
+      "99% accuracy",
+      "Instant delivery"
+    ]
+  },
+  {
+    title: "AI Studio",
+    description: "Train AI on your brand and messaging",
+    items: [
+      "Brand voice setup",
+      "Copy generation",
+      "A/B testing",
+      "Performance insights"
+    ]
+  },
+]
+
+// Stats Data
+const stats = [
+  { value: "500M+", label: "Verified Contacts" },
+  { value: "99%", label: "Data Accuracy" },
+  { value: "24/7", label: "AI Agents Active" },
 ]
 
 // Testimonials Data
