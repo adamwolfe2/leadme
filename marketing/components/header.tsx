@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import Link from "next/link"
 import { motion } from "framer-motion"
+import Image from "next/image"
 
 export function Header() {
   return (
@@ -16,17 +17,13 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              className="w-8 h-8 text-[#007AFF]"
-            >
-              <path d="M12 2L2 7l10 5 10-5-10-5z" />
-              <path d="M2 17l10 5 10-5" />
-              <path d="M2 12l10 5 10-5" />
-            </svg>
+            <Image
+              src="/cursive-logo.png"
+              alt="Cursive"
+              width={32}
+              height={32}
+              className="w-8 h-8"
+            />
             <span className="font-[var(--font-great-vibes)] text-2xl text-[#007AFF]">
               Cursive
             </span>
