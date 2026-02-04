@@ -21,7 +21,7 @@ export default function FAQPage() {
   return (
     <main className="overflow-hidden">
       {/* Hero Section */}
-      <section className="relative py-24 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <section className="relative py-24 bg-white">
         <Container>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -29,15 +29,15 @@ export default function FAQPage() {
             transition={{ duration: 0.8 }}
             className="text-center max-w-4xl mx-auto"
           >
-            <h1 className="text-5xl lg:text-6xl font-bold mb-6">
+            <h1 className="text-5xl lg:text-6xl font-light text-gray-900 mb-6">
               Frequently Asked
-              <span className="block font-[var(--font-great-vibes)] text-6xl lg:text-7xl text-primary mt-2">
+              <span className="block font-[var(--font-great-vibes)] text-4xl lg:text-5xl text-gray-500 mt-2">
                 Questions
               </span>
             </h1>
             <p className="text-xl text-gray-600 mb-8">
-              Everything you need to know about Cursive. Can't find what you're looking for?{" "}
-              <a href="/contact" className="text-primary hover:underline">Contact us</a>.
+              Everything you need to know about <span className="font-[var(--font-great-vibes)] text-2xl text-gray-500">Cursive</span>. Can't find what you're looking for?{" "}
+              <a href="/contact" className="text-[#007AFF] hover:underline">Contact us</a>.
             </p>
 
             {/* Search */}
@@ -48,7 +48,7 @@ export default function FAQPage() {
                 placeholder="Search for answers..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-lg"
+                className="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#007AFF] focus:border-transparent text-lg"
               />
             </div>
           </motion.div>
@@ -64,9 +64,9 @@ export default function FAQPage() {
               <button
                 key={category.value}
                 onClick={() => setActiveCategory(category.value)}
-                className={`px-6 py-3 rounded-lg font-medium transition-all ${
+                className={`px-6 py-3 rounded-lg transition-all ${
                   activeCategory === category.value
-                    ? "bg-primary text-white shadow-lg"
+                    ? "bg-[#007AFF] text-white shadow-lg"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
               >
@@ -82,7 +82,7 @@ export default function FAQPage() {
                 <p className="text-gray-600 mb-4">No results found for "{searchQuery}"</p>
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="text-primary hover:underline"
+                  className="text-[#007AFF] hover:underline"
                 >
                   Clear search
                 </button>
@@ -101,15 +101,15 @@ export default function FAQPage() {
                     className="w-full px-6 py-5 flex items-start justify-between text-left hover:bg-gray-50 transition-colors"
                   >
                     <div className="flex items-start gap-4 flex-1">
-                      <HelpCircle className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" />
-                      <span className="font-semibold text-lg">{faq.question}</span>
+                      <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full flex-shrink-0 mt-3" />
+                      <span className="text-lg text-gray-900">{faq.question}</span>
                     </div>
                     <div className="text-gray-400 ml-4 text-2xl">
                       {openFaq === index ? "−" : "+"}
                     </div>
                   </button>
                   {openFaq === index && (
-                    <div className="px-6 pb-5 pl-16">
+                    <div className="px-6 pb-5 pl-12">
                       <p className="text-gray-600 leading-relaxed whitespace-pre-line">{faq.answer}</p>
                     </div>
                   )}
@@ -121,10 +121,10 @@ export default function FAQPage() {
       </section>
 
       {/* Still Have Questions CTA */}
-      <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-24 bg-[#F7F9FB]">
         <Container>
-          <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl p-12 text-center text-white shadow-2xl max-w-4xl mx-auto">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
+          <div className="bg-[#007AFF] rounded-3xl p-12 text-center text-white shadow-lg max-w-4xl mx-auto">
+            <h2 className="text-4xl lg:text-5xl font-light mb-4">
               Still Have Questions?
             </h2>
             <p className="text-xl mb-8 opacity-90">
@@ -133,7 +133,7 @@ export default function FAQPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button
                 size="lg"
-                className="bg-white text-primary hover:bg-gray-100"
+                className="bg-white text-[#007AFF] hover:bg-gray-100"
                 href="https://cal.com/adamwolfe/cursive-ai-audit"
                 target="_blank"
               >
