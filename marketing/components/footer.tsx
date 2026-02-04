@@ -95,6 +95,26 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/resources" className="hover:text-primary transition-colors">
+                  Resources
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog" className="hover:text-primary transition-colors">
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-primary transition-colors">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link href="/faq" className="hover:text-primary transition-colors">
+                  FAQ
+                </Link>
+              </li>
+              <li>
                 <a
                   href="https://cal.com/adamwolfe/cursive-ai-audit"
                   target="_blank"

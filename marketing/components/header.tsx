@@ -45,8 +45,11 @@ export function Header() {
             <Link href="/platform" className="text-gray-700 hover:text-primary transition-colors">
               Platform
             </Link>
-            <Link href="/about" className="text-gray-700 hover:text-primary transition-colors">
-              About
+            <Link href="/resources" className="text-gray-700 hover:text-primary transition-colors">
+              Resources
+            </Link>
+            <Link href="/blog" className="text-gray-700 hover:text-primary transition-colors">
+              Blog
             </Link>
           </nav>
 
