@@ -266,8 +266,8 @@ export default async function ServiceTierPage({ params }: ServiceTierPageProps) 
             </h3>
             <p className="text-zinc-600 text-sm">
               {tier.onboarding_required
-                ? 'Onboarding typically takes 5-7 business days. We'll schedule a kickoff call to understand your needs and begin delivery within the first week.'
-                : 'Get started immediately! Access your account and begin using the platform right away.'}
+                ? "Onboarding typically takes 5-7 business days. We'll schedule a kickoff call to understand your needs and begin delivery within the first week."
+                : "Get started immediately! Access your account and begin using the platform right away."}
             </p>
           </div>
 
