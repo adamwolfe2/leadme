@@ -10,7 +10,8 @@ import {
   PlayCircle,
   ArrowLeft,
   Calendar,
-  FileText
+  FileText,
+  Plus
 } from 'lucide-react'
 
 interface ServiceDelivery {
@@ -157,19 +158,28 @@ export default function AdminServiceDeliveriesPage() {
     <div className="max-w-7xl mx-auto px-6 py-8">
       {/* Page Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <Link
-            href="/admin/services/subscriptions"
-            className="p-2 hover:bg-zinc-100 rounded-lg transition-colors"
-          >
-            <ArrowLeft className="h-5 w-5 text-zinc-600" />
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-zinc-900">Service Deliveries</h1>
-            <p className="text-sm text-zinc-600 mt-1">
-              Track and manage all service deliverables
-            </p>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/admin/services/subscriptions"
+              className="p-2 hover:bg-zinc-100 rounded-lg transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5 text-zinc-600" />
+            </Link>
+            <div>
+              <h1 className="text-2xl font-bold text-zinc-900">Service Deliveries</h1>
+              <p className="text-sm text-zinc-600 mt-1">
+                Track and manage all service deliverables
+              </p>
+            </div>
           </div>
+          <Link
+            href="/admin/services/deliveries/create"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+          >
+            <Plus className="h-5 w-5" />
+            Create Delivery
+          </Link>
         </div>
       </div>
 
