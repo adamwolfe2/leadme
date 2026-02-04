@@ -3,6 +3,11 @@
  * Cursive Platform
  *
  * Helpers for checking tier features and limits in API routes and server components.
+ *
+ * TIER PRECEDENCE:
+ * 1. Service Subscriptions (new managed service tiers)
+ * 2. Product Tiers (legacy SaaS subscription tiers)
+ * 3. Free Tier (default)
  */
 
 import { createClient } from '@/lib/supabase/server'
@@ -31,19 +36,116 @@ export interface WorkspaceTierInfo {
   features: ProductTierFeatures
   dailyLeadLimit: number
   monthlyLeadLimit: number | null
+  // Metadata for debugging
+  source: 'service_tier' | 'product_tier' | 'free' // Which system provided the tier
+  serviceTierId?: string // ID of service tier if active
+  productTierId?: string // ID of product tier if active
+}
+
+/**
+ * Map service tier platform_features to ProductTierFeatures
+ * Uses same logic as /api/workspace/tier for consistency
+ */
+function mapServiceTierFeatures(platformFeatures: any): Partial<ProductTierFeatures> {
+  return {
+    // Core features
+    campaigns: platformFeatures.campaigns || false,
+    templates: platformFeatures.campaigns || false, // Templates enabled with campaigns
+    ai_agents: platformFeatures.ai_agents || false,
+    api_access: platformFeatures.api_access || false,
+    integrations: platformFeatures.api_access || false, // Integrations enabled with API access
+
+    // Limits (-1 = unlimited)
+    team_members: platformFeatures.team_seats || 1,
+    max_campaigns: platformFeatures.campaigns ? -1 : 0, // Unlimited campaigns if enabled
+    max_templates: platformFeatures.campaigns ? -1 : 0, // Unlimited templates if campaigns enabled
+    max_email_accounts: platformFeatures.campaigns ? -1 : 1, // Unlimited email accounts with campaigns
+
+    // Enterprise features
+    white_label: platformFeatures.white_label || false,
+    custom_domains: platformFeatures.custom_integrations || false,
+
+    // All service tiers get dedicated support
+    dedicated_support: true,
+
+    // People search is always available
+    people_search: true,
+  }
 }
 
 /**
  * Get tier info for a workspace
+ * Checks both service subscriptions (new) and product tiers (legacy)
+ * Service subscriptions take precedence when both exist
  */
 export async function getWorkspaceTier(workspaceId: string): Promise<WorkspaceTierInfo> {
   const supabase = await createClient()
+
+  // ============================================================================
+  // STEP 1: Check for active service subscription (NEW SYSTEM)
+  // ============================================================================
+
+  const { data: serviceSubscription } = await supabase
+    .from('service_subscriptions')
+    .select(`
+      *,
+      service_tier:service_tiers (
+        id,
+        name,
+        slug,
+        platform_features
+      )
+    `)
+    .eq('workspace_id', workspaceId)
+    .eq('status', 'active')
+    .single()
+
+  const serviceTier = serviceSubscription?.service_tier as {
+    id: string
+    name: string
+    slug: string
+    platform_features: any
+  } | null
+
+  // If service tier exists, use it (takes precedence)
+  if (serviceTier && serviceTier.platform_features) {
+    console.log(`[TierCheck] Workspace ${workspaceId} using SERVICE TIER: ${serviceTier.slug}`)
+
+    const platformFeatures = serviceTier.platform_features
+    const features: ProductTierFeatures = {
+      ...DEFAULT_FEATURES,
+      ...mapServiceTierFeatures(platformFeatures),
+    }
+
+    // Extract daily lead limit from platform_features
+    let dailyLeadLimit = 3 // Free tier default
+    if (platformFeatures.daily_lead_limit !== undefined) {
+      dailyLeadLimit = platformFeatures.daily_lead_limit === -1
+        ? 999999 // Unlimited = very high number
+        : platformFeatures.daily_lead_limit
+    }
+
+    return {
+      tierSlug: serviceTier.slug,
+      tierName: serviceTier.name,
+      features,
+      dailyLeadLimit,
+      monthlyLeadLimit: null, // Service tiers don't have monthly limits (only daily)
+      source: 'service_tier',
+      serviceTierId: serviceTier.id,
+    }
+  }
+
+  // ============================================================================
+  // STEP 2: Fallback to legacy product tier (LEGACY SYSTEM)
+  // ============================================================================
 
   const { data: tierInfo } = await supabase
     .from('workspace_tiers')
     .select(`
       *,
       product_tiers (
+        id,
         name,
         slug,
         daily_lead_limit,
@@ -55,6 +157,7 @@ export async function getWorkspaceTier(workspaceId: string): Promise<WorkspaceTi
     .single()
 
   const productTier = tierInfo?.product_tiers as {
+    id: string
     name: string
     slug: string
     daily_lead_limit: number
@@ -62,19 +165,40 @@ export async function getWorkspaceTier(workspaceId: string): Promise<WorkspaceTi
     features: ProductTierFeatures
   } | null
 
-  // Merge features with overrides
-  const features: ProductTierFeatures = {
-    ...DEFAULT_FEATURES,
-    ...(productTier?.features || {}),
-    ...(tierInfo?.feature_overrides || {}),
+  if (productTier) {
+    console.log(`[TierCheck] Workspace ${workspaceId} using PRODUCT TIER: ${productTier.slug}`)
+
+    // Merge features with overrides
+    const features: ProductTierFeatures = {
+      ...DEFAULT_FEATURES,
+      ...(productTier.features || {}),
+      ...(tierInfo?.feature_overrides || {}),
+    }
+
+    return {
+      tierSlug: productTier.slug,
+      tierName: productTier.name,
+      features,
+      dailyLeadLimit: tierInfo?.daily_lead_limit_override ?? productTier.daily_lead_limit ?? 3,
+      monthlyLeadLimit: tierInfo?.monthly_lead_limit_override ?? productTier.monthly_lead_limit ?? null,
+      source: 'product_tier',
+      productTierId: productTier.id,
+    }
   }
 
+  // ============================================================================
+  // STEP 3: Default to free tier
+  // ============================================================================
+
+  console.log(`[TierCheck] Workspace ${workspaceId} using FREE TIER (no subscription found)`)
+
   return {
-    tierSlug: productTier?.slug || 'free',
-    tierName: productTier?.name || 'Free',
-    features,
-    dailyLeadLimit: tierInfo?.daily_lead_limit_override ?? productTier?.daily_lead_limit ?? 3,
-    monthlyLeadLimit: tierInfo?.monthly_lead_limit_override ?? productTier?.monthly_lead_limit ?? null,
+    tierSlug: 'free',
+    tierName: 'Free',
+    features: DEFAULT_FEATURES,
+    dailyLeadLimit: 3,
+    monthlyLeadLimit: null,
+    source: 'free',
   }
 }
 
@@ -169,12 +293,17 @@ export async function requireFeature(
 
   if (!hasFeature) {
     const tier = await getWorkspaceTier(workspaceId)
+    console.error(
+      `[TierCheck] Feature '${String(feature)}' denied for workspace ${workspaceId} (tier: ${tier.tierSlug}, source: ${tier.source})`
+    )
     throw new FeatureNotAvailableError(
       errorMessage || `This feature requires an upgrade from your ${tier.tierName} plan.`,
       feature,
       tier.tierSlug
     )
   }
+
+  console.log(`[TierCheck] Feature '${String(feature)}' granted for workspace ${workspaceId}`)
 }
 
 /**
@@ -188,6 +317,9 @@ export async function requireWithinLimit(
   const { withinLimit, used, limit } = await isWorkspaceWithinLimit(workspaceId, resource)
 
   if (!withinLimit) {
+    console.error(
+      `[TierCheck] Limit exceeded for workspace ${workspaceId}: ${resource} (used: ${used}, limit: ${limit})`
+    )
     throw new LimitExceededError(
       errorMessage || `You've reached your limit of ${limit} ${resource.replace('_', ' ')}.`,
       resource,
@@ -195,6 +327,8 @@ export async function requireWithinLimit(
       limit || 0
     )
   }
+
+  console.log(`[TierCheck] Limit check passed for workspace ${workspaceId}: ${resource} (used: ${used}, limit: ${limit})`)
 }
 
 // ============================================================================
