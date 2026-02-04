@@ -3,6 +3,9 @@
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
+import { VisitorTrackingFlow } from "@/components/demos/visitor-tracking-flow"
+import { PipelineDashboard } from "@/components/demos/pipeline-dashboard"
+import { LeadSequenceFlow } from "@/components/demos/lead-sequence-flow"
 
 export default function HomePage() {
   return (
@@ -36,21 +39,7 @@ export default function HomePage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="hidden lg:block"
             >
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <div className="aspect-square bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg flex items-center justify-center">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1"
-                    className="w-32 h-32 text-[#007AFF]"
-                  >
-                    <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                    <path d="M2 17l10 5 10-5" />
-                    <path d="M2 12l10 5 10-5" />
-                  </svg>
-                </div>
-              </div>
+              <PipelineDashboard />
             </motion.div>
           </div>
         </Container>
@@ -99,37 +88,56 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Value Proposition */}
+      {/* Visitor Tracking Flow */}
       <section className="py-20 bg-[#F7F9FB]">
         <Container>
-          <div className="text-center max-w-4xl mx-auto">
+          <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Every visitor identified,
             </h2>
             <p className="font-[var(--font-great-vibes)] text-5xl lg:text-6xl text-[#007AFF] mb-8">
               enriched, and scored
             </p>
-            <p className="text-lg text-gray-600 leading-relaxed">
-              Custom pixel sits above your site, identifies anonymous visitors, enriches with contact data, and triggers intent scoring. Feeds directly into your CRM—no manual data entry. The intelligence layer learns from every session.
+            <p className="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto mb-12">
+              Custom pixel sits above your site, identifies anonymous visitors, enriches with contact data, and triggers intent scoring. Feeds directly into your CRM—no manual data entry.
             </p>
           </div>
+          <VisitorTrackingFlow />
+        </Container>
+      </section>
+
+      {/* Lead Sequence */}
+      <section className="py-20 bg-white">
+        <Container>
+          <div className="text-center mb-12">
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+              Automated sequences that
+            </h2>
+            <p className="font-[var(--font-great-vibes)] text-5xl lg:text-6xl text-[#007AFF] mb-8">
+              actually convert
+            </p>
+            <p className="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto mb-12">
+              Multi-touch campaigns across email, SMS, and calls. The AI learns from every interaction and optimizes in real-time.
+            </p>
+          </div>
+          <LeadSequenceFlow />
         </Container>
       </section>
 
       {/* Stats */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-[#F7F9FB]">
         <Container>
           <div className="grid md:grid-cols-3 gap-12 text-center max-w-4xl mx-auto">
             <div>
-              <div className="text-5xl font-light text-[#007AFF] mb-2">500M+</div>
+              <div className="text-5xl font-light text-gray-900 mb-2">500M+</div>
               <div className="text-gray-600">Verified Contacts</div>
             </div>
             <div>
-              <div className="text-5xl font-light text-[#007AFF] mb-2">99%</div>
+              <div className="text-5xl font-light text-gray-900 mb-2">99%</div>
               <div className="text-gray-600">Data Accuracy</div>
             </div>
             <div>
-              <div className="text-5xl font-light text-[#007AFF] mb-2">24/7</div>
+              <div className="text-5xl font-light text-gray-900 mb-2">24/7</div>
               <div className="text-gray-600">AI Agents Active</div>
             </div>
           </div>
@@ -137,7 +145,7 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 bg-[#F7F9FB]">
+      <section className="py-20 bg-white">
         <Container>
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-2">
@@ -156,7 +164,7 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-lg p-8"
+                className="bg-white rounded-lg p-8 border border-gray-200"
               >
                 <p className="text-gray-700 mb-6 leading-relaxed">&ldquo;{testimonial.quote}&rdquo;</p>
                 <div className="flex items-center gap-3">
@@ -175,14 +183,14 @@ export default function HomePage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-[#F7F9FB]">
         <Container>
           <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-12 text-center text-white max-w-4xl mx-auto">
             <h2 className="text-4xl lg:text-5xl font-light mb-4">
               Ready to Get Started?
             </h2>
             <p className="text-lg mb-8 opacity-90">
-              Book a call to see how Cursive can transform your pipeline.
+              Book a call to see how <span className="font-[var(--font-great-vibes)] text-3xl">Cursive</span> can transform your pipeline.
             </p>
             <Button
               size="lg"
