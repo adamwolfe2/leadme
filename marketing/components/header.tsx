@@ -55,7 +55,7 @@ export function Header() {
             <Button variant="ghost" href="https://leads.meetcursive.com" target="_blank">
               Login
             </Button>
-            <Button size="sm" href="https://calendly.com/your-link" target="_blank">
+            <Button size="sm" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
               Book a Call
             </Button>
           </div>

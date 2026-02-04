@@ -45,7 +45,7 @@ export default function HomePage() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button size="lg" href="https://calendly.com/your-link" target="_blank">
+              <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
                 Free AI Audit
                 <ArrowRight className="w-5 h-5" />
               </Button>
@@ -167,7 +167,7 @@ export default function HomePage() {
           </motion.div>
 
           <div className="mt-12 text-center">
-            <Button size="lg" href="https://calendly.com/your-link" target="_blank">
+            <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
               Get Started Today
               <ArrowRight className="w-5 h-5" />
             </Button>
@@ -204,7 +204,7 @@ export default function HomePage() {
                 Embed our pixel, provide ICP data, share your existing CRM, and we start aggregating.
                 Takes 1-2 days. You don't migrate, we unify.
               </p>
-              <Button variant="outline" href="https://calendly.com/your-link" target="_blank">
+              <Button variant="outline" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
                 Free AI Audit
                 <ArrowRight className="w-5 h-5" />
               </Button>
@@ -290,7 +290,7 @@ export default function HomePage() {
             <Button
               size="lg"
               className="bg-white text-primary hover:bg-gray-100"
-              href="https://calendly.com/your-link"
+              href="https://cal.com/adamwolfe/cursive-ai-audit"
               target="_blank"
             >
               Get Started Today

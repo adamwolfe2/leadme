@@ -96,7 +96,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="https://calendly.com/your-link"
+                  href="https://cal.com/adamwolfe/cursive-ai-audit"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-primary transition-colors"

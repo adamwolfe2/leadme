@@ -105,7 +105,7 @@ Replace placeholder Calendly link in:
 - `marketing/components/header.tsx`
 - `marketing/components/footer.tsx`
 
-Find/replace: `https://calendly.com/your-link` → Your actual Calendly link
+Find/replace: `https://cal.com/adamwolfe/cursive-ai-audit` → Your actual Calendly link
 
 ### Add Real Images
 
