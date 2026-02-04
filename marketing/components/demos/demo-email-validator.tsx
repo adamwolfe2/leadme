@@ -40,7 +40,7 @@ export function DemoEmailValidator() {
       const testEmail = testEmails[currentEmailIndex]
       setInputEmail("")
       setScore(0)
-      setChecks(validationChecks.map(c => ({ ...c, status: "pending" as const })))
+      setChecks(validationChecks.map(c => ({ ...c, status: "pending" as ValidationCheck["status"] })))
       setIsValidating(false)
 
       // Type out email
@@ -65,16 +65,16 @@ export function DemoEmailValidator() {
       validationChecks.forEach((check, index) => {
         setTimeout(() => {
           setChecks(prev => prev.map((c, i) =>
-            i === index ? { ...c, status: "checking" as const } : c
+            i === index ? { ...c, status: "checking" as ValidationCheck["status"] } : c
           ))
         }, accumulatedTime)
 
         accumulatedTime += check.duration
 
         setTimeout(() => {
-          const newStatus = index === 2 && targetScore < 50 ? "warning" : targetScore < 60 && index > 3 ? "warning" : "pass"
+          const newStatus: ValidationCheck["status"] = index === 2 && targetScore < 50 ? "warning" : targetScore < 60 && index > 3 ? "warning" : "pass"
           setChecks(prev => prev.map((c, i) =>
-            i === index ? { ...c, status: newStatus as const } : c
+            i === index ? { ...c, status: newStatus } : c
           ))
 
           // Update score progressively
