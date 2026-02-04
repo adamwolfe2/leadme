@@ -64,7 +64,7 @@ export function InteractiveFeaturesShowcase() {
             className={`
               px-4 py-3 rounded-lg text-sm transition-all
               ${activeTab === feature.id
-                ? 'bg-gray-900 text-white'
+                ? 'bg-gradient-to-br from-blue-100 to-blue-200 text-[#007AFF] shadow-sm'
                 : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
               }
             `}
@@ -75,7 +75,7 @@ export function InteractiveFeaturesShowcase() {
       </div>
 
       {/* Demo Container with Browser Chrome */}
-      <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-8 md:p-12">
+      <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl p-8 md:p-12">
         <div className="bg-white rounded-xl shadow-2xl overflow-hidden">
           {/* Browser Dots */}
           <div className="bg-gray-100 px-4 py-3 flex items-center gap-1.5 border-b border-gray-200">
