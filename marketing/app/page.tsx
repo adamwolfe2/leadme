@@ -23,13 +23,13 @@ export default function HomePage() {
             className="text-center max-w-5xl mx-auto mb-16"
           >
             <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6 leading-tight">
-              Make smarter decisions, have stronger outreach,
+              AI Intent Systems
               <span className="block text-gray-500 mt-2">
-                and measurable growth.
+                That Never Sleep.
               </span>
             </h1>
             <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-3xl mx-auto">
-              Identify and track your website visitors, build highly targeted lists, launch direct mail campaigns, and maximize ad performance—all from one platform that unites verified B2C and B2B data.
+              <span className="font-cursive text-[#007AFF] text-2xl">Cursive</span> identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.
             </p>
             <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
               Get started. It's FREE!
