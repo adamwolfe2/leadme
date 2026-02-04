@@ -1,5 +1,6 @@
 import Stripe from 'stripe'
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
+import { getStripeConfigForTier } from './service-products'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-12-18.acacia'
@@ -48,51 +49,27 @@ export async function createServiceCheckout(
     throw new Error(`Service tier ${tier.name} requires sales contact`)
   }
 
-  // Determine pricing
-  const monthlyPrice = negotiatedMonthlyPrice || tier.monthly_price_min
-  const setupFee = tier.setup_fee || 0
+  // Get Stripe configuration for this tier
+  const stripeConfig = getStripeConfigForTier(serviceTierSlug)
 
-  // Build line items
+  if (!stripeConfig) {
+    throw new Error(`No Stripe configuration found for tier: ${serviceTierSlug}`)
+  }
+
+  // Build line items using pre-configured Stripe price IDs
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = []
 
-  // Add setup fee as one-time payment (if applicable)
-  if (setupFee > 0) {
+  // Add setup fee if configured (one-time payment)
+  if (stripeConfig.setupFeePriceId) {
     lineItems.push({
-      price_data: {
-        currency: 'usd',
-        product_data: {
-          name: `${tier.name} - Setup Fee`,
-          description: 'One-time onboarding and setup',
-          metadata: {
-            service_tier_id: tier.id,
-            service_tier_slug: tier.slug,
-            item_type: 'setup_fee'
-          }
-        },
-        unit_amount: Math.round(setupFee * 100) // Convert to cents
-      },
+      price: stripeConfig.setupFeePriceId,
       quantity: 1
     })
   }
 
   // Add recurring monthly subscription
   lineItems.push({
-    price_data: {
-      currency: 'usd',
-      product_data: {
-        name: tier.name,
-        description: tier.description,
-        metadata: {
-          service_tier_id: tier.id,
-          service_tier_slug: tier.slug,
-          item_type: 'subscription'
-        }
-      },
-      unit_amount: Math.round(monthlyPrice * 100), // Convert to cents
-      recurring: {
-        interval: 'month'
-      }
-    },
+    price: stripeConfig.priceId,
     quantity: 1
   })
 

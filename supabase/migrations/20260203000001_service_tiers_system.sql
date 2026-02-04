@@ -226,7 +226,7 @@ INSERT INTO service_tiers (slug, name, display_order, is_public, setup_fee, mont
   true,
   0,
   1000,
-  3000,
+  1000,
   'High-intent lead lists delivered monthly. Custom research based on your ideal customer profile.',
   '[
     "Custom lead research based on ICP",
@@ -260,9 +260,9 @@ INSERT INTO service_tiers (slug, name, display_order, is_public, setup_fee, mont
   'Cursive Outbound',
   2,
   true,
+  0,
   2500,
-  3000,
-  5000,
+  2500,
   'Done-for-you cold email campaigns. We build and manage your entire outbound engine using your brand voice.',
   '[
     "Everything in Cursive Data",
@@ -295,12 +295,12 @@ INSERT INTO service_tiers (slug, name, display_order, is_public, setup_fee, mont
 -- Tier 3: Cursive Pipeline
 (
   'cursive-pipeline',
-  'Cursive Pipeline',
+  'Cursive Automated Pipeline',
   3,
   true,
+  0,
   5000,
   5000,
-  10000,
   'Full-stack pipeline with AI SDR. Multi-channel outreach, meeting booking, and pipeline management.',
   '[
     "Everything in Cursive Outbound",
@@ -331,16 +331,16 @@ INSERT INTO service_tiers (slug, name, display_order, is_public, setup_fee, mont
   true
 ),
 
--- Tier 4: Cursive Studio (NOT PUBLIC)
+-- Tier 4: Cursive Venture Studio (NOT PUBLIC)
 (
-  'cursive-studio',
-  'Cursive Studio',
+  'cursive-venture-studio',
+  'Cursive Venture Studio',
   4,
   false,
   0,
   25000,
   150000,
-  'Strategic growth partnership. We become your growth team, with equity alignment and white-glove service.',
+  'Use our custom AI infrastructure & software while we provide white-glove onboarding service, delivering a full growth partnership. Cursive becomes your growth team, building you a site, integrating tracking pixels, creating custom ICP-aligned audiences, enriching leads, crafting email campaigns for outbound, and booking your leads to your calendar. All you do is close & sell them.',
   '[
     "Everything in Cursive Pipeline",
     "Strategic growth consulting",

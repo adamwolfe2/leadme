@@ -1,12 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRight, Loader2 } from 'lucide-react'
+import { ArrowRight, Loader2, Calendar } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/lib/hooks/use-toast'
+import { VENTURE_STUDIO_CALENDAR_URL, supportsDirectCheckout } from '@/lib/stripe/service-products'
+import { trackCheckout } from '@/lib/analytics/service-tier-events'
 
 interface CheckoutButtonProps {
   tierSlug: string
+  tierName?: string
+  tierPrice?: number
   variant?: 'blue' | 'white' | 'black'
   size?: 'default' | 'large'
   className?: string
@@ -14,6 +18,8 @@ interface CheckoutButtonProps {
 
 export function CheckoutButton({
   tierSlug,
+  tierName = '',
+  tierPrice = 0,
   variant = 'blue',
   size = 'default',
   className = ''
@@ -25,7 +31,22 @@ export function CheckoutButton({
   const handleCheckout = async () => {
     setLoading(true)
 
+    // Track checkout started
+    trackCheckout('started', {
+      tier_slug: tierSlug,
+      tier_name: tierName,
+      tier_price: tierPrice,
+    })
+
     try {
+      // Check if this tier uses calendar booking instead of direct checkout
+      if (!supportsDirectCheckout(tierSlug)) {
+        // Redirect to calendar booking for high-touch tiers (Venture Studio)
+        window.location.href = VENTURE_STUDIO_CALENDAR_URL
+        return
+      }
+
+      // Standard checkout flow for other tiers
       const response = await fetch('/api/services/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -46,6 +67,11 @@ export function CheckoutButton({
       setLoading(false)
     }
   }
+
+  // Determine button text based on tier type
+  const isCalendarBooking = !supportsDirectCheckout(tierSlug)
+  const buttonText = isCalendarBooking ? 'Schedule a Call' : 'Get Started'
+  const buttonIcon = isCalendarBooking ? Calendar : ArrowRight
 
   const variantStyles = {
     blue: 'bg-blue-600 hover:bg-blue-700 text-white',
@@ -73,12 +99,16 @@ export function CheckoutButton({
       {loading ? (
         <>
           <Loader2 className="h-5 w-5 animate-spin" />
-          Processing...
+          {isCalendarBooking ? 'Redirecting...' : 'Processing...'}
         </>
       ) : (
         <>
-          Get Started
-          <ArrowRight className="h-5 w-5" />
+          {buttonText}
+          {buttonIcon === Calendar ? (
+            <Calendar className="h-5 w-5" />
+          ) : (
+            <ArrowRight className="h-5 w-5" />
+          )}
         </>
       )}
     </button>
