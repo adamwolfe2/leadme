@@ -325,7 +325,7 @@ export default function HomePage() {
 const benefitPillars = [
   {
     icon: '👁️',
-    title: 'Know Who's Interested',
+    title: "Know Who's Interested",
     description: 'Identify up to 70% of anonymous visitors—see which companies viewed your pricing page this week.',
   },
   {

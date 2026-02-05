@@ -155,7 +155,7 @@ const blogPosts: Record<string, BlogPost> = {
           'Implementation is typically very fast. Adding the tracking pixel takes 5-10 minutes (similar to Google Analytics). Connecting your CRM and setting up workflows might take 1-2 hours. Most companies start seeing identified companies within 24 hours of installation.',
       },
       {
-        question: 'What's the difference between visitor identification and website analytics?',
+        question: "What's the difference between visitor identification and website analytics?",
         answer:
           'Traditional analytics (like Google Analytics) shows you aggregate metrics and anonymous user sessions. Visitor identification reveals which specific companies and sometimes which individuals are visiting. Think of it as adding a name tag to your anonymous traffic.',
       },
