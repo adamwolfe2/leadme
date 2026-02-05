@@ -46,7 +46,7 @@ In B2B marketing, **personal data** includes any information that can identify a
 
 This data flows through multiple systems throughout your marketing stack. A prospect might fill out a website form, triggering data capture by your CRM. That information then syncs to your marketing automation platform, email service provider, and ad platforms for retargeting.
 
-**Each transfer point represents a compliance obligation.**
+**Each transfer point represents a compliance obligation.** Learn more about [enhancing data connectivity with CRM integration](/blog/19-enhancing-data-connectivity-with-crm-integration) while maintaining privacy standards.
 
 When you use [Cursive's visitor identification](https://meetcursive.com/visitor-identification) to reveal anonymous website traffic, you're collecting behavioral data that must be handled according to privacy regulations—even if the visitor never filled out a form.
 
@@ -115,13 +115,13 @@ Your privacy policy from 2020 probably doesn't cover the new marketing tools you
 
 Some businesses treat unsubscribes as "soft" signals, continuing to send "relationship" emails or retarget users with ads. Under GDPR and CCPA, opt-outs must be honored immediately across all channels.
 
-**Compliant approach**: When someone opts out, scrub them from all marketing lists, stop ad retargeting, and suppress them from future uploads. **Cursive automatically syncs opt-out preferences across all 200+ integrated platforms**, ensuring compliance without manual tracking.
+**Compliant approach**: When someone opts out, scrub them from all marketing lists, stop ad retargeting, and suppress them from future uploads. **Cursive automatically syncs opt-out preferences across all 200+ [integrated platforms](/integrations)**, ensuring compliance without manual tracking.
 
 ### 4. Buying Third-Party Contact Lists
 
 Purchased email lists violate GDPR consent requirements and damage deliverability. Even if a list claims to be "opt-in," you can't prove consent was given for *your* specific use.
 
-**Compliant approach**: Build your audience organically through content, website forms, and events. Use [intent data from Cursive](https://meetcursive.com/intent-audiences) to identify in-market prospects, then reach them through compliant channels like ads and direct mail before asking for email opt-in.
+**Compliant approach**: Build your audience organically through content, website forms, and events. Use [intent data from Cursive](https://meetcursive.com/intent-audiences) to identify in-market prospects, then reach them through compliant channels like [ads and direct mail](/direct-mail) before asking for email opt-in. See our guide on [steps to build an effective audience building platform](/blog/02-steps-to-build-an-effective-audience-building-platform-UPDATED) for compliant growth strategies.
 
 ### 5. Sharing Data Without Proper Agreements
 
@@ -151,7 +151,7 @@ Cursive's consent management framework allows you to segment audiences based on 
 
 When someone unsubscribes from your email list, that preference should flow automatically to your CRM, ad platforms, and direct mail systems. Manual syncing creates gaps where violations occur.
 
-**Cursive integrates with 200+ platforms** to automatically propagate opt-out preferences, consent withdrawals, and data deletion requests across your entire marketing stack without requiring manual intervention.
+**Cursive [integrates with 200+ platforms](/integrations)** to automatically propagate opt-out preferences, consent withdrawals, and data deletion requests across your entire marketing stack without requiring manual intervention.
 
 **3. Data Encryption and Security**
 
@@ -226,7 +226,7 @@ Your compliance obligations extend to every vendor processing customer data. Ann
 - Privacy policy updates (did vendors change terms?)
 - Breach notifications (did any vendors experience incidents?)
 
-**Cursive's compliance team monitors all 200+ integrated platforms** for security incidents, privacy policy changes, and regulatory updates—alerting customers proactively when action is required.
+**Cursive's compliance team monitors all 200+ integrated platforms** for security incidents, privacy policy changes, and regulatory updates—alerting customers proactively when action is required. For additional tactical guidance, see our post on [steps to safeguard consumer data privacy](/blog/27-steps-to-safeguard-consumer-data-privacy).
 
 ### 6. Establish Incident Response Procedures
 
@@ -320,9 +320,9 @@ Under GDPR, you remain liable for how processors handle data. If a vendor experi
 
 ## Turn Privacy Compliance Into a Competitive Advantage
 
-Privacy compliance doesn't have to slow you down. When you choose platforms built with privacy by design—like Cursive—protection becomes automatic.
+Privacy compliance doesn't have to slow you down. When you choose platforms built with privacy by design—like Cursive—protection becomes automatic. Learn how [using marketing audience data efficiently](/blog/01-tips-for-using-marketing-audience-data-efficiently-UPDATED) can coexist with strong privacy practices.
 
-**Cursive's compliance-first approach** means you can identify website visitors, build targeted audiences, and activate multi-channel campaigns without compromising user privacy or regulatory requirements.
+**Cursive's compliance-first approach** means you can identify website visitors through our [visitor identification platform](/visitor-identification), build targeted audiences, and activate multi-channel campaigns without compromising user privacy or regulatory requirements.
 
 Our **200+ native integrations** automatically sync consent preferences, honor opt-outs, and maintain audit trails across your entire marketing stack—so you stay compliant while scaling growth.
 

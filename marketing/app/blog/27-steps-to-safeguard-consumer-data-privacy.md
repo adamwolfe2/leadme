@@ -42,7 +42,7 @@ Before implementing privacy safeguards, conduct a complete **data inventory audi
 - Intent signals (content consumption, competitor research, buying stage)
 - Professional information (LinkedIn data, job changes, career history)
 
-When you use [Cursive's visitor identification platform](https://meetcursive.com/visitor-identification), you're collecting behavioral and firmographic data that reveals up to **70% of anonymous website traffic**. This counts as personal data under GDPR when it can identify individuals at specific companies.
+When you use [Cursive's visitor identification platform](https://meetcursive.com/visitor-identification), you're collecting behavioral and firmographic data that reveals up to **70% of anonymous website traffic**. This counts as personal data under GDPR when it can identify individuals at specific companies. Review our complete guide on [understanding marketing data privacy compliance](/blog/24-understanding-marketing-data-privacy-compliance) for the full regulatory context.
 
 ### Map Where Data Lives
 
@@ -57,7 +57,7 @@ Data doesn't stay in one place. Create a **data flow map** showing every system 
 
 Each system represents a compliance obligation. If data lives there, you must secure it, document its purpose, and provide mechanisms for user access and deletion.
 
-Cursive's data management dashboard provides unified visibility across all 200+ integrated platforms—showing exactly where customer data flows and which systems hold specific records.
+Cursive's data management dashboard provides unified visibility across all [200+ integrated platforms](/integrations)—showing exactly where customer data flows and which systems hold specific records.
 
 ## Step 2: Set Clear Rules for How Data Gets Handled
 
@@ -138,7 +138,7 @@ Most privacy policies fail because they're written for lawyers, not customers. Y
 7. **User Rights**: Explain access, deletion, and portability rights
 8. **Contact Information**: Provide email/address for privacy questions
 
-When you add new marketing tools—like [Cursive's audience builder](https://meetcursive.com/audience-builder)—update your privacy policy to reflect the new data flows. Quarterly reviews ensure accuracy.
+When you add new marketing tools—like [Cursive's audience builder](https://meetcursive.com/audience-builder)—update your privacy policy to reflect the new data flows. Quarterly reviews ensure accuracy. See how [CRM integration](/blog/19-enhancing-data-connectivity-with-crm-integration) affects your privacy disclosures.
 
 ### Implement Proper Cookie Consent
 
@@ -165,7 +165,7 @@ When someone wants to stop receiving marketing, make it easy:
 - Don't require login to unsubscribe (it creates friction)
 - Confirm opt-out with a simple message—no "are you sure?" manipulation
 
-**Cursive automatically propagates opt-out preferences across all 200+ integrated platforms**—including your CRM, email service, ad retargeting, and direct mail systems—ensuring compliance without manual list management.
+**Cursive automatically propagates opt-out preferences across all [200+ integrated platforms](/integrations)**—including your CRM, email service, ad retargeting, and [direct mail systems](/direct-mail)—ensuring compliance without manual list management.
 
 ## Step 4: Keep Your Team on the Same Page
 
@@ -351,7 +351,7 @@ The platform should respect user preferences without manual intervention. If som
 
 When a user unsubscribes, that preference should flow to all connected systems—CRM, email, ads, direct mail—without requiring separate list uploads.
 
-Cursive's 200+ native integrations include automatic opt-out propagation, ensuring preferences sync in real time across your entire marketing stack.
+Cursive's 200+ native integrations include automatic opt-out propagation, ensuring preferences sync in real time across your entire marketing stack. Learn about [improving CRM integration workflows](/blog/30-tips-for-improving-crm-integration-workflows) with privacy safeguards built in.
 
 **3. Data Processing Agreements Provided**
 
@@ -401,7 +401,7 @@ Privacy compliance isn't an add-on feature at Cursive—it's architectural:
 - Regular privacy impact assessments
 - Open communication about data flows
 
-When you choose Cursive for [visitor identification](https://meetcursive.com/visitor-identification), [audience building](https://meetcursive.com/audience-builder), or [intent data](https://meetcursive.com/intent-audiences), you're choosing a platform that treats privacy protection as a competitive advantage—not a compliance burden.
+When you choose Cursive for [visitor identification](https://meetcursive.com/visitor-identification), [audience building](https://meetcursive.com/audience-builder), or [intent data](https://meetcursive.com/intent-audiences), you're choosing a platform that treats privacy protection as a competitive advantage—not a compliance burden. For practical audience strategies, see our guide on [creating behavioral audience segments easily](/blog/32-creating-behavioral-audience-segments-easily).
 
 ## Frequently Asked Questions
 
