@@ -34,7 +34,7 @@ Modern database platforms integrate with your existing tools, automatically sync
 
 **Result:** Sales reps see email engagement history in the CRM. Marketing accesses website behavior without checking analytics. Everyone works from the same up-to-date records.
 
-**Cursive integrates natively with 200+ CRM, email, and advertising platforms**, ensuring contact data stays synchronized automatically without manual exports or middleware.
+**[Cursive integrates natively with 200+ CRM, email, and advertising platforms](/integrations)**, ensuring contact data stays synchronized automatically without manual exports or middleware. Learn about [improving CRM integration workflows](/blog/30-tips-for-improving-crm-integration-workflows).
 
 ## Challenge 2: Incomplete and Outdated Contact Records
 
@@ -58,7 +58,7 @@ Quality platforms automatically enrich records with verified, up-to-date informa
 - **Contact verification:** Email validation, phone verification
 - **Company intelligence:** Tech stack, funding stage, recent news
 
-**Cursive enriches profiles with verified data from 140M+ business records**, automatically filling gaps without manual research. When prospects visit your site, Cursive appends missing firmographic details instantly.
+**Cursive enriches profiles with verified data from 140M+ business records**, automatically filling gaps without manual research. When prospects visit your site, Cursive appends missing firmographic details instantly. Discover [B2B data enrichment for better marketing outcomes](/blog/44-b2b-data-enrichment-for-better-marketing-outcomes).
 
 ## Challenge 3: Duplicate Records Creating Confusion
 
@@ -103,7 +103,7 @@ Modern platforms unify contact records with behavioral intelligence:
 - **Email behavior:** Open rates, click patterns, reply history
 - **Intent signals:** External research activity and competitive comparisons
 
-**Cursive combines contact data with behavioral tracking and intent signals**, showing complete engagement timelines inside your CRM. Sales reps see exactly what prospects have viewed before making contact.
+**Cursive combines contact data with [behavioral tracking](/visitor-identification) and [intent signals](/intent-audiences)**, showing complete engagement timelines inside your CRM. Sales reps see exactly what prospects have viewed before making contact. See [tracking intent signals for B2B marketing](/blog/40-intent-signal-tracking-for-b2b-marketing).
 
 ## Challenge 5: Can't Identify High-Intent Prospects
 
@@ -133,7 +133,7 @@ Lead scoring combines firmographic fit with behavioral signals to automatically 
 
 **Combined scoring surfaces high-priority accounts** that both match your target profile AND show active buying signals.
 
-**Cursive automatically scores accounts using 450 billion+ monthly intent signals across 30,000+ categories**, surfacing prospects who are in-market right now—not months ago.
+**[Cursive automatically scores accounts using 450 billion+ monthly intent signals](/intent-audiences) across 30,000+ categories**, surfacing prospects who are in-market right now—not months ago. Learn about [understanding the impact of buyer intent on campaigns](/blog/29-understanding-the-impact-of-buyer-intent-on-campaigns).
 
 ## Challenge 6: Slow Response Times to Inbound Leads
 
@@ -178,7 +178,7 @@ Multifactor segmentation combines firmographics, demographics, behavior, and int
 
 This precision targeting converts 3-5x better than demographic segmentation alone.
 
-**Cursive's audience builder** lets you layer firmographic filters, behavioral triggers, and intent signals with visual, drag-and-drop tools—no SQL required.
+**[Cursive's audience builder](/audience-builder)** lets you layer firmographic filters, behavioral triggers, and intent signals with visual, drag-and-drop tools—no SQL required. Discover [multifactor audience segmentation for campaign success](/blog/34-multifactor-audience-segmentation-for-campaign-success) and [creating behavioral audience segments easily](/blog/32-creating-behavioral-audience-segments-easily).
 
 ## Challenge 8: Can't Prove Marketing ROI
 

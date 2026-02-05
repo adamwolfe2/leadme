@@ -77,7 +77,7 @@ Most website traffic never fills out forms. Small teams lose these potential cus
 - Pages viewed and time on site
 - Behavioral signals showing intent
 
-**Cursive identifies up to 70% of website visitors**, growing your addressable audience from 2-3% (form fills) to 60-70% (identified traffic)—without adding work for your team.
+**[Cursive identifies up to 70% of website visitors](/visitor-identification)**, growing your addressable audience from 2-3% (form fills) to 60-70% (identified traffic)—without adding work for your team.
 
 **Impact for small teams:**
 
@@ -94,7 +94,7 @@ Small teams can't afford to spend 30 minutes researching every lead. But outreac
 - Tech stack and tools in use
 - Recent funding or acquisition news
 
-**Cursive enriches every identified visitor with verified data from 140M+ business profiles and 220M+ consumer profiles**—no manual research required.
+**Cursive enriches every identified visitor with verified data from 140M+ business profiles and 220M+ consumer profiles**—no manual research required. Learn about [B2B data enrichment for better marketing outcomes](/blog/44-b2b-data-enrichment-for-better-marketing-outcomes) and [business data enrichment for growth](/blog/46-unlocking-business-data-enrichment-for-growth).
 
 **Impact for small teams:**
 
@@ -111,7 +111,7 @@ Disconnected tools force manual reconciliation. You export from one system, matc
 - Advertising (Google, Meta, LinkedIn)
 - Analytics and other tools
 
-**Cursive offers 200+ native integrations** with bidirectional sync—when data updates in one system, it propagates everywhere automatically.
+**[Cursive offers 200+ native integrations](/integrations)** with bidirectional sync—when data updates in one system, it propagates everywhere automatically. See [improving CRM integration workflows](/blog/30-tips-for-improving-crm-integration-workflows) and [why CRM integration is crucial for smooth operations](/blog/33-why-crm-integration-is-crucial-for-smooth-operations).
 
 **Impact for small teams:**
 
@@ -154,7 +154,7 @@ Building targeted segments manually is slow:
 
 Segments update automatically as behavior changes—no manual rebuilding required.
 
-**Cursive's audience builder** combines firmographic data, behavioral tracking, and 450 billion+ monthly intent signals into dynamic segments that update in real time.
+**[Cursive's audience builder](/audience-builder)** combines firmographic data, behavioral tracking, and 450 billion+ monthly [intent signals](/intent-audiences) into dynamic segments that update in real time. Explore [creating behavioral audience segments easily](/blog/32-creating-behavioral-audience-segments-easily) and [multifactor audience segmentation for campaign success](/blog/34-multifactor-audience-segmentation-for-campaign-success).
 
 **Impact for small teams:**
 

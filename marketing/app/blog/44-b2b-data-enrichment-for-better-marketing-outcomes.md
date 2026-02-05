@@ -61,7 +61,7 @@ Enrichment platforms automatically append:
 
 **This transforms "john@example.com" into a complete business profile** showing John Smith, VP of Marketing at a 200-person SaaS company in San Francisco that recently raised Series B funding and uses Salesforce, HubSpot, and Google Ads.
 
-**Cursive enriches leads with verified data from 140M+ business profiles and 220M+ consumer profiles**, automatically filling gaps without manual research.
+**Cursive enriches leads with verified data from 140M+ business profiles and 220M+ consumer profiles**, automatically filling gaps without manual research. Learn about [business database platforms for B2B growth](/blog/43-business-database-platforms-for-b2b-growth).
 
 ## Why Incomplete Data Costs You Revenue
 
@@ -133,7 +133,7 @@ There are two approaches to data enrichment: manual and automated. Only automate
 - Updates continuously as information changes
 - Works for 100% of leads, not just high-priority ones
 
-**Cursive automatically enriches every identified website visitor**, appending complete firmographic profiles as soon as prospects land on your site—before they even fill out forms.
+**[Cursive automatically enriches every identified website visitor](/visitor-identification)**, appending complete firmographic profiles as soon as prospects land on your site—before they even fill out forms. With [200+ integrations](/integrations), enriched data flows everywhere. See [improving CRM integration workflows](/blog/30-tips-for-improving-crm-integration-workflows).
 
 ## When to Enrich: Real-Time vs. Batch Processing
 
@@ -243,7 +243,7 @@ When you know someone's industry, tech stack, and company size, you can personal
 - "As a VP of Marketing at a 150-person company..."
 - "Given your Series B funding announcement last quarter..."
 
-**Cursive's enrichment feeds directly into audience segmentation tools**, letting you build precise behavioral + firmographic segments with visual filters.
+**[Cursive's enrichment feeds directly into audience segmentation tools](/audience-builder)**, letting you build precise behavioral + firmographic segments with visual filters. Explore [creating behavioral audience segments easily](/blog/32-creating-behavioral-audience-segments-easily) and [multifactor audience segmentation for campaign success](/blog/34-multifactor-audience-segmentation-for-campaign-success).
 
 ### Accurate Lead Scoring
 
@@ -286,7 +286,7 @@ The most powerful approach combines enrichment with intent tracking.
 
 That complete context enables precisely timed, highly relevant outreach.
 
-**Cursive combines enrichment with 450 billion+ monthly intent signals across 30,000+ categories**, creating complete business intelligence profiles that show both who prospects are and what they're researching right now.
+**[Cursive combines enrichment with 450 billion+ monthly intent signals](/intent-audiences) across 30,000+ categories**, creating complete business intelligence profiles that show both who prospects are and what they're researching right now. Learn about [tracking intent signals for B2B marketing](/blog/40-intent-signal-tracking-for-b2b-marketing) and [intent-based marketing tactics for B2B](/blog/41-intent-based-marketing-tactics-for-b2b).
 
 ## Enrichment for Account-Based Marketing
 

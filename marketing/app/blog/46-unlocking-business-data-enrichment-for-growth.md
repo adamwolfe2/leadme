@@ -72,7 +72,7 @@ Identifying buying signals from external research behavior:
 - **Research recency**: Signals from last 7, 14, or 30 days
 - **Purchase timeline**: Indicators of urgency and decision timeframe
 
-[Cursive's audience builder](https://meetcursive.com/audience-builder) automatically enriches contact records with all four types of data—combining **220M+ consumer profiles and 140M+ business contacts** with **450 billion+ monthly intent signals** to create the most complete buyer intelligence available.
+[Cursive's audience builder](/audience-builder) automatically enriches contact records with all four types of data—combining **220M+ consumer profiles and 140M+ business contacts** with **450 billion+ monthly [intent signals](/intent-audiences)** to create the most complete buyer intelligence available. Learn about [B2B data enrichment for better marketing outcomes](/blog/44-b2b-data-enrichment-for-better-marketing-outcomes) and [business database platforms for B2B growth](/blog/43-business-database-platforms-for-b2b-growth).
 
 ## Why Enriched Data Accelerates B2B Growth
 
@@ -188,7 +188,7 @@ Intent data enrichment reveals exactly when prospects enter active evaluation:
 - Viewing customer support resources
 - **Action**: Executive sponsorship, limited-time incentives, reference calls
 
-[Cursive tracks 450B+ monthly intent signals](https://meetcursive.com/intent-audiences) across 30,000+ categories, identifying precisely when prospects transition between stages—enabling perfectly timed outreach that feels helpful instead of intrusive.
+[Cursive tracks 450B+ monthly intent signals](/intent-audiences) across 30,000+ categories, identifying precisely when prospects transition between stages—enabling perfectly timed outreach that feels helpful instead of intrusive. See [tracking intent signals for B2B marketing](/blog/40-intent-signal-tracking-for-b2b-marketing) and [intent-based marketing tactics for B2B](/blog/41-intent-based-marketing-tactics-for-b2b).
 
 ### 5. Improve Campaign Attribution and ROI Measurement
 
