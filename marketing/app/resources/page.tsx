@@ -1,47 +1,11 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import { FileText, Book } from "lucide-react"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import Link from "next/link"
-import { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "B2B Marketing Resources & Lead Generation Guides | Cursive",
-  description: "Free resources for B2B marketers. Learn visitor identification, audience targeting, intent data, and campaign automation strategies.",
-  keywords: "B2B marketing resources, lead generation guides, marketing playbooks, B2B marketing education, free marketing resources",
-
-  openGraph: {
-    title: "B2B Marketing Resources & Lead Generation Guides | Cursive",
-    description: "Free resources for B2B marketers. Learn visitor identification, audience targeting, intent data, and campaign automation strategies.",
-    type: "website",
-    url: "https://meetcursive.com/resources",
-    siteName: "Cursive",
-    images: [{
-      url: "https://meetcursive.com/og-image.png",
-      width: 1200,
-      height: 630,
-    }],
-    locale: "en_US",
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "B2B Marketing Resources & Lead Generation Guides | Cursive",
-    description: "Free resources for B2B marketers. Learn visitor identification, audience targeting, intent data, and campaign automation strategies.",
-    images: ["https://meetcursive.com/og-image.png"],
-    creator: "@meetcursive",
-  },
-
-  alternates: {
-    canonical: "https://meetcursive.com/resources",
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-  },
-}
 
 export default function ResourcesPage() {
   return (

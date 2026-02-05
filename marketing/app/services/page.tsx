@@ -1,33 +1,9 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
-import type { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Done-For-You Lead Generation Services | Cursive",
-  description: "Choose from Cursive Data (verified lead lists), Cursive Outbound (managed campaigns), or Cursive Pipeline (AI SDR automation). Scale your B2B pipeline without hiring SDRs. Starting at $1,000/mo.",
-  keywords: "done-for-you lead generation, B2B lead generation services, managed outbound campaigns, AI SDR services, lead list services, email campaign management, sales automation services",
-  openGraph: {
-    title: "Done-For-You Lead Generation Services | Cursive",
-    description: "Choose from Cursive Data, Cursive Outbound, or Cursive Pipeline. Scale your B2B pipeline without hiring SDRs. Starting at $1,000/mo.",
-    url: "https://meetcursive.com/services",
-    siteName: "Cursive",
-    images: [{ url: "/cursive-social-preview.png", width: 1200, height: 630 }],
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Done-For-You Lead Generation Services | Cursive",
-    description: "Choose from Cursive Data, Cursive Outbound, or Cursive Pipeline. Scale your B2B pipeline without hiring SDRs.",
-    images: ["/cursive-social-preview.png"],
-    creator: "@meetcursive",
-  },
-  alternates: {
-    canonical: "https://meetcursive.com/services",
-  },
-}
 
 export default function ServicesPage() {
   // Service Schema for SEO

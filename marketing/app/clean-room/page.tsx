@@ -1,45 +1,9 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { motion } from "framer-motion"
-import { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Privacy-Safe Data Clean Room for Partner Collaboration | Cursive",
-  description: "Share audiences and match data with partners without exposing PII. GDPR compliant data collaboration for secure marketing activation.",
-  keywords: "data clean room, privacy-safe data sharing, partner data collaboration, secure audience matching, GDPR compliance, privacy-preserving analytics",
-
-  openGraph: {
-    title: "Privacy-Safe Data Clean Room for Partner Collaboration | Cursive",
-    description: "Share audiences and match data with partners without exposing PII. GDPR compliant data collaboration for secure marketing activation.",
-    type: "website",
-    url: "https://meetcursive.com/clean-room",
-    siteName: "Cursive",
-    images: [{
-      url: "https://meetcursive.com/og-image.png",
-      width: 1200,
-      height: 630,
-    }],
-    locale: "en_US",
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "Privacy-Safe Data Clean Room for Partner Collaboration | Cursive",
-    description: "Share audiences and match data with partners without exposing PII. GDPR compliant data collaboration for secure marketing activation.",
-    images: ["https://meetcursive.com/og-image.png"],
-    creator: "@meetcursive",
-  },
-
-  alternates: {
-    canonical: "https://meetcursive.com/clean-room",
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-  },
-}
 
 export default function CleanRoomPage() {
   return (

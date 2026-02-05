@@ -181,6 +181,8 @@ export const trackVideoPlay = (videoTitle: string, videoUrl: string): void => {
  */
 export const trackSearch = (searchTerm: string): void => {
   safeGtagCall('search', {
+    event_category: 'engagement',
+    event_label: searchTerm,
     search_term: searchTerm,
   })
 }

@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
@@ -7,44 +9,6 @@ import {
   BarChart3, Package, MessageSquare, Globe
 } from "lucide-react"
 import { DashboardPreview } from "@/components/dashboard-preview"
-import { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Automated Direct Mail for Website Visitor Retargeting | Cursive",
-  description: "Turn website visits into physical postcards. Trigger direct mail campaigns automatically based on visitor behavior. 3-5x higher offline conversion rates.",
-  keywords: "direct mail automation, automated direct mail, visitor retargeting, offline marketing, physical mail campaigns, postcard automation, direct mail software",
-
-  openGraph: {
-    title: "Automated Direct Mail for Website Visitor Retargeting | Cursive",
-    description: "Turn website visits into physical postcards. Trigger direct mail campaigns automatically based on visitor behavior. 3-5x higher offline conversion rates.",
-    type: "website",
-    url: "https://meetcursive.com/direct-mail",
-    siteName: "Cursive",
-    images: [{
-      url: "https://meetcursive.com/og-image.png",
-      width: 1200,
-      height: 630,
-    }],
-    locale: "en_US",
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "Automated Direct Mail for Website Visitor Retargeting | Cursive",
-    description: "Turn website visits into physical postcards. Trigger direct mail campaigns automatically based on visitor behavior. 3-5x higher offline conversion rates.",
-    images: ["https://meetcursive.com/og-image.png"],
-    creator: "@meetcursive",
-  },
-
-  alternates: {
-    canonical: "https://meetcursive.com/direct-mail",
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-  },
-}
 
 export default function DirectMailPage() {
   const schemaMarkup = {

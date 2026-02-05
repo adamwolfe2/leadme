@@ -1,47 +1,11 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { DashboardPreview } from "@/components/dashboard-preview"
-import { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Franchise Lead Generation & Multi-Location Marketing | Cursive",
-  description: "Scale lead generation across all franchise locations. Centralized marketing with local targeting for franchise brands and multi-unit businesses.",
-  keywords: "franchise marketing, multi-location lead generation, franchise lead generation, local marketing automation, franchise advertising",
-
-  openGraph: {
-    title: "Franchise Lead Generation & Multi-Location Marketing | Cursive",
-    description: "Scale lead generation across all franchise locations. Centralized marketing with local targeting for franchise brands and multi-unit businesses.",
-    type: "website",
-    url: "https://meetcursive.com/industries/franchises",
-    siteName: "Cursive",
-    images: [{
-      url: "https://meetcursive.com/og-image.png",
-      width: 1200,
-      height: 630,
-    }],
-    locale: "en_US",
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "Franchise Lead Generation & Multi-Location Marketing | Cursive",
-    description: "Scale lead generation across all franchise locations. Centralized marketing with local targeting for franchise brands and multi-unit businesses.",
-    images: ["https://meetcursive.com/og-image.png"],
-    creator: "@meetcursive",
-  },
-
-  alternates: {
-    canonical: "https://meetcursive.com/industries/franchises",
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-  },
-}
 
 export default function FranchisesPage() {
   return (

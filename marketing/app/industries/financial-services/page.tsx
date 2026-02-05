@@ -1,47 +1,11 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { DashboardPreview } from "@/components/dashboard-preview"
-import { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Financial Services Lead Generation & Client Acquisition | Cursive",
-  description: "Reach high-intent prospects for wealth management, insurance, loans, and fintech. Compliant lead generation for financial services firms.",
-  keywords: "financial services marketing, wealth management leads, insurance lead generation, fintech marketing, loan leads, financial advisor marketing",
-
-  openGraph: {
-    title: "Financial Services Lead Generation & Client Acquisition | Cursive",
-    description: "Reach high-intent prospects for wealth management, insurance, loans, and fintech. Compliant lead generation for financial services firms.",
-    type: "website",
-    url: "https://meetcursive.com/industries/financial-services",
-    siteName: "Cursive",
-    images: [{
-      url: "https://meetcursive.com/og-image.png",
-      width: 1200,
-      height: 630,
-    }],
-    locale: "en_US",
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "Financial Services Lead Generation & Client Acquisition | Cursive",
-    description: "Reach high-intent prospects for wealth management, insurance, loans, and fintech. Compliant lead generation for financial services firms.",
-    images: ["https://meetcursive.com/og-image.png"],
-    creator: "@meetcursive",
-  },
-
-  alternates: {
-    canonical: "https://meetcursive.com/industries/financial-services",
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-  },
-}
 
 export default function FinancialServicesPage() {
   return (

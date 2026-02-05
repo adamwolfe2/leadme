@@ -1,46 +1,10 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { motion } from "framer-motion"
 import { InteractiveFeaturesShowcase } from "@/components/demos/interactive-features-showcase"
 import Link from "next/link"
-import { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Interactive Product Demos & Platform Walkthrough | Cursive",
-  description: "Explore Cursive with interactive demos. See visitor identification, audience builder, and campaign automation in action.",
-  keywords: "product demo, platform demo, interactive demo, software walkthrough, Cursive demo, lead generation demo",
-
-  openGraph: {
-    title: "Interactive Product Demos & Platform Walkthrough | Cursive",
-    description: "Explore Cursive with interactive demos. See visitor identification, audience builder, and campaign automation in action.",
-    type: "website",
-    url: "https://meetcursive.com/demos",
-    siteName: "Cursive",
-    images: [{
-      url: "https://meetcursive.com/og-image.png",
-      width: 1200,
-      height: 630,
-    }],
-    locale: "en_US",
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "Interactive Product Demos & Platform Walkthrough | Cursive",
-    description: "Explore Cursive with interactive demos. See visitor identification, audience builder, and campaign automation in action.",
-    images: ["https://meetcursive.com/og-image.png"],
-    creator: "@meetcursive",
-  },
-
-  alternates: {
-    canonical: "https://meetcursive.com/demos",
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-  },
-}
 
 export default function DemosPage() {
   return (
