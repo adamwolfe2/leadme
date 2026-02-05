@@ -11,7 +11,7 @@ const integrations = [
   { name: "Linear", logo: "/integrations/linear.svg" },
   { name: "Shopify", logo: "/integrations/shopify.svg" },
   { name: "Google Ads", logo: "/integrations/google-ads-svgrepo-com.svg" },
-  { name: "Google Calendar", logo: "/integrations/google-calendar.svg" },
+  { name: "Google Calendar", logo: "/integrations/Google_Calendar_icon_(2020).svg.png" },
   { name: "Google Docs", logo: "/integrations/google-docs-svgrepo-com.svg" },
   { name: "Google Drive", logo: "/integrations/google-drive-svgrepo-com.svg" },
   { name: "Meta", logo: "/integrations/meta-color.svg" },
@@ -79,8 +79,8 @@ export function IntegrationsShowcase({
               delay: i * 0.015,
               ease: [0.25, 0.4, 0.25, 1],
             }}
-            whileHover={{ scale: 1.15, y: -4 }}
-            className="bg-white rounded-lg p-2.5 border border-gray-200 hover:border-[#007AFF] hover:shadow-md transition-all cursor-pointer flex items-center justify-center aspect-square"
+            whileHover={{ scale: 1.05, transition: { duration: 0.15 } }}
+            className="bg-white rounded-lg p-2.5 border border-gray-200 hover:border-[#007AFF] hover:shadow-md transition-all duration-150 cursor-pointer flex items-center justify-center aspect-square"
           >
             <img
               src={integration.logo}
