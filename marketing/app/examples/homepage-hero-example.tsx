@@ -7,7 +7,7 @@
  * Testing different CTA copy to increase demo bookings
  */
 
-import { ABTestWrapper, trackABTestConversion, useABTest } from '@/lib/ab-testing';
+import { ABTestWrapper, ABTestVariant, trackABTestConversion, useABTest } from '@/lib/ab-testing';
 import { useRouter } from 'next/navigation';
 
 export default function HomepageHeroExample() {
