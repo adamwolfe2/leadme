@@ -8,6 +8,7 @@ import {
   Clock, Database, RefreshCw, Filter, Users, Sparkles,
   BarChart3, Globe, Layers, Mail, MessageSquare, Shield
 } from "lucide-react"
+import { DashboardPreview } from "@/components/dashboard-preview"
 
 export default function IntentAudiencesPage() {
   const schemaMarkup = {
@@ -728,39 +729,68 @@ export default function IntentAudiencesPage() {
         </section>
 
         {/* Final CTA */}
-        <section className="py-20 bg-white">
+        <section className="relative py-32 bg-white overflow-hidden">
           <Container>
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-12 text-center text-white max-w-4xl mx-auto"
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="text-center relative z-10 mb-16"
             >
-              <h2 className="text-4xl lg:text-5xl font-light mb-4">
-                Start Reaching In-Market Buyers Today
+              <h2 className="text-5xl lg:text-7xl font-light text-gray-900 mb-4 leading-tight">
+                Ready to Reach
               </h2>
-              <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
+              <p className="font-cursive text-6xl lg:text-8xl text-gray-900 mb-6">
+                In-Market Buyers?
+              </p>
+              <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
                 Pre-built intent audiences across 8 high-value verticals. Launch campaigns in minutes with prospects already showing purchase intent.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
-                  size="lg"
-                  className="bg-white text-[#007AFF] hover:bg-gray-100"
-                  href="https://cal.com/adamwolfe/cursive-ai-audit"
-                >
-                  Explore Intent Audiences
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-white text-white hover:bg-white/10"
-                  href="/pricing"
-                >
-                  View Pricing
-                </Button>
+
+              <Button
+                size="lg"
+                href="https://cal.com/adamwolfe/cursive-ai-audit"
+                target="_blank"
+                className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-10 py-5 mb-4"
+              >
+                Explore Intent Audiences Now
+              </Button>
+
+              <div className="flex items-center justify-center gap-8 text-sm text-gray-600 mt-4">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Updated every 7 days</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>46+ segments</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Instant activation</span>
+                </div>
               </div>
-              <p className="text-sm mt-6 opacity-75">Updated every 7 days · 46+ segments · Instant activation</p>
+            </motion.div>
+
+            {/* Dashboard Preview */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="relative max-w-6xl mx-auto"
+            >
+              <div className="relative rounded-xl overflow-hidden shadow-2xl">
+                <DashboardPreview />
+                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
+              </div>
             </motion.div>
           </Container>
         </section>

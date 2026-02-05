@@ -8,6 +8,7 @@ import {
   TrendingUp, CheckCircle2, ArrowRight, Sparkles,
   Globe, Lock, Layers, RefreshCw, Mail, MessageSquare
 } from "lucide-react"
+import { DashboardPreview } from "@/components/dashboard-preview"
 
 export default function AudienceBuilderPage() {
   const schemaMarkup = {
@@ -643,39 +644,68 @@ export default function AudienceBuilderPage() {
         </section>
 
         {/* Final CTA */}
-        <section className="py-20 bg-white">
+        <section className="relative py-32 bg-white overflow-hidden">
           <Container>
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-12 text-center text-white max-w-4xl mx-auto"
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="text-center relative z-10 mb-16"
             >
-              <h2 className="text-4xl lg:text-5xl font-light mb-4">
-                Build Your First Audience Today
+              <h2 className="text-5xl lg:text-7xl font-light text-gray-900 mb-4 leading-tight">
+                Ready to Build Unlimited
               </h2>
-              <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-                Access 360M+ profiles with unlimited audience building. No caps, no limits, no per-contact fees.
+              <p className="font-cursive text-6xl lg:text-8xl text-gray-900 mb-6">
+                Audiences?
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
-                  size="lg"
-                  className="bg-white text-[#007AFF] hover:bg-gray-100"
-                  href="https://cal.com/adamwolfe/cursive-ai-audit"
-                >
-                  Get Started
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-white text-white hover:bg-white/10"
-                  href="/pricing"
-                >
-                  View Pricing
-                </Button>
+              <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
+                Access 360M+ profiles with unlimited audience building. No caps, no limits, no per-contact fees—just pure targeting power.
+              </p>
+
+              <Button
+                size="lg"
+                href="https://cal.com/adamwolfe/cursive-ai-audit"
+                target="_blank"
+                className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-10 py-5 mb-4"
+              >
+                Build Your First Audience Now
+              </Button>
+
+              <div className="flex items-center justify-center gap-8 text-sm text-gray-600 mt-4">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>No credit card required</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Unlimited audiences</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>200+ integrations</span>
+                </div>
               </div>
-              <p className="text-sm mt-6 opacity-75">No credit card required · Unlimited audiences · 200+ integrations</p>
+            </motion.div>
+
+            {/* Dashboard Preview */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="relative max-w-6xl mx-auto"
+            >
+              <div className="relative rounded-xl overflow-hidden shadow-2xl">
+                <DashboardPreview />
+                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
+              </div>
             </motion.div>
           </Container>
         </section>
