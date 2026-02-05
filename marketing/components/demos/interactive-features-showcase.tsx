@@ -137,15 +137,16 @@ export function InteractiveFeaturesShowcase() {
             <div className="w-3 h-3 rounded-full bg-gray-300" />
           </div>
 
-          {/* Demo Content */}
-          <div className="p-6 md:p-8 min-h-[400px]">
+          {/* Demo Content - Fixed height to prevent layout shifts */}
+          <div className="p-6 md:p-8 h-[500px] overflow-y-auto">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="h-full"
               >
                 {activeFeature?.component}
               </motion.div>

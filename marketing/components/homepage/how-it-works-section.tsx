@@ -138,12 +138,12 @@ export function HowItWorksSection() {
               return (
                 <motion.div
                   key={step.number}
-                  initial={{ opacity: 0, x: isEven ? -30 : 30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true, margin: "-150px" }}
                   transition={{
-                    duration: 0.5,
-                    delay: index * 0.1,
+                    duration: 0.3,
+                    delay: index * 0.05,
                     ease: [0.22, 1, 0.36, 1]
                   }}
                   className="relative"
@@ -179,12 +179,8 @@ export function HowItWorksSection() {
                         {/* Details List */}
                         <ul className="space-y-2">
                           {step.details.map((detail, i) => (
-                            <motion.li
+                            <li
                               key={i}
-                              initial={{ opacity: 0, x: -10 }}
-                              whileInView={{ opacity: 1, x: 0 }}
-                              viewport={{ once: true }}
-                              transition={{ delay: index * 0.1 + i * 0.05 }}
                               className="flex items-start gap-3 text-sm text-gray-700"
                             >
                               <div
@@ -192,22 +188,16 @@ export function HowItWorksSection() {
                                 style={{ backgroundColor: step.color }}
                               />
                               <span>{detail}</span>
-                            </motion.li>
+                            </li>
                           ))}
                         </ul>
                       </div>
 
                       {/* Arrow Connector (not on last step) */}
                       {index < processSteps.length - 1 && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -10 }}
-                          whileInView={{ opacity: 1, y: 0 }}
-                          viewport={{ once: true }}
-                          transition={{ delay: index * 0.1 + 0.3 }}
-                          className="flex justify-center my-4 lg:hidden"
-                        >
+                        <div className="flex justify-center my-4 lg:hidden">
                           <ArrowRight className="w-6 h-6 text-gray-400 rotate-90" />
-                        </motion.div>
+                        </div>
                       )}
                     </div>
                   </div>

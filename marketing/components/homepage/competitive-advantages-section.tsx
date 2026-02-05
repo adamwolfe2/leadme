@@ -86,12 +86,12 @@ export function CompetitiveAdvantagesSection() {
             return (
               <motion.div
                 key={advantage.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true, margin: "-100px" }}
                 transition={{
-                  delay: index * 0.1,
-                  duration: 0.4,
+                  delay: index * 0.05,
+                  duration: 0.3,
                   ease: [0.22, 1, 0.36, 1]
                 }}
                 className="group bg-white rounded-xl border border-gray-200 p-8 hover:shadow-lg hover:border-[#007AFF]/20 transition-all"
