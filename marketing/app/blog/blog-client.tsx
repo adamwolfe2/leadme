@@ -132,7 +132,7 @@ export function BlogClient() {
               viewport={{ once: true }}
               className="grid lg:grid-cols-2 gap-8 bg-white rounded-2xl overflow-hidden border border-gray-200 hover:shadow-2xl transition-all duration-300"
             >
-              <div className="aspect-video bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+              <div className="aspect-video bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
                 <div className="text-center text-white p-8">
                   <div className="text-6xl font-bold mb-4">AI vs Human</div>
                   <div className="text-2xl">The Ultimate BDR Showdown</div>
@@ -279,7 +279,7 @@ const blogCategories = [
     description: "Master B2B audience segmentation and intent-based targeting strategies.",
     slug: "audience-targeting",
     icon: Target,
-    gradient: "bg-gradient-to-br from-purple-500 to-purple-600",
+    gradient: "bg-gradient-to-br from-blue-500 to-blue-600",
     postCount: 8,
   },
   {
@@ -287,7 +287,7 @@ const blogCategories = [
     description: "Explore B2B data enrichment and how to leverage business intelligence for growth.",
     slug: "data-platforms",
     icon: Database,
-    gradient: "bg-gradient-to-br from-green-500 to-green-600",
+    gradient: "bg-gradient-to-br from-blue-500 to-blue-600",
     postCount: 15,
   },
   {
@@ -295,7 +295,7 @@ const blogCategories = [
     description: "Proven tactics to generate qualified B2B leads with AI-powered automation.",
     slug: "lead-generation",
     icon: TrendingUp,
-    gradient: "bg-gradient-to-br from-blue-500 to-green-500",
+    gradient: "bg-gradient-to-br from-blue-500 to-blue-600",
     postCount: 18,
   },
   {
@@ -303,7 +303,7 @@ const blogCategories = [
     description: "Automate direct mail campaigns triggered by digital behavior for higher conversions.",
     slug: "direct-mail",
     icon: Mail,
-    gradient: "bg-gradient-to-br from-orange-500 to-red-500",
+    gradient: "bg-gradient-to-br from-blue-500 to-blue-600",
     postCount: 6,
   },
   {
@@ -311,7 +311,7 @@ const blogCategories = [
     description: "Re-engage anonymous visitors across email, ads, and direct mail channels.",
     slug: "retargeting",
     icon: RotateCcw,
-    gradient: "bg-gradient-to-br from-indigo-500 to-purple-500",
+    gradient: "bg-gradient-to-br from-blue-500 to-blue-600",
     postCount: 10,
   },
   {
@@ -319,7 +319,7 @@ const blogCategories = [
     description: "Track marketing performance, measure ROI, and implement multi-touch attribution.",
     slug: "analytics",
     icon: BarChart3,
-    gradient: "bg-gradient-to-br from-cyan-500 to-blue-500",
+    gradient: "bg-gradient-to-br from-blue-500 to-blue-600",
     postCount: 9,
   },
   {
@@ -327,7 +327,7 @@ const blogCategories = [
     description: "Connect your marketing stack and automate workflows across all your tools.",
     slug: "crm-integration",
     icon: Workflow,
-    gradient: "bg-gradient-to-br from-violet-500 to-purple-500",
+    gradient: "bg-gradient-to-br from-blue-500 to-blue-600",
     postCount: 7,
   },
 ]

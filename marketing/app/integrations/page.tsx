@@ -69,34 +69,14 @@ export default function IntegrationsPage() {
           <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-16">
             {[
               {
-                title: "Enhancing Data Connectivity with CRM Integration",
+                title: "CRM Integration Best Practices",
                 description: "Connect your CRM to centralize lead data and improve workflows.",
-                href: "/blog/19-enhancing-data-connectivity-with-crm-integration"
+                href: "/blog/crm-integration"
               },
               {
-                title: "Why CRM Integration Is Crucial for Smooth Operations",
-                description: "Learn how CRM integration eliminates data silos and manual work.",
-                href: "/blog/33-why-crm-integration-is-crucial-for-smooth-operations"
-              },
-              {
-                title: "Tips for Improving CRM Integration Workflows",
-                description: "Optimize your CRM integrations for maximum efficiency.",
-                href: "/blog/30-tips-for-improving-crm-integration-workflows"
-              },
-              {
-                title: "Steps to Use a Customer Data Platform Successfully",
-                description: "Integrate CDPs to unify customer data across all touchpoints.",
-                href: "/blog/08-steps-to-use-a-customer-data-platform-successfully-UPDATED"
-              },
-              {
-                title: "Guide to Setting Up a Consumer Data Platform",
-                description: "Set up and configure your CDP for seamless data flow.",
-                href: "/blog/36-guide-to-setting-up-a-consumer-data-platform"
-              },
-              {
-                title: "How Marketing Data Solutions Can Improve Campaigns",
-                description: "Leverage integrated data platforms to boost campaign ROI.",
-                href: "/blog/07-how-marketing-data-solutions-can-improve-campaigns"
+                title: "Marketing Data Platforms",
+                description: "Leverage integrated data platforms to boost campaign ROI and unify customer data.",
+                href: "/blog/data-platforms"
               }
             ].map((resource, i) => (
               <motion.a
