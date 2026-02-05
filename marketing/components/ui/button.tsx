@@ -1,6 +1,9 @@
+"use client"
+
 import { cva, type VariantProps } from "class-variance-authority"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { trackCTAClick } from "@/lib/analytics"
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none",
@@ -32,6 +35,8 @@ export interface ButtonProps
   href?: string
   target?: string
   rel?: string
+  trackingLabel?: string // Optional: custom label for analytics
+  trackingLocation?: string // Optional: where the button is located
 }
 
 export function Button({
@@ -43,8 +48,24 @@ export function Button({
   target,
   rel,
   children,
+  trackingLabel,
+  trackingLocation,
+  onClick,
   ...props
 }: ButtonProps) {
+  // Handle click with analytics tracking
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
+    // Track CTA click if tracking params are provided
+    if (trackingLabel && trackingLocation) {
+      trackCTAClick(trackingLabel, trackingLocation)
+    }
+
+    // Call original onClick if provided
+    if (onClick && 'currentTarget' in e) {
+      onClick(e as React.MouseEvent<HTMLButtonElement>)
+    }
+  }
+
   if (href) {
     const isExternal = target === "_blank"
     return (
@@ -53,6 +74,7 @@ export function Button({
         target={target}
         rel={isExternal ? "noopener noreferrer" : rel}
         className={cn(buttonVariants({ variant, size, className }))}
+        onClick={handleClick as any}
       >
         {children}
       </Link>
@@ -60,7 +82,11 @@ export function Button({
   }
 
   return (
-    <button className={cn(buttonVariants({ variant, size, className }))} {...props}>
+    <button
+      className={cn(buttonVariants({ variant, size, className }))}
+      onClick={handleClick}
+      {...props}
+    >
       {children}
     </button>
   )

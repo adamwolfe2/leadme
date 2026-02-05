@@ -1,6 +1,7 @@
 "use client"
 
 import { Container } from "@/components/ui/container"
+import { DashboardCTA } from "@/components/dashboard-cta"
 import { motion } from "framer-motion"
 import { InteractiveFeaturesShowcase } from "@/components/demos/interactive-features-showcase"
 import Link from "next/link"
@@ -9,7 +10,7 @@ export default function DemosPage() {
   return (
     <main className="bg-white">
       {/* Hero Section */}
-      <section className="pt-24 pb-12 bg-gradient-to-br from-blue-50 to-purple-50">
+      <section className="pt-24 pb-12 bg-white">
         <Container>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -124,38 +125,11 @@ export default function DemosPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-white">
-        <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-12 text-center text-white max-w-4xl mx-auto"
-          >
-            <h2 className="text-4xl lg:text-5xl font-light mb-4">
-              Ready to See It In Your Business?
-            </h2>
-            <p className="text-lg mb-8 opacity-90">
-              Book a personalized demo and see how Cursive can transform your lead generation.
-            </p>
-            <div className="flex items-center justify-center gap-4">
-              <Link
-                href="https://cal.com/adamwolfe/cursive-ai-audit"
-                target="_blank"
-                className="px-8 py-4 bg-white text-[#007AFF] rounded-lg font-medium hover:bg-gray-100 transition-colors text-lg"
-              >
-                Book a Live Demo
-              </Link>
-              <Link
-                href="/pricing"
-                className="px-8 py-4 bg-transparent text-white border-2 border-white rounded-lg font-medium hover:bg-white/10 transition-colors text-lg"
-              >
-                View Pricing
-              </Link>
-            </div>
-          </motion.div>
-        </Container>
-      </section>
+      <DashboardCTA
+        headline="Ready to See It"
+        subheadline="In Your Account?"
+        description="Book a personalized walkthrough and see how these features work with your actual data and workflows."
+      />
     </main>
   )
 }

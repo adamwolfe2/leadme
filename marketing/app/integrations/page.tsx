@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
+import { DashboardCTA } from "@/components/dashboard-cta"
 import { motion } from "framer-motion"
 import { IntegrationsShowcase } from "@/components/integrations-showcase"
 import { ArrowRight } from "lucide-react"
@@ -122,15 +123,11 @@ export default function IntegrationsPage() {
         </Container>
       </section>
 
-      <section className="py-20 bg-[#F7F9FB]">
-        <Container>
-          <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-12 text-center text-white max-w-4xl mx-auto">
-            <h2 className="text-4xl lg:text-5xl font-light mb-4">Need a Custom Integration?</h2>
-            <p className="text-lg mb-8 opacity-90">Our team can build custom integrations for your specific needs.</p>
-            <Button size="lg" className="bg-white text-[#007AFF] hover:bg-gray-100" href="https://cal.com/adamwolfe/cursive-ai-audit">Contact Us</Button>
-          </div>
-        </Container>
-      </section>
+      <DashboardCTA
+        headline="Ready to Connect"
+        subheadline="Your Stack?"
+        description="See how Cursive integrates with your CRM, ad platforms, and marketing tools to create a seamless data flow across your entire GTM stack."
+      />
     </main>
   )
 }

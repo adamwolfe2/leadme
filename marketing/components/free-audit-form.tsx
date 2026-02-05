@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
+import { trackLeadCaptured, trackFormSubmission } from "@/lib/analytics"
 
 export function FreeAuditForm() {
   const [formData, setFormData] = useState({
@@ -63,14 +64,9 @@ export function FreeAuditForm() {
 
       setSubmitted(true)
 
-      // Track conversion event
-      if (typeof window !== "undefined" && window.gtag) {
-        window.gtag("event", "generate_lead", {
-          event_category: "engagement",
-          event_label: "free_audit_form",
-          value: formData.email,
-        })
-      }
+      // Track conversion event using new analytics library
+      trackLeadCaptured("free_audit_form")
+      trackFormSubmission("free_audit_form")
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred")
     } finally {

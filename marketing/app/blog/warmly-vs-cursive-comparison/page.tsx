@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
+import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, ArrowRight, Check, X } from "lucide-react"
 import { generateMetadata } from '@/lib/seo/metadata'
 import { StructuredData } from '@/components/seo/structured-data'
@@ -67,7 +68,7 @@ export default function WarmlyVsCursiveComparison() {
       <StructuredData data={generateFAQSchema({ faqs })} />
 
       {/* Header */}
-      <section className="py-12 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <section className="py-12 bg-white">
         <Container>
           <a href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
             <ArrowLeft className="w-4 h-4" />
@@ -648,31 +649,6 @@ export default function WarmlyVsCursiveComparison() {
               ))}
             </div>
 
-            <div className="not-prose bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-8 my-12 text-white text-center">
-              <h3 className="text-3xl font-bold mb-4">Ready to Try Cursive?</h3>
-              <p className="text-lg mb-6 opacity-90">
-                Start with our free plan or book a demo to see how Cursive can scale your outbound
-                without hiring more SDRs.
-              </p>
-              <div className="flex gap-4 justify-center flex-wrap">
-                <Button
-                  size="lg"
-                  className="bg-white text-primary hover:bg-gray-100"
-                  href="/signup"
-                >
-                  Start Free Trial
-                  <ArrowRight className="w-5 h-5" />
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary"
-                  href="https://cal.com/adamwolfe/cursive-ai-audit"
-                >
-                  Book a Demo
-                </Button>
-              </div>
-            </div>
 
             <h2>About the Author</h2>
             <p>
@@ -684,6 +660,13 @@ export default function WarmlyVsCursiveComparison() {
           </article>
         </Container>
       </section>
+
+      {/* CTA Section */}
+      <DashboardCTA
+        headline="Ready to Compare"
+        subheadline="For Yourself?"
+        description="Start with our free plan or book a demo to see how Cursive can scale your outbound without hiring more SDRs."
+      />
 
       {/* Related Posts */}
       <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">

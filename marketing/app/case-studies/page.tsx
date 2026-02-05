@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
+import { DashboardCTA } from "@/components/dashboard-cta"
 import { motion } from "framer-motion"
 import { ArrowRight, TrendingUp, Users, Target, BarChart3 } from "lucide-react"
 
@@ -9,7 +10,7 @@ export default function CaseStudiesPage() {
   return (
     <main className="overflow-hidden">
       {/* Hero Section */}
-      <section className="relative py-24 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <section className="relative py-24 bg-white">
         <Container>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -413,27 +414,11 @@ export default function CaseStudiesPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-24 bg-white">
-        <Container>
-          <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-3xl p-12 text-center text-white shadow-2xl max-w-4xl mx-auto">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
-              Ready to See Similar Results?
-            </h2>
-            <p className="text-xl mb-8 opacity-90">
-              Book a call and we'll show you exactly how Cursive can transform your pipeline.
-            </p>
-            <Button
-              size="lg"
-              className="bg-white text-primary hover:bg-gray-100"
-              href="https://cal.com/adamwolfe/cursive-ai-audit"
-              target="_blank"
-            >
-              Book Your Free Audit
-              <ArrowRight className="w-5 h-5" />
-            </Button>
-          </div>
-        </Container>
-      </section>
+      <DashboardCTA
+        headline="Ready to Get"
+        subheadline="Results Like These?"
+        description="Book a demo and see how Cursive can help you 3x pipeline, improve lead quality, and scale revenue without scaling headcount."
+      />
     </main>
   )
 }

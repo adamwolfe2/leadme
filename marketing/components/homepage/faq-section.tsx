@@ -7,6 +7,7 @@ import { Container } from "@/components/ui/container"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { cn } from "@/lib/utils"
+import { trackDemoBooked } from "@/lib/analytics"
 
 interface FAQ {
   question: string
@@ -164,6 +165,7 @@ export function FAQSection() {
               href="https://cal.com/adamwolfe/cursive-ai-audit"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackDemoBooked("faq_section")}
               className="inline-flex items-center gap-2 px-6 py-3 bg-[#007AFF] text-white rounded-lg font-medium hover:bg-[#0066DD] transition-colors"
             >
               Book a Free AI Audit

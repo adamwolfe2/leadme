@@ -1,6 +1,7 @@
 import { Metadata } from "next"
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
+import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, ArrowRight, Shield, Zap, Eye, Database } from "lucide-react"
 import Link from "next/link"
 import { generateMetadata } from "@/lib/seo/metadata"
@@ -106,7 +107,7 @@ export default function BlogPost() {
       <StructuredData data={[articleSchema, breadcrumbSchema, faqSchema]} />
 
       {/* Header */}
-      <section className="py-12 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <section className="py-12 bg-white">
         <Container>
           <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
             <ArrowLeft className="w-4 h-4" />
@@ -817,34 +818,6 @@ export default function BlogPost() {
               compliance. They also layer on <a href="/intent-audiences" className="text-blue-600 hover:underline">intent data</a> to prioritize the hottest leads and follow up with personalized <a href="/direct-mail" className="text-blue-600 hover:underline">direct mail</a> campaigns.
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-8 my-12 text-white text-center">
-              <h3 className="text-3xl font-bold mb-4">See Who's Visiting Your Website</h3>
-              <p className="text-lg mb-6 opacity-90">
-                <a href="/" className="text-white underline hover:no-underline">Cursive</a> identifies up to 70% of your anonymous B2B website traffic using a hybrid approach
-                that combines IP intelligence, behavioral signals, and real-time enrichment. Know which
-                companies viewed your <a href="/pricing" className="text-white underline hover:no-underline">pricing page</a> this week, then follow up with targeted <a href="/direct-mail" className="text-white underline hover:no-underline">direct mail</a>.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="https://cal.com/adamwolfe/cursive-ai-audit">
-                  <Button
-                    size="lg"
-                    className="bg-white text-primary hover:bg-gray-100"
-                  >
-                    Book a Demo
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Button>
-                </Link>
-                <Link href="/visitor-identification">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="bg-transparent border-white text-white hover:bg-white/10"
-                  >
-                    Learn More About Visitor ID
-                  </Button>
-                </Link>
-              </div>
-            </div>
 
             <h2>About the Author</h2>
             <p>
@@ -856,6 +829,13 @@ export default function BlogPost() {
           </article>
         </Container>
       </section>
+
+      {/* CTA Section */}
+      <DashboardCTA
+        headline="Want to Put This"
+        subheadline="Into Practice?"
+        description="Cursive identifies up to 70% of your anonymous B2B website traffic using a hybrid approach combining IP intelligence, behavioral signals, and real-time enrichment."
+      />
 
       {/* Related Posts */}
       <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">

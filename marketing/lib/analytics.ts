@@ -6,112 +6,207 @@ declare global {
   }
 }
 
-// Track outbound link clicks
-export const trackOutboundLink = (url: string, label?: string) => {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', 'click', {
-      event_category: 'outbound',
-      event_label: label || url,
-      transport_type: 'beacon',
-      url: url,
-    })
+// TypeScript types for analytics events
+export interface ConversionEventParams {
+  event_category: string
+  event_label: string
+  value?: number
+  [key: string]: any
+}
+
+export interface EngagementEventParams {
+  event_category: string
+  event_label: string
+  [key: string]: any
+}
+
+// Safe wrapper for gtag calls
+const safeGtagCall = (
+  eventName: string,
+  params: ConversionEventParams | EngagementEventParams
+): void => {
+  try {
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', eventName, params)
+    }
+  } catch (error) {
+    // Silently fail - analytics should never break the app
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Analytics tracking failed:', error)
+    }
   }
 }
 
-// Track demo booking clicks
-export const trackDemoBooking = (source: string) => {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', 'demo_booking', {
-      event_category: 'conversion',
-      event_label: source,
-      value: 1,
-    })
-  }
+// ============================================================================
+// CONVERSION TRACKING FUNCTIONS
+// ============================================================================
+
+/**
+ * Track when a user books a demo call
+ * @param source - Where the demo was booked from (e.g., "homepage_hero", "faq_section", "exit_intent_popup")
+ */
+export const trackDemoBooked = (source: string): void => {
+  safeGtagCall('demo_booking', {
+    event_category: 'conversion',
+    event_label: source,
+    value: 1,
+    conversion_type: 'demo_booking',
+    source_location: source,
+  })
 }
 
-// Track form submissions
-export const trackFormSubmission = (formName: string) => {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', 'form_submit', {
-      event_category: 'conversion',
-      event_label: formName,
-      value: 1,
-    })
-  }
+/**
+ * Track when a user starts a trial
+ * @param plan - The plan type selected (e.g., "starter", "growth", "enterprise")
+ */
+export const trackTrialStarted = (plan: string): void => {
+  safeGtagCall('trial_started', {
+    event_category: 'conversion',
+    event_label: plan,
+    value: 1,
+    conversion_type: 'trial_start',
+    plan_type: plan,
+  })
 }
 
-// Track newsletter signups
-export const trackNewsletterSignup = (source: string) => {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', 'newsletter_signup', {
-      event_category: 'conversion',
-      event_label: source,
-      value: 1,
-    })
-  }
+/**
+ * Track newsletter signups
+ * @param source - Where the signup occurred (e.g., "homepage_footer", "blog_sidebar", "exit_intent_popup")
+ */
+export const trackNewsletterSignup = (source: string): void => {
+  safeGtagCall('newsletter_signup', {
+    event_category: 'conversion',
+    event_label: source,
+    value: 1,
+    conversion_type: 'newsletter_signup',
+    source_location: source,
+  })
 }
 
-// Track CTA clicks
-export const trackCTAClick = (ctaText: string, location: string) => {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', 'cta_click', {
-      event_category: 'engagement',
-      event_label: `${location}: ${ctaText}`,
-      cta_text: ctaText,
-      cta_location: location,
-    })
-  }
+/**
+ * Track lead capture events
+ * @param source - Where the lead was captured (e.g., "free_audit_form", "exit_intent_popup", "contact_form")
+ */
+export const trackLeadCaptured = (source: string): void => {
+  safeGtagCall('generate_lead', {
+    event_category: 'conversion',
+    event_label: source,
+    value: 1,
+    conversion_type: 'lead_capture',
+    source_location: source,
+  })
 }
 
-// Track scroll depth
-export const trackScrollDepth = (percentage: number, page: string) => {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', 'scroll_depth', {
-      event_category: 'engagement',
-      event_label: page,
-      value: percentage,
-    })
-  }
+// ============================================================================
+// ENGAGEMENT TRACKING FUNCTIONS
+// ============================================================================
+
+/**
+ * Track outbound link clicks
+ * @param url - The destination URL
+ * @param label - Optional label for the link
+ */
+export const trackOutboundLink = (url: string, label?: string): void => {
+  safeGtagCall('click', {
+    event_category: 'outbound',
+    event_label: label || url,
+    transport_type: 'beacon',
+    url: url,
+  })
 }
 
-// Track video plays (if you add videos)
-export const trackVideoPlay = (videoTitle: string, videoUrl: string) => {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', 'video_start', {
-      event_category: 'engagement',
-      event_label: videoTitle,
-      video_url: videoUrl,
-    })
-  }
+/**
+ * Track demo booking clicks (legacy - use trackDemoBooked instead)
+ * @deprecated Use trackDemoBooked for consistency
+ */
+export const trackDemoBooking = (source: string): void => {
+  trackDemoBooked(source)
 }
 
-// Track search (if you add search)
-export const trackSearch = (searchTerm: string) => {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', 'search', {
-      search_term: searchTerm,
-    })
-  }
+/**
+ * Track form submissions
+ * @param formName - The name of the form
+ */
+export const trackFormSubmission = (formName: string): void => {
+  safeGtagCall('form_submit', {
+    event_category: 'conversion',
+    event_label: formName,
+    value: 1,
+  })
 }
 
-// Track file downloads
-export const trackFileDownload = (fileName: string, fileUrl: string) => {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', 'file_download', {
-      event_category: 'engagement',
-      event_label: fileName,
-      file_url: fileUrl,
-    })
-  }
+/**
+ * Track CTA button clicks
+ * @param ctaText - The text on the CTA button
+ * @param location - Where the CTA is located
+ */
+export const trackCTAClick = (ctaText: string, location: string): void => {
+  safeGtagCall('cta_click', {
+    event_category: 'engagement',
+    event_label: `${location}: ${ctaText}`,
+    cta_text: ctaText,
+    cta_location: location,
+  })
 }
 
-// Track error pages
-export const trackError = (errorCode: string, errorMessage: string) => {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', 'error', {
-      event_category: 'error',
-      event_label: `${errorCode}: ${errorMessage}`,
-      error_code: errorCode,
-    })
-  }
+/**
+ * Track scroll depth
+ * @param percentage - Percentage scrolled (25, 50, 75, 100)
+ * @param page - The page being tracked
+ */
+export const trackScrollDepth = (percentage: number, page: string): void => {
+  safeGtagCall('scroll_depth', {
+    event_category: 'engagement',
+    event_label: page,
+    value: percentage,
+  })
+}
+
+/**
+ * Track video plays
+ * @param videoTitle - Title of the video
+ * @param videoUrl - URL of the video
+ */
+export const trackVideoPlay = (videoTitle: string, videoUrl: string): void => {
+  safeGtagCall('video_start', {
+    event_category: 'engagement',
+    event_label: videoTitle,
+    video_url: videoUrl,
+  })
+}
+
+/**
+ * Track search queries
+ * @param searchTerm - The search term entered
+ */
+export const trackSearch = (searchTerm: string): void => {
+  safeGtagCall('search', {
+    search_term: searchTerm,
+  })
+}
+
+/**
+ * Track file downloads
+ * @param fileName - Name of the downloaded file
+ * @param fileUrl - URL of the file
+ */
+export const trackFileDownload = (fileName: string, fileUrl: string): void => {
+  safeGtagCall('file_download', {
+    event_category: 'engagement',
+    event_label: fileName,
+    file_url: fileUrl,
+  })
+}
+
+/**
+ * Track error pages
+ * @param errorCode - HTTP error code
+ * @param errorMessage - Error message
+ */
+export const trackError = (errorCode: string, errorMessage: string): void => {
+  safeGtagCall('error', {
+    event_category: 'error',
+    event_label: `${errorCode}: ${errorMessage}`,
+    error_code: errorCode,
+  })
 }

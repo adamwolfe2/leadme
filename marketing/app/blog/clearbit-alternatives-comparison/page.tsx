@@ -1,5 +1,6 @@
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
+import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, ArrowRight, Check, X } from "lucide-react"
 import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
@@ -53,7 +54,7 @@ export default function BlogPost() {
       <StructuredData data={generateFAQSchema({ faqs })} />
 
       {/* Header */}
-      <section className="py-12 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <section className="py-12 bg-white">
         <Container>
           <a href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
             <ArrowLeft className="w-4 h-4" />
@@ -912,31 +913,6 @@ export default function BlogPost() {
               at a <a href="/pricing" className="text-blue-600 hover:underline">transparent price point</a>.
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-8 my-12 text-white text-center">
-              <h3 className="text-3xl font-bold mb-4">Ready to See Cursive in Action?</h3>
-              <p className="text-lg mb-6 opacity-90">
-                Start identifying your website visitors and converting them into qualified leads.
-                No credit card required. 14-day free trial.
-              </p>
-              <div className="flex gap-4 justify-center">
-                <Button
-                  size="lg"
-                  className="bg-white text-primary hover:bg-gray-100"
-                  href="https://meetcursive.com/signup"
-                >
-                  Start Free Trial
-                  <ArrowRight className="w-5 h-5" />
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-white text-white hover:bg-white/10"
-                  href="https://cal.com/adamwolfe/cursive-ai-audit"
-                >
-                  Book a Demo
-                </Button>
-              </div>
-            </div>
 
 
             <h2>About the Author</h2>
@@ -948,6 +924,13 @@ export default function BlogPost() {
           </article>
         </Container>
       </section>
+
+      {/* CTA Section */}
+      <DashboardCTA
+        headline="Ready to Replace"
+        subheadline="Clearbit?"
+        description="Try Cursive for real-time visitor identification and intent-based outreach. Start identifying your website visitors and converting them into qualified leads."
+      />
 
       {/* Related Posts */}
       <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">

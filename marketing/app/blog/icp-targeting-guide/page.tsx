@@ -1,12 +1,13 @@
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
+import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, ArrowRight, Target } from "lucide-react"
 
 export default function BlogPost() {
   return (
     <main>
       {/* Header */}
-      <section className="py-12 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <section className="py-12 bg-white">
         <Container>
           <a href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
             <ArrowLeft className="w-4 h-4" />
@@ -482,20 +483,6 @@ export default function BlogPost() {
               The companies that win are the ones who understand their ICP better than anyone else.
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-8 my-12 text-white text-center">
-              <h3 className="text-3xl font-bold mb-4">Need Help Defining Your ICP?</h3>
-              <p className="text-lg mb-6 opacity-90">
-                We'll run a free ICP workshop and build your first targeted list.
-              </p>
-              <Button
-                size="lg"
-                className="bg-white text-primary hover:bg-gray-100"
-                href="https://cal.com/adamwolfe/cursive-ai-audit"
-              >
-                Book a Call
-                <ArrowRight className="w-5 h-5" />
-              </Button>
-            </div>
 
             <h2>About the Author</h2>
             <p>
@@ -505,6 +492,13 @@ export default function BlogPost() {
           </article>
         </Container>
       </section>
+
+      {/* CTA Section */}
+      <DashboardCTA
+        headline="Need Help Defining"
+        subheadline="Your ICP?"
+        description="We'll run a free ICP workshop and build your first targeted list. Get crystal clear on who you're built for."
+      />
 
       {/* Related Posts */}
       <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">

@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
+import { DashboardCTA } from "@/components/dashboard-cta"
 import { motion } from "framer-motion"
 
 export default function CleanRoomPage() {
@@ -77,22 +78,11 @@ export default function CleanRoomPage() {
         </Container>
       </section>
 
-      <section className="py-20 bg-white">
-        <Container>
-          <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-12 text-center text-white max-w-4xl mx-auto">
-            <h2 className="text-4xl lg:text-5xl font-light mb-4">
-              Ready to Unlock Partner Data?
-            </h2>
-            <Button
-              size="lg"
-              className="bg-white text-[#007AFF] hover:bg-gray-100"
-              href="https://cal.com/adamwolfe/cursive-ai-audit"
-            >
-              Schedule a Demo
-            </Button>
-          </div>
-        </Container>
-      </section>
+      <DashboardCTA
+        headline="Ready to Unlock"
+        subheadline="Partner Data?"
+        description="See how Cursive's data clean room enables secure collaboration with partners while protecting personal information and maintaining compliance."
+      />
     </main>
   )
 }

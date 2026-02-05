@@ -1,6 +1,7 @@
 import { Metadata } from "next"
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
+import { DashboardCTA } from "@/components/dashboard-cta"
 import { ArrowLeft, ArrowRight, Calendar, Clock, Eye } from "lucide-react"
 import Link from "next/link"
 
@@ -44,7 +45,7 @@ export default function VisitorTrackingCategoryPage() {
       </section>
 
       {/* Category Header */}
-      <section className="py-16 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <section className="py-16 bg-white">
         <Container>
           <div className="max-w-4xl">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-full text-sm font-medium mb-6">
@@ -129,32 +130,11 @@ export default function VisitorTrackingCategoryPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-blue-600 to-blue-700">
-        <Container>
-          <div className="max-w-3xl mx-auto text-center text-white">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
-              Ready to See Who's Visiting Your Site?
-            </h2>
-            <p className="text-xl mb-8 opacity-90">
-              Cursive identifies up to 70% of your anonymous website traffic.
-              Know which companies viewed your pricing page this week—and reach out while they're still interested.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="https://cal.com/adamwolfe/cursive-ai-audit">
-                <Button size="lg" className="bg-white text-primary hover:bg-gray-100">
-                  Book a Demo
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </Link>
-              <Link href="/visitor-identification">
-                <Button size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white/10">
-                  Learn More
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </Container>
-      </section>
+      <DashboardCTA
+        headline="Ready to See Who's"
+        subheadline="Visiting Your Site?"
+        description="Cursive identifies up to 70% of your anonymous website traffic. Know which companies viewed your pricing page this week—and reach out while they're still interested."
+      />
 
       {/* Schema Markup */}
       <script

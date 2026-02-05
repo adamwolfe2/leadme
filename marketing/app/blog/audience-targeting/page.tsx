@@ -1,6 +1,7 @@
 import { Metadata } from "next"
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
+import { DashboardCTA } from "@/components/dashboard-cta"
 import { ArrowLeft, ArrowRight, Calendar, Clock, Target } from "lucide-react"
 import Link from "next/link"
 
@@ -44,7 +45,7 @@ export default function AudienceTargetingCategoryPage() {
       </section>
 
       {/* Category Header */}
-      <section className="py-16 bg-gradient-to-br from-purple-50 via-white to-blue-50">
+      <section className="py-16 bg-white">
         <Container>
           <div className="max-w-4xl">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-full text-sm font-medium mb-6">
@@ -128,32 +129,11 @@ export default function AudienceTargetingCategoryPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-blue-600 to-blue-700">
-        <Container>
-          <div className="max-w-3xl mx-auto text-center text-white">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
-              Build Your Perfect Audience in Minutes
-            </h2>
-            <p className="text-xl mb-8 opacity-90">
-              Access 220M+ consumer and 140M+ business profiles. Build unlimited audiences with no size caps.
-              Filter by firmographic, demographic, behavioral, and intent data.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="https://cal.com/adamwolfe/cursive-ai-audit">
-                <Button size="lg" className="bg-white text-primary hover:bg-gray-100">
-                  Book a Demo
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </Link>
-              <Link href="/audience-builder">
-                <Button size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white/10">
-                  Learn More
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </Container>
-      </section>
+      <DashboardCTA
+        headline="Build Your Perfect"
+        subheadline="Audience in Minutes"
+        description="Access 220M+ consumer and 140M+ business profiles. Build unlimited audiences with no size caps. Filter by firmographic, demographic, behavioral, and intent data."
+      />
 
       {/* Schema Markup */}
       <script

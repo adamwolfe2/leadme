@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { trackLeadCaptured, trackFormSubmission } from "@/lib/analytics"
 
 const STORAGE_KEY = "cursive_exit_intent_shown"
 const SHOW_DELAY = 1000 // Wait 1 second before enabling exit intent
@@ -100,14 +101,9 @@ export function ExitIntentPopup() {
 
       setSubmitted(true)
 
-      // Track conversion event
-      if (typeof window !== "undefined" && window.gtag) {
-        window.gtag("event", "generate_lead", {
-          event_category: "engagement",
-          event_label: "exit_intent_popup",
-          value: email,
-        })
-      }
+      // Track conversion event using new analytics library
+      trackLeadCaptured("exit_intent_popup")
+      trackFormSubmission("exit_intent_popup")
 
       // Close popup after 3 seconds
       setTimeout(() => {
