@@ -3,11 +3,20 @@
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, Check, Calculator, Shield, TrendingUp, Users, Zap } from "lucide-react"
 import { useState } from "react"
 
 export default function PricingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual')
+  const [calculatorLeads, setCalculatorLeads] = useState(1000)
+
+  // ROI Calculator logic
+  const costPerLead = 50 // Traditional cost per qualified lead
+  const cursiveCostPerLead = 2 // Cursive cost per lead
+  const traditionalCost = calculatorLeads * costPerLead
+  const cursiveCost = calculatorLeads * cursiveCostPerLead
+  const monthlySavings = traditionalCost - cursiveCost
 
   return (
     <main className="overflow-hidden">
@@ -20,25 +29,140 @@ export default function PricingPage() {
             transition={{ duration: 0.8 }}
             className="text-center max-w-4xl mx-auto"
           >
+            {/* Social Proof */}
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <Users className="w-5 h-5 text-[#007AFF]" />
+              <p className="text-sm text-gray-600">
+                Trusted by 1,000+ B2B companies to generate qualified leads
+              </p>
+            </div>
+
             <h1 className="text-5xl lg:text-6xl font-light text-gray-900 mb-6">
-              Transparent Pricing
+              Pricing That Scales
               <span className="block font-cursive text-6xl lg:text-7xl text-gray-900 mt-2">
-                No Surprises
+                With Your Growth
               </span>
             </h1>
-            <p className="text-xl text-gray-600 mb-8">
-              Every plan includes dedicated support, custom targeting, and verified data.
-              Scale up or down anytime.
+            <p className="text-xl text-gray-600 mb-4">
+              Turn anonymous visitors into qualified leads for 96% less than traditional methods.
+            </p>
+            <p className="text-lg text-gray-500">
+              No hidden fees. No restrictive contracts. Cancel anytime.
             </p>
           </motion.div>
         </Container>
       </section>
 
-      {/* Pricing Cards */}
-      <section className="py-24 bg-[#F7F9FB]">
+      {/* ROI Calculator Section */}
+      <section className="py-16 bg-gradient-to-br from-[#007AFF]/5 to-purple-50">
+        <Container>
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm mb-4">
+                <Calculator className="w-5 h-5 text-[#007AFF]" />
+                <span className="text-sm font-medium text-gray-900">ROI Calculator</span>
+              </div>
+              <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-3">
+                See Your Potential
+                <span className="block font-cursive text-4xl lg:text-5xl text-gray-900 mt-1">
+                  Monthly Savings
+                </span>
+              </h2>
+            </div>
+
+            <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-200">
+              <div className="mb-8">
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  How many qualified leads do you need per month?
+                </label>
+                <input
+                  type="range"
+                  min="100"
+                  max="5000"
+                  step="100"
+                  value={calculatorLeads}
+                  onChange={(e) => setCalculatorLeads(parseInt(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#007AFF]"
+                />
+                <div className="flex justify-between mt-2">
+                  <span className="text-sm text-gray-500">100 leads</span>
+                  <span className="text-xl font-light text-[#007AFF]">{calculatorLeads} leads</span>
+                  <span className="text-sm text-gray-500">5,000 leads</span>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6 mb-8">
+                <div className="p-6 bg-gray-50 rounded-xl">
+                  <div className="text-sm text-gray-600 mb-2">Traditional Lead Gen</div>
+                  <div className="text-3xl font-light text-gray-900 mb-1">
+                    ${traditionalCost.toLocaleString()}
+                    <span className="text-base text-gray-500">/mo</span>
+                  </div>
+                  <div className="text-xs text-gray-500">at $50 per lead</div>
+                </div>
+
+                <div className="p-6 bg-[#007AFF]/5 rounded-xl border-2 border-[#007AFF]">
+                  <div className="text-sm text-[#007AFF] font-medium mb-2">With Cursive</div>
+                  <div className="text-3xl font-light text-gray-900 mb-1">
+                    ${cursiveCost.toLocaleString()}
+                    <span className="text-base text-gray-500">/mo</span>
+                  </div>
+                  <div className="text-xs text-gray-500">at $2 per lead</div>
+                </div>
+              </div>
+
+              <div className="text-center p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200">
+                <div className="text-sm text-green-700 font-medium mb-1">Your Monthly Savings</div>
+                <div className="text-4xl font-light text-green-900 mb-2">
+                  ${monthlySavings.toLocaleString()}
+                </div>
+                <div className="text-sm text-green-700">
+                  That's ${(monthlySavings * 12).toLocaleString()} saved per year
+                </div>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Billing Toggle */}
+      <section className="py-16 bg-white">
+        <Container>
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center justify-center gap-4 mb-12">
+              <button
+                onClick={() => setBillingCycle('monthly')}
+                className={`px-6 py-2 rounded-lg transition-all ${
+                  billingCycle === 'monthly'
+                    ? 'bg-[#007AFF] text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                Monthly
+              </button>
+              <button
+                onClick={() => setBillingCycle('annual')}
+                className={`px-6 py-2 rounded-lg transition-all relative ${
+                  billingCycle === 'annual'
+                    ? 'bg-[#007AFF] text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                Annual
+                <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
+                  Save 20%
+                </span>
+              </button>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Pricing Cards - Anchoring with Pipeline first */}
+      <section className="py-16 bg-[#F7F9FB]">
         <Container>
           <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {/* Cursive Data */}
+            {/* Cursive Pipeline - Anchor (shown first for price anchoring) */}
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
@@ -46,101 +170,173 @@ export default function PricingPage() {
               className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-[#007AFF] transition-all duration-300 hover:shadow-lg"
             >
               <div className="mb-6">
-                <h3 className="text-2xl font-light text-gray-900 mb-2"><span className="font-cursive text-3xl text-gray-900">Cursive</span> Data</h3>
-                <p className="text-gray-600">Perfect for teams with existing outbound processes</p>
+                <div className="text-xs font-medium text-purple-600 mb-2">ENTERPRISE</div>
+                <h3 className="text-2xl font-light text-gray-900 mb-2">
+                  <span className="font-cursive text-3xl text-gray-900">Cursive</span> Pipeline
+                </h3>
+                <p className="text-gray-600">Full-stack AI SDR solution</p>
               </div>
 
               <div className="mb-8">
-                <div className="text-4xl font-light text-[#007AFF] mb-2">Starting at $1,000<span className="text-lg text-gray-600">/mo</span></div>
-                <p className="text-sm text-gray-500">500-2,000 leads per month</p>
+                {billingCycle === 'annual' ? (
+                  <>
+                    <div className="text-4xl font-light text-[#007AFF] mb-1">
+                      $4,000<span className="text-lg text-gray-600">/mo</span>
+                    </div>
+                    <div className="text-sm text-gray-500 line-through mb-1">$5,000/mo</div>
+                    <div className="inline-block bg-green-100 text-green-700 text-xs px-2 py-1 rounded">
+                      Save $12,000/year
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-4xl font-light text-[#007AFF] mb-2">
+                    $5,000<span className="text-lg text-gray-600">/mo</span>
+                  </div>
+                )}
+                <p className="text-sm text-gray-500 mt-2">$5,000 one-time setup</p>
+              </div>
+
+              <div className="mb-6">
+                <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
+                  Perfect For
+                </div>
+                <p className="text-sm text-gray-600">
+                  Enterprise sales teams needing multi-channel automation and unlimited scale
+                </p>
               </div>
 
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
-                  <span className="text-gray-700">Verified & enriched contacts</span>
+                  <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                  <span className="text-gray-700">Everything in Outbound</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
-                  <span className="text-gray-700">Custom ICP targeting</span>
+                  <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                  <span className="text-gray-700">AI SDR agents (24/7 automated)</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
-                  <span className="text-gray-700">Monthly refresh</span>
+                  <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                  <span className="text-gray-700">Multi-channel campaigns (email, LinkedIn, SMS)</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
-                  <span className="text-gray-700">CSV export</span>
+                  <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                  <span className="text-gray-700">Unlimited lead enrichment</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
-                  <span className="text-gray-700">Dedicated manager</span>
+                  <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                  <span className="text-gray-700">API access + CRM integrations</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                  <span className="text-gray-700">Dedicated success manager</span>
                 </li>
               </ul>
 
-              <Button className="w-full" href="https://buy.stripe.com/your-data-link" target="_blank">
-                Get Started
+              <Button className="w-full" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
+                Book a Demo
                 <ArrowRight className="w-4 h-4" />
               </Button>
 
-              <p className="text-xs text-center text-gray-500 mt-4">No setup fee • Cancel anytime</p>
+              <div className="mt-4 text-center">
+                <div className="text-xs text-gray-500">2-3 week onboarding</div>
+                <div className="flex items-center justify-center gap-1 mt-2">
+                  <Shield className="w-4 h-4 text-green-600" />
+                  <span className="text-xs text-green-600">Cancel anytime</span>
+                </div>
+              </div>
             </motion.div>
 
-            {/* Cursive Outbound - Most Popular */}
+            {/* Cursive Outbound - Most Popular (Decoy Effect) */}
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-[#007AFF] rounded-2xl p-8 border-2 border-[#007AFF] shadow-xl relative transform lg:scale-105"
+              className="bg-[#007AFF] rounded-2xl p-8 border-2 border-[#007AFF] shadow-xl relative transform lg:scale-105 z-10"
             >
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <div className="bg-white text-[#007AFF] px-4 py-1 rounded-full text-sm shadow-lg">
-                  Most Popular
+                <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 px-4 py-1 rounded-full text-sm font-medium shadow-lg">
+                  Most Popular - Best Value
                 </div>
               </div>
 
               <div className="mb-6 text-white">
-                <h3 className="text-2xl font-light mb-2"><span className="font-cursive text-3xl">Cursive</span> Outbound</h3>
+                <div className="text-xs font-medium mb-2 opacity-90">RECOMMENDED</div>
+                <h3 className="text-2xl font-light mb-2">
+                  <span className="font-cursive text-3xl">Cursive</span> Outbound
+                </h3>
                 <p className="opacity-90">Done-for-you email campaigns</p>
               </div>
 
               <div className="mb-8 text-white">
-                <div className="text-4xl font-light mb-2">$3,000<span className="text-lg opacity-90">/mo</span></div>
-                <p className="text-sm opacity-90">$2,500 one-time setup</p>
+                {billingCycle === 'annual' ? (
+                  <>
+                    <div className="text-4xl font-light mb-1">
+                      $2,400<span className="text-lg opacity-90">/mo</span>
+                    </div>
+                    <div className="text-sm opacity-75 line-through mb-1">$3,000/mo</div>
+                    <div className="inline-block bg-white/20 text-white text-xs px-2 py-1 rounded">
+                      Save $7,200/year
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-4xl font-light mb-2">
+                    $3,000<span className="text-lg opacity-90">/mo</span>
+                  </div>
+                )}
+                <p className="text-sm opacity-90 mt-2">$2,500 one-time setup</p>
+              </div>
+
+              <div className="mb-6 text-white">
+                <div className="text-xs font-medium opacity-75 uppercase tracking-wide mb-3">
+                  Perfect For
+                </div>
+                <p className="text-sm opacity-90">
+                  B2B SaaS and agencies ready to scale outbound without hiring more SDRs
+                </p>
               </div>
 
               <ul className="space-y-3 mb-8 text-white">
                 <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-white rounded-full mt-2 flex-shrink-0" />
-                  <span>AI-powered personalization</span>
+                  <Check className="w-5 h-5 flex-shrink-0" />
+                  <span>Everything in Data plan</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-white rounded-full mt-2 flex-shrink-0" />
-                  <span>Email infrastructure setup</span>
+                  <Check className="w-5 h-5 flex-shrink-0" />
+                  <span>AI-powered email personalization</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-white rounded-full mt-2 flex-shrink-0" />
-                  <span>500 leads included</span>
+                  <Check className="w-5 h-5 flex-shrink-0" />
+                  <span>Email infrastructure setup + warmup</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-white rounded-full mt-2 flex-shrink-0" />
-                  <span>A/B testing & optimization</span>
+                  <Check className="w-5 h-5 flex-shrink-0" />
+                  <span>500 verified leads included monthly</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-white rounded-full mt-2 flex-shrink-0" />
+                  <Check className="w-5 h-5 flex-shrink-0" />
+                  <span>A/B testing + continuous optimization</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 flex-shrink-0" />
                   <span>Weekly strategy calls</span>
                 </li>
               </ul>
 
               <Button className="w-full bg-white text-[#007AFF] hover:bg-gray-100" href="https://buy.stripe.com/your-outbound-link" target="_blank">
-                Get Started
+                Start Outbound
                 <ArrowRight className="w-4 h-4" />
               </Button>
 
-              <p className="text-xs text-center opacity-90 mt-4">2-week setup • Cancel anytime</p>
+              <div className="mt-4 text-center text-white">
+                <div className="text-xs opacity-75">2-week setup</div>
+                <div className="flex items-center justify-center gap-1 mt-2">
+                  <Shield className="w-4 h-4" />
+                  <span className="text-xs">30-day money-back guarantee</span>
+                </div>
+              </div>
             </motion.div>
 
-            {/* Cursive Pipeline */}
+            {/* Cursive Data - Entry tier */}
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
@@ -148,66 +344,339 @@ export default function PricingPage() {
               className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-[#007AFF] transition-all duration-300 hover:shadow-lg"
             >
               <div className="mb-6">
-                <h3 className="text-2xl font-light text-gray-900 mb-2"><span className="font-cursive text-3xl text-gray-900">Cursive</span> Pipeline</h3>
-                <p className="text-gray-600">Full-stack AI SDR solution</p>
+                <div className="text-xs font-medium text-gray-500 mb-2">STARTER</div>
+                <h3 className="text-2xl font-light text-gray-900 mb-2">
+                  <span className="font-cursive text-3xl text-gray-900">Cursive</span> Data
+                </h3>
+                <p className="text-gray-600">Verified leads for your team</p>
               </div>
 
               <div className="mb-8">
-                <div className="text-4xl font-light text-[#007AFF] mb-2">$5,000<span className="text-lg text-gray-600">/mo</span></div>
-                <p className="text-sm text-gray-500">$5,000 one-time setup</p>
+                {billingCycle === 'annual' ? (
+                  <>
+                    <div className="text-4xl font-light text-[#007AFF] mb-1">
+                      $800<span className="text-lg text-gray-600">/mo</span>
+                    </div>
+                    <div className="text-sm text-gray-500 line-through mb-1">$1,000/mo</div>
+                    <div className="inline-block bg-green-100 text-green-700 text-xs px-2 py-1 rounded">
+                      Save $2,400/year
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-4xl font-light text-[#007AFF] mb-2">
+                    $1,000<span className="text-lg text-gray-600">/mo</span>
+                  </div>
+                )}
+                <p className="text-sm text-gray-500 mt-2">500-2,000 leads/month</p>
+              </div>
+
+              <div className="mb-6">
+                <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
+                  Perfect For
+                </div>
+                <p className="text-sm text-gray-600">
+                  Teams with existing outbound processes who need high-quality verified leads
+                </p>
               </div>
 
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
-                  <span className="text-gray-700">Everything in Outbound</span>
+                  <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                  <span className="text-gray-700">Verified & enriched contacts (95%+ accuracy)</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
-                  <span className="text-gray-700">AI SDR agents</span>
+                  <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                  <span className="text-gray-700">Custom ICP targeting</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
-                  <span className="text-gray-700">Multi-channel campaigns</span>
+                  <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                  <span className="text-gray-700">Monthly list refresh</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
-                  <span className="text-gray-700">Unlimited enrichment</span>
+                  <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                  <span className="text-gray-700">CSV export + CRM integration</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
-                  <span className="text-gray-700">API access</span>
+                  <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                  <span className="text-gray-700">Email support</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                  <span className="text-gray-700">Dedicated account manager</span>
                 </li>
               </ul>
 
-              <Button className="w-full" href="https://buy.stripe.com/your-pipeline-link" target="_blank">
-                Get Started
+              <Button className="w-full" href="https://buy.stripe.com/your-data-link" target="_blank">
+                Get Data Access
                 <ArrowRight className="w-4 h-4" />
               </Button>
 
-              <p className="text-xs text-center text-gray-500 mt-4">2-3 week onboarding • Cancel anytime</p>
+              <div className="mt-4 text-center">
+                <div className="text-xs text-gray-500">Instant access</div>
+                <div className="flex items-center justify-center gap-1 mt-2">
+                  <Shield className="w-4 h-4 text-green-600" />
+                  <span className="text-xs text-green-600">No setup fee • Cancel anytime</span>
+                </div>
+              </div>
             </motion.div>
+          </div>
+
+          {/* Upgrade Path Clarity */}
+          <div className="mt-16 max-w-4xl mx-auto text-center">
+            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 border border-blue-100">
+              <TrendingUp className="w-12 h-12 text-[#007AFF] mx-auto mb-4" />
+              <h3 className="text-2xl font-light text-gray-900 mb-3">
+                Easy Upgrade Path
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Start with Data, upgrade to Outbound when ready, or go all-in with Pipeline.
+                Switch between plans anytime with no penalties.
+              </p>
+              <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
+                <span className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-600" />
+                  Pro-rated billing
+                </span>
+                <span className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-600" />
+                  Keep your data
+                </span>
+                <span className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-600" />
+                  No downgrade fees
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* Add-Ons Row */}
           <div className="mt-16 max-w-6xl mx-auto">
-            <h3 className="text-2xl font-light text-gray-900 text-center mb-8">Add-Ons & Power-Ups</h3>
+            <h3 className="text-2xl font-light text-gray-900 text-center mb-3">
+              Power-Ups & Add-Ons
+            </h3>
+            <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+              Enhance any plan with these premium features. Available on Outbound and Pipeline tiers.
+            </p>
             <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-xl p-6 text-center border border-gray-200">
+              <div className="bg-white rounded-xl p-6 text-center border border-gray-200 hover:border-[#007AFF] transition-all">
+                <Zap className="w-10 h-10 text-[#007AFF] mx-auto mb-3" />
                 <div className="text-2xl font-light text-[#007AFF] mb-2">$750/mo</div>
-                <div className="text-sm text-gray-900 mb-2">Website Visitor Tracking</div>
-                <div className="text-xs text-gray-600">+ $0.50 per identified visitor</div>
+                <div className="text-sm font-medium text-gray-900 mb-2">Website Visitor Tracking</div>
+                <div className="text-xs text-gray-600 mb-4">+ $0.50 per identified visitor</div>
+                <p className="text-xs text-gray-500">
+                  Identify 70% of anonymous website visitors in real-time
+                </p>
               </div>
-              <div className="bg-white rounded-xl p-6 text-center border border-gray-200">
+              <div className="bg-white rounded-xl p-6 text-center border border-gray-200 hover:border-[#007AFF] transition-all">
+                <TrendingUp className="w-10 h-10 text-[#007AFF] mx-auto mb-3" />
                 <div className="text-2xl font-light text-[#007AFF] mb-2">$1,500/mo</div>
-                <div className="text-sm text-gray-900 mb-2">Visitor Retargeting</div>
-                <div className="text-xs text-gray-600">Requires Visitor Tracking</div>
+                <div className="text-sm font-medium text-gray-900 mb-2">Visitor Retargeting</div>
+                <div className="text-xs text-gray-600 mb-4">Requires Visitor Tracking</div>
+                <p className="text-xs text-gray-500">
+                  Auto-engage visitors with email and ad campaigns
+                </p>
               </div>
-              <div className="bg-white rounded-xl p-6 text-center border border-gray-200">
+              <div className="bg-white rounded-xl p-6 text-center border border-gray-200 hover:border-[#007AFF] transition-all">
+                <Users className="w-10 h-10 text-[#007AFF] mx-auto mb-3" />
                 <div className="text-2xl font-light text-[#007AFF] mb-2">$2,000/mo</div>
-                <div className="text-sm text-gray-900 mb-2">White Label Platform</div>
-                <div className="text-xs text-gray-600">Includes 10 user seats</div>
+                <div className="text-sm font-medium text-gray-900 mb-2">White Label Platform</div>
+                <div className="text-xs text-gray-600 mb-4">Includes 10 user seats</div>
+                <p className="text-xs text-gray-500">
+                  Rebrand Cursive for your agency clients
+                </p>
               </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Feature Comparison Table */}
+      <section className="py-24 bg-white">
+        <Container>
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+                Compare Plans
+                <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+                  Feature by Feature
+                </span>
+              </h2>
+              <p className="text-xl text-gray-600">
+                Every plan includes our core data quality guarantee and dedicated support.
+              </p>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="border-b-2 border-gray-200">
+                    <th className="text-left py-4 px-6 font-light text-gray-900">Features</th>
+                    <th className="text-center py-4 px-6 font-light text-gray-900">Data</th>
+                    <th className="text-center py-4 px-6 font-light text-gray-900 bg-blue-50">
+                      Outbound
+                      <div className="text-xs text-[#007AFF] font-medium mt-1">Most Popular</div>
+                    </th>
+                    <th className="text-center py-4 px-6 font-light text-gray-900">Pipeline</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-4 px-6 text-gray-700">Verified Leads/Month</td>
+                    <td className="py-4 px-6 text-center text-gray-600">500-2,000</td>
+                    <td className="py-4 px-6 text-center text-gray-600 bg-blue-50">500+</td>
+                    <td className="py-4 px-6 text-center text-gray-600">Unlimited</td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-4 px-6 text-gray-700">Lead Enrichment</td>
+                    <td className="py-4 px-6 text-center"><Check className="w-5 h-5 text-green-600 mx-auto" /></td>
+                    <td className="py-4 px-6 text-center bg-blue-50"><Check className="w-5 h-5 text-green-600 mx-auto" /></td>
+                    <td className="py-4 px-6 text-center"><Check className="w-5 h-5 text-green-600 mx-auto" /></td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-4 px-6 text-gray-700">Custom ICP Targeting</td>
+                    <td className="py-4 px-6 text-center"><Check className="w-5 h-5 text-green-600 mx-auto" /></td>
+                    <td className="py-4 px-6 text-center bg-blue-50"><Check className="w-5 h-5 text-green-600 mx-auto" /></td>
+                    <td className="py-4 px-6 text-center"><Check className="w-5 h-5 text-green-600 mx-auto" /></td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-4 px-6 text-gray-700">AI Email Personalization</td>
+                    <td className="py-4 px-6 text-center text-gray-300">—</td>
+                    <td className="py-4 px-6 text-center bg-blue-50"><Check className="w-5 h-5 text-green-600 mx-auto" /></td>
+                    <td className="py-4 px-6 text-center"><Check className="w-5 h-5 text-green-600 mx-auto" /></td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-4 px-6 text-gray-700">Email Infrastructure Setup</td>
+                    <td className="py-4 px-6 text-center text-gray-300">—</td>
+                    <td className="py-4 px-6 text-center bg-blue-50"><Check className="w-5 h-5 text-green-600 mx-auto" /></td>
+                    <td className="py-4 px-6 text-center"><Check className="w-5 h-5 text-green-600 mx-auto" /></td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-4 px-6 text-gray-700">Campaign Management</td>
+                    <td className="py-4 px-6 text-center text-gray-300">—</td>
+                    <td className="py-4 px-6 text-center bg-blue-50"><Check className="w-5 h-5 text-green-600 mx-auto" /></td>
+                    <td className="py-4 px-6 text-center"><Check className="w-5 h-5 text-green-600 mx-auto" /></td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-4 px-6 text-gray-700">AI SDR Agents (24/7)</td>
+                    <td className="py-4 px-6 text-center text-gray-300">—</td>
+                    <td className="py-4 px-6 text-center bg-blue-50 text-gray-300">—</td>
+                    <td className="py-4 px-6 text-center"><Check className="w-5 h-5 text-green-600 mx-auto" /></td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-4 px-6 text-gray-700">Multi-Channel (Email + LinkedIn + SMS)</td>
+                    <td className="py-4 px-6 text-center text-gray-300">—</td>
+                    <td className="py-4 px-6 text-center bg-blue-50 text-gray-300">—</td>
+                    <td className="py-4 px-6 text-center"><Check className="w-5 h-5 text-green-600 mx-auto" /></td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-4 px-6 text-gray-700">API Access</td>
+                    <td className="py-4 px-6 text-center text-gray-300">—</td>
+                    <td className="py-4 px-6 text-center bg-blue-50 text-gray-300">—</td>
+                    <td className="py-4 px-6 text-center"><Check className="w-5 h-5 text-green-600 mx-auto" /></td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-4 px-6 text-gray-700">Support Level</td>
+                    <td className="py-4 px-6 text-center text-gray-600 text-sm">Email</td>
+                    <td className="py-4 px-6 text-center text-gray-600 text-sm bg-blue-50">Weekly calls</td>
+                    <td className="py-4 px-6 text-center text-gray-600 text-sm">Dedicated manager</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mt-8 text-center">
+              <p className="text-sm text-gray-500">
+                All plans include: 95%+ data accuracy, CRM integrations, monthly reporting, and no long-term contracts.
+              </p>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Testimonials by Tier */}
+      <section className="py-24 bg-[#F7F9FB]">
+        <Container>
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+                What Customers
+                <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+                  Are Saying
+                </span>
+              </h2>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {/* Data Plan Testimonial */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="bg-white rounded-xl p-6 border border-gray-200"
+              >
+                <div className="text-xs font-medium text-gray-500 mb-3">CURSIVE DATA</div>
+                <p className="text-gray-700 mb-4 italic">
+                  "We were spending $8K/month on ZoomInfo and still had to manually verify everything.
+                  Cursive Data gives us cleaner leads at a fraction of the cost."
+                </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-medium">
+                    JM
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">Jason Miller</div>
+                    <div className="text-xs text-gray-500">Head of Growth, SaaS Startup</div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Outbound Plan Testimonial */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+                className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-[#007AFF]"
+              >
+                <div className="text-xs font-medium text-[#007AFF] mb-3">CURSIVE OUTBOUND</div>
+                <p className="text-gray-700 mb-4 italic">
+                  "Cursive Outbound replaced 2 SDRs for us. We went from 5 qualified meetings/month
+                  to 20+ with better email performance than we ever got in-house."
+                </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-[#007AFF] rounded-full flex items-center justify-center text-white font-medium">
+                    SC
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">Sarah Chen</div>
+                    <div className="text-xs text-gray-500">VP Sales, B2B Platform</div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Pipeline Plan Testimonial */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+                className="bg-white rounded-xl p-6 border border-gray-200"
+              >
+                <div className="text-xs font-medium text-purple-600 mb-3">CURSIVE PIPELINE</div>
+                <p className="text-gray-700 mb-4 italic">
+                  "The AI SDR agents work 24/7 across email, LinkedIn, and SMS. We've 3x'd our pipeline
+                  in 4 months without hiring a single SDR. Game-changer for enterprise."
+                </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-medium">
+                    RP
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">Robert Park</div>
+                    <div className="text-xs text-gray-500">CRO, Enterprise SaaS</div>
+                  </div>
+                </div>
+              </motion.div>
             </div>
           </div>
         </Container>
@@ -219,11 +688,14 @@ export default function PricingPage() {
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                Frequently Asked
+                Common Questions
                 <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
-                  Questions
+                  Answered
                 </span>
               </h2>
+              <p className="text-lg text-gray-600 mt-4">
+                Everything you need to know about pricing, plans, and guarantees.
+              </p>
             </div>
 
             <div className="space-y-4">
@@ -257,25 +729,188 @@ export default function PricingPage() {
         </Container>
       </section>
 
-      {/* Final CTA */}
+      {/* Enterprise / Custom Plans Section */}
+      <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
+        <Container>
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white rounded-2xl p-10 shadow-lg border border-gray-200">
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-[#007AFF]/10 rounded-full mb-4">
+                  <Users className="w-8 h-8 text-[#007AFF]" />
+                </div>
+                <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-3">
+                  Need Something Custom?
+                </h2>
+                <p className="text-lg text-gray-600">
+                  Enterprise volume, white-label solutions, or unique requirements.
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-6 mb-8">
+                <div className="text-center p-4">
+                  <div className="text-[#007AFF] font-light text-2xl mb-2">10,000+</div>
+                  <div className="text-sm text-gray-600">Leads per month</div>
+                </div>
+                <div className="text-center p-4">
+                  <div className="text-[#007AFF] font-light text-2xl mb-2">White Label</div>
+                  <div className="text-sm text-gray-600">For agencies</div>
+                </div>
+                <div className="text-center p-4">
+                  <div className="text-[#007AFF] font-light text-2xl mb-2">Custom</div>
+                  <div className="text-sm text-gray-600">Integrations</div>
+                </div>
+              </div>
+
+              <div className="text-center">
+                <Button
+                  size="lg"
+                  href="https://cal.com/adamwolfe/cursive-ai-audit"
+                  target="_blank"
+                >
+                  Contact Sales
+                  <ArrowRight className="w-5 h-5" />
+                </Button>
+                <p className="text-sm text-gray-500 mt-3">
+                  Talk to our team about volume pricing and custom solutions
+                </p>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Pricing Transparency Section */}
+      <section className="py-16 bg-white">
+        <Container>
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-full mb-4">
+                <Shield className="w-5 h-5" />
+                <span className="text-sm font-medium">Pricing Transparency</span>
+              </div>
+              <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-6">
+                What's Included
+                <span className="block font-cursive text-4xl lg:text-5xl text-gray-900 mt-2">
+                  In Every Plan
+                </span>
+              </h2>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="flex items-start gap-3">
+                <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                <div>
+                  <div className="font-medium text-gray-900 mb-1">No Hidden Fees</div>
+                  <div className="text-sm text-gray-600">
+                    What you see is what you pay. No surprise charges, no per-seat fees for your team.
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                <div>
+                  <div className="font-medium text-gray-900 mb-1">Cancel Anytime</div>
+                  <div className="text-sm text-gray-600">
+                    Month-to-month billing. No long-term contracts or cancellation penalties.
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                <div>
+                  <div className="font-medium text-gray-900 mb-1">95%+ Data Accuracy</div>
+                  <div className="text-sm text-gray-600">
+                    Verified contacts with deliverability guarantee. Bounced emails are replaced free.
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                <div>
+                  <div className="font-medium text-gray-900 mb-1">Dedicated Support</div>
+                  <div className="text-sm text-gray-600">
+                    Real humans, not chatbots. Every plan includes dedicated account management.
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                <div>
+                  <div className="font-medium text-gray-900 mb-1">CRM Integrations</div>
+                  <div className="text-sm text-gray-600">
+                    Native integrations with Salesforce, HubSpot, and 200+ other tools.
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                <div>
+                  <div className="font-medium text-gray-900 mb-1">Flexible Scaling</div>
+                  <div className="text-sm text-gray-600">
+                    Upgrade or downgrade anytime. Pro-rated billing with no downgrade fees.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Final CTA with Risk Reversal */}
       <section className="py-24 bg-[#F7F9FB]">
         <Container>
-          <div className="bg-[#007AFF] rounded-3xl p-12 text-center text-white shadow-lg max-w-4xl mx-auto">
+          <div className="bg-gradient-to-br from-[#007AFF] to-purple-600 rounded-3xl p-12 text-center text-white shadow-2xl max-w-4xl mx-auto">
+            <div className="inline-flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full mb-6">
+              <Shield className="w-5 h-5" />
+              <span className="text-sm font-medium">30-Day Money-Back Guarantee</span>
+            </div>
+
             <h2 className="text-4xl lg:text-5xl font-light mb-4">
               Ready to 3x Your Pipeline?
             </h2>
-            <p className="text-xl mb-8 opacity-90">
-              Book a call. We'll audit your current lead gen and show you exactly how <span className="font-cursive text-2xl">Cursive</span> can help.
+            <p className="text-xl mb-2 opacity-90">
+              Book a free audit. We'll review your current lead gen process and show you exactly how{' '}
+              <span className="font-cursive text-2xl">Cursive</span> can help.
             </p>
-            <Button
-              size="lg"
-              className="bg-white text-[#007AFF] hover:bg-gray-100"
-              href="https://cal.com/adamwolfe/cursive-ai-audit"
-              target="_blank"
-            >
-              Book Your Free Audit
-              <ArrowRight className="w-5 h-5" />
-            </Button>
+            <p className="text-base mb-8 opacity-75">
+              No pressure. No sales pitch. Just honest advice on what will work for your business.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button
+                size="lg"
+                className="bg-white text-[#007AFF] hover:bg-gray-100"
+                href="https://cal.com/adamwolfe/cursive-ai-audit"
+                target="_blank"
+              >
+                Book Your Free Audit
+                <ArrowRight className="w-5 h-5" />
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="bg-transparent border-2 border-white text-white hover:bg-white/10"
+                href="https://buy.stripe.com/your-outbound-link"
+                target="_blank"
+              >
+                Start Outbound Now
+              </Button>
+            </div>
+
+            <div className="mt-8 flex items-center justify-center gap-6 text-sm opacity-75">
+              <span className="flex items-center gap-2">
+                <Check className="w-4 h-4" />
+                No credit card required
+              </span>
+              <span className="flex items-center gap-2">
+                <Check className="w-4 h-4" />
+                Setup in 2 weeks
+              </span>
+              <span className="flex items-center gap-2">
+                <Check className="w-4 h-4" />
+                Cancel anytime
+              </span>
+            </div>
           </div>
         </Container>
       </section>
@@ -283,46 +918,54 @@ export default function PricingPage() {
   )
 }
 
-// FAQ Data
+// FAQ Data - Objection Handling
 const faqs = [
   {
-    question: "Can I cancel anytime?",
-    answer: "Yes. All plans are month-to-month. Cancel anytime with 30 days notice. No hidden fees or penalties.",
+    question: "How is this different from ZoomInfo or Apollo?",
+    answer: "Traditional data providers just sell you lists. Cursive combines data + activation. We don't just give you leads—we help you engage them with AI-powered campaigns. Plus, our data is verified in real-time (not batch-processed monthly) and our pricing is transparent with no hidden seat fees.",
+  },
+  {
+    question: "What's your data accuracy guarantee?",
+    answer: "We guarantee 95%+ email deliverability. Every contact is verified through multiple data sources and real-time validation before delivery. If emails bounce, we replace them at no charge. Most data providers won't guarantee accuracy—we do.",
+  },
+  {
+    question: "Can I cancel anytime? Are there contracts?",
+    answer: "Zero long-term contracts. All plans are month-to-month. Cancel anytime with 30 days notice. No cancellation fees, no penalties. We earn your business every single month.",
   },
   {
     question: "What if I don't know which plan to choose?",
-    answer: "Book a 15-minute call. We'll ask about your goals, current process, and team size—then recommend the right fit. No pressure, just honest advice.",
+    answer: "Book a free 15-minute strategy call. We'll ask about your revenue goals, current lead gen process, and team size—then recommend the right fit. No pressure, just honest advice. Most B2B SaaS companies start with Outbound.",
   },
   {
-    question: "Do you offer custom plans?",
-    answer: "Absolutely. For enterprise needs, custom integrations, or volume discounts, contact us directly. We'll build a plan that fits your specific requirements.",
+    question: "How fast can we get started and see results?",
+    answer: "Cursive Data: Instant access, first leads within 5-7 days. Cursive Outbound: 2 weeks for setup, first meetings typically within 3-4 weeks. Cursive Pipeline: 2-3 weeks for onboarding, then continuous lead flow. We handle the heavy lifting—you focus on closing deals.",
   },
   {
-    question: "How fast can we get started?",
-    answer: "Cursive Data: Instant access. First list within 5-7 days. Cursive Outbound: 1-2 weeks for full setup (domains, copy, infrastructure). Cursive Pipeline: 2-3 weeks for onboarding and AI training.",
-  },
-  {
-    question: "What kind of companies use Cursive?",
-    answer: "B2B SaaS, agencies, consultancies, and service businesses doing $500k-$50M ARR. If you sell to businesses, we can help.",
-  },
-  {
-    question: "Is there a contract?",
-    answer: "No long-term contracts. Month-to-month for all plans. We earn your business every month.",
+    question: "Do you integrate with our CRM and tools?",
+    answer: "Yes. We have native integrations with Salesforce, HubSpot, Pipedrive, and 200+ other tools. We can also push data via API or CSV export. During onboarding, we'll connect directly to your existing stack.",
   },
   {
     question: "What's included in the setup fee?",
-    answer: "For Outbound: email domain setup, inbox configuration, deliverability optimization, campaign strategy, and AI training. For Pipeline: everything in Outbound plus API integration, AI SDR configuration, and custom workflow design.",
+    answer: "For Outbound ($2,500): email domain setup, inbox configuration, deliverability optimization, campaign strategy, copy review, and AI training on your brand voice. For Pipeline ($5,000): everything in Outbound plus API integration, AI SDR agent configuration, multi-channel workflow design, and dedicated onboarding. Setup fees are one-time—never recurring.",
   },
   {
-    question: "How do you ensure data quality?",
-    answer: "Every contact is verified through multiple data sources and real-time validation. We guarantee 95%+ email deliverability and provide a replacement guarantee for any bounced emails.",
+    question: "What kind of companies use Cursive?",
+    answer: "B2B SaaS companies ($500K-$50M ARR), digital agencies, consultancies, and service businesses. Our sweet spot is companies doing $2M-$20M ARR who need consistent qualified pipeline but don't want to hire more SDRs. If you sell to businesses, we can help.",
   },
   {
     question: "Can I bring my own lead lists?",
-    answer: "Yes! With Cursive Outbound and Pipeline, you can use your existing lists or combine them with ours. We'll enrich and verify them before sending.",
+    answer: "Absolutely. With Cursive Outbound and Pipeline, you can upload your existing lists or combine them with ours. We'll enrich, verify, and de-duplicate them before launching campaigns. Many customers use a hybrid approach: our fresh leads + their existing database.",
   },
   {
-    question: "Do you offer refunds?",
-    answer: "Setup fees are non-refundable (we invest significant time in onboarding). Monthly fees are prorated if you cancel mid-month. We stand behind our work—if you're not satisfied, we'll work with you to make it right.",
+    question: "What's your money-back guarantee?",
+    answer: "Outbound plan includes a 30-day money-back guarantee. If you're not satisfied with the quality of leads or campaign performance in the first 30 days, we'll refund your monthly fee (setup fees are non-refundable due to the work invested). We stand behind our results.",
+  },
+  {
+    question: "How do you handle pricing for annual plans?",
+    answer: "Annual plans save you 20% compared to monthly billing. You pay upfront for 12 months and lock in your rate (no surprise price increases). If you need to cancel mid-year, we'll prorate and refund unused months—no questions asked.",
+  },
+  {
+    question: "Do you offer discounts or custom pricing?",
+    answer: "We offer 20% off for annual billing. For enterprise volume (10,000+ leads/month), multi-year commitments, or agency white-label partnerships, we can create custom pricing. Contact us for a tailored quote based on your specific needs.",
   },
 ]
