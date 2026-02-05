@@ -24,17 +24,15 @@ export default function HomePage() {
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="text-center max-w-5xl mx-auto mb-12"
           >
-            {/* OPTIMIZED: Clear value prop in <10 words - benefit-focused, not feature-focused */}
             <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6 leading-tight">
-              Turn Anonymous Visitors
-              <span className="block text-gray-900 mt-2">
-                Into Qualified Leads
+              AI Intent Systems
+              <span className="block text-gray-500 mt-2">
+                That Never Sleep.
               </span>
             </h1>
 
-            {/* OPTIMIZED: Subhead explains HOW in <20 words */}
             <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-3xl mx-auto">
-              <span className="font-cursive text-gray-900 text-2xl">Cursive</span> reveals who's visiting your site, enriches them with contact data, and automates outreach—24/7.
+              <span className="font-cursive text-gray-900 text-2xl">Cursive</span> identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.
             </p>
 
             {/* OPTIMIZED: Stats ABOVE fold for credibility */}
