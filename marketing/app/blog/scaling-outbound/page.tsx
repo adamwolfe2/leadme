@@ -513,7 +513,7 @@ export default function BlogPost() {
               Do it right, and you can 10x your outbound without sacrificing quality.
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl p-8 my-12 text-white text-center">
+            <div className="not-prose bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-8 my-12 text-white text-center">
               <h3 className="text-3xl font-bold mb-4">Ready to Scale?</h3>
               <p className="text-lg mb-6 opacity-90">
                 We'll handle the entire operation—infrastructure, automation, and execution.

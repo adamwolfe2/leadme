@@ -128,7 +128,7 @@ export default function AudienceTargetingCategoryPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-purple-600 to-blue-600">
+      <section className="py-24 bg-gradient-to-br from-blue-600 to-blue-700">
         <Container>
           <div className="max-w-3xl mx-auto text-center text-white">
             <h2 className="text-4xl lg:text-5xl font-bold mb-4">

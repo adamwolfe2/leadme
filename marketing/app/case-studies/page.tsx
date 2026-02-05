@@ -415,7 +415,7 @@ export default function CaseStudiesPage() {
       {/* Final CTA */}
       <section className="py-24 bg-white">
         <Container>
-          <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl p-12 text-center text-white shadow-2xl max-w-4xl mx-auto">
+          <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-3xl p-12 text-center text-white shadow-2xl max-w-4xl mx-auto">
             <h2 className="text-4xl lg:text-5xl font-bold mb-4">
               Ready to See Similar Results?
             </h2>
