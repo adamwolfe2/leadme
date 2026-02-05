@@ -16,10 +16,12 @@ export function DashboardPreview() {
       {/* Sidebar */}
       <div className="w-48 bg-gray-50 border-r border-gray-200 p-4 flex flex-col">
         <div className="flex items-center gap-2 mb-8">
-          <div className="w-8 h-8 bg-[#007AFF] rounded-lg flex items-center justify-center">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
+          <div className="w-8 h-8 flex items-center justify-center">
+            <img
+              src="/cursive-logo.png"
+              alt="Cursive"
+              className="w-6 h-6"
+            />
           </div>
           <span className="font-semibold text-gray-900">Cursive</span>
         </div>
