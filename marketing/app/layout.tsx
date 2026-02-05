@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Inter, Dancing_Script } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { generateMetadata } from "@/lib/seo/metadata";
+import { ClientLayout } from "@/components/client-layout";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -32,12 +34,29 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        {/* Google tag (gtag.js) */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-JZ9C4QKCX4"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-JZ9C4QKCX4');
+          `}
+        </Script>
+      </head>
       <body
         className={`${inter.variable} ${dancingScript.variable} font-sans antialiased`}
       >
-        <Header />
-        <main className="pt-16">{children}</main>
-        <Footer />
+        <ClientLayout>
+          <Header />
+          <main className="pt-16">{children}</main>
+          <Footer />
+        </ClientLayout>
       </body>
     </html>
   );

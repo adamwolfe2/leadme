@@ -840,7 +840,7 @@ export default function PricingPage() {
       </section>
 
       {/* Final CTA with Risk Reversal */}
-      <section className="relative py-32 bg-white overflow-hidden">
+      <section className="relative pt-32 pb-0 bg-white overflow-hidden">
         <Container>
           <motion.div
             initial={{ opacity: 0, y: 30 }}

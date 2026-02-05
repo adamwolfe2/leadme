@@ -6,12 +6,19 @@ import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import { useState } from "react"
-import { Menu, X, ChevronDown } from "lucide-react"
+import { Menu, X, ChevronDown, Eye, Users, Mail, Target, Database, Shield, Building2, ShoppingCart, Code, Briefcase, Home, Store } from "lucide-react"
+
+interface DropdownItem {
+  href: string
+  label: string
+  description: string
+  icon: React.ComponentType<{ className?: string }>
+}
 
 interface NavLink {
   href?: string
   label: string
-  dropdown?: { href: string; label: string }[]
+  dropdown?: DropdownItem[]
 }
 
 const navLinks: NavLink[] = [
@@ -19,23 +26,83 @@ const navLinks: NavLink[] = [
   {
     label: "Solutions",
     dropdown: [
-      { href: "/visitor-identification", label: "Visitor Identification" },
-      { href: "/audience-builder", label: "Audience Builder" },
-      { href: "/direct-mail", label: "Direct Mail" },
-      { href: "/intent-audiences", label: "Intent Audiences" },
-      { href: "/clean-room", label: "Data Clean Room" },
-      { href: "/data-access", label: "Data Access" },
+      {
+        href: "/visitor-identification",
+        label: "Visitor Identification",
+        description: "Turn anonymous website visitors into qualified leads",
+        icon: Eye,
+      },
+      {
+        href: "/audience-builder",
+        label: "Audience Builder",
+        description: "Create unlimited targeted audiences with intent data",
+        icon: Users,
+      },
+      {
+        href: "/direct-mail",
+        label: "Direct Mail",
+        description: "Automated direct mail campaigns that convert",
+        icon: Mail,
+      },
+      {
+        href: "/intent-audiences",
+        label: "Intent Audiences",
+        description: "Pre-built audiences showing active buying intent",
+        icon: Target,
+      },
+      {
+        href: "/clean-room",
+        label: "Data Clean Room",
+        description: "Secure data collaboration without exposing PII",
+        icon: Shield,
+      },
+      {
+        href: "/data-access",
+        label: "Data Access",
+        description: "Direct access to 220M+ consumer & business profiles",
+        icon: Database,
+      },
     ],
   },
   {
     label: "Industries",
     dropdown: [
-      { href: "/industries/financial-services", label: "Financial Services" },
-      { href: "/industries/ecommerce", label: "eCommerce" },
-      { href: "/industries/b2b-software", label: "B2B Software" },
-      { href: "/industries/agencies", label: "Agencies" },
-      { href: "/industries/home-services", label: "Home Services" },
-      { href: "/industries/retail", label: "Retail" },
+      {
+        href: "/industries/financial-services",
+        label: "Financial Services",
+        description: "Lead generation for banks and financial institutions",
+        icon: Building2,
+      },
+      {
+        href: "/industries/ecommerce",
+        label: "eCommerce",
+        description: "Customer acquisition for online retailers",
+        icon: ShoppingCart,
+      },
+      {
+        href: "/industries/b2b-software",
+        label: "B2B Software",
+        description: "Enterprise lead generation and demand gen",
+        icon: Code,
+      },
+      {
+        href: "/industries/agencies",
+        label: "Agencies",
+        description: "White-label solutions for marketing agencies",
+        icon: Briefcase,
+      },
+      {
+        href: "/industries/home-services",
+        label: "Home Services",
+        description: "Local lead generation for contractors and pros",
+        icon: Home,
+      },
+      {
+        href: "/industries/retail",
+        label: "Retail",
+        description: "Foot traffic and customer acquisition for stores",
+        icon: Store,
+      },
     ],
   },
   { href: "/pricing", label: "Pricing" },
@@ -86,23 +153,38 @@ export function Header() {
                     </Link>
                   )}
 
-                  {/* Dropdown Menu */}
+                  {/* Dropdown Menu - Mega Menu Style */}
                   {link.dropdown && openDropdown === link.label && (
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
-                      className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+                      className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[600px] bg-white rounded-xl shadow-2xl border border-gray-200 p-6 z-50"
                     >
-                      {link.dropdown.map((item) => (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#F7F9FB] hover:text-[#007AFF] transition-colors"
-                        >
-                          {item.label}
-                        </Link>
-                      ))}
+                      <div className="grid grid-cols-2 gap-3">
+                        {link.dropdown.map((item) => {
+                          const Icon = item.icon
+                          return (
+                            <Link
+                              key={item.href}
+                              href={item.href}
+                              className="flex items-start gap-3 p-3 rounded-lg hover:bg-[#F7F9FB] transition-colors group"
+                            >
+                              <div className="w-10 h-10 flex-shrink-0 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+                                <Icon className="w-5 h-5 text-gray-600 group-hover:text-[#007AFF] transition-colors" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="font-medium text-gray-900 mb-0.5 group-hover:text-[#007AFF] transition-colors">
+                                  {item.label}
+                                </div>
+                                <div className="text-sm text-gray-600 leading-snug">
+                                  {item.description}
+                                </div>
+                              </div>
+                            </Link>
+                          )
+                        })}
+                      </div>
                     </motion.div>
                   )}
                 </div>
@@ -169,17 +251,30 @@ export function Header() {
                           <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === link.label ? 'rotate-180' : ''}`} />
                         </button>
                         {openDropdown === link.label && (
-                          <div className="ml-4 mt-1 space-y-1">
-                            {link.dropdown.map((item) => (
-                              <Link
-                                key={item.href}
-                                href={item.href}
-                                onClick={() => setMobileMenuOpen(false)}
-                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#F7F9FB] hover:text-[#007AFF] rounded-lg transition-colors"
-                              >
-                                {item.label}
-                              </Link>
-                            ))}
+                          <div className="ml-2 mt-2 space-y-2">
+                            {link.dropdown.map((item) => {
+                              const Icon = item.icon
+                              return (
+                                <Link
+                                  key={item.href}
+                                  href={item.href}
+                                  onClick={() => setMobileMenuOpen(false)}
+                                  className="flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-[#F7F9FB] transition-colors"
+                                >
+                                  <div className="w-8 h-8 flex-shrink-0 bg-gray-100 rounded-lg flex items-center justify-center">
+                                    <Icon className="w-4 h-4 text-gray-600" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="font-medium text-gray-900 text-sm mb-0.5">
+                                      {item.label}
+                                    </div>
+                                    <div className="text-xs text-gray-600 leading-snug">
+                                      {item.description}
+                                    </div>
+                                  </div>
+                                </Link>
+                              )
+                            })}
                           </div>
                         )}
                       </div>

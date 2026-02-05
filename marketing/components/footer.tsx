@@ -1,13 +1,16 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
 import Link from "next/link"
+import { ViewToggle } from "./view-toggle"
 
 export function Footer() {
   return (
     <footer className="bg-white border-t border-gray-200 py-12">
       <Container>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           {/* Brand */}
-          <div className="col-span-2 md:col-span-3 lg:col-span-2">
+          <div className="col-span-2">
             <div className="flex items-center mb-4">
               <img
                 src="/cursive-logo.png"
@@ -22,9 +25,12 @@ export function Footer() {
             <p className="font-cursive text-3xl text-gray-500 mb-4">
               With Cursive
             </p>
-            <p className="text-gray-600 text-sm">
+            <p className="text-gray-600 text-sm mb-6">
               AI-powered lead generation and outbound automation for B2B companies.
             </p>
+
+            {/* View Toggle */}
+            <ViewToggle />
           </div>
 
           {/* Solutions */}
@@ -171,7 +177,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="mt-12 pt-8 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-gray-600">
             © {new Date().getFullYear()} Cursive. All rights reserved.
           </p>
