@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
+import { IntegrationsShowcase } from "@/components/integrations-showcase"
 
 export default function IntegrationsPage() {
   return (
@@ -13,7 +14,7 @@ export default function IntegrationsPage() {
             <span className="text-sm text-[#007AFF] mb-4 block">INTEGRATIONS</span>
             <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
               Seamlessly Sync Data
-              <span className="block font-cursive text-6xl lg:text-8xl text-gray-900 mt-2">With Your Stack</span>
+              <span className="block font-cursive text-6xl lg:text-8xl text-gray-500 mt-2">With Your Stack</span>
             </h1>
             <p className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto">
               Connect Cursive to 200+ platforms or use our API and webhooks for custom integrations.
@@ -25,6 +26,15 @@ export default function IntegrationsPage() {
 
       <section className="py-20 bg-[#F7F9FB]">
         <Container>
+          <IntegrationsShowcase />
+        </Container>
+      </section>
+
+      <section className="py-20 bg-white">
+        <Container>
+          <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-12 text-center">
+            Integration Categories
+          </h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {[
               { title: 'CRM Platforms', examples: 'Salesforce, HubSpot, Pipedrive, Close' },
