@@ -1,9 +1,9 @@
 import { generateMetadata } from '@/lib/seo/metadata'
 
 export const metadata = generateMetadata({
-  title: 'Website Visitor Identification & Tracking',
-  description: 'Transform anonymous clicks into valuable contacts. Identify, enrich, and activate visitor data—instantly reveal up to 70% of website traffic.',
-  keywords: ['visitor identification', 'website tracking', 'anonymous visitor identification', 'visitor tracking pixel', 'identify website visitors'],
+  title: 'Visitor Identification Software | Identify 70% of Anonymous Traffic',
+  description: 'Stop losing 98% of your website visitors. Cursive identifies up to 70% of anonymous traffic with company + individual data. Real-time enrichment, 200+ integrations, GDPR compliant.',
+  keywords: ['visitor identification', 'website visitor tracking', 'anonymous visitor identification', 'identify website visitors', 'B2B visitor identification', 'visitor tracking software', 'website analytics'],
   canonical: 'https://meetcursive.com/visitor-identification',
 })
 

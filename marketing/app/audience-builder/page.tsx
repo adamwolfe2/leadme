@@ -3,196 +3,683 @@
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
+import {
+  Users, Target, Zap, Shield, Filter, Database,
+  TrendingUp, CheckCircle2, ArrowRight, Sparkles,
+  Globe, Lock, Layers, RefreshCw, Mail, MessageSquare
+} from "lucide-react"
 
 export default function AudienceBuilderPage() {
+  const schemaMarkup = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://meetcursive.com/audience-builder#product",
+        "name": "Cursive Audience Builder",
+        "description": "Build unlimited B2B and B2C audiences with 220M+ consumer profiles and 140M+ business profiles. Filter by demographics, firmographics, and 450B+ monthly intent signals.",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "brand": {
+          "@type": "Brand",
+          "name": "Cursive"
+        },
+        "offers": {
+          "@type": "Offer",
+          "url": "https://meetcursive.com/audience-builder",
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://meetcursive.com"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Audience Builder",
+            "item": "https://meetcursive.com/audience-builder"
+          }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How large is your B2B and B2C database?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Cursive provides access to 220M+ consumer profiles and 140M+ business profiles across the United States. Our database is updated in real-time with fresh intent signals and verified contact information."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Are there limits on audience size?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Unlike other data providers, Cursive has no caps on audience size, exports, or activations. Build audiences as large or as targeted as you need for your campaigns."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How fresh is your intent data?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Our intent signals are updated in real-time. We track 450B+ monthly signals across 30,000+ categories, so you're always reaching prospects at the right moment."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I filter audiences by intent signals?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Cursive lets you filter audiences by specific topics, keywords, and behaviors. Build segments of people actively researching solutions like yours."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I activate audiences once I build them?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "One-click activation to 200+ platforms including Facebook Ads, Google Ads, LinkedIn Ads, email platforms, and CRMs. Audiences sync automatically to your connected tools."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is the data GDPR and CCPA compliant?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. All data honors opt-outs and complies with GDPR, CCPA, and regional privacy regulations. We use consent-aware activation and hashed identifiers."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I build lookalike audiences?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Absolutely. Upload your customer list and Cursive will find similar prospects based on firmographics, demographics, technographics, and behavioral patterns."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What types of filters are available?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Filter by company size, industry, revenue, location, job title, seniority, technologies used, intent signals, and dozens of other attributes. Combine filters for precise targeting."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I share audiences with partners?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Cursive includes a data clean room for secure audience sharing with partners while maintaining privacy compliance."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How quickly can I build an audience?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Most audiences are built in minutes. Apply your filters, preview the results, and activate immediately. No waiting for batch processing or manual approvals."
+            }
+          }
+        ]
+      }
+    ]
+  }
+
   return (
-    <main>
-      {/* Hero Section */}
-      <section className="pt-24 pb-20 bg-white">
-        <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center max-w-5xl mx-auto"
-          >
-            <span className="text-sm text-[#007AFF] mb-4 block">AUDIENCE BUILDER</span>
-            <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
-              Build Limitless Audiences
-              <span className="block font-cursive text-6xl lg:text-8xl text-gray-900 mt-2">
-                With Intent & Identity
-              </span>
-            </h1>
-            <p className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto">
-              Access live-intent B2B and B2C data, create limitless audiences, and engage across every channel.
-            </p>
-            <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit">
-              Get Started
-            </Button>
-          </motion.div>
-        </Container>
-      </section>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }}
+      />
 
-      {/* Stats Grid */}
-      <section className="py-20 bg-[#F7F9FB]">
-        <Container>
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-16">
-            {stats.map((stat, i) => (
+      <main>
+        {/* Hero Section */}
+        <section className="pt-24 pb-20 bg-white">
+          <Container>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-center max-w-5xl mx-auto"
+            >
+              <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">AUDIENCE BUILDER</span>
+              <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
+                Build Unlimited Audiences. No Caps. No Limits.
+              </h1>
+              <p className="text-xl text-gray-600 mb-6 max-w-3xl mx-auto leading-relaxed">
+                Access 220M+ consumer profiles and 140M+ business profiles. Filter by firmographics, demographics, and intent signals. Activate across every channel—instantly.
+              </p>
+              <p className="text-lg text-gray-500 mb-8 max-w-2xl mx-auto">
+                Stop paying per contact or hitting export limits. Build audiences of any size and launch campaigns in minutes, not weeks.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit">
+                  Build Your First Audience
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+                <Button size="lg" variant="outline" href="/pricing">
+                  View Pricing
+                </Button>
+              </div>
+              <div className="mt-8 flex items-center justify-center gap-8 text-sm text-gray-600 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <span>220M+ consumer profiles</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <span>140M+ business profiles</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <span>No size limits</span>
+                </div>
+              </div>
+            </motion.div>
+          </Container>
+        </section>
+
+        {/* How It Works */}
+        <section className="py-20 bg-[#F7F9FB]">
+          <Container>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+                From Filter to Campaign in 3 Steps
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Building targeted audiences has never been easier
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-12 max-w-5xl mx-auto">
+              {[
+                {
+                  step: "1",
+                  title: "Define Your Filters",
+                  description: "Choose from firmographic, demographic, technographic, and intent-based filters. Stack criteria to build hyper-targeted segments.",
+                  icon: Filter
+                },
+                {
+                  step: "2",
+                  title: "Preview & Refine",
+                  description: "See audience size in real-time as you adjust filters. Export sample profiles to verify quality before activating.",
+                  icon: Target
+                },
+                {
+                  step: "3",
+                  title: "Activate Everywhere",
+                  description: "One-click sync to Facebook, Google, LinkedIn, email platforms, and CRMs. Audiences update automatically as new data arrives.",
+                  icon: Zap
+                }
+              ].map((step, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.15 }}
+                  className="relative"
+                >
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center mb-6 shadow-lg">
+                      <step.icon className="h-10 w-10" />
+                    </div>
+                    <div className="absolute top-8 left-20 w-full h-0.5 bg-gradient-to-r from-blue-200 to-transparent hidden md:block" style={{ display: i === 2 ? 'none' : 'block' }} />
+                    <h3 className="text-2xl text-gray-900 mb-3 font-medium">
+                      {step.title}
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      {step.description}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Benefits Grid */}
+        <section className="py-20 bg-white">
+          <Container>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+                The Most Powerful Audience Builder for B2B
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Everything you need to find, segment, and activate your ideal customers
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[
+                {
+                  icon: Database,
+                  title: "360M+ Verified Profiles",
+                  description: "Access 220M consumer and 140M business profiles. The largest combined B2B + B2C database—all in one platform."
+                },
+                {
+                  icon: Sparkles,
+                  title: "450B+ Monthly Intent Signals",
+                  description: "Know when prospects are actively researching. Filter audiences by topics, keywords, and behaviors across 30,000+ categories."
+                },
+                {
+                  icon: Layers,
+                  title: "No Size Limits or Caps",
+                  description: "Build audiences of 100 or 100 million. No restrictive licensing, no per-contact fees, no hidden export limits."
+                },
+                {
+                  icon: RefreshCw,
+                  title: "Real-Time Data Updates",
+                  description: "Our database refreshes continuously. Audiences stay fresh with the latest contact info, job changes, and intent signals."
+                },
+                {
+                  icon: Shield,
+                  title: "Consent-Aware Activation",
+                  description: "All data honors opt-outs and complies with GDPR, CCPA, and regional privacy laws. Stay compliant automatically."
+                },
+                {
+                  icon: Globe,
+                  title: "Multi-Channel Activation",
+                  description: "Activate to ads, email, direct mail, CRM, and SMS—all from one dashboard. No juggling multiple tools."
+                },
+                {
+                  icon: TrendingUp,
+                  title: "Lookalike Modeling",
+                  description: "Upload your best customers and find similar prospects. Our AI identifies patterns and scales your best segments."
+                },
+                {
+                  icon: Users,
+                  title: "Account-Based Segments",
+                  description: "Build lists with multiple decision-makers per account. Perfect for ABM campaigns targeting buying committees."
+                }
+              ].map((benefit, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="bg-white rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all"
+                >
+                  <benefit.icon className="h-8 w-8 text-[#007AFF] mb-4" />
+                  <h3 className="text-xl text-gray-900 mb-3 font-medium">
+                    {benefit.title}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {benefit.description}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Use Cases */}
+        <section className="py-20 bg-[#F7F9FB]">
+          <Container>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+                Built for Every Marketing Channel
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Real use cases from B2B marketers using Cursive Audience Builder
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              {[
+                {
+                  audience: "Paid Media Teams",
+                  scenario: "You're spending thousands on LinkedIn ads but targeting is limited to job titles and company size. You need richer filters to reach high-intent prospects.",
+                  solution: "Build custom audiences filtered by tech stack, funding stage, intent signals, and specific topics. Upload to LinkedIn, Facebook, and Google for laser-focused campaigns that convert."
+                },
+                {
+                  audience: "Sales Development Reps",
+                  scenario: "Your SDRs waste hours manually researching prospects on LinkedIn and Clearbit. They need ready-to-call lists with verified contact info.",
+                  solution: "Create segmented lists of decision-makers matching your ICP. Export with verified emails and phone numbers. Your SDRs spend time selling, not researching."
+                },
+                {
+                  audience: "Account-Based Marketing",
+                  scenario: "You're targeting 500 enterprise accounts but don't have contacts for every buying committee member. Manual research takes weeks.",
+                  solution: "Upload your target account list. Cursive finds all relevant decision-makers at each company—VPs, directors, and managers across buying teams. Build multi-threaded ABM campaigns instantly."
+                },
+                {
+                  audience: "Lifecycle Marketers",
+                  scenario: "You want to re-engage churned customers with a win-back campaign, but your email list is outdated and missing new contacts.",
+                  solution: "Build a lookalike audience based on churned accounts. Find similar companies showing intent signals. Run targeted win-back campaigns to former customers and new prospects."
+                }
+              ].map((useCase, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="bg-white rounded-xl p-8 border border-gray-200"
+                >
+                  <div className="text-sm text-[#007AFF] font-medium mb-2">FOR {useCase.audience.toUpperCase()}</div>
+                  <h3 className="text-2xl text-gray-900 mb-4 font-medium">
+                    {useCase.scenario}
+                  </h3>
+                  <div className="border-l-4 border-[#007AFF] pl-4 bg-blue-50 p-4 rounded">
+                    <p className="text-gray-700 leading-relaxed">
+                      <strong className="text-gray-900">How Cursive helps:</strong> {useCase.solution}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Features Deep Dive */}
+        <section className="py-20 bg-white">
+          <Container>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+                Advanced Filtering & Segmentation
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Build hyper-targeted audiences with the most comprehensive filters in the industry
+              </p>
+            </div>
+            <div className="space-y-16 max-w-5xl mx-auto">
+              {[
+                {
+                  title: "Firmographic Filters (B2B)",
+                  description: "Target businesses based on company characteristics. Perfect for enterprise sales and ABM campaigns.",
+                  features: [
+                    "Industry (NAICS codes, custom verticals)",
+                    "Company size (employees, revenue)",
+                    "Funding stage and total raised",
+                    "Geographic location (country, state, city, zip)",
+                    "Growth signals (hiring trends, news mentions)"
+                  ]
+                },
+                {
+                  title: "Demographic Filters (B2C)",
+                  description: "Segment consumers based on personal attributes and household data.",
+                  features: [
+                    "Age, gender, income, education level",
+                    "Homeownership status and property value",
+                    "Household composition and family size",
+                    "Interests and purchase behaviors",
+                    "Location and mobility patterns"
+                  ]
+                },
+                {
+                  title: "Technographic Filters",
+                  description: "Find companies using specific technologies—ideal for software vendors and service providers.",
+                  features: [
+                    "CRM, marketing automation, analytics tools",
+                    "Cloud infrastructure and hosting",
+                    "E-commerce platforms and payment processors",
+                    "HR and productivity software",
+                    "Security and compliance tools"
+                  ]
+                },
+                {
+                  title: "Intent-Based Filters",
+                  description: "Reach prospects actively researching solutions like yours. The most powerful filter for conversion.",
+                  features: [
+                    "Topics and keywords searched",
+                    "Content consumed (whitepapers, reviews, comparisons)",
+                    "Recency (7-day, 14-day, 30-day windows)",
+                    "30,000+ intent categories",
+                    "450B+ monthly signals tracked"
+                  ]
+                },
+                {
+                  title: "Job Title & Seniority",
+                  description: "Target decision-makers and influencers across departments and levels.",
+                  features: [
+                    "Standardized job titles and functions",
+                    "Seniority levels (C-suite, VP, Director, Manager, IC)",
+                    "Department (Sales, Marketing, Engineering, Finance, etc.)",
+                    "Decision-making authority indicators",
+                    "Recent job changes and promotions"
+                  ]
+                }
+              ].map((feature, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 border border-gray-200"
+                >
+                  <h3 className="text-2xl text-gray-900 mb-4 font-medium">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600 mb-6 leading-relaxed">
+                    {feature.description}
+                  </p>
+                  <ul className="space-y-3">
+                    {feature.features.map((item, j) => (
+                      <li key={j} className="flex items-start gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Integrations */}
+        <section className="py-20 bg-[#F7F9FB]">
+          <Container>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+                One-Click Activation to 200+ Platforms
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Sync audiences to every marketing tool in your stack
+              </p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 max-w-5xl mx-auto mb-8">
+              {[
+                "Facebook Ads", "Google Ads", "LinkedIn Ads", "Twitter Ads", "TikTok Ads", "Snapchat Ads",
+                "Salesforce", "HubSpot", "Marketo", "Pardot", "Pipedrive", "Zoho CRM",
+                "Mailchimp", "SendGrid", "ActiveCampaign", "Klaviyo", "Braze", "Customer.io",
+                "Slack", "Zapier"
+              ].map((integration, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.02 }}
+                  className="bg-white rounded-lg p-4 border border-gray-200 flex items-center justify-center text-center h-20"
+                >
+                  <span className="text-sm font-medium text-gray-700">{integration}</span>
+                </motion.div>
+              ))}
+            </div>
+            <div className="text-center">
+              <p className="text-gray-600 mb-4">And 180+ more marketing platforms</p>
+              <Button variant="outline" href="/integrations">
+                View All Integrations
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          </Container>
+        </section>
+
+        {/* Social Proof */}
+        <section className="py-20 bg-white">
+          <Container>
+            <div className="max-w-4xl mx-auto">
               <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 text-center border border-blue-200"
-              >
-                <div className="text-4xl text-[#007AFF] mb-2">{stat.value}</div>
-                <div className="text-sm text-gray-600">{stat.label}</div>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="text-center">
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Build audiences from the largest collection of verified consumer and business data, updated in real-time.
-            </p>
-          </div>
-        </Container>
-      </section>
-
-      {/* Features */}
-      <section className="py-20 bg-white">
-        <Container>
-          <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-12 text-center">
-            Powerful Audience Building Features
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, i) => (
-              <motion.div
-                key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-white rounded-xl p-6 border border-gray-200"
+                className="bg-gradient-to-br from-blue-50 to-white rounded-2xl p-12 border border-blue-100"
               >
-                <h3 className="text-xl text-gray-900 mb-3">{feature.title}</h3>
-                <p className="text-gray-600 text-sm">{feature.description}</p>
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                      </svg>
+                    ))}
+                  </div>
+                </div>
+                <blockquote className="text-2xl text-gray-900 mb-6 leading-relaxed">
+                  "We switched from ZoomInfo to Cursive and cut our data costs by 60%. The unlimited audience builder means we can test new segments without worrying about hitting export caps. Game changer for our ABM strategy."
+                </blockquote>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-medium">
+                    SM
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">Sarah Mitchell</div>
+                    <div className="text-sm text-gray-600">Head of Demand Gen, Enterprise SaaS</div>
+                  </div>
+                </div>
               </motion.div>
-            ))}
-          </div>
-        </Container>
-      </section>
+              <div className="grid md:grid-cols-3 gap-8 mt-12">
+                {[
+                  { metric: "360M+", label: "Total profiles available" },
+                  { metric: "30K+", label: "Intent categories tracked" },
+                  { metric: "∞", label: "Audience size limits" }
+                ].map((stat, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    className="text-center"
+                  >
+                    <div className="text-4xl text-[#007AFF] font-light mb-2">{stat.metric}</div>
+                    <div className="text-sm text-gray-600">{stat.label}</div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </Container>
+        </section>
 
-      {/* Use Cases */}
-      <section className="py-20 bg-[#F7F9FB]">
-        <Container>
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-4">
-              Endless Possibilities
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Build audiences for any marketing channel or use case
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            {useCases.map((useCase, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-white rounded-xl p-6 border border-gray-200"
-              >
-                <h3 className="text-lg text-gray-900 mb-2">{useCase.title}</h3>
-                <p className="text-gray-600 text-sm">{useCase.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </Container>
-      </section>
+        {/* FAQ */}
+        <section className="py-20 bg-[#F7F9FB]">
+          <Container>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+                Frequently Asked Questions
+              </h2>
+            </div>
+            <div className="max-w-4xl mx-auto space-y-6">
+              {[
+                {
+                  question: "How large is your B2B and B2C database?",
+                  answer: "Cursive provides access to 220M+ consumer profiles and 140M+ business profiles across the United States. Our database is updated in real-time with fresh intent signals and verified contact information."
+                },
+                {
+                  question: "Are there limits on audience size?",
+                  answer: "No. Unlike other data providers, Cursive has no caps on audience size, exports, or activations. Build audiences as large or as targeted as you need for your campaigns."
+                },
+                {
+                  question: "How fresh is your intent data?",
+                  answer: "Our intent signals are updated in real-time. We track 450B+ monthly signals across 30,000+ categories, so you're always reaching prospects at the right moment."
+                },
+                {
+                  question: "Can I filter audiences by intent signals?",
+                  answer: "Yes. Cursive lets you filter audiences by specific topics, keywords, and behaviors. Build segments of people actively researching solutions like yours."
+                },
+                {
+                  question: "How do I activate audiences once I build them?",
+                  answer: "One-click activation to 200+ platforms including Facebook Ads, Google Ads, LinkedIn Ads, email platforms, and CRMs. Audiences sync automatically to your connected tools."
+                },
+                {
+                  question: "Is the data GDPR and CCPA compliant?",
+                  answer: "Yes. All data honors opt-outs and complies with GDPR, CCPA, and regional privacy regulations. We use consent-aware activation and hashed identifiers."
+                },
+                {
+                  question: "Can I build lookalike audiences?",
+                  answer: "Absolutely. Upload your customer list and Cursive will find similar prospects based on firmographics, demographics, technographics, and behavioral patterns."
+                },
+                {
+                  question: "What types of filters are available?",
+                  answer: "Filter by company size, industry, revenue, location, job title, seniority, technologies used, intent signals, and dozens of other attributes. Combine filters for precise targeting."
+                },
+                {
+                  question: "Can I share audiences with partners?",
+                  answer: "Yes. Cursive includes a data clean room for secure audience sharing with partners while maintaining privacy compliance."
+                },
+                {
+                  question: "How quickly can I build an audience?",
+                  answer: "Most audiences are built in minutes. Apply your filters, preview the results, and activate immediately. No waiting for batch processing or manual approvals."
+                }
+              ].map((faq, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="bg-white rounded-xl p-6 border border-gray-200"
+                >
+                  <h3 className="text-lg text-gray-900 mb-3 font-medium">
+                    {faq.question}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {faq.answer}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-white">
-        <Container>
-          <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-12 text-center text-white max-w-4xl mx-auto">
-            <h2 className="text-4xl lg:text-5xl font-light mb-4">
-              Ready to Build Your Audience?
-            </h2>
-            <p className="text-lg mb-8 opacity-90">
-              Start building limitless audiences with verified B2B and B2C data.
-            </p>
-            <Button
-              size="lg"
-              className="bg-white text-[#007AFF] hover:bg-gray-100"
-              href="https://cal.com/adamwolfe/cursive-ai-audit"
+        {/* Final CTA */}
+        <section className="py-20 bg-white">
+          <Container>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-12 text-center text-white max-w-4xl mx-auto"
             >
-              Get Started
-            </Button>
-          </div>
-        </Container>
-      </section>
-    </main>
+              <h2 className="text-4xl lg:text-5xl font-light mb-4">
+                Build Your First Audience Today
+              </h2>
+              <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
+                Access 360M+ profiles with unlimited audience building. No caps, no limits, no per-contact fees.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button
+                  size="lg"
+                  className="bg-white text-[#007AFF] hover:bg-gray-100"
+                  href="https://cal.com/adamwolfe/cursive-ai-audit"
+                >
+                  Get Started
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-white text-white hover:bg-white/10"
+                  href="/pricing"
+                >
+                  View Pricing
+                </Button>
+              </div>
+              <p className="text-sm mt-6 opacity-75">No credit card required · Unlimited audiences · 200+ integrations</p>
+            </motion.div>
+          </Container>
+        </section>
+      </main>
+    </>
   )
 }
-
-const stats = [
-  { value: '25,000+', label: 'Categories' },
-  { value: '220M+', label: 'Consumer Profiles' },
-  { value: '140M+', label: 'Business Profiles' },
-]
-
-const features = [
-  {
-    title: 'Target with Intent & Identity',
-    description: 'Combine live intent signals with verified identity data to reach buyers at the perfect moment.',
-  },
-  {
-    title: 'Audiences of Any Size',
-    description: 'No caps, no restrictions. Build audiences as large or targeted as you need.',
-  },
-  {
-    title: 'Intelligent Filters',
-    description: 'Filter by demographics, firmographics, technographics, and behavioral data.',
-  },
-  {
-    title: 'Consent-Aware Activation',
-    description: 'All data honors opt-outs and complies with privacy regulations.',
-  },
-  {
-    title: 'Regulation-Ready',
-    description: 'GDPR, CCPA, and regional compliance built in from day one.',
-  },
-  {
-    title: 'Partner-Friendly',
-    description: 'Share audiences securely with partners through our data clean room.',
-  },
-]
-
-const useCases = [
-  {
-    title: 'Paid Advertising',
-    description: 'Upload audiences to Facebook, Google, LinkedIn, and 200+ ad platforms.',
-  },
-  {
-    title: 'Email Marketing',
-    description: 'Build verified email lists for cold outreach and nurture campaigns.',
-  },
-  {
-    title: 'Direct Mail',
-    description: 'Target prospects with personalized direct mail campaigns.',
-  },
-  {
-    title: 'CRM Enrichment',
-    description: 'Enrich existing contacts with fresh firmographic and intent data.',
-  },
-  {
-    title: 'Lookalike Modeling',
-    description: 'Find new prospects that match your best customers.',
-  },
-  {
-    title: 'Account-Based Marketing',
-    description: 'Build targeted account lists with multiple decision-makers.',
-  },
-]

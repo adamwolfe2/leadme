@@ -3,137 +3,768 @@
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
+import {
+  Target, Zap, TrendingUp, CheckCircle2, ArrowRight,
+  Clock, Database, RefreshCw, Filter, Users, Sparkles,
+  BarChart3, Globe, Layers, Mail, MessageSquare, Shield
+} from "lucide-react"
 
 export default function IntentAudiencesPage() {
+  const schemaMarkup = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Product",
+        "@id": "https://meetcursive.com/intent-audiences#product",
+        "name": "Cursive Intent Audiences",
+        "description": "Pre-built intent audience segments across 8 high-value verticals. Access 280M+ US profiles with 450B+ monthly intent signals. Updated every 7 days.",
+        "brand": {
+          "@type": "Brand",
+          "name": "Cursive"
+        },
+        "offers": {
+          "@type": "Offer",
+          "url": "https://meetcursive.com/intent-audiences",
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock"
+        },
+        "category": "Intent Data Platform"
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://meetcursive.com"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Intent Audiences",
+            "item": "https://meetcursive.com/intent-audiences"
+          }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What are intent audiences?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Intent audiences are pre-built segments of people actively researching specific products or services. We track 450B+ monthly intent signals to identify prospects showing purchase intent across 8 high-value verticals."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How fresh is the intent data?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Intent audiences are updated every 7 days with fresh users. Our signals are tracked in real-time, so you're always reaching prospects at peak interest."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which verticals are available?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "We offer 8 high-value verticals: MedSpa & Aesthetics, GLP-1 & Weight Loss, Home Services, Legal Services, Luxury Goods, Men's Health, High-Ticket Recreation, and Pickleball. Each vertical includes 5-8 specific segments."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What are the different intent levels?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "We offer three intent levels: Hot (7-day window, highest intent), Warm (14-day window, expanded reach), and Scale (30-day window, full-funnel coverage). Choose based on your campaign goals."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I activate these audiences?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "One-click activation to 200+ platforms including Facebook Ads, Google Ads, LinkedIn Ads, email platforms, and CRMs. Audiences sync automatically to your connected tools."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I combine intent audiences with custom filters?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Start with a pre-built intent audience and layer on additional filters like location, income, age, or other demographics to refine your targeting."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How large are these audiences?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Audience sizes vary by vertical and intent level. Hot audiences are smaller (thousands to tens of thousands) while Scale audiences can reach hundreds of thousands. We show estimated sizes before activation."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is the data compliant with privacy regulations?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. All intent data honors opt-outs and complies with GDPR, CCPA, and regional privacy laws. We use consent-aware activation and hashed identifiers."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I request custom verticals?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. If your industry isn't covered by our standard verticals, we can build custom intent audiences tailored to your specific needs. Contact us for custom vertical requests."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How quickly can I launch a campaign?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Immediately. Select your vertical, choose your intent level, and activate to your preferred platforms. Pre-built audiences eliminate the need for manual list building."
+            }
+          }
+        ]
+      }
+    ]
+  }
+
   return (
-    <main>
-      {/* Hero */}
-      <section className="pt-24 pb-20 bg-white">
-        <Container>
-          <div className="text-center max-w-5xl mx-auto">
-            <motion.h1
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }}
+      />
+
+      <main>
+        {/* Hero Section */}
+        <section className="pt-24 pb-20 bg-white">
+          <Container>
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-5xl lg:text-7xl font-light text-gray-900 mb-6"
+              transition={{ duration: 0.5 }}
+              className="text-center max-w-5xl mx-auto"
             >
-              Syndicated Intent Audiences
-              <span className="block font-cursive text-6xl lg:text-8xl text-gray-900 mt-2">
-                Ready to Activate
-              </span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-lg text-gray-600 mb-8"
-            >
-              Pre-built intent audiences across high-value verticals, updated every 7 days with fresh users.
-            </motion.p>
-          </div>
+              <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">INTENT AUDIENCES</span>
+              <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
+                Reach Buyers When They're Ready to Purchase
+              </h1>
+              <p className="text-xl text-gray-600 mb-6 max-w-3xl mx-auto leading-relaxed">
+                Pre-built audience segments across 8 high-value verticals. 280M+ US profiles tracked with 450B+ monthly intent signals. Updated every 7 days with fresh, in-market prospects.
+              </p>
+              <p className="text-lg text-gray-500 mb-8 max-w-2xl mx-auto">
+                Skip the manual list building. Launch campaigns in minutes with audiences already showing purchase intent. No research, no guessing—just ready-to-convert prospects.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit">
+                  Explore Intent Audiences
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+                <Button size="lg" variant="outline" href="/pricing">
+                  See Pricing
+                </Button>
+              </div>
+              <div className="mt-8 flex items-center justify-center gap-8 text-sm text-gray-600 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <span>8 high-value verticals</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <span>46+ segments</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <span>Updated every 7 days</span>
+                </div>
+              </div>
+            </motion.div>
+          </Container>
+        </section>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mt-12">
-            {[
-              { value: '8', label: 'Verticals' },
-              { value: '46+', label: 'Segments' },
-              { value: '280M+', label: 'US Profiles' },
-              { value: '450B+', label: 'Intent Signals/Month' },
-            ].map((stat, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 text-center border border-blue-200"
-              >
-                <div className="text-4xl text-[#007AFF] mb-2">{stat.value}</div>
-                <div className="text-sm text-gray-600">{stat.label}</div>
-              </motion.div>
-            ))}
-          </div>
-        </Container>
-      </section>
+        {/* Stats Grid */}
+        <section className="py-20 bg-[#F7F9FB]">
+          <Container>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
+              {[
+                { value: '8', label: 'Verticals', icon: Layers },
+                { value: '46+', label: 'Segments', icon: Filter },
+                { value: '280M+', label: 'US Profiles', icon: Users },
+                { value: '450B+', label: 'Intent Signals/Month', icon: Sparkles },
+              ].map((stat, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 text-center border border-blue-200 hover:shadow-lg transition-shadow"
+                >
+                  <stat.icon className="h-10 w-10 text-[#007AFF] mx-auto mb-3" />
+                  <div className="text-4xl text-[#007AFF] mb-2 font-light">{stat.value}</div>
+                  <div className="text-sm text-gray-600 font-medium">{stat.label}</div>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
 
-      {/* Intent Levels */}
-      <section className="py-20 bg-[#F7F9FB]">
-        <Container>
-          <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-12 text-center">
-            Choose Your Intent Level
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {[
-              { level: 'Hot (7D)', description: 'Highest intent score - users actively searching in the last 7 days', color: 'from-red-50 to-red-100 border-red-200' },
-              { level: 'Warm (14D)', description: 'Expanded reach - users showing interest in the last 14 days', color: 'from-orange-50 to-orange-100 border-orange-200' },
-              { level: 'Scale (30D)', description: 'Full-funnel coverage - users with intent signals in the last 30 days', color: 'from-blue-50 to-blue-100 border-blue-200' },
-            ].map((tier, i) => (
+        {/* How It Works */}
+        <section className="py-20 bg-white">
+          <Container>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+                Launch Campaigns in Minutes, Not Days
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                From intent signal to active campaign in three simple steps
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-12 max-w-5xl mx-auto">
+              {[
+                {
+                  step: "1",
+                  title: "Choose Your Vertical",
+                  description: "Select from 8 high-value verticals like MedSpa, Home Services, Legal Services, or GLP-1. Each includes 5-8 specific segments.",
+                  icon: Target
+                },
+                {
+                  step: "2",
+                  title: "Select Intent Level",
+                  description: "Hot (7D) for highest intent, Warm (14D) for expanded reach, or Scale (30D) for full-funnel coverage. Preview audience sizes.",
+                  icon: TrendingUp
+                },
+                {
+                  step: "3",
+                  title: "Activate to Platforms",
+                  description: "One-click sync to Facebook, Google, LinkedIn, email, or CRM. Audiences update automatically every 7 days with fresh prospects.",
+                  icon: Zap
+                }
+              ].map((step, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.15 }}
+                  className="relative"
+                >
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center mb-6 shadow-lg">
+                      <step.icon className="h-10 w-10" />
+                    </div>
+                    <div className="absolute top-8 left-20 w-full h-0.5 bg-gradient-to-r from-blue-200 to-transparent hidden md:block" style={{ display: i === 2 ? 'none' : 'block' }} />
+                    <h3 className="text-2xl text-gray-900 mb-3 font-medium">
+                      {step.title}
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      {step.description}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Intent Levels */}
+        <section className="py-20 bg-[#F7F9FB]">
+          <Container>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+                Choose Your Intent Level
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Match audience freshness to your campaign goals
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+              {[
+                {
+                  level: 'Hot (7D)',
+                  description: 'Highest intent prospects actively searching in the last 7 days. Smallest audience, highest conversion.',
+                  color: 'from-red-50 to-red-100 border-red-200',
+                  icon: '🔥',
+                  bestFor: 'High-ticket offers, immediate conversions, limited ad budgets',
+                  size: 'Thousands'
+                },
+                {
+                  level: 'Warm (14D)',
+                  description: 'Expanded reach with users showing interest in the last 14 days. Balance of intent and scale.',
+                  color: 'from-orange-50 to-orange-100 border-orange-200',
+                  icon: '📈',
+                  bestFor: 'Standard campaigns, lead generation, nurture sequences',
+                  size: 'Tens of thousands'
+                },
+                {
+                  level: 'Scale (30D)',
+                  description: 'Full-funnel coverage with intent signals from the last 30 days. Maximum reach and impressions.',
+                  color: 'from-blue-50 to-blue-100 border-blue-200',
+                  icon: '🚀',
+                  bestFor: 'Brand awareness, retargeting, top-of-funnel prospecting',
+                  size: 'Hundreds of thousands'
+                },
+              ].map((tier, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className={`bg-gradient-to-br ${tier.color} rounded-xl p-8 border hover:shadow-lg transition-shadow`}
+                >
+                  <div className="text-4xl mb-4">{tier.icon}</div>
+                  <h3 className="text-2xl text-gray-900 mb-3 font-medium">{tier.level}</h3>
+                  <p className="text-gray-600 mb-6 leading-relaxed">{tier.description}</p>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">Best for:</div>
+                        <div className="text-sm text-gray-600">{tier.bestFor}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Database className="h-5 w-5 text-[#007AFF] mt-0.5 flex-shrink-0" />
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">Typical size:</div>
+                        <div className="text-sm text-gray-600">{tier.size}</div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Available Verticals */}
+        <section className="py-20 bg-white">
+          <Container>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+                8 High-Value Verticals
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Pre-built segments across industries with strong purchase intent
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              {[
+                {
+                  vertical: 'MedSpa & Aesthetics',
+                  description: 'People researching Botox, fillers, laser treatments, skin rejuvenation, and aesthetic procedures.',
+                  segments: ['Botox Seekers', 'Laser Hair Removal', 'Facial Treatments', 'Body Contouring', 'Anti-Aging']
+                },
+                {
+                  vertical: 'GLP-1 & Weight Loss',
+                  description: 'Users actively searching for Ozempic, Wegovy, Mounjaro, weight loss programs, and medical solutions.',
+                  segments: ['GLP-1 Medications', 'Medical Weight Loss', 'Bariatric Surgery', 'Diet Programs', 'Supplements']
+                },
+                {
+                  vertical: 'Home Services',
+                  description: 'Homeowners researching HVAC, roofing, plumbing, landscaping, and home improvement projects.',
+                  segments: ['HVAC Replacement', 'Roof Repair', 'Kitchen Remodel', 'Landscaping', 'Solar Installation']
+                },
+                {
+                  vertical: 'Legal Services',
+                  description: 'Individuals seeking personal injury, family law, estate planning, and business legal services.',
+                  segments: ['Personal Injury', 'Divorce Attorneys', 'Estate Planning', 'Business Formation', 'Immigration']
+                },
+                {
+                  vertical: 'Luxury Goods',
+                  description: 'High-income consumers shopping for luxury watches, jewelry, designer fashion, and premium products.',
+                  segments: ['Luxury Watches', 'Fine Jewelry', 'Designer Handbags', 'Exotic Cars', 'Private Aviation']
+                },
+                {
+                  vertical: "Men's Health",
+                  description: 'Men researching testosterone therapy, ED treatments, hair loss solutions, and wellness services.',
+                  segments: ['TRT Clinics', 'ED Treatments', 'Hair Restoration', 'Fitness Coaching', 'Hormone Optimization']
+                },
+                {
+                  vertical: 'High-Ticket Recreation',
+                  description: 'Affluent consumers shopping for boats, RVs, motorcycles, golf memberships, and luxury recreation.',
+                  segments: ['Boat Buyers', 'RV Shoppers', 'Golf Members', 'Motorcycle Buyers', 'Luxury Travel']
+                },
+                {
+                  vertical: 'Pickleball',
+                  description: 'Players seeking equipment, lessons, court memberships, tournaments, and pickleball communities.',
+                  segments: ['Equipment Buyers', 'Lesson Seekers', 'Court Memberships', 'Tournament Players', 'Apparel']
+                }
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="bg-white rounded-xl p-8 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all"
+                >
+                  <h3 className="text-2xl text-gray-900 mb-3 font-medium">
+                    {item.vertical}
+                  </h3>
+                  <p className="text-gray-600 mb-6 leading-relaxed">
+                    {item.description}
+                  </p>
+                  <div>
+                    <div className="text-sm font-medium text-gray-900 mb-2">Available Segments:</div>
+                    <div className="flex flex-wrap gap-2">
+                      {item.segments.map((segment, j) => (
+                        <span key={j} className="px-3 py-1 bg-blue-50 text-[#007AFF] text-sm rounded-full border border-blue-200">
+                          {segment}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Use Cases */}
+        <section className="py-20 bg-[#F7F9FB]">
+          <Container>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+                Who Uses Intent Audiences
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Real scenarios from marketers using pre-built intent segments
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              {[
+                {
+                  audience: "MedSpa Owners",
+                  scenario: "You're spending thousands on Facebook ads targeting broad demographics like 'women 35-55.' Most clicks don't convert because they're not actively researching treatments.",
+                  solution: "Switch to Cursive's MedSpa intent audiences. Reach only people actively searching for Botox, fillers, or laser treatments in the last 7 days. Your CPL drops 60% because you're targeting in-market buyers, not browsers."
+                },
+                {
+                  audience: "Home Service Companies",
+                  scenario: "You run seasonal campaigns for HVAC replacement but can't identify which homeowners actually need service until they call.",
+                  solution: "Activate the HVAC Replacement Hot audience during peak season. Reach homeowners actively Googling 'AC replacement cost' and 'best HVAC companies near me.' Convert prospects before competitors even reach them."
+                },
+                {
+                  audience: "Weight Loss Clinics",
+                  scenario: "GLP-1 demand is exploding but you're competing with every med spa and telehealth company. Paid ads are expensive and crowded.",
+                  solution: "Target the GLP-1 Medications intent audience with offers for consultations and treatment plans. Reach patients already educated on Ozempic and Wegovy—skip the awareness phase and close faster."
+                },
+                {
+                  audience: "Luxury Brands",
+                  scenario: "High-net-worth shoppers don't respond to standard retargeting. You need to reach affluent buyers when they're actively shopping for luxury goods.",
+                  solution: "Activate Luxury Watches or Fine Jewelry intent audiences. Reach consumers researching Rolex, Patek Philippe, or Cartier. Target them with exclusive offers and VIP experiences while they're in buying mode."
+                }
+              ].map((useCase, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="bg-white rounded-xl p-8 border border-gray-200"
+                >
+                  <div className="text-sm text-[#007AFF] font-medium mb-2">FOR {useCase.audience.toUpperCase()}</div>
+                  <h3 className="text-2xl text-gray-900 mb-4 font-medium">
+                    {useCase.scenario}
+                  </h3>
+                  <div className="border-l-4 border-[#007AFF] pl-4 bg-blue-50 p-4 rounded">
+                    <p className="text-gray-700 leading-relaxed">
+                      <strong className="text-gray-900">How Cursive helps:</strong> {useCase.solution}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Benefits Grid */}
+        <section className="py-20 bg-white">
+          <Container>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+                Why Intent Audiences Outperform Standard Targeting
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Stop targeting demographics. Start targeting behavior.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[
+                {
+                  icon: TrendingUp,
+                  title: "Higher Conversion Rates",
+                  description: "Intent-based audiences convert 2-4x better than demographic targeting. You're reaching people actively researching, not passive browsers."
+                },
+                {
+                  icon: Clock,
+                  title: "Launch Campaigns Instantly",
+                  description: "No manual list building or audience research. Select a segment and launch in minutes. Pre-built audiences eliminate weeks of prep work."
+                },
+                {
+                  icon: RefreshCw,
+                  title: "Always Fresh Data",
+                  description: "Audiences update every 7 days with new in-market prospects. Unlike static lists that go stale, you're always reaching active buyers."
+                },
+                {
+                  icon: Target,
+                  title: "Precise Behavioral Targeting",
+                  description: "Based on actual search and content consumption, not guessed interests. We track what people search for, not what they clicked once."
+                },
+                {
+                  icon: BarChart3,
+                  title: "Lower Customer Acquisition Cost",
+                  description: "Targeting in-market buyers reduces wasted ad spend. Higher match rates and relevance scores mean lower CPMs and CPCs."
+                },
+                {
+                  icon: Shield,
+                  title: "Privacy-Compliant Signals",
+                  description: "All intent data honors opt-outs and complies with GDPR/CCPA. We use aggregated, anonymized signals—not individual tracking."
+                },
+                {
+                  icon: Layers,
+                  title: "Combine with Custom Filters",
+                  description: "Start with intent and layer on geography, demographics, or firmographics. Stack filters for hyper-targeted segments."
+                },
+                {
+                  icon: Globe,
+                  title: "Multi-Channel Activation",
+                  description: "Use the same intent audience across Facebook, Google, LinkedIn, email, and direct mail. Consistent targeting across channels."
+                }
+              ].map((benefit, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="bg-white rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all"
+                >
+                  <benefit.icon className="h-8 w-8 text-[#007AFF] mb-4" />
+                  <h3 className="text-xl text-gray-900 mb-3 font-medium">
+                    {benefit.title}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {benefit.description}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Integrations */}
+        <section className="py-20 bg-[#F7F9FB]">
+          <Container>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+                Activate to Every Marketing Platform
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                One-click sync to 200+ ad platforms, CRMs, and email tools
+              </p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 max-w-5xl mx-auto mb-8">
+              {[
+                "Facebook Ads", "Google Ads", "LinkedIn Ads", "TikTok Ads", "Snapchat Ads", "Twitter Ads",
+                "Salesforce", "HubSpot", "Marketo", "Pardot", "Pipedrive", "Zoho CRM",
+                "Mailchimp", "SendGrid", "ActiveCampaign", "Klaviyo", "Braze", "Customer.io",
+                "Slack", "Zapier"
+              ].map((integration, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.02 }}
+                  className="bg-white rounded-lg p-4 border border-gray-200 flex items-center justify-center text-center h-20"
+                >
+                  <span className="text-sm font-medium text-gray-700">{integration}</span>
+                </motion.div>
+              ))}
+            </div>
+            <div className="text-center">
+              <p className="text-gray-600 mb-4">And 180+ more platforms</p>
+              <Button variant="outline" href="/integrations">
+                View All Integrations
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          </Container>
+        </section>
+
+        {/* Social Proof */}
+        <section className="py-20 bg-white">
+          <Container>
+            <div className="max-w-4xl mx-auto">
               <motion.div
-                key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className={`bg-gradient-to-br ${tier.color} rounded-xl p-6 border`}
+                className="bg-gradient-to-br from-blue-50 to-white rounded-2xl p-12 border border-blue-100"
               >
-                <h3 className="text-xl text-gray-900 mb-3">{tier.level}</h3>
-                <p className="text-gray-600 text-sm">{tier.description}</p>
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                      </svg>
+                    ))}
+                  </div>
+                </div>
+                <blockquote className="text-2xl text-gray-900 mb-6 leading-relaxed">
+                  "We switched from broad demographic targeting to Cursive's MedSpa intent audiences and our cost per lead dropped from $85 to $32. We're reaching people actively Googling our services instead of hoping they might be interested."
+                </blockquote>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-medium">
+                    MC
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">Maria Chen</div>
+                    <div className="text-sm text-gray-600">Marketing Director, MedSpa Chain</div>
+                  </div>
+                </div>
               </motion.div>
-            ))}
-          </div>
-        </Container>
-      </section>
+              <div className="grid md:grid-cols-3 gap-8 mt-12">
+                {[
+                  { metric: "2-4x", label: "Higher conversion vs demographics" },
+                  { metric: "7 days", label: "Audience refresh frequency" },
+                  { metric: "450B+", label: "Monthly intent signals tracked" }
+                ].map((stat, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    className="text-center"
+                  >
+                    <div className="text-4xl text-[#007AFF] font-light mb-2">{stat.metric}</div>
+                    <div className="text-sm text-gray-600">{stat.label}</div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </Container>
+        </section>
 
-      {/* Verticals */}
-      <section className="py-20 bg-white">
-        <Container>
-          <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-12 text-center">
-            Available Verticals
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            {[
-              'MedSpa & Aesthetics',
-              'GLP-1 & Weight Loss',
-              'Home Services',
-              'Legal Services',
-              'Luxury Goods',
-              'Men\'s Health',
-              'High-Ticket Recreation',
-              'Pickleball',
-            ].map((vertical, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="bg-white rounded-xl p-6 border border-gray-200 text-center hover:border-[#007AFF] transition-colors"
-              >
-                <h3 className="text-lg text-gray-900">{vertical}</h3>
-              </motion.div>
-            ))}
-          </div>
-        </Container>
-      </section>
+        {/* FAQ */}
+        <section className="py-20 bg-[#F7F9FB]">
+          <Container>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+                Frequently Asked Questions
+              </h2>
+            </div>
+            <div className="max-w-4xl mx-auto space-y-6">
+              {[
+                {
+                  question: "What are intent audiences?",
+                  answer: "Intent audiences are pre-built segments of people actively researching specific products or services. We track 450B+ monthly intent signals to identify prospects showing purchase intent across 8 high-value verticals."
+                },
+                {
+                  question: "How fresh is the intent data?",
+                  answer: "Intent audiences are updated every 7 days with fresh users. Our signals are tracked in real-time, so you're always reaching prospects at peak interest."
+                },
+                {
+                  question: "Which verticals are available?",
+                  answer: "We offer 8 high-value verticals: MedSpa & Aesthetics, GLP-1 & Weight Loss, Home Services, Legal Services, Luxury Goods, Men's Health, High-Ticket Recreation, and Pickleball. Each vertical includes 5-8 specific segments."
+                },
+                {
+                  question: "What are the different intent levels?",
+                  answer: "We offer three intent levels: Hot (7-day window, highest intent), Warm (14-day window, expanded reach), and Scale (30-day window, full-funnel coverage). Choose based on your campaign goals."
+                },
+                {
+                  question: "How do I activate these audiences?",
+                  answer: "One-click activation to 200+ platforms including Facebook Ads, Google Ads, LinkedIn Ads, email platforms, and CRMs. Audiences sync automatically to your connected tools."
+                },
+                {
+                  question: "Can I combine intent audiences with custom filters?",
+                  answer: "Yes. Start with a pre-built intent audience and layer on additional filters like location, income, age, or other demographics to refine your targeting."
+                },
+                {
+                  question: "How large are these audiences?",
+                  answer: "Audience sizes vary by vertical and intent level. Hot audiences are smaller (thousands to tens of thousands) while Scale audiences can reach hundreds of thousands. We show estimated sizes before activation."
+                },
+                {
+                  question: "Is the data compliant with privacy regulations?",
+                  answer: "Yes. All intent data honors opt-outs and complies with GDPR, CCPA, and regional privacy laws. We use consent-aware activation and hashed identifiers."
+                },
+                {
+                  question: "Can I request custom verticals?",
+                  answer: "Yes. If your industry isn't covered by our standard verticals, we can build custom intent audiences tailored to your specific needs. Contact us for custom vertical requests."
+                },
+                {
+                  question: "How quickly can I launch a campaign?",
+                  answer: "Immediately. Select your vertical, choose your intent level, and activate to your preferred platforms. Pre-built audiences eliminate the need for manual list building."
+                }
+              ].map((faq, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="bg-white rounded-xl p-6 border border-gray-200"
+                >
+                  <h3 className="text-lg text-gray-900 mb-3 font-medium">
+                    {faq.question}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {faq.answer}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
 
-      {/* CTA */}
-      <section className="py-20 bg-[#F7F9FB]">
-        <Container>
-          <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-12 text-center text-white max-w-4xl mx-auto">
-            <h2 className="text-4xl lg:text-5xl font-light mb-4">
-              Ready to Activate Intent Audiences?
-            </h2>
-            <p className="text-lg mb-8 opacity-90">
-              Get access to pre-built segments updated every 7 days.
-            </p>
-            <Button
-              size="lg"
-              className="bg-white text-[#007AFF] hover:bg-gray-100"
-              href="https://cal.com/adamwolfe/cursive-ai-audit"
+        {/* Final CTA */}
+        <section className="py-20 bg-white">
+          <Container>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-12 text-center text-white max-w-4xl mx-auto"
             >
-              Get Started
-            </Button>
-          </div>
-        </Container>
-      </section>
-    </main>
+              <h2 className="text-4xl lg:text-5xl font-light mb-4">
+                Start Reaching In-Market Buyers Today
+              </h2>
+              <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
+                Pre-built intent audiences across 8 high-value verticals. Launch campaigns in minutes with prospects already showing purchase intent.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button
+                  size="lg"
+                  className="bg-white text-[#007AFF] hover:bg-gray-100"
+                  href="https://cal.com/adamwolfe/cursive-ai-audit"
+                >
+                  Explore Intent Audiences
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-white text-white hover:bg-white/10"
+                  href="/pricing"
+                >
+                  View Pricing
+                </Button>
+              </div>
+              <p className="text-sm mt-6 opacity-75">Updated every 7 days · 46+ segments · Instant activation</p>
+            </motion.div>
+          </Container>
+        </section>
+      </main>
+    </>
   )
 }

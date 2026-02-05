@@ -1,9 +1,9 @@
 import { generateMetadata } from '@/lib/seo/metadata'
 
 export const metadata = generateMetadata({
-  title: 'Syndicated Intent Audiences - Pre-Built Segments',
-  description: 'Pre-built intent audiences across 8 high-value verticals, 46+ segments, 280M+ US profiles, 450B+ monthly intent signals. Hot, Warm, and Scale intent levels.',
-  keywords: ['intent data', 'buyer intent', 'syndicated audiences', 'intent audiences', 'B2B intent data', 'B2C intent data'],
+  title: 'Intent Audiences | Pre-Built Segments Across 8 Verticals | 450B+ Signals',
+  description: 'Reach buyers when they are ready to purchase. Pre-built intent audiences across MedSpa, Home Services, Legal, GLP-1, and more. 280M+ profiles, updated every 7 days with fresh in-market prospects.',
+  keywords: ['intent data', 'buyer intent', 'intent audiences', 'purchase intent data', 'syndicated audiences', 'B2B intent data', 'B2C intent signals', 'behavioral targeting'],
   canonical: 'https://meetcursive.com/intent-audiences',
 })
 
