@@ -14,11 +14,12 @@ export function generateMetadata({
   description,
   keywords = [],
   canonical,
-  ogImage = '/og-image.png',
+  ogImage = '/cursive-social-preview.png',
   noindex = false,
 }: PageMetadata): Metadata {
   const baseUrl = 'https://meetcursive.com'
   const fullTitle = `${title} | Cursive`
+  const fullOgImage = ogImage.startsWith('http') ? ogImage : `${baseUrl}${ogImage}`
 
   return {
     title: fullTitle,
@@ -31,7 +32,14 @@ export function generateMetadata({
       description,
       url: canonical || baseUrl,
       siteName: 'Cursive',
-      images: [{ url: ogImage, width: 1200, height: 630 }],
+      images: [
+        {
+          url: fullOgImage,
+          width: 1200,
+          height: 630,
+          alt: 'Cursive - AI Intent Systems That Never Sleep',
+        }
+      ],
       locale: 'en_US',
       type: 'website',
     },
@@ -41,8 +49,9 @@ export function generateMetadata({
       card: 'summary_large_image',
       title: fullTitle,
       description,
-      images: [ogImage],
+      images: [fullOgImage],
       creator: '@meetcursive',
+      site: '@meetcursive',
     },
 
     // Canonical
