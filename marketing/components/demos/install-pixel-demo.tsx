@@ -2,23 +2,21 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Check, Eye } from 'lucide-react';
+import { Eye } from 'lucide-react';
 
-const CODE_LINES = [
-  "<!-- Cursive Tracking Pixel -->",
-  "<script>",
-  "  (function() {",
-  "    var script = document.createElement('script');",
-  "    script.src = 'https://cdn.cursive.io/pixel.js';",
-  "    script.async = true;",
-  "    script.dataset.projectId = 'proj_abc123xyz';",
-  "    document.head.appendChild(script);",
-  "  })();",
-  "</script>"
-];
+const FULL_CODE = `<!-- Cursive Tracking Pixel -->
+<script>
+  (function() {
+    var script = document.createElement('script');
+    script.src = 'https://cdn.cursive.io/pixel.js';
+    script.async = true;
+    script.dataset.projectId = 'proj_abc123xyz';
+    document.head.appendChild(script);
+  })();
+</script>`;
 
 export default function InstallPixelDemo() {
-  const [currentLine, setCurrentLine] = useState(0);
+  const [displayedCode, setDisplayedCode] = useState('');
   const [showInstalled, setShowInstalled] = useState(false);
   const [showEyes, setShowEyes] = useState(false);
   const [eyePositions, setEyePositions] = useState<Array<{ x: number; y: number; delay: number }>>([]);
@@ -27,34 +25,32 @@ export default function InstallPixelDemo() {
   const isInView = useInView(ref, { once: true, amount: 0.3 });
 
   useEffect(() => {
-    if (isInView && currentLine === 0) {
-      // Type out code lines
-      const interval = setInterval(() => {
-        setCurrentLine((prev) => {
-          if (prev < CODE_LINES.length - 1) {
-            return prev + 1;
-          } else {
-            clearInterval(interval);
-            // Show "Installed" button after typing completes
-            setTimeout(() => {
-              setShowInstalled(true);
-              // Generate random eye positions
-              const eyes = Array.from({ length: 15 }, (_, i) => ({
-                x: Math.random() * 100,
-                y: Math.random() * 100,
-                delay: i * 0.05
-              }));
-              setEyePositions(eyes);
-              setShowEyes(true);
-            }, 300);
-            return prev;
-          }
-        });
-      }, 200);
+    if (isInView && displayedCode === '') {
+      let currentIndex = 0;
+      const typingInterval = setInterval(() => {
+        if (currentIndex < FULL_CODE.length) {
+          setDisplayedCode(FULL_CODE.slice(0, currentIndex + 1));
+          currentIndex++;
+        } else {
+          clearInterval(typingInterval);
+          // Show "Installed" text after typing completes
+          setTimeout(() => {
+            setShowInstalled(true);
+            // Generate random eye positions
+            const eyes = Array.from({ length: 20 }, (_, i) => ({
+              x: Math.random() * 100,
+              y: Math.random() * 100,
+              delay: i * 0.05
+            }));
+            setEyePositions(eyes);
+            setShowEyes(true);
+          }, 300);
+        }
+      }, 30); // Type at 30ms per character for smooth effect
 
-      return () => clearInterval(interval);
+      return () => clearInterval(typingInterval);
     }
-  }, [isInView, currentLine]);
+  }, [isInView, displayedCode]);
 
   return (
     <div ref={ref} className="w-full relative">
@@ -73,42 +69,34 @@ export default function InstallPixelDemo() {
         </p>
       </motion.div>
 
-      {/* Code Editor */}
-      <div className="relative bg-gray-900 rounded-xl overflow-hidden border border-gray-700 mb-6">
+      {/* Code Editor - Light Theme */}
+      <div className="relative bg-white rounded-xl overflow-hidden border-2 border-gray-200 mb-6 shadow-sm">
         {/* Editor Header */}
-        <div className="flex items-center justify-between px-6 py-3 border-b border-gray-700 bg-gray-800">
+        <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 bg-gray-50">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-red-500" />
-            <div className="w-3 h-3 rounded-full bg-yellow-500" />
-            <div className="w-3 h-3 rounded-full bg-green-500" />
+            <div className="w-3 h-3 rounded-full bg-red-400" />
+            <div className="w-3 h-3 rounded-full bg-yellow-400" />
+            <div className="w-3 h-3 rounded-full bg-green-400" />
           </div>
-          <span className="text-sm text-gray-400 font-mono">index.html</span>
+          <span className="text-sm text-gray-600 font-mono">index.html</span>
         </div>
 
-        {/* Code Content with Typing Animation */}
-        <div className="p-6 font-mono text-sm leading-relaxed">
-          {CODE_LINES.map((line, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: index <= currentLine ? 1 : 0 }}
-              transition={{ duration: 0.3 }}
-              className="text-gray-300"
-            >
-              {line}
-              {index === currentLine && index < CODE_LINES.length - 1 && (
-                <motion.span
-                  animate={{ opacity: [1, 0, 1] }}
-                  transition={{ duration: 0.8, repeat: Infinity }}
-                  className="inline-block w-2 h-4 bg-blue-500 ml-1"
-                />
-              )}
-            </motion.div>
-          ))}
+        {/* Code Content with Character-by-Character Typing */}
+        <div className="p-6 font-mono text-sm leading-relaxed min-h-[240px]">
+          <pre className="text-gray-800 whitespace-pre-wrap">
+            {displayedCode}
+            {displayedCode.length < FULL_CODE.length && (
+              <motion.span
+                animate={{ opacity: [1, 0, 1] }}
+                transition={{ duration: 0.6, repeat: Infinity }}
+                className="inline-block w-2 h-4 bg-[#007AFF] ml-0.5"
+              />
+            )}
+          </pre>
         </div>
       </div>
 
-      {/* Installed Button */}
+      {/* Installed Text */}
       {showInstalled && (
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
@@ -116,9 +104,8 @@ export default function InstallPixelDemo() {
           transition={{ type: "spring", duration: 0.5 }}
           className="flex justify-center mb-8"
         >
-          <div className="flex items-center gap-2 px-6 py-3 bg-green-50 border-2 border-green-500 rounded-full">
-            <Check className="w-5 h-5 text-green-600" />
-            <span className="text-lg font-medium text-green-700">Installed!</span>
+          <div className="text-2xl font-medium text-green-600">
+            Installed
           </div>
         </motion.div>
       )}

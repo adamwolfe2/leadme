@@ -6,7 +6,7 @@ import { Eye } from 'lucide-react';
 
 export default function IdentifyVisitorsDemo() {
   const [showEyes, setShowEyes] = useState(false);
-  const [eyePositions, setEyePositions] = useState<Array<{ x: number; y: number; delay: number }>>([]);
+  const [eyePositions, setEyePositions] = useState<Array<{ x: number; y: number; delay: number; duration: number }>>([]);
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
 
@@ -14,10 +14,11 @@ export default function IdentifyVisitorsDemo() {
     if (isInView && !showEyes) {
       // Generate random eye positions after a short delay
       setTimeout(() => {
-        const eyes = Array.from({ length: 12 }, (_, i) => ({
-          x: Math.random() * 100,
-          y: Math.random() * 100,
-          delay: i * 0.08
+        const eyes = Array.from({ length: 25 }, (_, i) => ({
+          x: 5 + Math.random() * 90, // Keep away from edges
+          y: 5 + Math.random() * 90,
+          delay: i * 0.06,
+          duration: 1.5 + Math.random() * 2 // Random fade duration between 1.5-3.5s
         }));
         setEyePositions(eyes);
         setShowEyes(true);
@@ -43,7 +44,7 @@ export default function IdentifyVisitorsDemo() {
       </motion.div>
 
       {/* Website Screenshot with Eye Icons */}
-      <div className="relative mb-8">
+      <div className="relative mb-8 max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -72,13 +73,22 @@ export default function IdentifyVisitorsDemo() {
             <span className="text-sm font-medium text-white">Live</span>
           </motion.div>
 
-          {/* Eyeball Icons Popping Up */}
+          {/* Eyeball Icons Flashing and Fading */}
           {showEyes && eyePositions.map((pos, index) => (
             <motion.div
               key={index}
               initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: pos.delay, type: "spring", duration: 0.4 }}
+              animate={{
+                scale: [0, 1, 1, 1],
+                opacity: [0, 1, 0.4, 1, 0.3, 1]
+              }}
+              transition={{
+                delay: pos.delay,
+                duration: pos.duration,
+                repeat: Infinity,
+                repeatDelay: 0.5,
+                times: [0, 0.2, 0.4, 0.6, 0.8, 1]
+              }}
               style={{
                 position: 'absolute',
                 left: `${pos.x}%`,
@@ -86,7 +96,7 @@ export default function IdentifyVisitorsDemo() {
               }}
               className="pointer-events-none"
             >
-              <Eye className="w-6 h-6 text-[#007AFF]" />
+              <Eye className="w-5 h-5 text-[#007AFF]" />
             </motion.div>
           ))}
         </motion.div>
