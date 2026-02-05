@@ -2,6 +2,7 @@ import { StructuredData } from "@/components/seo/structured-data"
 import { generateOrganizationSchema } from "@/lib/seo/structured-data"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 import { HumanHomePage } from "@/components/human-home-page"
+import { FAQSection } from "@/components/homepage/faq-section"
 
 export default function HomePage() {
   return (

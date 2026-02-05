@@ -7,7 +7,10 @@ import { InteractiveFeaturesShowcase } from "@/components/demos/interactive-feat
 import { DashboardPreview } from "@/components/dashboard-preview"
 import { IntegrationsShowcase } from "@/components/integrations-showcase"
 import { HowItWorksInteractiveDemo } from "@/components/demos/how-it-works-demo"
+import { HowItWorksSection } from "@/components/homepage/how-it-works-section"
 import { CompetitorComparisonGrid } from "@/components/competitor-comparison"
+import { CompetitiveAdvantagesSection } from "@/components/homepage/competitive-advantages-section"
+import { FAQSection } from "@/components/homepage/faq-section"
 import Link from "next/link"
 import { Eye, Target, Bot, TrendingUp, type LucideIcon } from "lucide-react"
 
@@ -174,8 +177,11 @@ export function HumanHomePage() {
         </Container>
       </section>
 
+      {/* Competitive Advantages */}
+      <CompetitiveAdvantagesSection />
+
       {/* Core Features Grid - BENEFIT-LED */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-[#F7F9FB]">
         <Container>
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-2">
@@ -223,6 +229,9 @@ export function HumanHomePage() {
         </Container>
       </section>
 
+      {/* How It Works - Technical Process */}
+      <HowItWorksSection />
+
       {/* Integrations Showcase */}
       <section className="py-20 bg-[#F7F9FB]">
         <Container>
@@ -235,6 +244,9 @@ export function HumanHomePage() {
 
       {/* Competitor Comparison */}
       <CompetitorComparisonGrid />
+
+      {/* FAQ Section */}
+      <FAQSection />
 
       {/* OPTIMIZED: Final CTA - Strong, Urgent, Clear with Risk Reversal */}
       <section className="relative py-32 bg-white overflow-hidden">
