@@ -157,9 +157,9 @@ export function ExitIntentPopup() {
               {submitted ? (
                 // Success State
                 <div className="text-center py-4">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg
-                      className="w-8 h-8 text-green-600"
+                      className="w-8 h-8 text-blue-600"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -210,7 +210,7 @@ export function ExitIntentPopup() {
                     </div>
 
                     {error && (
-                      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                      <div className="bg-gray-50 border border-gray-200 text-gray-700 px-4 py-3 rounded-lg text-sm">
                         {error}
                       </div>
                     )}

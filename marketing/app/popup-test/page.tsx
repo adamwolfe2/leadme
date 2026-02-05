@@ -51,7 +51,7 @@ export default function PopupTestPage() {
             {/* Reset Button */}
             <button
               onClick={handleReset}
-              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm font-medium"
+              className="px-4 py-2 bg-[#007AFF] text-white rounded-lg hover:bg-[#0066DD] transition-colors text-sm font-medium"
             >
               Reset All Popups
             </button>

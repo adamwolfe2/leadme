@@ -44,10 +44,10 @@ export default function CRMIntegrationCategoryPage() {
       </section>
 
       {/* Category Header */}
-      <section className="py-16 bg-gradient-to-br from-violet-50 via-white to-purple-50">
+      <section className="py-16 bg-gradient-to-br from-blue-50 via-white to-blue-50">
         <Container>
           <div className="max-w-4xl">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-full text-sm font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#007AFF] text-white rounded-full text-sm font-medium mb-6">
               <Workflow className="w-4 h-4" />
               CRM Integration
             </div>
@@ -100,7 +100,7 @@ export default function CRMIntegrationCategoryPage() {
             {crmIntegrationPosts.map((post, index) => (
               <Link key={post.slug} href={`/blog/${post.slug}`}>
                 <article className="bg-white rounded-xl overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 h-full flex flex-col">
-                  <div className="bg-gradient-to-br from-violet-500 to-purple-500 aspect-video flex items-center justify-center">
+                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 aspect-video flex items-center justify-center">
                     <Workflow className="w-16 h-16 text-white" />
                   </div>
                   <div className="p-6 flex flex-col flex-1">
@@ -129,7 +129,7 @@ export default function CRMIntegrationCategoryPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-violet-600 to-blue-700">
+      <section className="py-24 bg-gradient-to-br from-[#007AFF] to-blue-700">
         <Container>
           <div className="max-w-3xl mx-auto text-center text-white">
             <h2 className="text-4xl lg:text-5xl font-bold mb-4">

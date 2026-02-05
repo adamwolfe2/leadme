@@ -187,7 +187,7 @@ export function DemoPeopleSearch() {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
-                      className="px-3 py-1 bg-purple-50 text-purple-700 text-xs rounded font-medium flex items-center gap-1.5"
+                      className="px-3 py-1 bg-blue-50 text-purple-700 text-xs rounded font-medium flex items-center gap-1.5"
                     >
                       <div className="w-3 h-3 border-2 border-purple-700 border-t-transparent rounded-full animate-spin" />
                       Enriching
@@ -197,7 +197,7 @@ export function DemoPeopleSearch() {
                       key="enriched"
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="px-3 py-1 bg-purple-50 text-purple-700 text-xs rounded font-medium"
+                      className="px-3 py-1 bg-blue-50 text-purple-700 text-xs rounded font-medium"
                     >
                       ✓ Enriched
                     </motion.div>
@@ -208,7 +208,7 @@ export function DemoPeopleSearch() {
                       animate={{ opacity: 1, scale: 1 }}
                       className={`px-3 py-1 text-xs rounded font-medium ${
                         contact.verified
-                          ? "bg-green-50 text-green-700"
+                          ? "bg-blue-50 text-green-700"
                           : "bg-gray-100 text-gray-600"
                       }`}
                     >

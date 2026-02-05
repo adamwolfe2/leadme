@@ -48,7 +48,7 @@ export default function AudienceTargetingCategoryPage() {
       <section className="py-16 bg-white">
         <Container>
           <div className="max-w-4xl">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-full text-sm font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#007AFF] text-white rounded-full text-sm font-medium mb-6">
               <Target className="w-4 h-4" />
               Audience Targeting
             </div>
@@ -100,7 +100,7 @@ export default function AudienceTargetingCategoryPage() {
             {audienceTargetingPosts.map((post, index) => (
               <Link key={post.slug} href={`/blog/${post.slug}`}>
                 <article className="bg-white rounded-xl overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 h-full flex flex-col">
-                  <div className="bg-gradient-to-br from-purple-500 to-purple-600 aspect-video flex items-center justify-center">
+                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 aspect-video flex items-center justify-center">
                     <Target className="w-16 h-16 text-white" />
                   </div>
                   <div className="p-6 flex flex-col flex-1">

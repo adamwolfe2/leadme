@@ -154,7 +154,7 @@ export function ExitIntentPopupVariantB({
                 {!isSuccess ? (
                   <>
                     {/* Social Proof Badge - VARIANT B DIFFERENCE */}
-                    <div className="mb-4 inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-sm font-medium">
+                    <div className="mb-4 inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
                       <TrendingUp className="h-4 w-4" />
                       <span>Join 2,400+ companies using Cursive</span>
                     </div>
@@ -232,9 +232,9 @@ export function ExitIntentPopupVariantB({
                 ) : (
                   <div className="text-center py-8">
                     <div className="mb-4">
-                      <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+                      <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
                         <svg
-                          className="w-8 h-8 text-green-600"
+                          className="w-8 h-8 text-blue-600"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"

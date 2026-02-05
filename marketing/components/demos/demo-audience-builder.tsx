@@ -136,9 +136,9 @@ export function DemoAudienceBuilder() {
 
   const filterColors: Record<string, string> = {
     industry: "bg-blue-50 text-blue-700 border-blue-200",
-    title: "bg-purple-50 text-purple-700 border-purple-200",
-    size: "bg-green-50 text-green-700 border-green-200",
-    location: "bg-orange-50 text-orange-700 border-orange-200",
+    title: "bg-blue-50 text-blue-700 border-blue-200",
+    size: "bg-blue-50 text-blue-700 border-blue-200",
+    location: "bg-gray-50 text-gray-700 border-gray-200",
   }
 
   return (
@@ -154,7 +154,7 @@ export function DemoAudienceBuilder() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 text-center border border-gray-200 col-span-2"
+          className="bg-gradient-to-br from-blue-50 to-blue-50 rounded-xl p-6 text-center border border-gray-200 col-span-2"
         >
           <div className="text-sm text-gray-600 mb-2">Total Audience Size</div>
           <motion.div
@@ -195,7 +195,7 @@ export function DemoAudienceBuilder() {
           >
             {totalMatched}
           </motion.div>
-          <div className="flex items-center justify-center gap-1 text-xs text-green-600">
+          <div className="flex items-center justify-center gap-1 text-xs text-blue-600">
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
             </svg>
@@ -213,7 +213,7 @@ export function DemoAudienceBuilder() {
             <motion.div
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="w-2 h-2 rounded-full bg-green-500"
+              className="w-2 h-2 rounded-full bg-[#007AFF]"
             />
           </div>
           <div className="space-y-2 min-h-[200px]">
@@ -238,9 +238,9 @@ export function DemoAudienceBuilder() {
                     <motion.div
                       initial={{ scale: 0, rotate: -180 }}
                       animate={{ scale: 1, rotate: 0 }}
-                      className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0"
+                      className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0"
                     >
-                      <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                       </svg>
                     </motion.div>

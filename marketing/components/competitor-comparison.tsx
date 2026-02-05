@@ -11,15 +11,15 @@ interface Competitor {
 }
 
 const competitors: Competitor[] = [
-  { name: "ZoomInfo", logo: "🔷", slug: "zoominfo" },
-  { name: "6sense", logo: "🎯", slug: "6sense" },
-  { name: "Clearbit", logo: "⚡", slug: "clearbit" },
-  { name: "Apollo", logo: "🚀", slug: "apollo" },
-  { name: "LeadIQ", logo: "💡", slug: "leadiq" },
-  { name: "Lusha", logo: "📊", slug: "lusha" },
-  { name: "Hunter", logo: "🔍", slug: "hunter" },
-  { name: "RocketReach", logo: "🎪", slug: "rocketreach" },
-  { name: "UpLead", logo: "📈", slug: "uplead" },
+  { name: "ZoomInfo", logo: "◆", slug: "zoominfo" },
+  { name: "6sense", logo: "●", slug: "6sense" },
+  { name: "Clearbit", logo: "■", slug: "clearbit" },
+  { name: "Apollo", logo: "▲", slug: "apollo" },
+  { name: "LeadIQ", logo: "●", slug: "leadiq" },
+  { name: "Lusha", logo: "■", slug: "lusha" },
+  { name: "Hunter", logo: "◆", slug: "hunter" },
+  { name: "RocketReach", logo: "●", slug: "rocketreach" },
+  { name: "UpLead", logo: "▲", slug: "uplead" },
 ]
 
 export function CompetitorComparisonGrid() {
@@ -205,7 +205,7 @@ export function ComparisonPage({ competitorName, competitorLogo, benefits, featu
                     <td className="px-6 py-4 text-center">
                       {typeof feature.cursive === 'boolean' ? (
                         feature.cursive ? (
-                          <Check className="w-5 h-5 text-green-600 mx-auto" />
+                          <Check className="w-5 h-5 text-blue-600 mx-auto" />
                         ) : (
                           <X className="w-5 h-5 text-gray-300 mx-auto" />
                         )
@@ -257,7 +257,7 @@ export function ComparisonPage({ competitorName, competitorLogo, benefits, featu
 // Example usage data for ZoomInfo comparison
 export const zoomInfoComparison = {
   competitorName: "ZoomInfo",
-  competitorLogo: "🔷",
+  competitorLogo: "◆",
   benefits: [
     {
       title: "From visitors to customers",

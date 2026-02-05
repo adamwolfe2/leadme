@@ -72,7 +72,7 @@ export function SocialShare({ url, title }: SocialShareProps) {
         onClick={handleCopyLink}
         className={`p-2 rounded-lg border transition-all ${
           copied
-            ? 'bg-green-500 text-white border-green-500'
+            ? 'bg-[#007AFF] text-white border-[#007AFF]'
             : 'border-gray-200 text-gray-600 hover:bg-gray-100'
         }`}
         aria-label="Copy link"

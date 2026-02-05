@@ -5,8 +5,8 @@ import { useState, useEffect } from "react"
 
 const leadLists = [
   { title: "SaaS Founders - Series A", leads: 500, price: 250, verified: 99, tag: "Popular", tagColor: "bg-[#007AFF]" },
-  { title: "VP Marketing - Tech", leads: 1000, price: 450, verified: 98, tag: "New", tagColor: "bg-green-500" },
-  { title: "Head of Sales - B2B", leads: 750, price: 350, verified: 97, tag: "Trending", tagColor: "bg-purple-500" },
+  { title: "VP Marketing - Tech", leads: 1000, price: 450, verified: 98, tag: "New", tagColor: "bg-[#007AFF]" },
+  { title: "Head of Sales - B2B", leads: 750, price: 350, verified: 97, tag: "Trending", tagColor: "bg-blue-600" },
 ]
 
 export function DemoMarketplace() {
@@ -78,9 +78,9 @@ export function DemoMarketplace() {
                   <motion.div
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
-                    className="w-2 h-2 rounded-full bg-green-500"
+                    className="w-2 h-2 rounded-full bg-[#007AFF]"
                   />
-                  <span className="text-sm text-green-700 font-medium">{list.verified}%</span>
+                  <span className="text-sm text-blue-700 font-medium">{list.verified}%</span>
                 </motion.div>
               </div>
               <div className="flex items-center justify-between">

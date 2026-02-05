@@ -6,7 +6,8 @@ import { motion } from "framer-motion"
 import {
   Target, Zap, TrendingUp, CheckCircle2, ArrowRight,
   Clock, Database, RefreshCw, Filter, Users, Sparkles,
-  BarChart3, Globe, Layers, Mail, MessageSquare, Shield
+  BarChart3, Globe, Layers, Mail, MessageSquare, Shield,
+  Flame, Rocket
 } from "lucide-react"
 import { DashboardPreview } from "@/components/dashboard-preview"
 import { Metadata } from "next"
@@ -328,21 +329,21 @@ export default function IntentAudiencesPage() {
                 {
                   level: 'Hot (7D)',
                   description: 'Highest intent prospects actively searching in the last 7 days. Smallest audience, highest conversion.',
-                  icon: '🔥',
+                  icon: Flame,
                   bestFor: 'High-ticket offers, immediate conversions, limited ad budgets',
                   size: 'Thousands'
                 },
                 {
                   level: 'Warm (14D)',
                   description: 'Expanded reach with users showing interest in the last 14 days. Balance of intent and scale.',
-                  icon: '📈',
+                  icon: TrendingUp,
                   bestFor: 'Standard campaigns, lead generation, nurture sequences',
                   size: 'Tens of thousands'
                 },
                 {
                   level: 'Scale (30D)',
                   description: 'Full-funnel coverage with intent signals from the last 30 days. Maximum reach and impressions.',
-                  icon: '🚀',
+                  icon: Rocket,
                   bestFor: 'Brand awareness, retargeting, top-of-funnel prospecting',
                   size: 'Hundreds of thousands'
                 },
@@ -355,12 +356,12 @@ export default function IntentAudiencesPage() {
                   transition={{ delay: i * 0.1 }}
                   className="bg-white rounded-xl p-8 border border-gray-200 hover:shadow-lg transition-shadow"
                 >
-                  <div className="text-4xl mb-4">{tier.icon}</div>
+                  <div className="mb-4"><tier.icon className="w-10 h-10 text-[#007AFF]" /></div>
                   <h3 className="text-2xl text-gray-900 mb-3 font-medium">{tier.level}</h3>
                   <p className="text-gray-600 mb-6 leading-relaxed">{tier.description}</p>
                   <div className="space-y-3">
                     <div className="flex items-start gap-2">
-                      <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
                       <div>
                         <div className="text-sm font-medium text-gray-900">Best for:</div>
                         <div className="text-sm text-gray-600">{tier.bestFor}</div>

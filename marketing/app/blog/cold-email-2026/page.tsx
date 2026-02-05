@@ -93,8 +93,8 @@ export default function BlogPost() {
 
             <h2>What's Dead</h2>
 
-            <div className="not-prose bg-red-50 rounded-xl p-6 my-8 border border-red-200">
-              <h3 className="text-xl font-bold mb-4 text-red-900 flex items-center gap-2">
+            <div className="not-prose bg-gray-50 rounded-xl p-6 my-8 border border-gray-200">
+              <h3 className="text-xl font-bold mb-4 text-gray-900 flex items-center gap-2">
                 <XCircle className="w-6 h-6" />
                 Stop Doing These
               </h3>
@@ -149,8 +149,8 @@ export default function BlogPost() {
 
             <h2>What's Working</h2>
 
-            <div className="not-prose bg-green-50 rounded-xl p-6 my-8 border border-green-200">
-              <h3 className="text-xl font-bold mb-4 text-green-900 flex items-center gap-2">
+            <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-200">
+              <h3 className="text-xl font-bold mb-4 text-blue-900 flex items-center gap-2">
                 <CheckCircle className="w-6 h-6" />
                 Do More of This
               </h3>

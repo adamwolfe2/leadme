@@ -288,7 +288,7 @@ export default function WarmlyVsCursiveComparison() {
                   </div>
                 </div>
               </div>
-              <div className="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+              <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <p className="text-sm text-gray-700">
                   <strong>Cost Consideration:</strong> Warmly's pricing scales with website traffic,
                   which can become expensive for high-traffic sites. <a href="/" className="text-blue-600 hover:underline">Cursive</a> offers flat-rate <a href="/pricing" className="text-blue-600 hover:underline">pricing</a>

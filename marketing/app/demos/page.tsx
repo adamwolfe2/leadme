@@ -65,7 +65,7 @@ export default function DemosPage() {
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                className="w-2 h-2 rounded-full bg-green-500"
+                className="w-2 h-2 rounded-full bg-[#007AFF]"
               />
               <span className="text-sm text-gray-600">12 Interactive Demos</span>
             </motion.div>

@@ -86,7 +86,7 @@ export function DemoAccountIntelligence() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.3 }}
-            className="px-3 py-1.5 bg-green-100 text-green-700 text-xs rounded-full font-medium"
+            className="px-3 py-1.5 bg-blue-100 text-blue-700 text-xs rounded-full font-medium"
           >
             High Intent
           </motion.div>
@@ -193,7 +193,7 @@ export function DemoAccountIntelligence() {
                     <div className="text-sm font-medium text-gray-900">{contact.split(" - ")[0]}</div>
                     <div className="text-xs text-gray-600">{contact.split(" - ")[1]}</div>
                   </div>
-                  <div className="px-2 py-1 bg-green-50 text-green-700 text-xs rounded">Verified</div>
+                  <div className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded">Verified</div>
                 </div>
               </motion.div>
             ))}
@@ -240,7 +240,7 @@ export function DemoAccountIntelligence() {
               <motion.div
                 animate={{ opacity: [1, 0.3, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="w-2 h-2 bg-green-500 rounded-full"
+                className="w-2 h-2 bg-[#007AFF] rounded-full"
               />
               <h5 className="text-sm font-medium text-gray-900">Recent Intent Signals</h5>
             </div>

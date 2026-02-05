@@ -188,7 +188,7 @@ export function DemoIntentHeatmap() {
                     opacity: [0.8, 0],
                   }}
                   transition={{ duration: 1.5 }}
-                  className="w-6 h-6 -left-3 -top-3 rounded-full bg-green-500 absolute"
+                  className="w-6 h-6 -left-3 -top-3 rounded-full bg-blue-500 absolute"
                 />
               </motion.div>
             )
@@ -212,7 +212,7 @@ export function DemoIntentHeatmap() {
                   <motion.div
                     animate={{ opacity: [1, 0.3, 1] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
-                    className="w-1.5 h-1.5 rounded-full bg-green-500"
+                    className="w-1.5 h-1.5 rounded-full bg-blue-500"
                   />
                   {category}
                 </span>
@@ -233,7 +233,7 @@ export function DemoIntentHeatmap() {
           <motion.div
             animate={{ opacity: [1, 0.3, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="w-2 h-2 bg-green-500 rounded-full"
+            className="w-2 h-2 bg-blue-500 rounded-full"
           />
           <h4 className="text-sm text-gray-900 font-medium">Recent Signals</h4>
         </div>

@@ -86,7 +86,7 @@ export function DemoLeadSequence() {
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       exit={{ scale: 0 }}
-                      className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 text-xs rounded font-medium"
+                      className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded font-medium"
                     >
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -182,9 +182,9 @@ export function DemoLeadSequence() {
                     transition={{ delay: 0.2 }}
                     className={`px-2 py-1 text-xs rounded font-medium flex-shrink-0 ${
                       email.status === "replied"
-                        ? "bg-green-50 text-green-700"
+                        ? "bg-blue-50 text-blue-700"
                         : email.status === "opened"
-                        ? "bg-purple-50 text-purple-700"
+                        ? "bg-blue-100 text-blue-700"
                         : "bg-gray-100 text-gray-600"
                     }`}
                   >

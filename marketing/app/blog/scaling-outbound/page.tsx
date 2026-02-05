@@ -201,9 +201,9 @@ export default function BlogPost() {
               <li><strong>Domains needed for 1,000 emails/day:</strong> 5-7</li>
             </ul>
 
-            <div className="not-prose bg-orange-50 rounded-xl p-6 my-8 border border-orange-200">
+            <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-200">
               <div className="flex gap-3">
-                <AlertTriangle className="w-6 h-6 text-orange-600 flex-shrink-0 mt-0.5" />
+                <AlertTriangle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-bold mb-2">Pro Tip</h4>
                   <p className="text-sm text-gray-700">
@@ -449,7 +449,7 @@ export default function BlogPost() {
                   </ul>
                 </div>
 
-                <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
+                <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
                   <div className="font-bold text-lg mb-2">Month 3-4: Ramp</div>
                   <ul className="text-sm space-y-1 text-gray-700">
                     <li>• Launch first automated campaigns</li>
@@ -460,7 +460,7 @@ export default function BlogPost() {
                   </ul>
                 </div>
 
-                <div className="bg-green-50 rounded-xl p-6 border border-green-200">
+                <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
                   <div className="font-bold text-lg mb-2">Month 5-6: Scale</div>
                   <ul className="text-sm space-y-1 text-gray-700">
                     <li>• Add more domains as needed</li>

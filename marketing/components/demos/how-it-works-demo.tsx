@@ -60,7 +60,7 @@ function TrackingPixelDemo() {
               >
                 <div className="text-gray-400">&lt;!-- Cursive Tracking Pixel --&gt;</div>
                 <div className="text-blue-400">&lt;script </div>
-                <div className="ml-4 text-green-400">src=&quot;https://cursive.com/pixel.js&quot;</div>
+                <div className="ml-4 text-blue-400">src=&quot;https://cursive.com/pixel.js&quot;</div>
                 <div className="ml-4 text-purple-400">data-id=&quot;YOUR_ID&quot;</div>
                 <div className="text-blue-400">&gt;&lt;/script&gt;</div>
               </motion.div>
@@ -79,7 +79,7 @@ function TrackingPixelDemo() {
               className="absolute bottom-8 left-1/2 -translate-x-1/2"
             >
               <div className={`px-6 py-3 rounded-full shadow-xl flex items-center gap-3 ${
-                installed ? 'bg-green-500' : 'bg-[#007AFF]'
+                installed ? 'bg-blue-500' : 'bg-[#007AFF]'
               } text-white`}>
                 {installed ? (
                   <>
@@ -134,12 +134,12 @@ function VisitorIdentificationDemo() {
   const [showMetrics, setShowMetrics] = useState(false)
 
   const integrations = [
-    { id: 1, name: "Salesforce", color: "#00A1E0", icon: "🔵" },
-    { id: 2, name: "HubSpot", color: "#FF7A59", icon: "🟠" },
-    { id: 3, name: "LinkedIn", color: "#0077B5", icon: "🔷" },
-    { id: 4, name: "Google", color: "#4285F4", icon: "🔴" },
-    { id: 5, name: "Facebook", color: "#1877F2", icon: "🔵" },
-    { id: 6, name: "Slack", color: "#4A154B", icon: "🟣" },
+    { id: 1, name: "Salesforce", color: "#007AFF", icon: "●" },
+    { id: 2, name: "HubSpot", color: "#007AFF", icon: "●" },
+    { id: 3, name: "LinkedIn", color: "#007AFF", icon: "◆" },
+    { id: 4, name: "Google", color: "#007AFF", icon: "●" },
+    { id: 5, name: "Facebook", color: "#007AFF", icon: "●" },
+    { id: 6, name: "Slack", color: "#007AFF", icon: "●" },
   ]
 
   useEffect(() => {
@@ -263,8 +263,8 @@ function VisitorIdentificationDemo() {
             <div className="text-sm font-medium text-gray-600 mb-1">Anonymous → Known</div>
             <div className="flex items-center gap-2">
               <div className="w-8 h-2 bg-gray-300 rounded-full" />
-              <ArrowRight className="w-4 h-4 text-green-500" />
-              <div className="w-8 h-2 bg-green-500 rounded-full" />
+              <ArrowRight className="w-4 h-4 text-blue-500" />
+              <div className="w-8 h-2 bg-blue-500 rounded-full" />
             </div>
           </motion.div>
           <motion.div
@@ -476,10 +476,10 @@ function CampaignDemo() {
   const [showMetrics, setShowMetrics] = useState<{ [key: number]: boolean }>({})
 
   const channels = [
-    { id: 0, label: "Email", icon: "📧", metric: "42% open rate" },
-    { id: 1, label: "LinkedIn", icon: "💼", metric: "18% reply rate" },
-    { id: 2, label: "Direct Mail", icon: "📬", metric: "8% response" },
-    { id: 3, label: "SMS", icon: "💬", metric: "65% read rate" },
+    { id: 0, label: "Email", icon: "✉", metric: "42% open rate" },
+    { id: 1, label: "LinkedIn", icon: "◆", metric: "18% reply rate" },
+    { id: 2, label: "Direct Mail", icon: "■", metric: "8% response" },
+    { id: 3, label: "SMS", icon: "●", metric: "65% read rate" },
   ]
 
   useEffect(() => {
@@ -594,7 +594,7 @@ function CampaignDemo() {
                   animate={{ opacity: 1, y: -50, scale: 1 }}
                   className="absolute top-0 left-1/2 -translate-x-1/2 whitespace-nowrap"
                 >
-                  <div className="bg-green-500 text-white px-3 py-1.5 rounded-full text-xs font-medium shadow-lg">
+                  <div className="bg-blue-500 text-white px-3 py-1.5 rounded-full text-xs font-medium shadow-lg">
                     {channel.metric}
                   </div>
                 </motion.div>

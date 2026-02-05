@@ -139,7 +139,7 @@ export function DemoEnrichmentWaterfall() {
             transition={{ delay: index * 0.05 }}
             className={`bg-white rounded-lg p-4 border-2 transition-all ${
               step.status === "complete"
-                ? "border-green-300 bg-green-50/30"
+                ? "border-blue-300 bg-blue-50/30"
                 : step.status === "processing"
                 ? "border-[#007AFF] shadow-md"
                 : "border-gray-200"
@@ -155,7 +155,7 @@ export function DemoEnrichmentWaterfall() {
                       initial={{ scale: 0, rotate: -180 }}
                       animate={{ scale: 1, rotate: 0 }}
                       exit={{ scale: 0 }}
-                      className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center"
+                      className="w-8 h-8 rounded-full bg-[#007AFF] flex items-center justify-center"
                     >
                       <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -224,10 +224,10 @@ export function DemoEnrichmentWaterfall() {
                   animate={{ opacity: 1, scale: 1 }}
                   className={`px-2 py-1 rounded text-xs font-medium ${
                     step.confidence >= 95
-                      ? "bg-green-100 text-green-700"
+                      ? "bg-blue-100 text-blue-700"
                       : step.confidence >= 85
-                      ? "bg-yellow-100 text-yellow-700"
-                      : "bg-orange-100 text-orange-700"
+                      ? "bg-gray-100 text-gray-700"
+                      : "bg-gray-200 text-gray-700"
                   }`}
                 >
                   {step.confidence}% confident
@@ -245,10 +245,10 @@ export function DemoEnrichmentWaterfall() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border-2 border-green-300"
+            className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border-2 border-blue-300"
           >
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-[#007AFF] flex items-center justify-center">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>

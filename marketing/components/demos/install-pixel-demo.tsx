@@ -226,9 +226,9 @@ export default function InstallPixelDemo() {
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="flex items-center justify-center gap-3 mt-6 text-gray-700"
         >
-          <div className="flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 rounded-full">
-            <Check className="w-4 h-4 text-green-600" />
-            <span className="text-sm font-medium text-green-700">Installed!</span>
+          <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border border-green-200 rounded-full">
+            <Check className="w-4 h-4 text-blue-600" />
+            <span className="text-sm font-medium text-blue-700">Installed!</span>
           </div>
           <span className="text-sm">
             Tracking{' '}

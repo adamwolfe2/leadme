@@ -133,7 +133,7 @@ export function DemoAIStudio() {
               transition={{ duration: 0.3, delay: i * 0.1 }}
               className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${
                 isComplete
-                  ? "bg-green-50 border-green-200"
+                  ? "bg-blue-50 border-blue-200"
                   : isActive
                   ? "bg-white border-gray-300 shadow-sm"
                   : "bg-white border-gray-200"
@@ -146,7 +146,7 @@ export function DemoAIStudio() {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}
-                    className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0"
+                    className="w-5 h-5 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0"
                   >
                     <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -224,7 +224,7 @@ export function DemoAIStudio() {
               <motion.span
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="px-2 py-1 bg-green-50 text-green-700 text-xs rounded font-medium"
+                className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded font-medium"
               >
                 ✓ Ready
               </motion.span>

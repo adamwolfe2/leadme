@@ -134,7 +134,7 @@ export function DemoVisitorTracking() {
           <motion.div
             animate={{ opacity: [1, 0.4, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="w-2 h-2 bg-green-500 rounded-full"
+            className="w-2 h-2 bg-blue-500 rounded-full"
           />
           <h4 className="text-gray-900 font-medium">Live Visitors on Your Site</h4>
         </div>
@@ -173,12 +173,12 @@ export function DemoVisitorTracking() {
                   <motion.span
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
-                    className="px-2 py-1 bg-green-50 text-green-700 text-xs rounded-full flex items-center gap-1.5 flex-shrink-0"
+                    className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full flex items-center gap-1.5 flex-shrink-0"
                   >
                     <motion.div
                       animate={{ opacity: [1, 0.3, 1] }}
                       transition={{ duration: 1.5, repeat: Infinity }}
-                      className="w-1.5 h-1.5 bg-green-500 rounded-full"
+                      className="w-1.5 h-1.5 bg-blue-500 rounded-full"
                     />
                     Live
                   </motion.span>

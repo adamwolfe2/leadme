@@ -223,7 +223,7 @@ export default function BlogPost() {
 
                 <div className="bg-white rounded-lg p-6">
                   <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
-                    <Zap className="w-5 h-5 text-yellow-600" />
+                    <Zap className="w-5 h-5 text-gray-600" />
                     First-Party Data
                   </h4>
                   <div className="space-y-3 text-sm">
@@ -604,9 +604,9 @@ export default function BlogPost() {
               </li>
             </ol>
 
-            <div className="not-prose bg-yellow-50 rounded-lg p-6 my-8 border-l-4 border-yellow-600">
+            <div className="not-prose bg-gray-50 rounded-lg p-6 my-8 border-l-4 border-gray-600">
               <p className="text-sm text-gray-700 mb-0">
-                <strong className="text-yellow-900">Legal Disclaimer:</strong> This guide provides general
+                <strong className="text-gray-900">Legal Disclaimer:</strong> This guide provides general
                 information about privacy regulations. It is not legal advice. Consult with a privacy attorney
                 to ensure your visitor identification practices comply with all applicable laws in your
                 jurisdiction and for your specific use case.

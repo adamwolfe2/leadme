@@ -207,9 +207,9 @@ export function DemoEmailValidator() {
             transition={{ delay: index * 0.05 }}
             className={`bg-white rounded-lg p-4 border transition-all ${
               check.status === "pass"
-                ? "border-green-300 bg-green-50/30"
+                ? "border-blue-300 bg-blue-50/30"
                 : check.status === "warning"
-                ? "border-yellow-300 bg-yellow-50/30"
+                ? "border-gray-300 bg-gray-50/30"
                 : check.status === "checking"
                 ? "border-[#007AFF] shadow-sm"
                 : "border-gray-200"
@@ -224,7 +224,7 @@ export function DemoEmailValidator() {
                       key="pass"
                       initial={{ scale: 0, rotate: -180 }}
                       animate={{ scale: 1, rotate: 0 }}
-                      className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center"
+                      className="w-6 h-6 rounded-full bg-[#007AFF] flex items-center justify-center"
                     >
                       <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -235,7 +235,7 @@ export function DemoEmailValidator() {
                       key="warning"
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className="w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center"
+                      className="w-6 h-6 rounded-full bg-gray-500 flex items-center justify-center"
                     >
                       <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -293,10 +293,10 @@ export function DemoEmailValidator() {
             exit={{ opacity: 0 }}
             className={`rounded-lg p-4 border-2 ${
               score >= 90
-                ? "bg-green-50 border-green-300"
+                ? "bg-blue-50 border-blue-300"
                 : score >= 70
-                ? "bg-yellow-50 border-yellow-300"
-                : "bg-red-50 border-red-300"
+                ? "bg-gray-50 border-gray-300"
+                : "bg-gray-100 border-gray-300"
             }`}
           >
             <div className="flex items-center gap-2 mb-2">

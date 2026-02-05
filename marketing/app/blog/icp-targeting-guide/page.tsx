@@ -375,7 +375,7 @@ export default function BlogPost() {
 
             <div className="not-prose my-8">
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
+                <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
                   <h4 className="font-bold text-lg mb-3">ICP (Company Level)</h4>
                   <ul className="space-y-2 text-sm">
                     <li>• B2B SaaS</li>
@@ -385,7 +385,7 @@ export default function BlogPost() {
                     <li>• Uses Salesforce</li>
                   </ul>
                 </div>
-                <div className="bg-green-50 rounded-xl p-6 border border-green-200">
+                <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
                   <h4 className="font-bold text-lg mb-3">Buyer Persona (Individual)</h4>
                   <ul className="space-y-2 text-sm">
                     <li>• Director of Sales Ops</li>
