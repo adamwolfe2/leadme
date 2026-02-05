@@ -8,29 +8,72 @@ export function Footer() {
   return (
     <footer className="bg-white border-t border-gray-200 py-12">
       <Container>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
-          {/* Brand */}
-          <div className="col-span-2">
-            <div className="flex items-center mb-4">
-              <img
-                src="/cursive-logo.png"
-                alt="Cursive"
-                className="w-8 h-8"
-                loading="lazy"
-              />
-            </div>
-            <p className="text-xl text-gray-900 mb-2 leading-tight">
-              We know who's searching for what
-            </p>
-            <p className="font-cursive text-3xl text-gray-500 mb-4">
-              With Cursive
-            </p>
-            <p className="text-gray-600 text-sm mb-6">
-              AI-powered lead generation and outbound automation for B2B companies.
-            </p>
+        {/* Brand and View Toggle - Top Section */}
+        <div className="mb-12">
+          <div className="flex items-center mb-4">
+            <img
+              src="/cursive-logo.png"
+              alt="Cursive"
+              className="w-8 h-8"
+              loading="lazy"
+            />
+          </div>
+          <p className="text-xl text-gray-900 mb-2 leading-tight">
+            We know who's searching for what
+          </p>
+          <p className="font-cursive text-3xl text-gray-500 mb-4">
+            With Cursive
+          </p>
+          <p className="text-gray-600 text-sm mb-6">
+            AI-powered lead generation and outbound automation for B2B companies.
+          </p>
 
-            {/* View Toggle */}
-            <ViewToggle />
+          {/* View Toggle */}
+          <ViewToggle />
+        </div>
+
+        {/* Main Links - 1x4 Horizontal Layout at Bottom */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          {/* Company */}
+          <div>
+            <h3 className="text-gray-900 mb-4">Company</h3>
+            <ul className="space-y-2 text-sm text-gray-600">
+              <li>
+                <Link href="/about" className="hover:text-[#007AFF] transition-colors">
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link href="/resources" className="hover:text-[#007AFF] transition-colors">
+                  Resources
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog" className="hover:text-[#007AFF] transition-colors">
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-[#007AFF] transition-colors">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link href="/faq" className="hover:text-[#007AFF] transition-colors">
+                  FAQ
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="https://leads.meetcursive.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-[#007AFF] transition-colors"
+                >
+                  Login
+                </a>
+              </li>
+            </ul>
           </div>
 
           {/* Solutions */}
@@ -134,79 +177,6 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Comparisons */}
-          <div>
-            <h3 className="text-gray-900 mb-4">Compare</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li>
-                <Link href="/compare/zoominfo" className="hover:text-[#007AFF] transition-colors">
-                  vs ZoomInfo
-                </Link>
-              </li>
-              <li>
-                <Link href="/compare/6sense" className="hover:text-[#007AFF] transition-colors">
-                  vs 6sense
-                </Link>
-              </li>
-              <li>
-                <Link href="/compare/clearbit" className="hover:text-[#007AFF] transition-colors">
-                  vs Clearbit
-                </Link>
-              </li>
-              <li>
-                <Link href="/compare/apollo" className="hover:text-[#007AFF] transition-colors">
-                  vs Apollo
-                </Link>
-              </li>
-              <li>
-                <Link href="/compare/leadiq" className="hover:text-[#007AFF] transition-colors">
-                  vs LeadIQ
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Company */}
-          <div>
-            <h3 className="text-gray-900 mb-4">Company</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li>
-                <Link href="/about" className="hover:text-[#007AFF] transition-colors">
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link href="/resources" className="hover:text-[#007AFF] transition-colors">
-                  Resources
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="hover:text-[#007AFF] transition-colors">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="hover:text-[#007AFF] transition-colors">
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link href="/faq" className="hover:text-[#007AFF] transition-colors">
-                  FAQ
-                </Link>
-              </li>
-              <li>
-                <a
-                  href="https://leads.meetcursive.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-[#007AFF] transition-colors"
-                >
-                  Login
-                </a>
-              </li>
-            </ul>
-          </div>
         </div>
 
         <div className="mt-12 pt-8 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4">
