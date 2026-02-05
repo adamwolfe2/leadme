@@ -6,7 +6,10 @@ import { motion } from "framer-motion"
 import { InteractiveFeaturesShowcase } from "@/components/demos/interactive-features-showcase"
 import { DashboardPreview } from "@/components/dashboard-preview"
 import { IntegrationsShowcase } from "@/components/integrations-showcase"
-import { HowItWorksInteractiveDemo } from "@/components/demos/how-it-works-demo"
+import InstallPixelDemo from "@/components/demos/install-pixel-demo"
+import IdentifyVisitorsDemo from "@/components/demos/identify-visitors-demo"
+import BuildAudienceDemo from "@/components/demos/build-audience-demo"
+import LaunchCampaignsDemo from "@/components/demos/launch-campaigns-demo"
 import { HowItWorksSection } from "@/components/homepage/how-it-works-section"
 import { CompetitorComparisonGrid } from "@/components/competitor-comparison"
 import { CompetitiveAdvantagesSection } from "@/components/homepage/competitive-advantages-section"
@@ -163,18 +166,26 @@ export function HumanHomePage() {
         </Container>
       </section>
 
-      {/* How It Works - Interactive Demo */}
-      <section className="py-20 bg-[#F7F9FB]">
-        <Container>
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-              How <span className="font-cursive text-gray-500">Cursive</span> Works
-            </h2>
-            <p className="text-xl text-gray-600">Get started in minutes, not weeks</p>
-          </div>
+      {/* How It Works - Interactive Demos with Black Background */}
+      <section className="bg-black">
+        <div className="text-center pt-24 pb-12 px-6">
+          <h2 className="text-5xl lg:text-6xl font-light text-white mb-4">
+            How <span className="font-cursive text-gray-400">Cursive</span> Works
+          </h2>
+          <p className="text-xl text-gray-400">Get started in minutes, not weeks</p>
+        </div>
 
-          <HowItWorksInteractiveDemo />
-        </Container>
+        {/* Step 1: Install Tracking Pixel */}
+        <InstallPixelDemo />
+
+        {/* Step 2: Identify Visitors */}
+        <IdentifyVisitorsDemo />
+
+        {/* Step 3: Build Your Audience */}
+        <BuildAudienceDemo />
+
+        {/* Step 4: Launch Campaigns */}
+        <LaunchCampaignsDemo />
       </section>
 
       {/* Competitive Advantages */}

@@ -159,8 +159,12 @@ export function Header() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
-                      className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[600px] bg-white rounded-xl shadow-2xl border border-gray-200 p-6 z-50"
+                      className="absolute top-full left-1/2 -translate-x-1/2 pt-2 w-[600px] z-50"
                     >
+                      {/* Invisible bridge to prevent dropdown from closing */}
+                      <div className="absolute top-0 left-0 right-0 h-2" />
+
+                      <div className="bg-white rounded-xl shadow-2xl border border-gray-200 p-6">
                       <div className="grid grid-cols-2 gap-3">
                         {link.dropdown.map((item) => {
                           const Icon = item.icon
@@ -184,6 +188,7 @@ export function Header() {
                             </Link>
                           )
                         })}
+                      </div>
                       </div>
                     </motion.div>
                   )}
