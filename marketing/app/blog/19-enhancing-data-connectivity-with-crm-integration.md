@@ -9,7 +9,7 @@ When your marketing tools don't communicate with each other, revenue opportuniti
 
 This is the reality for B2B companies operating with disconnected systems.
 
-**CRM integration** solves this by connecting your customer data directly with your marketing automation, sales platforms, and analytics tools. When done right, it transforms scattered touchpoints into a unified revenue engine that identifies opportunities, personalizes outreach, and accelerates conversions.
+**CRM integration** solves this by connecting your customer data directly with your marketing automation, sales platforms, and analytics tools. When done right, it transforms scattered touchpoints into a unified revenue engine that identifies opportunities, personalizes outreach, and accelerates conversions. Modern [visitor identification platforms](/visitor-identification) track these anonymous interactions and feed them directly into your CRM for immediate action.
 
 For B2B SaaS companies and digital agencies managing multiple client accounts, seamless CRM connectivity isn't optional—it's the foundation of scalable growth.
 
@@ -42,7 +42,7 @@ With Cursive's visitor identification platform connected to your CRM, you can **
 
 ### Personalized Multi-Touch Campaigns
 
-Instead of generic email blasts, [Cursive's audience builder](https://meetcursive.com/audience-builder) lets you create segments based on firmographic data, behavioral signals, and intent scores—all synced with your CRM in real time. A SaaS company visiting your integrations page receives different messaging than an agency browsing case studies.
+Instead of generic email blasts, [Cursive's audience builder](https://meetcursive.com/audience-builder) lets you create segments based on firmographic data, behavioral signals, and intent scores—all synced with your CRM in real time. A SaaS company visiting your integrations page receives different messaging than an agency browsing case studies. Learn more about [creating behavioral audience segments easily](/blog/32-creating-behavioral-audience-segments-easily) to maximize your CRM data.
 
 ### Accurate Lead Scoring
 
@@ -72,7 +72,7 @@ Route leads to the right rep based on territory, product interest, company size,
 
 Sales, marketing, and customer success teams work from the same records. No more asking "which contact information is correct?" or "did we already reach out to this company?"
 
-**Cursive integrates natively with 200+ CRM, marketing automation, and advertising platforms**—including Salesforce, HubSpot, Pipedrive, ActiveCampaign, and Google Ads—ensuring bidirectional data sync without building custom workflows or relying on fragile Zapier connections.
+**Cursive integrates natively with 200+ CRM, marketing automation, and advertising platforms** through our [comprehensive integrations hub](/integrations)—including Salesforce, HubSpot, Pipedrive, ActiveCampaign, and Google Ads—ensuring bidirectional data sync without building custom workflows or relying on fragile Zapier connections.
 
 ## Building a CRM Integration Strategy That Actually Works
 
@@ -144,7 +144,7 @@ Batch syncing that runs every few hours kills your ability to act on hot leads. 
 
 ### Compliance-First Data Handling
 
-CRM integrations must respect privacy regulations. Ensure your tools honor GDPR opt-outs, support consent management, and provide data processing agreements. **Cursive is built compliance-first**, with automatic opt-out handling, data encryption, and GDPR/CCPA alignment across all 200+ integrations.
+CRM integrations must respect privacy regulations. Ensure your tools honor GDPR opt-outs, support consent management, and provide data processing agreements. **Cursive is built compliance-first**, with automatic opt-out handling, data encryption, and GDPR/CCPA alignment across all 200+ integrations. For a deeper dive, see our complete guide on [understanding marketing data privacy compliance](/blog/24-understanding-marketing-data-privacy-compliance).
 
 ## Measuring CRM Integration Success
 
@@ -216,9 +216,9 @@ Yes. Multi-CRM setups are common for agencies managing client accounts or enterp
 
 ## Transform Your CRM Integration with Cursive
 
-Disconnected marketing and sales tools cost you deals. When data flows seamlessly between [Cursive's visitor identification platform](https://meetcursive.com/visitor-identification), your CRM, and your entire marketing stack, you convert more leads, close deals faster, and prove marketing ROI with precision.
+Disconnected marketing and sales tools cost you deals. When data flows seamlessly between [Cursive's visitor identification platform](https://meetcursive.com/visitor-identification), your CRM, and your entire marketing stack, you convert more leads, close deals faster, and prove marketing ROI with precision. For practical implementation advice, check out our [tips for improving CRM integration workflows](/blog/30-tips-for-improving-crm-integration-workflows).
 
-Cursive's **200+ native integrations** eliminate the data silos that slow your team down—syncing visitor behavior, intent signals, and enriched contact data in real time without custom development or fragile middleware.
+Cursive's **200+ native integrations** eliminate the data silos that slow your team down—syncing visitor behavior, intent signals, and enriched contact data in real time without custom development or fragile middleware. Learn more about [why data quality matters in marketing](/blog/31-why-data-quality-matters-in-marketing-UPDATED) to maximize your integration investment.
 
 Ready to see how unified data connectivity accelerates growth?
 
