@@ -58,7 +58,7 @@ When a database grows without care, these mistakes sneak in fast. You lose track
 
 Once that trust is gone, it's hard to get back.
 
-**Cursive addresses this with automated data cleansing and validation tools** that maintain up-to-date, duplicate-free lists across numerous CRM and campaign platforms.
+**Cursive addresses this with automated data cleansing and validation tools** that maintain up-to-date, duplicate-free lists across numerous CRM and campaign platforms. See our guide on [improving your marketing database quality](/blog/23-steps-to-improve-your-marketing-database-quality-UPDATED).
 
 ## How Teams Use Better Data to Work Smarter
 
@@ -74,9 +74,9 @@ Clean records help you notice patterns, time things better, and give each lead t
 
 It also makes your tools more useful. If the data going into a CRM or ad platform is clean, the results coming out make more sense.
 
-You can build better audiences, automate based on behavior, and follow up with people who've already shown interest instead of guessing who to contact next.
+You can build better audiences, automate based on behavior, and follow up with people who've already shown interest instead of guessing who to contact next. [Audience building](/audience-builder) starts with clean data.
 
-**Cursive provides seamless integrations and real-time data syncing** that connect all data sources, keeping campaigns current even as contacts and lead details change.
+**[Cursive's integrations](/integrations) provide seamless data syncing** that connect all data sources, keeping campaigns current even as contacts and lead details change. Learn about [improving B2B contact data efficiency](/blog/14-how-to-improve-b2b-contact-data-efficiency-UPDATED).
 
 ## How to Keep Data from Getting Messy
 

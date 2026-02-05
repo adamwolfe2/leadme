@@ -26,7 +26,7 @@ Without a good system, you often rely on guesswork or old info, leading to vague
 - Sending the same message to everyone, even though their needs are different
 - Spending too much time trying to figure out who is worth following up with
 
-**The right tools can fix a lot of that.** Instead of building lists by hand or digging through scattered data, you can use audience targeting software to stay organized.
+**The right tools can fix a lot of that.** Instead of building lists by hand or digging through scattered data, you can use audience targeting software to stay organized. [Platform integrations](/integrations) keep your data synchronized across all your tools.
 
 It keeps your contact info updated and sorted, so you spend less time wondering who to message and more time crafting something that's actually helpful.
 
@@ -46,9 +46,9 @@ They track how people interact with your pages, which links they click, and even
 - Those signals are sorted into groups, helping you decide who's close to buying or just curious
 - Messages can then be sent to smaller, focused lists based on actions, job title, or industry
 
-**Cursive integrates real-time buyer intent and engagement signals**, updating lead segments quickly and supporting omni-channel campaigns through 200+ CRM and ad platforms for businesses at every scale.
+**Cursive integrates real-time [buyer intent](/intent-audiences) and engagement signals**, updating lead segments quickly and supporting omni-channel campaigns through 200+ CRM and ad platforms for businesses at every scale.
 
-This kind of behind-the-scenes work means you're not guessing who might be interested. You have real signals guiding you.
+This kind of behind-the-scenes work means you're not guessing who might be interested. You have real signals guiding you. Learn about [building effective audience targeting platforms](/blog/16-guide-to-building-an-effective-audience-targeting-platform-UPDATED).
 
 Whether you're prepping a campaign or planning retargeting ads, the guesswork is mostly gone.
 
@@ -66,7 +66,7 @@ You don't need to be tech experts or data scientists to benefit from it. Most se
 - Agency teams juggling multiple clients and needing quick insights
 - Marketing leads who don't want to spend all day sorting spreadsheets
 
-**Cursive's all-in-one platform automates routine targeting and segmentation tasks**, so anyone can access insights and personalize outreach without a steep learning curve or advanced technical knowledge.
+**[Cursive's platform](/audience-builder) automates routine targeting and segmentation tasks**, so anyone can access insights and personalize outreach without a steep learning curve or advanced technical knowledge.
 
 It's easy to fold into the work you're already doing. You can get alerts when someone revisits a page, sort contacts by behavior, or even pull lists for ads without needing to switch between a dozen different tools.
 

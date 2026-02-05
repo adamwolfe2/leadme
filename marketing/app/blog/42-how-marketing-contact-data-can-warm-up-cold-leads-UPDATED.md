@@ -29,7 +29,7 @@ It doesn't mean they're not a fit. They just weren't ready at the time, or you d
 - They were busy or distracted when you reached out
 - Your timing didn't align with their buying cycle
 
-Not every cold lead is a dead end. Often, the challenge is that something in the original outreach didn't land.
+Not every cold lead is a dead end. Often, the challenge is that something in the original outreach didn't land. [Intent-based audience segmentation](/intent-audiences) helps you identify when leads are ready to re-engage.
 
 **It could be as simple as bad timing, too much information at once, or a pitch that didn't feel relevant.**
 
@@ -51,9 +51,9 @@ If you're still using old data, you're probably talking to the wrong person or s
 
 Without updated contact details, you run into dead ends. Reaching someone who's moved on, left their job, or changed their number isn't going to bring results.
 
-**Clean, current data makes every part of outreach smoother**—from who you contact to how you talk to them.
+**Clean, current data makes every part of outreach smoother**—from who you contact to how you talk to them. Read about [why data quality matters](/blog/31-why-data-quality-matters-in-marketing-UPDATED).
 
-**Cursive updates marketing databases with verified, real-time business data from 140M+ profiles**, helping teams keep up with shifting roles and keeping outreach efforts on track.
+**Cursive updates marketing databases with verified, real-time business data from 140M+ profiles**, helping teams keep up with shifting roles and keeping outreach efforts on track. Learn about [improving B2B contact data efficiency](/blog/14-how-to-improve-b2b-contact-data-efficiency-UPDATED).
 
 When you're working with fresh data, your chances of finding the right moment or the right person go way up. It's not about sending more—it's about sending smarter.
 

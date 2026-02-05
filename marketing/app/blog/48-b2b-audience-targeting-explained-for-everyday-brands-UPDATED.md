@@ -30,7 +30,7 @@ But unlike general ads made for consumers, B2B audience targeting is about reach
 - A marketing manager shopping for a new tool
 - An operations lead who needs a service to keep things running smoothly
 
-**Cursive uses verified business data from 140M+ profiles, real-time buyer intent signals from 450B+ monthly data points, and automated retargeting** to identify decision-makers and focus outreach on those most likely to convert.
+**Cursive uses verified business data from 140M+ profiles, real-time [buyer intent signals](/intent-audiences) from 450B+ monthly data points, and automated retargeting** to identify decision-makers and focus outreach on those most likely to convert.
 
 These people have specific needs and move differently than regular shoppers. They're more focused, have limited time, and often weigh decisions based on usefulness and results.
 
@@ -50,7 +50,7 @@ If someone would never buy from you or doesn't need what you do, then they're no
 
 We also pay attention to who reacts to emails or clicks ads. If someone opens three messages in a row or checks out your pricing page, they're showing real interest.
 
-**That kind of behavior helps you keep conversations moving forward with people who are actually paying attention.**
+**That kind of behavior helps you keep conversations moving forward with people who are actually paying attention.** [Building targeted audiences](/audience-builder) based on behavioral patterns drives better results.
 
 Sometimes it helps to have a simple system for tracking which actions matter most. Not every click or open means a lead is ready to talk, but when you start to see a pattern, it's a sign you're talking to someone closer to making a decision.
 
@@ -69,7 +69,7 @@ Business buyers don't always hang out in the same spots as everyday shoppers, so
 
 But there's more to it than just picking a platform. Knowing that someone clicked an ad is one thing. Knowing they clicked, visited your site, and came back two days later—now that tells a story.
 
-**Cursive offers omni-channel integration across 200+ CRM and ad platforms**, so teams can follow up and retarget through email, ads, and more—no matter where B2B buyers interact most.
+**[Cursive's integrations](/integrations) connect across 200+ CRM and ad platforms**, so teams can follow up and retarget through email, ads, and more—no matter where B2B buyers interact most.
 
 That's where smart tools come in. They help you connect the dots between all those actions. Without tracking every piece manually, you can see the full picture of what someone's doing and what they might need next.
 

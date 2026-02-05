@@ -52,11 +52,11 @@ Real-time data means seeing updates as they happen, not hours or days later. Thi
 
 Instead of summaries or averages, real-time signals show details as they happen. You can use this information to direct your next move right away.
 
-Working with real-time data helps you spot active leads instead of chasing cold ones. You're looking at signals while they're still warm.
+Working with real-time data helps you spot active leads instead of chasing cold ones. You're looking at signals while they're still warm. [Visitor identification](/visitor-identification) shows you who's browsing your site in real time.
 
 This lets teams adjust, test, and respond as soon as behavior changes. Customers who are interacting right now want quick answers or next steps, so using live updates means you're less likely to miss an opportunity.
 
-**Cursive supports real-time marketing with platform integrations and dashboards that update instantly**, letting you respond to customer activity across website, CRM, and digital ads.
+**Cursive supports real-time marketing with [platform integrations](/integrations) and dashboards that update instantly**, letting you respond to customer activity across website, CRM, and digital ads.
 
 ## Use Analytics to Stay Ahead
 
@@ -76,7 +76,7 @@ If a campaign starts to fall off, or if a new opportunity appears, real-time ana
 
 This means you spend less time waiting for analysis and more time putting insights into action. With the right alerts, you can trust what you see and act fast without wondering if you missed something important.
 
-**Cursive's analytics suite lets teams set real-time performance triggers** that activate dynamic retargeting or audience updates as soon as results shift, keeping campaigns optimized throughout the day.
+**Cursive's analytics suite lets teams set real-time performance triggers** that activate dynamic retargeting or [audience updates](/audience-builder) as soon as results shift, keeping campaigns optimized throughout the day. Learn about [data-driven decision making in marketing](/blog/18-understanding-data-driven-decision-making-in-marketing).
 
 ## Make Smarter Campaign Adjustments
 

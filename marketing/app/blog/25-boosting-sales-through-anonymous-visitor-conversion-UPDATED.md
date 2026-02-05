@@ -32,7 +32,7 @@ You can track:
 - How long someone stays
 - Whether they return again
 
-**It's like turning on a light in a room you used to guess about.**
+**It's like turning on a light in a room you used to guess about.** [Visitor identification tools](/visitor-identification) help you see who's browsing your site even without form fills.
 
 You don't need someone to sign up to know they're interested. Their clicks tell a story.
 
@@ -42,7 +42,7 @@ When you spot these patterns, you can follow up in a way that fits. Maybe that m
 
 **Instead of chasing cold leads, focus on warm ones who've already shown they care.**
 
-**Cursive's visitor identification reveals up to 70% of your anonymous traffic**, showing real-time company and contact information so you can trigger targeted follow-up through CRM, email, and ad campaigns.
+**Cursive's visitor identification reveals up to 70% of your anonymous traffic**, showing real-time company and contact information so you can trigger targeted follow-up through CRM, email, and ad campaigns. Learn more about [using website visitor tracking for lead generation](/blog/22-using-website-visitor-tracking-for-lead-generation-UPDATED).
 
 ## What Makes a Website Visit Worth Noticing
 
@@ -61,7 +61,7 @@ Someone scrolling once doesn't mean much. But when you see clusters of actions b
 
 **Spotting these signs early helps you reach out before they move to a competitor.**
 
-**Cursive automatically scores leads and triggers outbound messaging** based on web actions showing clear buying intent, so you never miss a high-intent moment.
+**Cursive automatically scores leads and triggers outbound messaging** based on web actions showing clear [buying intent](/intent-audiences), so you never miss a high-intent moment.
 
 ## Connect Data to Better Sales Outreach
 

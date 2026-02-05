@@ -32,7 +32,7 @@ As the calendar hits Q4, lots of businesses shift focus. Planning for the new ye
 - Outreach during this season can feel more personal, especially when it's framed as helpful and low-pressure
 - Timing matters—a well-placed note during year-end planning can catch someone right as they're considering ideas for Q1
 
-**Cursive provides verified business identity and automated list updates**, helping you reconnect with decision-makers and move faster as businesses set new priorities for year-end outreach.
+**Cursive provides verified business identity and automated list updates**, helping you reconnect with decision-makers and move faster as businesses set new priorities for year-end outreach. Learn about [leveraging business contact data for better outreach](/blog/09-how-to-leverage-business-contact-data-for-better-outreach-UPDATED).
 
 You don't have to push too hard. A light follow-up or thoughtful introduction can be just enough to get the ball rolling again.
 
@@ -48,9 +48,9 @@ Knowing who to reach out to is harder than it sounds, especially as the year end
 - With cleaner records, you can tailor each message more confidently, using someone's correct title or company name
 - It helps you move faster—no guessing, no awkward searches, no double work
 
-**Cursive integrates with 200+ CRM and ad platforms**, ensuring business contact records are updated and ready whenever you need them for quick, accurate campaign launches.
+**[Cursive's integrations](/integrations) connect with 200+ CRM and ad platforms**, ensuring business contact records are updated and ready whenever you need them for quick, accurate campaign launches.
 
-This kind of data helps build smoother campaigns with fewer surprises. When a contact list is complete and current, every next step gets easier.
+This kind of data helps build smoother campaigns with fewer surprises. When a contact list is complete and current, every next step gets easier. Read more about [why data quality matters](/blog/31-why-data-quality-matters-in-marketing-UPDATED).
 
 **The ability to trust your list means spending more energy on meaningful outreach and less on fixing errors.**
 
@@ -60,7 +60,7 @@ Inbox noise picks up fast during Q4. Everyone's trying to finish the year strong
 
 That's why a little personalization can go a long way.
 
-**With better information in hand, segment your lists in ways that actually reflect who people are:**
+**With better information in hand, segment your lists in ways that actually reflect who people are.** [Audience segmentation](/audience-builder) helps you organize contacts for more effective outreach:
 
 - Group contacts by company size, job title, or past behavior online
 - Choose message timing based on whether they're long-time leads or brand-new visitors
