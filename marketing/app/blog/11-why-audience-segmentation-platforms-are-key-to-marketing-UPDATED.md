@@ -32,9 +32,9 @@ Are they researching? Weighing options? Nearly ready to buy?
 
 Segmentation gives you a way to organize intent signals so you don't treat everyone the same and hope for the best.
 
-**Better grouping leads to clearer goals and less wasted outreach.** You're reacting to demonstrated interest instead of guessing.
+**Better grouping leads to clearer goals and less wasted outreach.** You're reacting to demonstrated interest instead of guessing. [Effective audience building](/audience-builder) starts with understanding behavioral patterns.
 
-Cursive's behavioral segmentation lets you automatically group visitors by page views, return frequency, and engagement patterns—ensuring every message matches real intent.
+Cursive's behavioral segmentation lets you automatically group visitors by page views, return frequency, and engagement patterns—ensuring every message matches real intent. Learn more about [creating behavioral audience segments](/blog/32-creating-behavioral-audience-segments-easily).
 
 ## Platforms Make Targeting Faster and Easier
 
@@ -52,9 +52,9 @@ When your tools are connected, you know:
 
 These quick views help you spot shifts and patterns before they get lost in the data.
 
-**Cursive integrates with 200+ CRM and advertising platforms**, bringing together verified business and consumer data in real time. Your audience insights stay current as new data flows in, so you're never working with yesterday's information.
+**[Cursive's integrations](/integrations) connect with 200+ CRM and advertising platforms**, bringing together verified business and consumer data in real time. Your audience insights stay current as new data flows in, so you're never working with yesterday's information.
 
-Centralizing data also reduces manual entry errors and makes collaboration easier across marketing and sales teams.
+Centralizing data also reduces manual entry errors and makes collaboration easier across marketing and sales teams. See our guide on [improving CRM integration workflows](/blog/30-tips-for-improving-crm-integration-workflows).
 
 ## Timing and Personalization Drive Results
 
@@ -74,7 +74,7 @@ Personalization matters too. Generic emails don't make anyone feel seen. But a m
 
 Even small adjustments in timing or content can move someone from curious to committed. Those changes come easier when you're working from grouped data that reflects what matters to them.
 
-**Cursive's automation triggers campaigns based on real-time behavior**—whether it's a return visit, content download, or pricing page view—so you never miss a high-intent moment.
+**Cursive's automation triggers campaigns based on real-time behavior**—whether it's a return visit, content download, or pricing page view—so you never miss a high-intent moment. Learn about [leveraging real-time data for efficient campaigns](/blog/26-leveraging-real-time-data-for-efficient-campaigns-UPDATED).
 
 ## Avoid Common Segmentation Mistakes
 

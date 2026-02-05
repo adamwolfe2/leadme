@@ -31,7 +31,7 @@ You can see:
 
 When marketing and sales teams work from the same data, everyone moves in the same direction. No more conflicting information or missed opportunities.
 
-**Cursive integrates with 200+ CRM and advertising systems**, creating a unified timeline of cross-channel behavior so you can identify key actions the moment they happen.
+**[Cursive's integrations](/integrations) connect with 200+ CRM and advertising systems**, creating a unified timeline of cross-channel behavior so you can identify key actions the moment they happen. Learn more about [enhancing data connectivity with CRM integration](/blog/19-enhancing-data-connectivity-with-crm-integration).
 
 ## Set Up Your Platform the Right Way
 
@@ -51,9 +51,9 @@ Instead of broad segments like "VP of Marketing," create behavior-based groups:
 - Contacts who opened your last three emails but haven't booked a demo
 - Companies that downloaded a case study and returned to your site within 48 hours
 
-These actions signal intent. Someone clicking the same product page three times is closer to buying than someone who read one blog post months ago.
+These actions signal intent. Someone clicking the same product page three times is closer to buying than someone who read one blog post months ago. [Building targeted audiences](/audience-builder) based on behavior delivers better results than demographic filtering alone.
 
-**Cursive's action-based audience segmentation lets you trigger messaging automatically** based on repeat visits, recent downloads, or changes in engagement—so no opportunity slips by.
+**Cursive's action-based audience segmentation lets you trigger messaging automatically** based on repeat visits, recent downloads, or changes in engagement—so no opportunity slips by. For more on behavioral patterns, see our guide on [creating behavioral audience segments](/blog/32-creating-behavioral-audience-segments-easily).
 
 Keep segments updated automatically. What worked last month might not apply now. Regular reviews ensure you're targeting current behavior, not outdated patterns.
 
@@ -81,7 +81,7 @@ Even a great setup needs regular care. Review your platform every few weeks to e
 
 Share wins and changes with your team so everyone stays aligned. If you notice new behavioral patterns emerging, create new segments or adjust messaging.
 
-**Regular check-ins keep data clean and segments working.** This prevents outdated filters from sending messages to people who no longer fit, reducing wasted effort and maintaining campaign relevance.
+**Regular check-ins keep data clean and segments working.** This prevents outdated filters from sending messages to people who no longer fit, reducing wasted effort and maintaining campaign relevance. Read more about [why data quality matters in marketing](/blog/31-why-data-quality-matters-in-marketing-UPDATED).
 
 ## Turn Customer Data Into Competitive Advantage
 

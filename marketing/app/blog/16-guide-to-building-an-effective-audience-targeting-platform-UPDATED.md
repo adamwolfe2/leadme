@@ -26,7 +26,7 @@ For example:
 - A visitor looks at a product multiple times → Serious consideration
 - A contact engages with three emails in one week → High engagement
 
-**These actions matter more than broad demographics.** A smart approach focuses on behaviors that reveal real interest.
+**These actions matter more than broad demographics.** A smart approach focuses on behaviors that reveal real interest. [Building targeted audiences](/audience-builder) starts with understanding behavioral patterns.
 
 When building targeted lists, look for:
 
@@ -52,7 +52,7 @@ When you're overwhelmed with data, it's easy to lose track of what's useful. A g
 
 **Simple visibility across tools makes targeting faster and cleaner.**
 
-**Cursive identifies anonymous website visitors and connects verified B2B data (140M+ business profiles) to help you organize audience lists for deeper targeting.** With integrations across 200+ CRM and advertising systems, contact information stays current and aligned with outreach efforts.
+**[Cursive's visitor identification](/visitor-identification) reveals anonymous website visitors and connects verified B2B data (140M+ business profiles) to help you organize audience lists for deeper targeting.** With [integrations](/integrations) across 200+ CRM and advertising systems, contact information stays current and aligned with outreach efforts.
 
 Building on this, seamless tool integration means you aren't starting over. Data flows smoothly from your website, forms, and ads into your CRM, saving time.
 
@@ -74,7 +74,7 @@ Every planned step saves time and avoids wasted effort later. Track results as y
 
 Sometimes a message that gets weak response in one group performs well with another. Testing and adjusting ideas is part of growing a smarter strategy.
 
-**Cursive's behavioral segmentation automatically groups visitors by page views, return frequency, and engagement** —helping you respond to intent quickly.
+**Cursive's behavioral segmentation automatically groups visitors by page views, return frequency, and engagement** —helping you respond to intent quickly. Learn more about [creating behavioral audience segments](/blog/32-creating-behavioral-audience-segments-easily).
 
 ## Avoid Common Targeting Mistakes
 

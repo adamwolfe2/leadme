@@ -24,7 +24,7 @@ The quality of your contact data starts with how it arrives. If you import conta
 - Verify emails, phone numbers, and names before importing
 - Use validation tools to catch errors upfront
 
-Getting this right from the start saves hours later. It helps you avoid emailing someone who left the company months ago or sending duplicate messages to the same person from different lists.
+Getting this right from the start saves hours later. It helps you avoid emailing someone who left the company months ago or sending duplicate messages to the same person from different lists. [Visitor identification](/visitor-identification) tools help you capture accurate data from the start.
 
 **A simple pause before importing contact data can save hours down the line.**
 
@@ -40,7 +40,7 @@ If you don't update data regularly, you're working from old information that slo
 - Quick checks ensure job roles, emails, and phone numbers still make sense
 - Archive or remove contacts that haven't shown activity in 90+ days
 
-**Cursive provides access to real-time business data from 140M+ business profiles**, helping you update contact records automatically as changes happen.
+**Cursive provides access to real-time business data from 140M+ business profiles**, helping you update contact records automatically as changes happen. Learn more about [why data quality matters](/blog/31-why-data-quality-matters-in-marketing-UPDATED).
 
 Clean B2B contact data means fewer false starts and more accurate outreach. It takes less effort to fix small gaps than to overhaul a full contact list when things get out of hand.
 
@@ -54,7 +54,7 @@ Even the best data won't help if you can't find what you need. Searchable, tagge
 - Break down lists by project phase for more personal follow-ups
 - Set up filters to quickly pull groups for custom campaigns
 
-**Cursive integrates with 200+ CRM and advertising tools**, ensuring your organized data feeds directly into every part of your outreach process.
+**[Cursive's integrations](/integrations) connect with 200+ CRM and advertising tools**, ensuring your organized data feeds directly into every part of your outreach process. See our guide on [improving CRM integration workflows](/blog/30-tips-for-improving-crm-integration-workflows).
 
 When you organize data to match how you work, it's easier to spot who needs attention and when. This keeps outreach focused and ensures no one slips through the cracks.
 

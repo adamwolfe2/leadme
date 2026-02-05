@@ -26,7 +26,7 @@ This includes:
 
 Every action shows intent. Taken together, these signals create a clear picture of where someone is in their buying journey.
 
-**Behavior reveals more than demographics.** Instead of broad segments like "marketing managers" or "SaaS companies," you can distinguish between someone exploring for the first time and someone ready to buy.
+**Behavior reveals more than demographics.** Instead of broad segments like "marketing managers" or "SaaS companies," you can distinguish between someone exploring for the first time and someone ready to buy. [Effective audience segmentation](/audience-builder) starts with understanding behavioral patterns.
 
 For example:
 
@@ -62,7 +62,7 @@ Real-time data helps you:
 - Adjust campaigns mid-flight based on performance
 - Reach out while prospects are actively researching
 
-**Cursive provides real-time audience updates, live reporting, and intent tracking**, making it easy to shift tactics without delay. You don't wait for batch processing or delayed reports. You see what's happening now and act on it.
+**Cursive provides real-time audience updates, live reporting, and [intent tracking](/intent-audiences)**, making it easy to shift tactics without delay. You don't wait for batch processing or delayed reports. You see what's happening now and act on it. Learn more about [leveraging real-time data for efficient campaigns](/blog/26-leveraging-real-time-data-for-efficient-campaigns-UPDATED).
 
 ## Keep Your Entire Team Aligned
 
@@ -74,7 +74,7 @@ Shared targeting data solves this:
 - Everyone works from the same lead scores and engagement metrics
 - Updates flow across platforms automatically, no manual handoffs
 
-**Cursive integrates with 200+ CRM and advertising systems**, ensuring your whole team works from the same source of truth. When a prospect visits your pricing page, that signal reaches your CRM instantly. Sales can follow up the same day.
+**[Cursive's integrations](/integrations) connect with 200+ CRM and advertising systems**, ensuring your whole team works from the same source of truth. When a prospect visits your pricing page, that signal reaches your CRM instantly. Sales can follow up the same day.
 
 ## Spot Long-Term Patterns to Improve Strategy
 
@@ -102,7 +102,7 @@ With clean targeting data, you:
 - Act faster when opportunities appear
 - Connect with people when they're ready to engage
 
-**This kind of insight keeps you focused and makes campaigns smoother from start to finish.**
+**This kind of insight keeps you focused and makes campaigns smoother from start to finish.** For more on finding the right targeting solutions, read our guide on [data targeting solutions that work](/blog/13-tips-for-finding-data-targeting-solutions-that-work-UPDATED).
 
 Ready to make smarter decisions about audience engagement? **[Book a demo](https://cal.com/adamwolfe/cursive-ai-audit)** to see how Cursive turns anonymous website traffic into qualified leads using real-time intent signals and verified B2B data.
 

@@ -28,7 +28,7 @@ Old or bad entries don't just take up space—they mess with results, make repor
 - Remove people who haven't opened a message in 90+ days
 - Watch for fake entries with random letters or obvious typos
 
-**A focused list works better than a large, messy one.** When you get rid of noise, your messages land where they should, giving you a more accurate picture of what's really working.
+**A focused list works better than a large, messy one.** When you get rid of noise, your messages land where they should, giving you a more accurate picture of what's really working. Read more about [why data quality matters](/blog/31-why-data-quality-matters-in-marketing-UPDATED).
 
 ## Sync Data Across All Your Tools
 
@@ -50,7 +50,7 @@ When your tools communicate and update cleanly, you avoid:
 
 **It saves time and helps you avoid mistakes that can lose trust.**
 
-**Cursive integrates with 200+ CRM, email, and advertising platforms**, ensuring your entire stack operates with unified, up-to-date data automatically.
+**[Cursive's integrations](/integrations) connect with 200+ CRM, email, and advertising platforms**, ensuring your entire stack operates with unified, up-to-date data automatically. Learn more about [improving CRM integration workflows](/blog/30-tips-for-improving-crm-integration-workflows).
 
 ## Use Clear Labels to Organize Contacts
 
@@ -64,7 +64,7 @@ When you can quickly sort people based on what they're interested in or how they
 - Group contacts by signup source or campaign response
 - Keep labels simple and consistent so you don't have to guess what they mean later
 
-**Better sorting means better outreach.** When contacts get emails or messages matching what they care about, they're more likely to stay engaged.
+**Better sorting means better outreach.** When contacts get emails or messages matching what they care about, they're more likely to stay engaged. [Audience segmentation](/audience-builder) helps you organize contacts for targeted messaging.
 
 That clarity also helps when running campaigns or reporting on results.
 

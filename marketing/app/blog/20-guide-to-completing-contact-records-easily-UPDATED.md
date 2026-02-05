@@ -35,13 +35,13 @@ These aren't just labels to fill in. They help your messages land in front of th
 
 If someone is in marketing, you don't want to send content meant for finance. Even updating a job title can make your approach feel more relevant.
 
-**Cursive matches existing contact records to a verified database of 140M+ businesses and professionals**, letting you append missing fields automatically and improve the accuracy of each campaign.
+**Cursive matches existing contact records to a verified database of 140M+ businesses and professionals**, letting you append missing fields automatically and improve the accuracy of each campaign. Learn about [improving B2B contact data efficiency](/blog/14-how-to-improve-b2b-contact-data-efficiency-UPDATED).
 
 ## Fill Gaps Without Guessing
 
 Trying to complete missing contact details manually is time-consuming, and mistakes are easy to make. Instead of assumptions, use tools that do the research using verified sources.
 
-One helpful approach: **match anonymous visitors to real businesses and people.** If someone visits your site without completing a form, enrichment can often match them to known contacts.
+One helpful approach: **match anonymous visitors to real businesses and people.** If someone visits your site without completing a form, enrichment can often match them to known contacts. [Visitor identification](/visitor-identification) turns anonymous traffic into qualified leads.
 
 This turns mystery leads into actionable opportunities.
 
@@ -69,7 +69,7 @@ When everything works together:
 
 Whether a lead downloads a resource, signs up for a webinar, or responds to an ad, the information updates right away across platforms. You avoid misfires and keep timing sharp.
 
-**Cursive integrates with 200+ CRM and advertising systems**, ensuring data flows seamlessly and contact records stay synchronized across your entire stack.
+**[Cursive's integrations](/integrations) connect with 200+ CRM and advertising systems**, ensuring data flows seamlessly and contact records stay synchronized across your entire stack.
 
 ## Automate Updates Without the Busywork
 

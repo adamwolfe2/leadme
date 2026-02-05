@@ -33,9 +33,9 @@ Outdated or inaccurate data slows you down. You might reach someone who left the
 
 **Up-to-date data reduces missed connections and improves your reputation for being organized and professional.**
 
-When your contact data is targeted and current, you can focus outreach where it matters most. It helps you narrow your list instead of going wide, making every message more likely to land with the right person.
+When your contact data is targeted and current, you can focus outreach where it matters most. It helps you narrow your list instead of going wide, making every message more likely to land with the right person. Learn more about [improving B2B contact data efficiency](/blog/14-how-to-improve-b2b-contact-data-efficiency-UPDATED).
 
-**Cursive provides verified business data from 140M+ business profiles**, using real-time buyer intent signals to identify decision-makers most likely to engage.
+**Cursive provides verified business data from 140M+ business profiles**, using real-time [buyer intent signals](/intent-audiences) to identify decision-makers most likely to engage.
 
 ## Match Your Message to the Right Person
 
@@ -49,7 +49,7 @@ Sort contacts by:
 - Company size (startup vs. mid-market vs. enterprise)
 - Industry focus (healthcare, finance, SaaS, retail)
 
-**Segmenting contacts this way leads to stronger responses.** With clearer context, your messages can be short and specific. You avoid sounding generic.
+**Segmenting contacts this way leads to stronger responses.** With clearer context, your messages can be short and specific. You avoid sounding generic. [Audience segmentation](/audience-builder) helps you target the right people with the right message.
 
 Real people want to hear from other real people who understand what they care about. Business contact data gives you what you need to communicate that way.
 
@@ -85,7 +85,7 @@ Here's what helps keep everything moving:
 
 If someone signs up or engages on your site, the right tools follow up automatically—but only if the contact info is correct and connected.
 
-**Cursive integrates with 200+ CRM and advertising platforms**, keeping your contact records up to date and powering timely, relevant campaigns across every channel.
+**[Cursive's integrations](/integrations) connect with 200+ CRM and advertising platforms**, keeping your contact records up to date and powering timely, relevant campaigns across every channel.
 
 ## Focus on the Leads That Matter
 

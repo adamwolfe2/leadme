@@ -26,7 +26,7 @@ Define your objectives:
 
 Make your goals measurable. Instead of "get more leads," aim for "identify 100 high-intent companies per month visiting our pricing page."
 
-**Specific goals guide everything that follows**—from which data you collect to how you segment your audience to what messages you send.
+**Specific goals guide everything that follows**—from which data you collect to how you segment your audience to what messages you send. [Effective audience segmentation](/audience-builder) begins with clarity on who you're trying to reach and why.
 
 ## Choose Tools That Actually Work Together
 
@@ -39,9 +39,9 @@ Look for platforms that:
 - Provide real-time updates, not batch processing from days ago
 - Offer clean dashboards that show what matters
 
-**Cursive integrates with 200+ CRM and advertising platforms**, ensuring your audience data flows seamlessly between tools. When a prospect visits your website, that activity appears in your CRM immediately. When they engage with an email, your retargeting campaigns update automatically.
+**[Cursive's integrations](/integrations) connect with 200+ CRM and advertising platforms**, ensuring your audience data flows seamlessly between tools. When a prospect visits your website, that activity appears in your CRM immediately. When they engage with an email, your retargeting campaigns update automatically.
 
-This connected approach means less manual work and more time focusing on high-value activities like closing deals.
+This connected approach means less manual work and more time focusing on high-value activities like closing deals. Learn more about [improving CRM integration workflows](/blog/30-tips-for-improving-crm-integration-workflows).
 
 ## Use Behavioral Data to Understand What People Want
 
@@ -56,9 +56,9 @@ Pay attention to:
 
 Someone who visits your pricing page three times in a week is showing much stronger intent than someone who read one blog post months ago.
 
-**Cursive's visitor identification reveals which companies are on your site**, what pages they view, and how often they return—even if they never fill out a form. This lets you prioritize outreach to prospects already showing buying signals.
+**[Cursive's visitor identification](/visitor-identification) reveals which companies are on your site**, what pages they view, and how often they return—even if they never fill out a form. This lets you prioritize outreach to prospects already showing buying signals.
 
-Use these patterns to create segments:
+Use these patterns to create segments. For more strategies, see our guide on [creating behavioral audience segments](/blog/32-creating-behavioral-audience-segments-easily):
 
 - High-intent prospects (multiple pricing page views)
 - Content researchers (blog readers, guide downloaders)
@@ -77,7 +77,7 @@ Build these habits:
 - Update lists regularly to remove bounced emails and inactive contacts
 - Tag contacts by segment, campaign source, and engagement level
 
-**Organization isn't just about neatness.** Clean data lets you move faster. You can pull targeted lists in seconds, avoid sending duplicate messages, and spot opportunities before competitors do.
+**Organization isn't just about neatness.** Clean data lets you move faster. You can pull targeted lists in seconds, avoid sending duplicate messages, and spot opportunities before competitors do. See our post on [why data quality matters](/blog/31-why-data-quality-matters-in-marketing-UPDATED).
 
 Cursive's platform centralizes your audience data from 220M+ consumer and 140M+ business profiles, automatically updating records and removing duplicates across your entire stack.
 

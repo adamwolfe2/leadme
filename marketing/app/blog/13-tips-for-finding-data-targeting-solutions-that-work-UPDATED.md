@@ -28,7 +28,7 @@ Common problems:
 - Multiple versions of the same person under different names
 - Tools that don't sync, requiring manual data transfers
 
-**These issues slow you down.** Even minor data errors add hours to projects and cause you to miss qualified leads.
+**These issues slow you down.** Even minor data errors add hours to projects and cause you to miss qualified leads. Learn more about [why data quality matters in marketing](/blog/31-why-data-quality-matters-in-marketing-UPDATED).
 
 Having doubts about data quality keeps you from following up quickly or confidently. Solid decision-making relies on trusting your base information.
 
@@ -44,13 +44,13 @@ Look for clear signs when evaluating solutions:
 - **Real-time updates** so incoming data stays fresh without extra effort
 - **Strong integrations** with tools you already use (CRM, email, ads)
 
-**Tools that stand out adapt to your needs, not the other way around.**
+**Tools that stand out adapt to your needs, not the other way around.** [Effective audience targeting](/audience-builder) requires flexible tools that match your workflow.
 
 Organized data helps you filter, tag, and sort contacts based on what really matters—industry, region, job level, behavior. When you can quickly find what you need, everything speeds up.
 
 Comprehensive filtering and search tools let you narrow long lists to the most promising leads easily. Flexibility in customization, reporting, and workflow options makes a solution valuable long-term, even as needs evolve.
 
-**Cursive offers real-time buyer intent data and integrates with 200+ CRM and advertising platforms**, letting you automate retargeting and keep contact lists current without heavy manual work.
+**Cursive offers real-time [buyer intent data](/intent-audiences) and [integrates](/integrations) with 200+ CRM and advertising platforms**, letting you automate retargeting and keep contact lists current without heavy manual work.
 
 ## Ask the Right Questions Before Switching
 
