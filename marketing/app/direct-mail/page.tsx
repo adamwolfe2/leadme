@@ -189,7 +189,7 @@ export default function DirectMailPage() {
         <section className="py-20 bg-[#F7F9FB]">
           <Container>
             <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 From Click to Mailbox in 48 Hours
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -232,8 +232,8 @@ export default function DirectMailPage() {
                   className="relative"
                 >
                   <div className="flex flex-col items-center text-center">
-                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center mb-6 shadow-lg">
-                      <step.icon className="h-10 w-10" />
+                    <div className="w-20 h-20 rounded-2xl bg-[#F7F9FB] border border-gray-200 flex items-center justify-center mb-6">
+                      <step.icon className="h-10 w-10 text-gray-700" />
                     </div>
                     <h3 className="text-xl text-gray-900 mb-3 font-medium">
                       {step.title}
@@ -252,7 +252,7 @@ export default function DirectMailPage() {
         <section className="py-20 bg-white">
           <Container>
             <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 Stand Out in a Crowded Inbox
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -327,7 +327,7 @@ export default function DirectMailPage() {
         <section className="py-20 bg-[#F7F9FB]">
           <Container>
             <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 Real Direct Mail Campaigns That Convert
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -369,8 +369,8 @@ export default function DirectMailPage() {
                   <h3 className="text-2xl text-gray-900 mb-4 font-medium">
                     {useCase.scenario}
                   </h3>
-                  <div className="border-l-4 border-[#007AFF] pl-4 bg-blue-50 p-4 rounded">
-                    <p className="text-gray-700 leading-relaxed">
+                  <div className="border-l-4 border-gray-200 pl-4 mt-4">
+                    <p className="text-gray-600 leading-relaxed">
                       <strong className="text-gray-900">How Cursive helps:</strong> {useCase.solution}
                     </p>
                   </div>
@@ -384,7 +384,7 @@ export default function DirectMailPage() {
         <section className="py-20 bg-white">
           <Container>
             <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 Everything You Need for Direct Mail Success
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -485,7 +485,7 @@ export default function DirectMailPage() {
         <section className="py-20 bg-[#F7F9FB]">
           <Container>
             <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 Simple, Transparent Pricing
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -542,7 +542,7 @@ export default function DirectMailPage() {
         <section className="py-20 bg-white">
           <Container>
             <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 Works With Your Marketing Stack
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -636,7 +636,7 @@ export default function DirectMailPage() {
         <section className="py-20 bg-white">
           <Container>
             <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 Frequently Asked Questions
               </h2>
             </div>

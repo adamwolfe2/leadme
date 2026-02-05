@@ -147,7 +147,7 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-gradient-to-br from-blue-50 to-transparent rounded-xl p-6 border border-blue-200"
+                className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow"
               >
                 <div className="text-3xl mb-3">{pillar.icon}</div>
                 <h3 className="text-xl text-gray-900 mb-3">{pillar.title}</h3>

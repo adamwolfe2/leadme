@@ -206,7 +206,7 @@ export default function IntentAudiencesPage() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 text-center border border-blue-200 hover:shadow-lg transition-shadow"
+                  className="bg-white rounded-xl p-8 text-center border border-gray-200 hover:shadow-lg transition-shadow"
                 >
                   <stat.icon className="h-10 w-10 text-[#007AFF] mx-auto mb-3" />
                   <div className="text-4xl text-[#007AFF] mb-2 font-light">{stat.value}</div>
@@ -221,7 +221,7 @@ export default function IntentAudiencesPage() {
         <section className="py-20 bg-white">
           <Container>
             <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 Launch Campaigns in Minutes, Not Days
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -258,10 +258,9 @@ export default function IntentAudiencesPage() {
                   className="relative"
                 >
                   <div className="flex flex-col items-center text-center">
-                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center mb-6 shadow-lg">
-                      <step.icon className="h-10 w-10" />
+                    <div className="w-20 h-20 rounded-2xl bg-[#F7F9FB] border border-gray-200 flex items-center justify-center mb-6">
+                      <step.icon className="h-10 w-10 text-gray-700" />
                     </div>
-                    <div className="absolute top-8 left-20 w-full h-0.5 bg-gradient-to-r from-blue-200 to-transparent hidden md:block" style={{ display: i === 2 ? 'none' : 'block' }} />
                     <h3 className="text-2xl text-gray-900 mb-3 font-medium">
                       {step.title}
                     </h3>
@@ -279,7 +278,7 @@ export default function IntentAudiencesPage() {
         <section className="py-20 bg-[#F7F9FB]">
           <Container>
             <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 Choose Your Intent Level
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -291,7 +290,6 @@ export default function IntentAudiencesPage() {
                 {
                   level: 'Hot (7D)',
                   description: 'Highest intent prospects actively searching in the last 7 days. Smallest audience, highest conversion.',
-                  color: 'from-red-50 to-red-100 border-red-200',
                   icon: '🔥',
                   bestFor: 'High-ticket offers, immediate conversions, limited ad budgets',
                   size: 'Thousands'
@@ -299,7 +297,6 @@ export default function IntentAudiencesPage() {
                 {
                   level: 'Warm (14D)',
                   description: 'Expanded reach with users showing interest in the last 14 days. Balance of intent and scale.',
-                  color: 'from-orange-50 to-orange-100 border-orange-200',
                   icon: '📈',
                   bestFor: 'Standard campaigns, lead generation, nurture sequences',
                   size: 'Tens of thousands'
@@ -307,7 +304,6 @@ export default function IntentAudiencesPage() {
                 {
                   level: 'Scale (30D)',
                   description: 'Full-funnel coverage with intent signals from the last 30 days. Maximum reach and impressions.',
-                  color: 'from-blue-50 to-blue-100 border-blue-200',
                   icon: '🚀',
                   bestFor: 'Brand awareness, retargeting, top-of-funnel prospecting',
                   size: 'Hundreds of thousands'
@@ -319,7 +315,7 @@ export default function IntentAudiencesPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  className={`bg-gradient-to-br ${tier.color} rounded-xl p-8 border hover:shadow-lg transition-shadow`}
+                  className="bg-white rounded-xl p-8 border border-gray-200 hover:shadow-lg transition-shadow"
                 >
                   <div className="text-4xl mb-4">{tier.icon}</div>
                   <h3 className="text-2xl text-gray-900 mb-3 font-medium">{tier.level}</h3>
@@ -350,7 +346,7 @@ export default function IntentAudiencesPage() {
         <section className="py-20 bg-white">
           <Container>
             <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 8 High-Value Verticals
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -418,7 +414,7 @@ export default function IntentAudiencesPage() {
                     <div className="text-sm font-medium text-gray-900 mb-2">Available Segments:</div>
                     <div className="flex flex-wrap gap-2">
                       {item.segments.map((segment, j) => (
-                        <span key={j} className="px-3 py-1 bg-blue-50 text-[#007AFF] text-sm rounded-full border border-blue-200">
+                        <span key={j} className="px-3 py-1 bg-gray-50 text-gray-700 text-sm rounded-full border border-gray-200">
                           {segment}
                         </span>
                       ))}
@@ -434,7 +430,7 @@ export default function IntentAudiencesPage() {
         <section className="py-20 bg-[#F7F9FB]">
           <Container>
             <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 Who Uses Intent Audiences
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -476,8 +472,8 @@ export default function IntentAudiencesPage() {
                   <h3 className="text-2xl text-gray-900 mb-4 font-medium">
                     {useCase.scenario}
                   </h3>
-                  <div className="border-l-4 border-[#007AFF] pl-4 bg-blue-50 p-4 rounded">
-                    <p className="text-gray-700 leading-relaxed">
+                  <div className="border-l-4 border-gray-200 pl-4 mt-4">
+                    <p className="text-gray-600 leading-relaxed">
                       <strong className="text-gray-900">How Cursive helps:</strong> {useCase.solution}
                     </p>
                   </div>
@@ -491,7 +487,7 @@ export default function IntentAudiencesPage() {
         <section className="py-20 bg-white">
           <Container>
             <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 Why Intent Audiences Outperform Standard Targeting
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -566,7 +562,7 @@ export default function IntentAudiencesPage() {
         <section className="py-20 bg-[#F7F9FB]">
           <Container>
             <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 Activate to Every Marketing Platform
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -661,7 +657,7 @@ export default function IntentAudiencesPage() {
         <section className="py-20 bg-[#F7F9FB]">
           <Container>
             <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-5xl font-light text-gray-900 mb-4">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 Frequently Asked Questions
               </h2>
             </div>

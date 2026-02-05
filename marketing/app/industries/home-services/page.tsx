@@ -57,8 +57,8 @@ export default function HomeServicesPage() {
 
         <section className="py-20 bg-[#F7F9FB]">
           <Container>
-            <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-12 text-center">
-              Why Choose Cursive for <span className="font-cursive text-5xl">Home Services</span>
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-12 text-center">
+              Why Choose Cursive for Home Services
             </h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {benefits.map((benefit, i) => (
