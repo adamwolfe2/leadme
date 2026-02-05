@@ -138,7 +138,7 @@ export default function PricingPage() {
               </p>
             </div>
 
-            <h1 className="text-5xl lg:text-6xl font-light text-gray-900 mb-6">
+            <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
               Pricing That Scales With Your Growth
             </h1>
             <p className="text-xl text-gray-600 mb-4">

@@ -43,7 +43,7 @@ export default function PlatformPage() {
             transition={{ duration: 0.8 }}
             className="text-center max-w-4xl mx-auto"
           >
-            <h1 className="text-5xl lg:text-6xl font-light text-gray-900 mb-6">
+            <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
               The Tools Behind
               <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
                 The Results
