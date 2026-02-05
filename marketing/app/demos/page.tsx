@@ -1,5 +1,3 @@
-"use client"
-
 import { Container } from "@/components/ui/container"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { motion } from "framer-motion"

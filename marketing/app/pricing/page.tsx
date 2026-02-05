@@ -6,32 +6,6 @@ import { motion } from "framer-motion"
 import { ArrowRight, Check, Calculator, Shield, TrendingUp, Users, Zap } from "lucide-react"
 import { useState } from "react"
 import { DashboardPreview } from "@/components/dashboard-preview"
-import type { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Pricing & Plans | Cursive",
-  description: "Turn anonymous visitors into qualified leads for 96% less than traditional methods. Choose from Data, Outbound, or Pipeline plans starting at $1,000/mo. No hidden fees, cancel anytime.",
-  keywords: "lead generation pricing, B2B lead gen costs, outbound pricing, sales automation pricing, AI SDR pricing, visitor tracking pricing, marketing automation costs",
-  openGraph: {
-    title: "Pricing & Plans | Cursive",
-    description: "Turn anonymous visitors into qualified leads for 96% less than traditional methods. Choose from Data, Outbound, or Pipeline plans starting at $1,000/mo.",
-    url: "https://meetcursive.com/pricing",
-    siteName: "Cursive",
-    images: [{ url: "/cursive-social-preview.png", width: 1200, height: 630 }],
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Pricing & Plans | Cursive",
-    description: "Turn anonymous visitors into qualified leads for 96% less than traditional methods. Choose from Data, Outbound, or Pipeline plans starting at $1,000/mo.",
-    images: ["/cursive-social-preview.png"],
-    creator: "@meetcursive",
-  },
-  alternates: {
-    canonical: "https://meetcursive.com/pricing",
-  },
-}
 
 export default function PricingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
