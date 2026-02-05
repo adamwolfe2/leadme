@@ -2,8 +2,9 @@
 
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
+import { CategoryCard } from "@/components/blog/category-card"
 import { motion } from "framer-motion"
-import { ArrowRight, Calendar, Clock, User } from "lucide-react"
+import { ArrowRight, Calendar, Clock, Eye, Target, Database, TrendingUp, Mail, RotateCcw, BarChart3, Workflow } from "lucide-react"
 import Link from "next/link"
 
 export default function BlogPage() {
@@ -31,8 +32,24 @@ export default function BlogPage() {
         </Container>
       </section>
 
-      {/* Featured Post */}
+      {/* Categories Section */}
       <section className="py-24 bg-white">
+        <Container>
+          <div className="mb-12">
+            <h2 className="text-3xl font-bold mb-2">Browse by Category</h2>
+            <p className="text-gray-600">Explore our expert guides organized by topic</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {blogCategories.map((category, index) => (
+              <CategoryCard key={category.slug} {...category} index={index} />
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Featured Post */}
+      <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
         <Container>
           <div className="mb-12">
             <h2 className="text-3xl font-bold mb-2">Featured</h2>
@@ -80,7 +97,7 @@ export default function BlogPage() {
       </section>
 
       {/* Blog Posts Grid */}
-      <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-24 bg-white">
         <Container>
           <div className="mb-12">
             <h2 className="text-3xl font-bold mb-2">Latest Articles</h2>
@@ -125,7 +142,7 @@ export default function BlogPage() {
       </section>
 
       {/* Newsletter CTA */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
         <Container>
           <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl p-12 text-center text-white shadow-2xl max-w-4xl mx-auto">
             <h2 className="text-4xl lg:text-5xl font-bold mb-4">
@@ -158,9 +175,75 @@ export default function BlogPage() {
   )
 }
 
-// Blog Posts Data
-import { TrendingUp, Target, Zap } from "lucide-react"
+// Blog Categories Data
+const blogCategories = [
+  {
+    title: "Visitor Tracking",
+    description: "Learn how to identify anonymous website visitors and turn traffic into qualified leads.",
+    slug: "visitor-tracking",
+    icon: Eye,
+    gradient: "bg-gradient-to-br from-blue-500 to-blue-600",
+    postCount: 12,
+  },
+  {
+    title: "Audience Targeting",
+    description: "Master B2B audience segmentation and intent-based targeting strategies.",
+    slug: "audience-targeting",
+    icon: Target,
+    gradient: "bg-gradient-to-br from-purple-500 to-purple-600",
+    postCount: 8,
+  },
+  {
+    title: "Data Platforms",
+    description: "Explore B2B data enrichment and how to leverage business intelligence for growth.",
+    slug: "data-platforms",
+    icon: Database,
+    gradient: "bg-gradient-to-br from-green-500 to-green-600",
+    postCount: 15,
+  },
+  {
+    title: "Lead Generation",
+    description: "Proven tactics to generate qualified B2B leads with AI-powered automation.",
+    slug: "lead-generation",
+    icon: TrendingUp,
+    gradient: "bg-gradient-to-br from-blue-500 to-green-500",
+    postCount: 18,
+  },
+  {
+    title: "Direct Mail",
+    description: "Automate direct mail campaigns triggered by digital behavior for higher conversions.",
+    slug: "direct-mail",
+    icon: Mail,
+    gradient: "bg-gradient-to-br from-orange-500 to-red-500",
+    postCount: 6,
+  },
+  {
+    title: "Retargeting",
+    description: "Re-engage anonymous visitors across email, ads, and direct mail channels.",
+    slug: "retargeting",
+    icon: RotateCcw,
+    gradient: "bg-gradient-to-br from-indigo-500 to-purple-500",
+    postCount: 10,
+  },
+  {
+    title: "Analytics",
+    description: "Track marketing performance, measure ROI, and implement multi-touch attribution.",
+    slug: "analytics",
+    icon: BarChart3,
+    gradient: "bg-gradient-to-br from-cyan-500 to-blue-500",
+    postCount: 9,
+  },
+  {
+    title: "CRM Integration",
+    description: "Connect your marketing stack and automate workflows across all your tools.",
+    slug: "crm-integration",
+    icon: Workflow,
+    gradient: "bg-gradient-to-br from-violet-500 to-purple-500",
+    postCount: 7,
+  },
+]
 
+// Blog Posts Data
 const blogPosts = [
   {
     slug: "cold-email-2026",
@@ -190,6 +273,6 @@ const blogPosts = [
     date: "Jan 14, 2026",
     readTime: "7 min read",
     color: "bg-gradient-to-br from-green-500 to-green-600",
-    icon: Zap,
+    icon: TrendingUp,
   },
 ]
