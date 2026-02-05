@@ -57,7 +57,7 @@ Connect these core systems:
 
 When these systems share data automatically, you see complete customer journeys instead of fragmented touchpoints.
 
-**Cursive integrates natively with 200+ CRM, email, and advertising platforms**, ensuring data flows bidirectionally without manual exports or middleware. When a prospect shows intent on your website, that signal syncs into your CRM, triggers email sequences, and updates ad audiences automatically.
+**[Cursive integrates natively with 200+ CRM, email, and advertising platforms](/integrations)**, ensuring data flows bidirectionally without manual exports or middleware. When a prospect shows intent on your website, that signal syncs into your CRM, triggers email sequences, and updates ad audiences automatically.
 
 ### Build Unified Customer Profiles
 
@@ -70,7 +70,7 @@ BI requires seeing all touchpoints for each prospect in one place:
 - CRM notes and sales activities
 - Intent signals from external research
 
-Cursive's [audience builder](https://meetcursive.com/audience-builder) automatically creates these unified profiles by combining visitor identification (70% ID rate), behavioral tracking, and data enrichment from 140M+ business profiles and 220M+ consumer profiles.
+Cursive's [audience builder](/audience-builder) automatically creates these unified profiles by combining [visitor identification](/visitor-identification) (70% ID rate), behavioral tracking, and data enrichment from 140M+ business profiles and 220M+ consumer profiles.
 
 ## Use Intent Signals to Prioritize High-Value Accounts
 
@@ -94,9 +94,9 @@ See what prospects research outside your website:
 - Industry publication reads
 - Review site visits
 
-**When first-party and third-party intent align**, you've found a high-priority account. Someone researching "B2B visitor identification" across multiple sites who then visits your pricing page three times is actively shopping—not casually browsing.
+**When first-party and third-party intent align**, you've found a high-priority account. Someone researching "B2B visitor identification" across multiple sites who then visits your pricing page three times is actively shopping—not casually browsing. Learn more about [buyer intent-based audience segmentation](/blog/38-buyer-intent-based-audience-segmentation-techniques-UPDATED).
 
-**Cursive tracks 450 billion+ monthly intent signals across 30,000+ categories**, combining your website behavior with external research patterns to surface accounts showing the strongest buying signals.
+**[Cursive tracks 450 billion+ monthly intent signals across 30,000+ categories](/intent-audiences)**, combining your website behavior with external research patterns to surface accounts showing the strongest buying signals.
 
 ### Score and Rank Leads Automatically
 
@@ -123,7 +123,7 @@ Which blog posts, case studies, or guides correlate with conversions? BI reveals
 - Resources downloaded by prospects who eventually convert
 - Pages visited before demo requests or purchases
 
-Once you know what works, create more of it, promote it more heavily, and use it in nurture sequences.
+Once you know what works, create more of it, promote it more heavily, and use it in nurture sequences. See how [marketing data solutions transform campaign performance](/blog/07-how-marketing-data-solutions-can-improve-campaigns).
 
 ### Optimize Channel Mix
 
@@ -220,9 +220,9 @@ Create visibility into metrics both teams care about:
 - Conversion rates at each funnel stage
 - Win rates by lead source and campaign
 
-When marketing and sales work from the same intelligence, friction disappears and revenue accelerates.
+When marketing and sales work from the same intelligence, friction disappears and revenue accelerates. Learn about [steps to use a customer data platform successfully](/blog/08-steps-to-use-a-customer-data-platform-successfully-UPDATED).
 
-**Cursive syncs intent signals and unified profiles directly into your CRM via 200+ native integrations**, ensuring sales teams have complete context without switching tools.
+**Cursive syncs intent signals and unified profiles directly into your CRM via [200+ native integrations](/integrations)**, ensuring sales teams have complete context without switching tools.
 
 ## Avoid Common Business Intelligence Mistakes
 
@@ -269,7 +269,7 @@ Don't try to build a comprehensive BI strategy overnight. Start with one specifi
 
 **High-impact starting points:**
 
-**Identify anonymous website visitors:** See which companies are researching your product right now. Cursive identifies up to 70% of website traffic, instantly growing your addressable audience.
+**Identify anonymous website visitors:** See which companies are researching your product right now. [Cursive identifies up to 70% of website traffic](/visitor-identification), instantly growing your addressable audience. Learn more about [using website visitor tracking for lead generation](/blog/22-using-website-visitor-tracking-for-lead-generation-UPDATED).
 
 **Score and prioritize leads automatically:** Stop manually reviewing every lead. Let BI surface high-intent accounts for immediate sales follow-up.
 

@@ -20,7 +20,7 @@ Here are seven specific benefits that drive measurable revenue growth.
 
 The biggest revenue leak most businesses face is invisible: anonymous traffic. These are visitors who browse your site, view products, read content, and leave without ever identifying themselves.
 
-Traditional analytics tools tell you these visitors exist, but not who they are. That makes follow-up impossible.
+Traditional analytics tools tell you these visitors exist, but not who they are. That makes follow-up impossible. Learn more about [using website visitor tracking for lead generation](/blog/22-using-website-visitor-tracking-for-lead-generation-UPDATED).
 
 **A consumer data platform reveals the identity of anonymous visitors**, providing:
 
@@ -33,7 +33,7 @@ Traditional analytics tools tell you these visitors exist, but not who they are.
 
 Instead of losing 98% of your website traffic to anonymity, you identify 60-70% of visitors and add them to targeted nurture campaigns. A SaaS company with 10,000 monthly visitors goes from capturing 200 leads (2% form fill rate) to identifying 7,000 prospects—a 35x increase in qualified contacts.
 
-**Cursive identifies up to 70% of website visitors**, turning anonymous browsers into actionable leads with complete behavioral profiles and contact information. This means your email list grows automatically as qualified prospects visit your site—even when they don't fill out forms.
+**[Cursive identifies up to 70% of website visitors](/visitor-identification)**, turning anonymous browsers into actionable leads with complete behavioral profiles and contact information. This means your email list grows automatically as qualified prospects visit your site—even when they don't fill out forms.
 
 ## Benefit 2: Create Unified Customer Profiles Across All Channels
 
@@ -58,9 +58,9 @@ Fragmented data creates three problems:
 
 **Real business impact:**
 
-When sales reps see complete customer timelines, they close deals faster. When marketing can segment by combined behavioral and demographic criteria, campaigns convert better. When customer success can see purchase history alongside support needs, retention improves.
+When sales reps see complete customer timelines, they close deals faster. When marketing can segment by combined behavioral and demographic criteria, campaigns convert better. When customer success can see purchase history alongside support needs, retention improves. Discover [how to use a customer data platform successfully](/blog/08-steps-to-use-a-customer-data-platform-successfully-UPDATED).
 
-Cursive's [audience builder](https://meetcursive.com/audience-builder) automatically creates unified profiles by syncing data across 200+ integrated platforms, ensuring every team works from the same complete customer view.
+Cursive's [audience builder](/audience-builder) automatically creates unified profiles by syncing data across [200+ integrated platforms](/integrations), ensuring every team works from the same complete customer view.
 
 ## Benefit 3: Personalize Marketing Based on Real Behavior
 
@@ -88,9 +88,9 @@ Most marketing platforms lack this context. Email tools know open rates but not 
 
 **Real business impact:**
 
-Behavioral personalization drives 2-4x higher conversion rates than demographic segmentation alone. An ecommerce company personalizing product recommendations based on browsing history sees 20-35% revenue increases from email campaigns.
+Behavioral personalization drives 2-4x higher conversion rates than demographic segmentation alone. An ecommerce company personalizing product recommendations based on browsing history sees 20-35% revenue increases from email campaigns. Learn about [buyer intent-based audience segmentation](/blog/38-buyer-intent-based-audience-segmentation-techniques-UPDATED).
 
-With Cursive's intent tracking powered by 450 billion+ monthly signals, you segment audiences by real-time behavior and automatically trigger campaigns when prospects show buying intent.
+With Cursive's [intent tracking powered by 450 billion+ monthly signals](/intent-audiences), you segment audiences by real-time behavior and automatically trigger campaigns when prospects show buying intent.
 
 ## Benefit 4: Improve Ad Targeting and Reduce Wasted Spend
 
@@ -121,9 +121,9 @@ When someone converts, they should exit your ad campaigns immediately. When a pr
 
 **Real business impact:**
 
-Companies using CDP-powered ad targeting typically see 30-50% improvements in ROAS (return on ad spend) and 20-40% reductions in cost per acquisition. You spend less to acquire better customers.
+Companies using CDP-powered ad targeting typically see 30-50% improvements in ROAS (return on ad spend) and 20-40% reductions in cost per acquisition. You spend less to acquire better customers. See how [marketing data solutions improve campaign performance](/blog/07-how-marketing-data-solutions-can-improve-campaigns).
 
-**Cursive syncs unified customer profiles into Google Ads, Meta, LinkedIn, and 200+ other platforms**, ensuring your ad targeting always reflects current behavior and purchase status.
+**Cursive syncs unified customer profiles into Google Ads, Meta, LinkedIn, and [200+ other platforms](/integrations)**, ensuring your ad targeting always reflects current behavior and purchase status.
 
 ## Benefit 5: Automate Timely, Relevant Campaigns
 
