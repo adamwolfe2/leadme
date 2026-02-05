@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 
 const companies = [
   {
-    name: "Acme Corp",
+    name: "Salesforce",
     size: 150,
     growth: 12,
     funding: "Series B, $25M",
@@ -14,7 +14,7 @@ const companies = [
     contacts: 12,
   },
   {
-    name: "TechStart Inc",
+    name: "HubSpot",
     size: 85,
     growth: 28,
     funding: "Series A, $12M",

@@ -4,11 +4,11 @@ import { motion } from "framer-motion"
 
 export function DashboardPreview() {
   const leads = [
-    { name: "Sarah Chen", company: "TechCorp", title: "VP Sales", source: "Website", value: "$85K", status: "Hot" },
-    { name: "Michael Rodriguez", company: "DataFlow Inc.", title: "Director Marketing", source: "LinkedIn", value: "$120K", status: "Warm" },
-    { name: "Jessica Park", company: "CloudBase", title: "Head of Growth", source: "Webinar", value: "$65K", status: "Hot" },
-    { name: "David Kim", company: "ScaleAI", title: "VP Operations", source: "Direct Mail", value: "$95K", status: "Contacted" },
-    { name: "Amanda Foster", company: "SaaSify", title: "Chief Revenue Officer", source: "Website", value: "$150K", status: "Hot" },
+    { name: "Sarah Chen", company: "Salesforce", title: "VP Sales", source: "Website", value: "$85K", status: "Hot" },
+    { name: "Michael Rodriguez", company: "Datadog", title: "Director Marketing", source: "LinkedIn", value: "$120K", status: "Warm" },
+    { name: "Jessica Park", company: "Cloudflare", title: "Head of Growth", source: "Webinar", value: "$65K", status: "Hot" },
+    { name: "David Kim", company: "Monday.com", title: "VP Operations", source: "Direct Mail", value: "$95K", status: "Contacted" },
+    { name: "Amanda Foster", company: "HubSpot", title: "Chief Revenue Officer", source: "Website", value: "$150K", status: "Hot" },
   ]
 
   return (

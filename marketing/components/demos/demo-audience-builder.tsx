@@ -26,14 +26,14 @@ const availableFilters = {
 }
 
 const sampleContacts = [
-  { name: "Sarah Chen", title: "VP Sales", company: "TechCorp" },
-  { name: "Michael Rodriguez", title: "Director Marketing", company: "DataFlow" },
-  { name: "Jessica Park", title: "Head of Growth", company: "CloudBase" },
-  { name: "David Kim", title: "VP Operations", company: "ScaleAI" },
-  { name: "Amanda Foster", title: "Chief Revenue Officer", company: "SaaSify" },
-  { name: "Ryan Thompson", title: "Director Sales", company: "MetricHQ" },
-  { name: "Emily Watson", title: "VP Marketing", company: "GrowthLab" },
-  { name: "James Liu", title: "Head of Sales", company: "DataSync" },
+  { name: "Sarah Chen", title: "VP Sales", company: "Salesforce" },
+  { name: "Michael Rodriguez", title: "Director Marketing", company: "Datadog" },
+  { name: "Jessica Park", title: "Head of Growth", company: "Cloudflare" },
+  { name: "David Kim", title: "VP Operations", company: "Monday.com" },
+  { name: "Amanda Foster", title: "Chief Revenue Officer", company: "HubSpot" },
+  { name: "Ryan Thompson", title: "Director Sales", company: "Elastic" },
+  { name: "Emily Watson", title: "VP Marketing", company: "Klaviyo" },
+  { name: "James Liu", title: "Head of Sales", company: "Snowflake" },
 ]
 
 export function DemoAudienceBuilder() {

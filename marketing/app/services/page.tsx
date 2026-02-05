@@ -326,11 +326,11 @@ export default function ServicesPage() {
                     <div className="space-y-3 text-left bg-white rounded-lg p-4 text-sm">
                       <div className="border-l-2 border-[#007AFF] pl-3 py-2">
                         <div className="text-gray-900">Meeting Booked</div>
-                        <div className="text-gray-600 text-xs">Acme Corp - 2:30 PM tomorrow</div>
+                        <div className="text-gray-600 text-xs">Salesforce - 2:30 PM tomorrow</div>
                       </div>
                       <div className="border-l-2 border-[#007AFF] pl-3 py-2">
                         <div className="text-gray-900">Follow-up Sent</div>
-                        <div className="text-gray-600 text-xs">TechStart Inc - Sequence 3</div>
+                        <div className="text-gray-600 text-xs">HubSpot - Sequence 3</div>
                       </div>
                       <div className="border-l-2 border-[#007AFF] pl-3 py-2">
                         <div className="text-gray-900">Research Complete</div>

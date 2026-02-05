@@ -26,6 +26,11 @@ export const metadata: Metadata = {
     keywords: ['B2B lead generation', 'visitor identification', 'intent data', 'direct mail marketing', 'audience targeting', 'AI SDR', 'outbound automation'],
     canonical: 'https://meetcursive.com',
   }),
+  icons: {
+    icon: '/cursive-logo.png',
+    shortcut: '/cursive-logo.png',
+    apple: '/cursive-logo.png',
+  },
 };
 
 export default function RootLayout({

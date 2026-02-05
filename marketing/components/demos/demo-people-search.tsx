@@ -11,11 +11,11 @@ const searchQueries = [
 ]
 
 const contacts = [
-  { name: "Sarah Chen", title: "VP Marketing", company: "Acme Corp", verified: true },
-  { name: "Mike Rodriguez", title: "Head of Sales", company: "TechStart", verified: true },
-  { name: "Emily Johnson", title: "CEO", company: "GrowthCo", verified: false },
-  { name: "David Kim", title: "Founder", company: "FinanceAI", verified: true },
-  { name: "Lisa Martinez", title: "VP Sales", company: "ScaleUp", verified: false },
+  { name: "Sarah Chen", title: "VP Marketing", company: "Salesforce", verified: true },
+  { name: "Mike Rodriguez", title: "Head of Sales", company: "HubSpot", verified: true },
+  { name: "Emily Johnson", title: "CEO", company: "Klaviyo", verified: false },
+  { name: "David Kim", title: "Founder", company: "Stripe", verified: true },
+  { name: "Lisa Martinez", title: "VP Sales", company: "Monday.com", verified: false },
 ]
 
 export function DemoPeopleSearch() {

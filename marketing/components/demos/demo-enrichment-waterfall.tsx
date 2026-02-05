@@ -15,7 +15,7 @@ interface EnrichmentStep {
 const enrichmentSteps: EnrichmentStep[] = [
   { id: "name", field: "Full Name", value: "Sarah Johnson", status: "pending", confidence: 98, duration: 50 },
   { id: "title", field: "Job Title", value: "VP of Marketing", status: "pending", confidence: 95, duration: 120 },
-  { id: "company", field: "Company", value: "Acme Corp", status: "pending", confidence: 100, duration: 80 },
+  { id: "company", field: "Company", value: "Salesforce", status: "pending", confidence: 100, duration: 80 },
   { id: "linkedin", field: "LinkedIn Profile", value: "linkedin.com/in/sarahjohnson", status: "pending", confidence: 92, duration: 200 },
   { id: "phone", field: "Phone Number", value: "(555) 234-5678", status: "pending", confidence: 88, duration: 350 },
   { id: "location", field: "Location", value: "San Francisco, CA", status: "pending", confidence: 100, duration: 90 },
@@ -92,7 +92,7 @@ export function DemoEnrichmentWaterfall() {
           <svg className="w-5 h-5 text-[#007AFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
-          <span className="text-gray-900 font-medium">sarah.j@acmecorp.com</span>
+          <span className="text-gray-900 font-medium">sarah.j@salesforce.com</span>
         </div>
       </motion.div>
 

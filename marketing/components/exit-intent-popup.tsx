@@ -12,6 +12,7 @@ const SHOW_DELAY = 1000 // Wait 1 second before enabling exit intent
 export function ExitIntentPopup() {
   const [isVisible, setIsVisible] = useState(false)
   const [isEnabled, setIsEnabled] = useState(false)
+  const [selectedAudit, setSelectedAudit] = useState<'ai' | 'visitor' | null>(null)
   const [email, setEmail] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -90,6 +91,7 @@ export function ExitIntentPopup() {
         body: JSON.stringify({
           email: email,
           source: "exit_intent_popup",
+          auditType: selectedAudit,
           timestamp: new Date().toISOString(),
         }),
       })
@@ -102,8 +104,8 @@ export function ExitIntentPopup() {
       setSubmitted(true)
 
       // Track conversion event using new analytics library
-      trackLeadCaptured("exit_intent_popup")
-      trackFormSubmission("exit_intent_popup")
+      trackLeadCaptured(`exit_intent_popup_${selectedAudit}`)
+      trackFormSubmission(`exit_intent_popup_${selectedAudit}`)
 
       // Close popup after 3 seconds
       setTimeout(() => {
@@ -176,22 +178,115 @@ export function ExitIntentPopup() {
                     Thank You!
                   </h3>
                   <p className="text-gray-600">
-                    We'll send your free visitor audit to{" "}
+                    We'll send your free {selectedAudit === 'ai' ? 'AI audit' : 'visitor audit'} to{" "}
                     <span className="font-medium text-gray-900">{email}</span>
                   </p>
                 </div>
-              ) : (
-                // Form State
+              ) : selectedAudit === null ? (
+                // Quiz State - Choose Audit Type
                 <>
                   <div className="text-center mb-6">
                     <h2
                       id="exit-intent-title"
                       className="text-2xl md:text-3xl font-light text-gray-900 mb-2"
                     >
-                      Wait! Get Your Free Visitor Audit
+                      Wait! Get Your Free Audit
+                    </h2>
+                    <p className="text-gray-600 mb-6">
+                      Which audit would help your business most?
+                    </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => setSelectedAudit('ai')}
+                      className="w-full bg-white border-2 border-gray-200 hover:border-[#007AFF] rounded-xl p-6 text-left transition-all group"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-blue-50 group-hover:bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors">
+                          <svg
+                            className="w-6 h-6 text-[#007AFF]"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-medium text-gray-900 mb-1">
+                            AI Audit of Your Company
+                          </h3>
+                          <p className="text-sm text-gray-600">
+                            Get personalized insights and recommendations powered by AI to optimize your marketing and sales strategy
+                          </p>
+                        </div>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => setSelectedAudit('visitor')}
+                      className="w-full bg-white border-2 border-gray-200 hover:border-[#007AFF] rounded-xl p-6 text-left transition-all group"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-blue-50 group-hover:bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors">
+                          <svg
+                            className="w-6 h-6 text-[#007AFF]"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-medium text-gray-900 mb-1">
+                            Website Visitor Audit
+                          </h3>
+                          <p className="text-sm text-gray-600">
+                            See exactly who's visiting your site right now with full contact details and intent scores
+                          </p>
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+
+                  <p className="text-xs text-gray-500 text-center mt-6">
+                    No credit card required. Results in 24 hours.
+                  </p>
+                </>
+              ) : (
+                // Form State - After Quiz Selection
+                <>
+                  <div className="text-center mb-6">
+                    <h2
+                      id="exit-intent-title"
+                      className="text-2xl md:text-3xl font-light text-gray-900 mb-2"
+                    >
+                      {selectedAudit === 'ai'
+                        ? 'Get Your Free AI Audit'
+                        : 'Get Your Free Visitor Audit'}
                     </h2>
                     <p className="text-gray-600">
-                      See exactly who's visiting your site right now
+                      {selectedAudit === 'ai'
+                        ? 'Enter your email to receive personalized AI-powered insights'
+                        : 'Enter your email to see who\'s visiting your site'}
                     </p>
                   </div>
 
@@ -231,61 +326,120 @@ export function ExitIntentPopup() {
                       )}
                     </Button>
 
-                    <p className="text-xs text-gray-500 text-center">
-                      No credit card required. Results in 24 hours.
-                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedAudit(null)}
+                      className="text-sm text-gray-500 hover:text-gray-700 w-full text-center"
+                    >
+                      ← Back to options
+                    </button>
                   </form>
 
                   <div className="mt-6 pt-6 border-t border-gray-200">
                     <div className="space-y-2 text-sm text-gray-600">
-                      <div className="flex items-center gap-2">
-                        <svg
-                          className="w-4 h-4 text-[#007AFF] flex-shrink-0"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                        <span>Last 100 identified visitors with contact info</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <svg
-                          className="w-4 h-4 text-[#007AFF] flex-shrink-0"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                        <span>Intent scores showing who's ready to buy</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <svg
-                          className="w-4 h-4 text-[#007AFF] flex-shrink-0"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                        <span>Personalized outreach templates</span>
-                      </div>
+                      {selectedAudit === 'visitor' ? (
+                        <>
+                          <div className="flex items-center gap-2">
+                            <svg
+                              className="w-4 h-4 text-[#007AFF] flex-shrink-0"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                            <span>Last 100 identified visitors with contact info</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <svg
+                              className="w-4 h-4 text-[#007AFF] flex-shrink-0"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                            <span>Intent scores showing who's ready to buy</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <svg
+                              className="w-4 h-4 text-[#007AFF] flex-shrink-0"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                            <span>Personalized outreach templates</span>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex items-center gap-2">
+                            <svg
+                              className="w-4 h-4 text-[#007AFF] flex-shrink-0"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                            <span>AI-powered marketing strategy recommendations</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <svg
+                              className="w-4 h-4 text-[#007AFF] flex-shrink-0"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                            <span>Competitive analysis and positioning insights</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <svg
+                              className="w-4 h-4 text-[#007AFF] flex-shrink-0"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                            <span>Growth opportunities and optimization tactics</span>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </>

@@ -97,37 +97,6 @@ export function HumanHomePage() {
       {/* Customer Logos - Early Social Proof */}
       <CustomerLogos />
 
-      {/* OPTIMIZED: Social Proof Early - Position #2 for trust building */}
-      <section className="py-16 bg-[#F7F9FB]">
-        <Container>
-          <div className="text-center mb-12">
-            <p className="text-gray-600 mb-8 text-sm uppercase tracking-wide">Trusted by Growth Teams at</p>
-            <div className="grid md:grid-cols-3 gap-8 max-w-3xl mx-auto">
-              {testimonials.map((testimonial, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="bg-white rounded-xl p-6 border border-gray-200"
-                >
-                  <p className="text-gray-700 mb-4 leading-relaxed text-sm">&ldquo;{testimonial.quote}&rdquo;</p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm">
-                      {testimonial.name[0]}
-                    </div>
-                    <div>
-                      <div className="text-gray-900 text-sm font-medium">{testimonial.name}</div>
-                      <div className="text-xs text-gray-600">{testimonial.title}</div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </Container>
-      </section>
 
       {/* OPTIMIZED: Problem → Solution (Benefit-Led, Not Feature-Led) */}
       <section className="py-20 bg-white">
@@ -346,21 +315,3 @@ const coreFeatures = [
   },
 ]
 
-// Testimonials Data - SPECIFIC, with real outcomes
-const testimonials = [
-  {
-    quote: "We went from 3 leads per week to 50+ qualified conversations per month. Cursive eliminated our prospecting bottleneck.",
-    name: "Sarah Chen",
-    title: "VP Sales, TechStart",
-  },
-  {
-    quote: "The lead quality is unmatched. Every list is tailored to our ICP, verified, and ready to work. No more dead emails.",
-    name: "Mike Rodriguez",
-    title: "Head of Growth, SaaS Co",
-  },
-  {
-    quote: "Cursive's AI SDR books more meetings than our entire sales team combined. It's like having 10 BDRs for the cost of one.",
-    name: "Emily Johnson",
-    title: "CEO, Pipeline Inc",
-  },
-]

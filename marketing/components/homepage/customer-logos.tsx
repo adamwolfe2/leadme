@@ -2,16 +2,17 @@
 
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
+import Image from "next/image"
 
 const companies = [
-  "TechCorp",
-  "DataSystems",
-  "CloudFlow",
-  "SalesForce",
-  "MarketPro",
-  "GrowthLabs",
-  "RevEngine",
-  "ScaleHQ",
+  { name: "Salesforce", logo: "/integrations/salesforce.svg" },
+  { name: "HubSpot", logo: "/integrations/hubspot-svgrepo-com.svg" },
+  { name: "Stripe", logo: "/integrations/public/integrations/stripe.svg" },
+  { name: "Klaviyo", logo: "/integrations/klaviyo.svg" },
+  { name: "Slack", logo: "/integrations/slack.svg" },
+  { name: "Zoom", logo: "/integrations/icons8-zoom.svg" },
+  { name: "Shopify", logo: "/integrations/shopify.svg" },
+  { name: "Notion", logo: "/integrations/notion.svg" },
 ]
 
 export function CustomerLogos() {
@@ -33,15 +34,21 @@ export function CustomerLogos() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 max-w-5xl mx-auto">
             {companies.map((company, index) => (
               <motion.div
-                key={company}
+                key={company.name}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05, duration: 0.3 }}
                 className="flex items-center justify-center"
               >
-                <div className="text-2xl lg:text-3xl font-semibold text-gray-400 hover:text-gray-700 transition-colors duration-300 cursor-default select-none tracking-tight">
-                  {company}
+                <div className="relative w-32 h-16 md:w-40 md:h-20 grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-300">
+                  <Image
+                    src={company.logo}
+                    alt={`${company.name} logo`}
+                    fill
+                    className="object-contain"
+                    sizes="(max-width: 768px) 128px, 160px"
+                  />
                 </div>
               </motion.div>
             ))}

@@ -54,7 +54,7 @@ export function PipelineDashboard() {
               <div>
                 <div className="text-sm text-gray-900">New High-Intent Lead</div>
                 <div className="text-xs text-gray-600">
-                  Sarah Chen (Acme Corp) - $55K
+                  Sarah Chen (Salesforce) - $55K
                   <br />
                   Source: Webinar
                 </div>
@@ -135,14 +135,14 @@ export function PipelineDashboard() {
               </svg>
               <span className="text-gray-900">Deal Closed!</span>
             </div>
-            <div className="text-xs text-gray-600 mb-1">TechNova Inc. - $120K</div>
+            <div className="text-xs text-gray-600 mb-1">HubSpot - $120K</div>
             <div className="text-xs text-gray-600">Source: Organic Search</div>
           </motion.div>
 
           <div className="space-y-2">
             <div className="bg-white border border-gray-200 rounded-lg p-3">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs text-gray-900">Acme Corp</span>
+                <span className="text-xs text-gray-900">Salesforce</span>
                 <span className="bg-blue-100 text-[#007AFF] text-xs px-2 py-0.5 rounded">
                   contacted
                 </span>
@@ -152,7 +152,7 @@ export function PipelineDashboard() {
 
             <div className="bg-white border border-gray-200 rounded-lg p-3">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs text-gray-900">Acme Dynamics, LLC</span>
+                <span className="text-xs text-gray-900">Salesforce Ventures</span>
                 <span className="bg-blue-100 text-[#007AFF] text-xs px-2 py-0.5 rounded">
                   contacted
                 </span>

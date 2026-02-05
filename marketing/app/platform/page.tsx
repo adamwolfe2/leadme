@@ -112,7 +112,7 @@ export default function PlatformPage() {
                 <div className="space-y-3">
                   <div className="bg-white rounded-lg p-3 text-sm">
                     <div className="text-gray-500 mb-1">Brand Name</div>
-                    <div className="text-gray-900">Acme Corp</div>
+                    <div className="text-gray-900">Salesforce</div>
                   </div>
                   <div className="bg-white rounded-lg p-3 text-sm">
                     <div className="text-gray-500 mb-1">Voice & Tone</div>
@@ -180,9 +180,9 @@ export default function PlatformPage() {
 
                 <div className="space-y-3">
                   {[
-                    { name: "Sarah Johnson", title: "VP of Sales", company: "TechCorp", verified: true },
-                    { name: "Mike Chen", title: "Head of Growth", company: "StartupXYZ", verified: true },
-                    { name: "Emily Rodriguez", title: "Director, Revenue", company: "SaaS Inc", verified: true },
+                    { name: "Sarah Johnson", title: "VP of Sales", company: "HubSpot", verified: true },
+                    { name: "Mike Chen", title: "Head of Growth", company: "Zapier", verified: true },
+                    { name: "Emily Rodriguez", title: "Director, Revenue", company: "Stripe", verified: true },
                   ].map((person, i) => (
                     <div key={i} className="bg-white rounded-lg p-4 border border-gray-200 hover:border-[#007AFF] transition-colors">
                       <div className="flex items-center justify-between">
@@ -547,9 +547,9 @@ export default function PlatformPage() {
 
                 <div className="space-y-3">
                   {[
-                    { company: "Acme Corp", visitors: 12, pages: 23, intent: "High" },
-                    { company: "TechStart Inc", visitors: 5, pages: 8, intent: "Medium" },
-                    { company: "SaaS Co", visitors: 3, pages: 15, intent: "High" },
+                    { company: "Salesforce", visitors: 12, pages: 23, intent: "High" },
+                    { company: "Monday.com", visitors: 5, pages: 8, intent: "Medium" },
+                    { company: "Klaviyo", visitors: 3, pages: 15, intent: "High" },
                   ].map((visitor, i) => (
                     <div key={i} className="bg-white rounded-lg p-4 border border-gray-200">
                       <div className="flex items-center justify-between mb-2">
