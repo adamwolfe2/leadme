@@ -14,7 +14,7 @@ export function HumanView({ children }: ViewWrapperProps) {
 export function MachineView({ children }: ViewWrapperProps) {
   const { view } = useView()
   return view === 'machine' ? (
-    <div className="machine-view bg-black text-gray-300 font-mono text-sm leading-relaxed">
+    <div className="machine-view bg-white text-gray-900 font-mono text-sm leading-relaxed border-t border-gray-200">
       {children}
     </div>
   ) : null
@@ -27,7 +27,7 @@ interface MachineContentProps {
 
 export function MachineContent({ children, className = '' }: MachineContentProps) {
   return (
-    <div className={`max-w-4xl mx-auto px-6 py-12 ${className}`}>
+    <div className={`max-w-3xl mx-auto px-6 py-12 ${className}`}>
       {children}
     </div>
   )
@@ -40,9 +40,9 @@ interface MachineSectionProps {
 
 export function MachineSection({ title, children }: MachineSectionProps) {
   return (
-    <section className="mb-12">
-      <h2 className="text-xl text-white mb-6 font-bold">## {title}</h2>
-      <div className="space-y-4">{children}</div>
+    <section className="mb-10">
+      <h2 className="text-lg text-gray-900 mb-4 font-bold">## {title}</h2>
+      <div className="space-y-3">{children}</div>
     </section>
   )
 }
@@ -54,7 +54,7 @@ interface MachineLinkProps {
 
 export function MachineLink({ href, children }: MachineLinkProps) {
   return (
-    <a href={href} className="text-gray-300 hover:text-white transition-colors">
+    <a href={href} className="text-[#007AFF] hover:text-[#0066DD] transition-colors underline">
       [{children}]({href})
     </a>
   )
@@ -70,25 +70,25 @@ export function MachineList({ items }: MachineListProps) {
       {items.map((item, i) => {
         if (typeof item === 'string') {
           return (
-            <li key={i} className="before:content-['•'] before:mr-2 before:text-gray-500">
+            <li key={i} className="before:content-['•'] before:mr-2 before:text-gray-400">
               {item}
             </li>
           )
         }
         return (
-          <li key={i} className="before:content-['•'] before:mr-2 before:text-gray-500">
+          <li key={i} className="before:content-['•'] before:mr-2 before:text-gray-400">
             {item.href ? (
               <>
                 <MachineLink href={item.href}>{item.label}</MachineLink>
                 {item.description && (
-                  <span className="text-gray-500 block ml-4 mt-1">{item.description}</span>
+                  <span className="text-gray-600 block ml-4 mt-1 text-xs">{item.description}</span>
                 )}
               </>
             ) : (
               <>
                 {item.label}
                 {item.description && (
-                  <span className="text-gray-500 block ml-4 mt-1">{item.description}</span>
+                  <span className="text-gray-600 block ml-4 mt-1 text-xs">{item.description}</span>
                 )}
               </>
             )}

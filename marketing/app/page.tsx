@@ -17,9 +17,9 @@ export default function HomePage() {
       <MachineView>
         <MachineContent>
           {/* Header */}
-          <div className="mb-12">
-            <h1 className="text-3xl text-white font-bold mb-4 font-cursive">CURSIVE</h1>
-            <p className="text-gray-300 leading-relaxed">
+          <div className="mb-12 pb-6 border-b border-gray-200">
+            <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE</h1>
+            <p className="text-gray-700 leading-relaxed">
               AI-powered B2B lead generation platform that identifies anonymous website visitors and automates multi-channel outreach. Build AI intent systems that never sleep.
             </p>
           </div>
