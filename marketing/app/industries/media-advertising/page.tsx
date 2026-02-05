@@ -6,6 +6,44 @@ import { motion } from "framer-motion"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Media & Advertising Lead Generation Solutions | Cursive",
+  description: "Drive leads for media companies, ad agencies, and publishers. Monetize audiences with targeted campaigns and data-driven advertising.",
+  keywords: "media lead generation, advertising agency marketing, publisher monetization, ad tech leads, media sales, programmatic advertising",
+
+  openGraph: {
+    title: "Media & Advertising Lead Generation Solutions | Cursive",
+    description: "Drive leads for media companies, ad agencies, and publishers. Monetize audiences with targeted campaigns and data-driven advertising.",
+    type: "website",
+    url: "https://meetcursive.com/industries/media-advertising",
+    siteName: "Cursive",
+    images: [{
+      url: "https://meetcursive.com/og-image.png",
+      width: 1200,
+      height: 630,
+    }],
+    locale: "en_US",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Media & Advertising Lead Generation Solutions | Cursive",
+    description: "Drive leads for media companies, ad agencies, and publishers. Monetize audiences with targeted campaigns and data-driven advertising.",
+    images: ["https://meetcursive.com/og-image.png"],
+    creator: "@meetcursive",
+  },
+
+  alternates: {
+    canonical: "https://meetcursive.com/industries/media-advertising",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
 
 export default function MediaAdvertisingPage() {
   return (

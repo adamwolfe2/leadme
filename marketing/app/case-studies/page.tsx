@@ -5,6 +5,44 @@ import { Container } from "@/components/ui/container"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { motion } from "framer-motion"
 import { ArrowRight, TrendingUp, Users, Target, BarChart3 } from "lucide-react"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Customer Success Stories & Case Studies | Cursive",
+  description: "See how B2B companies use Cursive to identify visitors, build audiences, and scale revenue. Real results from real customers.",
+  keywords: "case studies, customer success stories, B2B marketing results, lead generation case studies, customer testimonials",
+
+  openGraph: {
+    title: "Customer Success Stories & Case Studies | Cursive",
+    description: "See how B2B companies use Cursive to identify visitors, build audiences, and scale revenue. Real results from real customers.",
+    type: "website",
+    url: "https://meetcursive.com/case-studies",
+    siteName: "Cursive",
+    images: [{
+      url: "https://meetcursive.com/og-image.png",
+      width: 1200,
+      height: 630,
+    }],
+    locale: "en_US",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Customer Success Stories & Case Studies | Cursive",
+    description: "See how B2B companies use Cursive to identify visitors, build audiences, and scale revenue. Real results from real customers.",
+    images: ["https://meetcursive.com/og-image.png"],
+    creator: "@meetcursive",
+  },
+
+  alternates: {
+    canonical: "https://meetcursive.com/case-studies",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
 
 export default function CaseStudiesPage() {
   return (

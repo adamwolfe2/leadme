@@ -6,6 +6,44 @@ import { motion } from "framer-motion"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Retail Lead Generation & Customer Acquisition | Cursive",
+  description: "Drive foot traffic and online sales for retail stores. Target local shoppers with intent data and multi-channel campaigns.",
+  keywords: "retail marketing, store lead generation, retail customer acquisition, local retail advertising, foot traffic marketing",
+
+  openGraph: {
+    title: "Retail Lead Generation & Customer Acquisition | Cursive",
+    description: "Drive foot traffic and online sales for retail stores. Target local shoppers with intent data and multi-channel campaigns.",
+    type: "website",
+    url: "https://meetcursive.com/industries/retail",
+    siteName: "Cursive",
+    images: [{
+      url: "https://meetcursive.com/og-image.png",
+      width: 1200,
+      height: 630,
+    }],
+    locale: "en_US",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Retail Lead Generation & Customer Acquisition | Cursive",
+    description: "Drive foot traffic and online sales for retail stores. Target local shoppers with intent data and multi-channel campaigns.",
+    images: ["https://meetcursive.com/og-image.png"],
+    creator: "@meetcursive",
+  },
+
+  alternates: {
+    canonical: "https://meetcursive.com/industries/retail",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
 
 export default function RetailPage() {
   return (

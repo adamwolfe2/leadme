@@ -2,6 +2,44 @@ import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, ArrowRight, AlertTriangle } from "lucide-react"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "How to Scale Outbound Sales Without Hiring More SDRs | Cursive",
+  description: "Scale B2B outbound sales with automation, data, and technology. Proven strategies to 3x pipeline without increasing headcount or budget.",
+  keywords: "scale outbound sales, sales automation, SDR productivity, outbound scaling, sales operations, pipeline growth",
+
+  openGraph: {
+    title: "How to Scale Outbound Sales Without Hiring More SDRs | Cursive",
+    description: "Scale B2B outbound sales with automation, data, and technology. Proven strategies to 3x pipeline without increasing headcount or budget.",
+    type: "article",
+    url: "https://meetcursive.com/blog/scaling-outbound",
+    siteName: "Cursive",
+    images: [{
+      url: "https://meetcursive.com/og-image.png",
+      width: 1200,
+      height: 630,
+    }],
+    locale: "en_US",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "How to Scale Outbound Sales Without Hiring More SDRs | Cursive",
+    description: "Scale B2B outbound sales with automation, data, and technology. Proven strategies to 3x pipeline without increasing headcount or budget.",
+    images: ["https://meetcursive.com/og-image.png"],
+    creator: "@meetcursive",
+  },
+
+  alternates: {
+    canonical: "https://meetcursive.com/blog/scaling-outbound",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
 
 export default function BlogPost() {
   return (

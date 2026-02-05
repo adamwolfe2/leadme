@@ -6,6 +6,44 @@ import { motion } from "framer-motion"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Education Lead Generation & Student Enrollment | Cursive",
+  description: "Drive enrollments for schools, colleges, and online learning platforms. Identify prospective students and nurture them through automated campaigns.",
+  keywords: "education marketing, student recruitment, enrollment marketing, higher education lead generation, online course marketing",
+
+  openGraph: {
+    title: "Education Lead Generation & Student Enrollment | Cursive",
+    description: "Drive enrollments for schools, colleges, and online learning platforms. Identify prospective students and nurture them through automated campaigns.",
+    type: "website",
+    url: "https://meetcursive.com/industries/education",
+    siteName: "Cursive",
+    images: [{
+      url: "https://meetcursive.com/og-image.png",
+      width: 1200,
+      height: 630,
+    }],
+    locale: "en_US",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Education Lead Generation & Student Enrollment | Cursive",
+    description: "Drive enrollments for schools, colleges, and online learning platforms. Identify prospective students and nurture them through automated campaigns.",
+    images: ["https://meetcursive.com/og-image.png"],
+    creator: "@meetcursive",
+  },
+
+  alternates: {
+    canonical: "https://meetcursive.com/industries/education",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
 
 export default function EducationPage() {
   return (

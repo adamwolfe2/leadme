@@ -6,6 +6,44 @@ import { motion } from "framer-motion"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "B2B Software Lead Generation & Sales Acceleration | Cursive",
+  description: "Identify high-intent SaaS buyers, enrich with verified contacts, and automate outbound campaigns. Built for B2B software companies scaling revenue.",
+  keywords: "B2B software lead generation, SaaS lead gen, B2B SaaS marketing, software sales automation, SaaS buyer intent, B2B outbound",
+
+  openGraph: {
+    title: "B2B Software Lead Generation & Sales Acceleration | Cursive",
+    description: "Identify high-intent SaaS buyers, enrich with verified contacts, and automate outbound campaigns. Built for B2B software companies scaling revenue.",
+    type: "website",
+    url: "https://meetcursive.com/industries/b2b-software",
+    siteName: "Cursive",
+    images: [{
+      url: "https://meetcursive.com/og-image.png",
+      width: 1200,
+      height: 630,
+    }],
+    locale: "en_US",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "B2B Software Lead Generation & Sales Acceleration | Cursive",
+    description: "Identify high-intent SaaS buyers, enrich with verified contacts, and automate outbound campaigns. Built for B2B software companies scaling revenue.",
+    images: ["https://meetcursive.com/og-image.png"],
+    creator: "@meetcursive",
+  },
+
+  alternates: {
+    canonical: "https://meetcursive.com/industries/b2b-software",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
 
 export default function B2BSoftwarePage() {
   return (

@@ -5,6 +5,44 @@ import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import { ArrowRight, HelpCircle, Search } from "lucide-react"
 import { useState } from "react"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Frequently Asked Questions About Cursive | FAQ",
+  description: "Get answers about Cursive's visitor identification, pricing, data accuracy, integrations, and GDPR compliance. Common questions answered.",
+  keywords: "FAQ, frequently asked questions, Cursive help, lead generation questions, visitor tracking FAQ, pricing questions",
+
+  openGraph: {
+    title: "Frequently Asked Questions About Cursive | FAQ",
+    description: "Get answers about Cursive's visitor identification, pricing, data accuracy, integrations, and GDPR compliance. Common questions answered.",
+    type: "website",
+    url: "https://meetcursive.com/faq",
+    siteName: "Cursive",
+    images: [{
+      url: "https://meetcursive.com/og-image.png",
+      width: 1200,
+      height: 630,
+    }],
+    locale: "en_US",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Frequently Asked Questions About Cursive | FAQ",
+    description: "Get answers about Cursive's visitor identification, pricing, data accuracy, integrations, and GDPR compliance. Common questions answered.",
+    images: ["https://meetcursive.com/og-image.png"],
+    creator: "@meetcursive",
+  },
+
+  alternates: {
+    canonical: "https://meetcursive.com/faq",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
 
 export default function FAQPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)

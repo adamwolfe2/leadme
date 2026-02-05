@@ -6,6 +6,44 @@ import { motion } from "framer-motion"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "White-Label Lead Generation for Marketing Agencies | Cursive",
+  description: "Scale client services with white-label lead generation. Offer visitor tracking, audience building, and campaign automation under your brand.",
+  keywords: "white-label lead generation, agency marketing tools, white-label software, agency client services, marketing agency solutions",
+
+  openGraph: {
+    title: "White-Label Lead Generation for Marketing Agencies | Cursive",
+    description: "Scale client services with white-label lead generation. Offer visitor tracking, audience building, and campaign automation under your brand.",
+    type: "website",
+    url: "https://meetcursive.com/industries/agencies",
+    siteName: "Cursive",
+    images: [{
+      url: "https://meetcursive.com/og-image.png",
+      width: 1200,
+      height: 630,
+    }],
+    locale: "en_US",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "White-Label Lead Generation for Marketing Agencies | Cursive",
+    description: "Scale client services with white-label lead generation. Offer visitor tracking, audience building, and campaign automation under your brand.",
+    images: ["https://meetcursive.com/og-image.png"],
+    creator: "@meetcursive",
+  },
+
+  alternates: {
+    canonical: "https://meetcursive.com/industries/agencies",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
 
 export default function AgenciesPage() {
   return (

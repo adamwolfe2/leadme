@@ -9,6 +9,44 @@ import {
   BarChart3, Globe, Layers, Mail, MessageSquare, Shield
 } from "lucide-react"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Syndicated Intent Audiences Ready to Activate | Cursive",
+  description: "Pre-built intent audiences across 8 verticals, 46+ segments, 280M+ US profiles. Hot, Warm, and Scale intent levels updated every 7 days.",
+  keywords: "intent audiences, buyer intent data, purchase intent, intent signals, B2B intent data, pre-built audiences, syndicated data, in-market buyers",
+
+  openGraph: {
+    title: "Syndicated Intent Audiences Ready to Activate | Cursive",
+    description: "Pre-built intent audiences across 8 verticals, 46+ segments, 280M+ US profiles. Hot, Warm, and Scale intent levels updated every 7 days.",
+    type: "website",
+    url: "https://meetcursive.com/intent-audiences",
+    siteName: "Cursive",
+    images: [{
+      url: "https://meetcursive.com/og-image.png",
+      width: 1200,
+      height: 630,
+    }],
+    locale: "en_US",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Syndicated Intent Audiences Ready to Activate | Cursive",
+    description: "Pre-built intent audiences across 8 verticals, 46+ segments, 280M+ US profiles. Hot, Warm, and Scale intent levels updated every 7 days.",
+    images: ["https://meetcursive.com/og-image.png"],
+    creator: "@meetcursive",
+  },
+
+  alternates: {
+    canonical: "https://meetcursive.com/intent-audiences",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
 
 export default function IntentAudiencesPage() {
   const schemaMarkup = {

@@ -6,6 +6,44 @@ import { DashboardCTA } from "@/components/dashboard-cta"
 import { motion } from "framer-motion"
 import { IntegrationsShowcase } from "@/components/integrations-showcase"
 import { ArrowRight } from "lucide-react"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "200+ Marketing Integrations - CRM, Email, Ads | Cursive",
+  description: "Connect Cursive with Salesforce, HubSpot, Google Ads, LinkedIn, and 200+ marketing tools. One-click integration setup.",
+  keywords: "marketing integrations, CRM integrations, ad platform integrations, Salesforce integration, HubSpot integration, API connections",
+
+  openGraph: {
+    title: "200+ Marketing Integrations - CRM, Email, Ads | Cursive",
+    description: "Connect Cursive with Salesforce, HubSpot, Google Ads, LinkedIn, and 200+ marketing tools. One-click integration setup.",
+    type: "website",
+    url: "https://meetcursive.com/integrations",
+    siteName: "Cursive",
+    images: [{
+      url: "https://meetcursive.com/og-image.png",
+      width: 1200,
+      height: 630,
+    }],
+    locale: "en_US",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "200+ Marketing Integrations - CRM, Email, Ads | Cursive",
+    description: "Connect Cursive with Salesforce, HubSpot, Google Ads, LinkedIn, and 200+ marketing tools. One-click integration setup.",
+    images: ["https://meetcursive.com/og-image.png"],
+    creator: "@meetcursive",
+  },
+
+  alternates: {
+    canonical: "https://meetcursive.com/integrations",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
 
 export default function IntegrationsPage() {
   return (

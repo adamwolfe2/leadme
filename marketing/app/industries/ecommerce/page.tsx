@@ -6,6 +6,44 @@ import { motion } from "framer-motion"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Ecommerce Lead Generation & Customer Acquisition | Cursive",
+  description: "Turn anonymous store visitors into customers. Track cart abandoners, retarget browsers, and recover lost revenue with automated campaigns.",
+  keywords: "ecommerce lead generation, online store marketing, cart abandonment, ecommerce retargeting, customer acquisition, DTC marketing",
+
+  openGraph: {
+    title: "Ecommerce Lead Generation & Customer Acquisition | Cursive",
+    description: "Turn anonymous store visitors into customers. Track cart abandoners, retarget browsers, and recover lost revenue with automated campaigns.",
+    type: "website",
+    url: "https://meetcursive.com/industries/ecommerce",
+    siteName: "Cursive",
+    images: [{
+      url: "https://meetcursive.com/og-image.png",
+      width: 1200,
+      height: 630,
+    }],
+    locale: "en_US",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Ecommerce Lead Generation & Customer Acquisition | Cursive",
+    description: "Turn anonymous store visitors into customers. Track cart abandoners, retarget browsers, and recover lost revenue with automated campaigns.",
+    images: ["https://meetcursive.com/og-image.png"],
+    creator: "@meetcursive",
+  },
+
+  alternates: {
+    canonical: "https://meetcursive.com/industries/ecommerce",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
 
 export default function EcommercePage() {
   return (
