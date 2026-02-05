@@ -190,7 +190,7 @@ Yes. Cursive is fully compliant with GDPR, CCPA, and other privacy regulations. 
 
 ### How much does Cursive cost?
 
-Pricing varies based on features and usage. Most B2B SaaS companies start at $2,000-5,000/month depending on website traffic volume and features needed. Contact us for a customized quote: https://cal.com/adamwolfe/cursive-ai-audit
+Cursive offers flexible pricing starting at $499/month for small businesses and scaling to $999/month for growing companies, with enterprise plans available for high-volume needs. Pricing varies based on features, traffic volume, and usage. Contact us for a customized quote: https://cal.com/adamwolfe/cursive-ai-audit
 
 ### What's the difference between hot, warm, and scale intent audiences?
 

@@ -7,6 +7,7 @@ import { InteractiveFeaturesShowcase } from "@/components/demos/interactive-feat
 import { DashboardPreview } from "@/components/dashboard-preview"
 import { IntegrationsShowcase } from "@/components/integrations-showcase"
 import { HowItWorksInteractiveDemo } from "@/components/demos/how-it-works-demo"
+import { CompetitorComparisonGrid } from "@/components/competitor-comparison"
 import Link from "next/link"
 import { Eye, Target, Bot, TrendingUp, type LucideIcon } from "lucide-react"
 
@@ -231,6 +232,9 @@ export function HumanHomePage() {
           />
         </Container>
       </section>
+
+      {/* Competitor Comparison */}
+      <CompetitorComparisonGrid />
 
       {/* OPTIMIZED: Final CTA - Strong, Urgent, Clear with Risk Reversal */}
       <section className="relative py-32 bg-white overflow-hidden">

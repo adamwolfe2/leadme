@@ -2,19 +2,17 @@ import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://meetcursive.com'
+  const currentDate = new Date()
 
-  const routes = [
-    '',
-    '/platform',
-    '/services',
-    '/pricing',
-    '/about',
-    '/resources',
-    '/blog',
-    '/case-studies',
-    '/faq',
-    '/contact',
-    '/demos',
+  // Core pages - highest priority, frequent updates
+  const corePages = [
+    { url: '', priority: 1.0, changefreq: 'daily' as const },
+    { url: '/platform', priority: 0.9, changefreq: 'weekly' as const },
+    { url: '/pricing', priority: 0.9, changefreq: 'weekly' as const },
+  ]
+
+  // Solution pages - high priority
+  const solutionPages = [
     '/visitor-identification',
     '/audience-builder',
     '/direct-mail',
@@ -22,7 +20,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/data-access',
     '/integrations',
     '/intent-audiences',
-    // Industries
+  ].map(url => ({
+    url,
+    priority: 0.8,
+    changefreq: 'weekly' as const,
+  }))
+
+  // Industry pages - medium-high priority
+  const industryPages = [
     '/industries/financial-services',
     '/industries/ecommerce',
     '/industries/media-advertising',
@@ -32,7 +37,67 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/industries/home-services',
     '/industries/retail',
     '/industries/education',
-    // Blog posts (52 total)
+  ].map(url => ({
+    url,
+    priority: 0.7,
+    changefreq: 'monthly' as const,
+  }))
+
+  // Secondary pages - medium priority
+  const secondaryPages = [
+    '/services',
+    '/about',
+    '/contact',
+    '/demos',
+    '/faq',
+  ].map(url => ({
+    url,
+    priority: 0.6,
+    changefreq: 'monthly' as const,
+  }))
+
+  // Resources and blog hub - medium priority
+  const resourcePages = [
+    { url: '/resources', priority: 0.7, changefreq: 'weekly' as const },
+    { url: '/blog', priority: 0.7, changefreq: 'daily' as const },
+    { url: '/case-studies', priority: 0.7, changefreq: 'monthly' as const },
+  ]
+
+  // Blog category pages - medium priority
+  const blogCategoryPages = [
+    '/blog/visitor-tracking',
+    '/blog/lead-generation',
+    '/blog/data-platforms',
+    '/blog/audience-targeting',
+    '/blog/direct-mail',
+    '/blog/analytics',
+    '/blog/retargeting',
+    '/blog/crm-integration',
+    '/blog/scaling-outbound',
+    '/blog/ai-sdr-vs-human-bdr',
+    '/blog/cold-email-2026',
+    '/blog/icp-targeting-guide',
+  ].map(url => ({
+    url,
+    priority: 0.6,
+    changefreq: 'weekly' as const,
+  }))
+
+  // Blog posts - organized by recency
+  // Recent posts (published in last 3 months) - higher priority
+  const recentBlogPosts = [
+    '/blog/scaling-outbound',
+    '/blog/ai-sdr-vs-human-bdr',
+    '/blog/cold-email-2026',
+    '/blog/icp-targeting-guide',
+  ].map(url => ({
+    url,
+    priority: 0.7,
+    changefreq: 'monthly' as const,
+  }))
+
+  // Older blog posts - standard priority
+  const olderBlogPosts = [
     '/blog/tips-for-using-marketing-audience-data-efficiently',
     '/blog/steps-to-build-an-effective-audience-building-platform',
     '/blog/why-consumer-targeting-data-is-essential-for-brands',
@@ -85,12 +150,61 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/what-b2c-database-providers-do-for-busy-retailers',
     '/blog/how-business-contact-data-helps-grow-winter-connections',
     '/blog/audience-targeting-software-anyone-can-understand',
+  ].map(url => ({
+    url,
+    priority: 0.6,
+    changefreq: 'monthly' as const,
+  }))
+
+  // Legal pages - low priority, rarely change
+  const legalPages = [
+    { url: '/privacy', priority: 0.3, changefreq: 'yearly' as const },
+    { url: '/terms', priority: 0.3, changefreq: 'yearly' as const },
   ]
 
-  return routes.map(route => ({
-    url: `${baseUrl}${route}`,
-    lastModified: new Date(),
-    changeFrequency: route.startsWith('/blog/') ? 'monthly' as const : 'weekly' as const,
-    priority: route === '' ? 1.0 : route.startsWith('/blog/') ? 0.6 : 0.8,
+  // Combine all pages
+  const allPages = [
+    ...corePages,
+    ...solutionPages,
+    ...industryPages,
+    ...secondaryPages,
+    ...resourcePages,
+    ...blogCategoryPages,
+    ...recentBlogPosts,
+    ...olderBlogPosts,
+    ...legalPages,
+  ]
+
+  return allPages.map(({ url, priority, changefreq }) => ({
+    url: `${baseUrl}${url}`,
+    lastModified: currentDate,
+    changeFrequency: changefreq,
+    priority,
   }))
 }
+
+/**
+ * Sitemap Configuration Notes:
+ *
+ * Excluded paths (automatically excluded by Next.js or via robots.txt):
+ * - /api/* - API routes
+ * - /popup-test - Internal testing page
+ *
+ * Priority Guidelines:
+ * - 1.0: Homepage (most important)
+ * - 0.9: Core product pages (platform, pricing)
+ * - 0.8: Solution pages
+ * - 0.7: Industry pages, resource hubs, recent blog posts
+ * - 0.6: Secondary pages, blog categories, standard blog posts
+ * - 0.3: Legal pages
+ *
+ * Change Frequency Guidelines:
+ * - daily: Homepage (with dynamic content)
+ * - weekly: Product pages, solution pages, resource hubs
+ * - monthly: Industry pages, blog posts, secondary pages
+ * - yearly: Legal pages
+ *
+ * Dynamic Routes:
+ * For dynamic blog routes like /blog/[category]/[slug], implement generateStaticParams()
+ * in the page component to include them in the sitemap at build time.
+ */

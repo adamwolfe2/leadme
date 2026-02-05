@@ -1,12 +1,25 @@
+/**
+ * StructuredData Component
+ *
+ * Renders JSON-LD structured data for SEO
+ */
+
 interface StructuredDataProps {
-  data: object
+  data: object | object[]
 }
 
 export function StructuredData({ data }: StructuredDataProps) {
+  const jsonLd = Array.isArray(data) ? data : [data]
+
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-    />
+    <>
+      {jsonLd.map((item, index) => (
+        <script
+          key={index}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(item) }}
+        />
+      ))}
+    </>
   )
 }
