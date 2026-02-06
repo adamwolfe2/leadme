@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { EmailRevealButton } from './email-reveal-button'
+import { getCreditLink } from '@/lib/stripe/payment-links'
 
 interface SearchResult {
   id: string
@@ -215,6 +216,15 @@ export function SearchResults({
                   </a>{' '}
                   for 1000 credits per day.
                 </p>
+                <button
+                  onClick={() => window.open(getCreditLink('starter'), '_blank', 'noopener,noreferrer')}
+                  className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-[12px] font-medium rounded-md transition-colors"
+                >
+                  Buy Credits Now
+                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </button>
               </div>
             </div>
           </div>

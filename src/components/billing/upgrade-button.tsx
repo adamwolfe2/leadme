@@ -1,15 +1,18 @@
 'use client'
 
 import { useState } from 'react'
+import { getSubscriptionLink } from '@/lib/stripe/payment-links'
 
 interface UpgradeButtonProps {
   billingPeriod: 'monthly' | 'yearly'
+  plan?: 'starter' | 'pro' | 'enterprise'
   className?: string
   variant?: 'primary' | 'secondary'
 }
 
 export function UpgradeButton({
   billingPeriod,
+  plan = 'pro',
   className = '',
   variant = 'primary',
 }: UpgradeButtonProps) {
@@ -19,7 +22,7 @@ export function UpgradeButton({
     setLoading(true)
 
     try {
-      // Create checkout session
+      // Create checkout session via API
       const response = await fetch('/api/billing/checkout', {
         method: 'POST',
         headers: {
@@ -33,7 +36,13 @@ export function UpgradeButton({
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create checkout session')
+        // Fallback to Stripe Payment Link if checkout session fails
+        // (e.g., Stripe Price IDs not configured in database)
+        console.warn('Checkout API failed, falling back to payment link:', data.error)
+        const cycle = billingPeriod === 'yearly' ? 'annual' : 'monthly'
+        const paymentUrl = getSubscriptionLink(plan, cycle)
+        window.location.href = paymentUrl
+        return
       }
 
       // Redirect to Stripe Checkout
@@ -43,9 +52,16 @@ export function UpgradeButton({
         throw new Error('No checkout URL returned')
       }
     } catch (error: any) {
-      console.error('Upgrade error:', error)
-      alert(error.message || 'Failed to start checkout. Please try again.')
-      setLoading(false)
+      // Final fallback: use payment link directly
+      console.error('Upgrade error, using payment link fallback:', error)
+      try {
+        const cycle = billingPeriod === 'yearly' ? 'annual' : 'monthly'
+        const paymentUrl = getSubscriptionLink(plan, cycle)
+        window.location.href = paymentUrl
+      } catch {
+        alert('Failed to start checkout. Please try again or contact support.')
+        setLoading(false)
+      }
     }
   }
 

@@ -9,6 +9,15 @@ import { useUser } from '@/hooks/use-user'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { CREDIT_PACKAGES, type CreditPackage } from '@/lib/constants/credit-packages'
+import { getCreditLink } from '@/lib/stripe/payment-links'
+
+// Map credit package IDs to payment link tiers
+const PACKAGE_TO_CREDIT_TIER: Record<string, 'leadPurchase' | 'starter' | 'professional' | 'enterprise'> = {
+  starter: 'starter',
+  growth: 'professional',
+  scale: 'professional',
+  enterprise: 'enterprise',
+}
 
 export default function CreditsPage() {
   const router = useRouter()
@@ -85,20 +94,33 @@ export default function CreditsPage() {
           window.location.href = data.url
         }
       } else {
-        const error = await response.json()
+        // Fallback to payment link if checkout session fails
+        const creditTier = PACKAGE_TO_CREDIT_TIER[pkg.id]
+        if (creditTier) {
+          console.warn('Checkout API failed, falling back to payment link')
+          window.open(getCreditLink(creditTier), '_blank', 'noopener,noreferrer')
+        } else {
+          const error = await response.json()
+          toast({
+            title: 'Purchase failed',
+            message: error.error || 'Failed to initiate credit purchase',
+            type: 'error',
+          })
+        }
+      }
+    } catch (error) {
+      // Final fallback: use payment link directly
+      console.error('Purchase failed, using payment link fallback:', error)
+      const creditTier = PACKAGE_TO_CREDIT_TIER[pkg.id]
+      if (creditTier) {
+        window.open(getCreditLink(creditTier), '_blank', 'noopener,noreferrer')
+      } else {
         toast({
           title: 'Purchase failed',
-          message: error.error || 'Failed to initiate credit purchase',
+          message: 'An error occurred. Please try again.',
           type: 'error',
         })
       }
-    } catch (error) {
-      console.error('Purchase failed:', error)
-      toast({
-        title: 'Purchase failed',
-        message: 'An error occurred. Please try again.',
-        type: 'error',
-      })
     } finally {
       setIsPurchasing(null)
     }

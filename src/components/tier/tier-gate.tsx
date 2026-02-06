@@ -12,6 +12,7 @@ import React from 'react'
 import { useTier, type TierFeature } from '@/lib/hooks/use-tier'
 import type { ProductTierFeatures } from '@/types'
 import Link from 'next/link'
+import { getSubscriptionLink, getCreditLink } from '@/lib/stripe/payment-links'
 
 // ============================================================================
 // TIER GATE - For feature-based gating
@@ -100,6 +101,25 @@ export function LimitGate({
 // PROMPTS
 // ============================================================================
 
+/**
+ * Maps a tier display name to its payment URL
+ */
+function getUpgradeUrlForTier(tierName: string): string {
+  const tierMap: Record<string, 'starter' | 'pro' | 'enterprise'> = {
+    'Starter': 'starter',
+    'starter': 'starter',
+    'Pro': 'pro',
+    'pro': 'pro',
+    'Growth': 'pro',
+    'growth': 'pro',
+    'Enterprise': 'enterprise',
+    'enterprise': 'enterprise',
+  }
+
+  const plan = tierMap[tierName] || 'pro'
+  return getSubscriptionLink(plan, 'monthly')
+}
+
 const FEATURE_NAMES: Record<keyof ProductTierFeatures, string> = {
   campaigns: 'Email Campaigns',
   templates: 'Email Templates',
@@ -166,15 +186,15 @@ function FeatureLockedPrompt({
         This feature requires the {requiredTier} plan or higher.
       </p>
       {canUpgrade && (
-        <Link
-          href="/settings/billing"
+        <a
+          href={getUpgradeUrlForTier(requiredTier)}
           className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
           </svg>
           Upgrade to {requiredTier}
-        </Link>
+        </a>
       )}
     </div>
   )
@@ -222,15 +242,26 @@ function LimitReachedPrompt({
             You've reached your {currentTier} plan limit of {limit} {resourceName.toLowerCase()}.
           </p>
           {canUpgrade && (
-            <Link
-              href="/settings/billing"
-              className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-amber-800 hover:text-amber-900"
-            >
-              Upgrade for more
-              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              <a
+                href={getSubscriptionLink('pro', 'monthly')}
+                className="inline-flex items-center gap-1 text-xs font-medium text-amber-800 hover:text-amber-900"
+              >
+                Upgrade for more
+                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+              <button
+                onClick={() => window.open(getCreditLink('starter'), '_blank', 'noopener,noreferrer')}
+                className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 hover:text-emerald-800"
+              >
+                Buy Credits
+                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -264,12 +295,12 @@ export function UpgradeBanner({
           <h3 className="text-sm font-semibold">{title}</h3>
           <p className="mt-0.5 text-xs text-white/80">{description}</p>
         </div>
-        <Link
-          href="/settings/billing"
+        <a
+          href={getUpgradeUrlForTier(targetTier)}
           className="flex-shrink-0 rounded-lg bg-white px-4 py-2 text-sm font-medium text-blue-600 hover:bg-white/90 transition-colors"
         >
           Upgrade to {targetTier}
-        </Link>
+        </a>
       </div>
     </div>
   )

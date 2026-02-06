@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { AlertTriangle, TrendingUp, ArrowRight, X } from 'lucide-react'
 import { useTier, useLimit } from '@/lib/hooks/use-tier'
 import { useState } from 'react'
+import { getSubscriptionLink, getCreditLink } from '@/lib/stripe/payment-links'
 
 interface ServiceLimitBannerProps {
   resource?: 'dailyLeads' | 'monthlyLeads' | 'campaigns' | 'teamMembers' | 'templates' | 'emailAccounts'
@@ -97,21 +98,38 @@ export function ServiceLimitBanner({
 
           {/* CTA */}
           <div className="flex flex-wrap gap-2">
-            <Link
-              href="/services"
-              className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
-            >
-              Upgrade Plan
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            {tierSlug === 'free' && (
-              <Link
-                href="/pricing"
+            {tierSlug === 'free' ? (
+              <a
+                href={getSubscriptionLink('pro', 'monthly')}
                 className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
               >
-                View Pricing
-                <TrendingUp className="h-4 w-4" />
+                Upgrade to Pro
+                <ArrowRight className="h-4 w-4" />
+              </a>
+            ) : (
+              <Link
+                href="/settings/billing"
+                className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+              >
+                Manage Plan
+                <ArrowRight className="h-4 w-4" />
               </Link>
+            )}
+            <Link
+              href="/pricing"
+              className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+            >
+              View Pricing
+              <TrendingUp className="h-4 w-4" />
+            </Link>
+            {(resource === 'dailyLeads' || resource === 'monthlyLeads') && (
+              <button
+                onClick={() => window.open(getCreditLink('starter'), '_blank', 'noopener,noreferrer')}
+                className="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors"
+              >
+                Buy Credits
+                <ArrowRight className="h-4 w-4" />
+              </button>
             )}
           </div>
         </div>
@@ -140,12 +158,12 @@ export function ServiceLimitBanner({
  */
 export function LimitExceededBanner({
   resource = 'dailyLeads',
-  actionUrl = '/services'
+  actionUrl,
 }: {
   resource?: 'dailyLeads' | 'monthlyLeads' | 'campaigns' | 'teamMembers' | 'templates' | 'emailAccounts'
   actionUrl?: string
 }) {
-  const { tierName } = useTier()
+  const { tierName, tierSlug } = useTier()
   const { isWithinLimit, limit } = useLimit(resource)
   const [dismissed, setDismissed] = useState(false)
 
@@ -159,6 +177,11 @@ export function LimitExceededBanner({
     templates: 'template',
     emailAccounts: 'email account'
   }[resource]
+
+  // Default to payment link for free users, billing page for paid users
+  const upgradeUrl = actionUrl
+    || (tierSlug === 'free' ? getSubscriptionLink('pro', 'monthly') : '/settings/billing')
+  const isExternalLink = upgradeUrl.startsWith('http')
 
   return (
     <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4 mb-6">
@@ -176,13 +199,33 @@ export function LimitExceededBanner({
             Upgrade to continue.
           </p>
 
-          <Link
-            href={actionUrl}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors text-sm"
-          >
-            Upgrade Now
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            {isExternalLink ? (
+              <a
+                href={upgradeUrl}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors text-sm"
+              >
+                Upgrade Now
+                <ArrowRight className="h-4 w-4" />
+              </a>
+            ) : (
+              <Link
+                href={upgradeUrl}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors text-sm"
+              >
+                Upgrade Now
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            )}
+            {(resource === 'dailyLeads' || resource === 'monthlyLeads') && (
+              <button
+                onClick={() => window.open(getCreditLink('starter'), '_blank', 'noopener,noreferrer')}
+                className="inline-flex items-center gap-2 px-4 py-2 border border-red-300 hover:bg-red-50 text-red-700 font-medium rounded-lg transition-colors text-sm"
+              >
+                Buy Credits
+              </button>
+            )}
+          </div>
         </div>
 
         <button

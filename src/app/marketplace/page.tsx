@@ -11,6 +11,7 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { MobileFilters } from './components/MobileFilters'
 import { BuyLeadButton } from '@/components/marketplace/BuyLeadButton'
+import { getServiceLink } from '@/lib/stripe/payment-links'
 
 // Types for marketplace leads
 interface MarketplaceLeadPreview {
@@ -787,15 +788,15 @@ export default function MarketplacePage() {
                         Save 40% with Cursive Data—get custom lead lists delivered automatically every month instead of buying one by one.
                       </p>
                       <div className="flex flex-col sm:flex-row gap-3">
-                        <Link
-                          href="/services/cursive-data"
+                        <a
+                          href={getServiceLink('data')}
                           className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-white hover:bg-zinc-50 text-blue-600 font-medium rounded-lg transition-colors text-sm"
                         >
                           See Data Plans
                           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                           </svg>
-                        </Link>
+                        </a>
                         <Link
                           href="/marketplace/credits"
                           className="inline-flex items-center justify-center gap-2 px-4 py-2 border-2 border-white hover:bg-white/10 text-white font-medium rounded-lg transition-colors text-sm"
@@ -830,12 +831,12 @@ export default function MarketplacePage() {
                     <div className="mt-4 pt-4 border-t border-zinc-200">
                       <p className="text-[13px] text-zinc-600 mb-3">Need leads?</p>
                       <div className="flex items-center justify-center gap-3">
-                        <Link
-                          href="/services/cursive-data"
+                        <a
+                          href={getServiceLink('data')}
                           className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors text-sm"
                         >
                           Explore Data Plans
-                        </Link>
+                        </a>
                         <Link
                           href="/marketplace/credits"
                           className="inline-flex items-center gap-2 px-4 py-2 border border-zinc-300 hover:border-zinc-400 text-zinc-700 font-medium rounded-lg transition-colors text-sm"

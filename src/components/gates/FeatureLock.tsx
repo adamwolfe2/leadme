@@ -6,6 +6,38 @@ import { Lock, ArrowRight, Sparkles } from 'lucide-react'
 import { useFeature } from '@/lib/hooks/use-tier'
 import type { ProductTierFeatures } from '@/types'
 import { trackFeatureLock } from '@/lib/analytics/service-tier-events'
+import { getSubscriptionLink, getServiceLink } from '@/lib/stripe/payment-links'
+
+/**
+ * Maps tier slugs to the correct payment URL.
+ * Service tiers (cursive-data, cursive-outbound, cursive-pipeline) use service payment links.
+ * Subscription tiers (starter, pro, enterprise) use subscription payment links.
+ * Falls back to the pricing page if no match found.
+ */
+function getUpgradeUrl(tierSlug: string): string {
+  const serviceMap: Record<string, 'data' | 'outbound' | 'pipeline'> = {
+    'cursive-data': 'data',
+    'cursive-outbound': 'outbound',
+    'cursive-pipeline': 'pipeline',
+  }
+
+  const subscriptionMap: Record<string, 'starter' | 'pro' | 'enterprise'> = {
+    'starter': 'starter',
+    'pro': 'pro',
+    'enterprise': 'enterprise',
+  }
+
+  if (serviceMap[tierSlug]) {
+    return getServiceLink(serviceMap[tierSlug])
+  }
+
+  if (subscriptionMap[tierSlug]) {
+    return getSubscriptionLink(subscriptionMap[tierSlug], 'monthly')
+  }
+
+  // Default fallback: Pro subscription
+  return getSubscriptionLink('pro', 'monthly')
+}
 
 interface FeatureLockProps {
   feature: keyof ProductTierFeatures
@@ -91,16 +123,16 @@ export function FeatureLock({
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href={`/services/${requiredTierSlug}`}
+            <a
+              href={getUpgradeUrl(requiredTierSlug)}
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
               onClick={() => trackFeatureLock('upgrade_clicked', feature, requiredTier)}
             >
-              Learn More
+              Upgrade Now
               <ArrowRight className="h-4 w-4" />
-            </Link>
+            </a>
             <Link
-              href="/services"
+              href="/pricing"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-zinc-300 hover:border-zinc-400 text-zinc-700 font-medium rounded-lg transition-colors"
               onClick={() => trackFeatureLock('upgrade_clicked', feature, requiredTier)}
             >
@@ -166,15 +198,15 @@ export function InlineFeatureLock({
             This feature requires {requiredTier}. Unlock it now to get started.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link
-              href={`/services/${requiredTierSlug}`}
+            <a
+              href={getUpgradeUrl(requiredTierSlug)}
               className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors text-sm"
             >
-              View {requiredTier}
+              Upgrade Now
               <ArrowRight className="h-4 w-4" />
-            </Link>
+            </a>
             <Link
-              href="/services"
+              href="/pricing"
               className="inline-flex items-center gap-2 px-4 py-2 border border-zinc-300 hover:border-zinc-400 text-zinc-700 font-medium rounded-lg transition-colors text-sm"
             >
               Compare All Plans

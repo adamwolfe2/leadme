@@ -54,7 +54,7 @@ export function PricingCards({ plans, currentPlan }: PricingCardsProps) {
         const cycle = billingCycle === 'yearly' ? 'annual' : 'monthly'
         try {
           const paymentUrl = getSubscriptionLink(planKey, cycle)
-          window.open(paymentUrl, '_blank', 'noopener,noreferrer')
+          window.location.href = paymentUrl
         } catch {
           throw new Error('Price ID not configured for this plan')
         }
