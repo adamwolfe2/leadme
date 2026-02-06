@@ -78,9 +78,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('[API] Error creating customer portal session:', error)
+    console.error('[Customer Portal] Error:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to create portal session' },
+      { error: 'Failed to create portal session' },
       { status: 500 }
     )
   }

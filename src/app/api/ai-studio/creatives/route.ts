@@ -43,14 +43,15 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
 
     if (error) {
-      throw new Error(`Failed to fetch creatives: ${error.message}`)
+      console.error('[Creatives GET] Database error:', error)
+      throw new Error('Failed to fetch creatives')
     }
 
     return NextResponse.json({ creatives: creatives || [] })
   } catch (error: any) {
-    console.error('[Creatives] Error:', error)
+    console.error('[Creatives GET] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch creatives' },
+      { error: 'Failed to fetch creatives' },
       { status: 500 }
     )
   }
@@ -117,7 +118,8 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (saveError) {
-      throw new Error(`Failed to save creative: ${saveError.message}`)
+      console.error('[Creatives POST] Save error:', saveError)
+      throw new Error('Failed to save creative')
     }
 
     return NextResponse.json({ creative, message: 'Creative generated successfully' })
@@ -132,7 +134,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: error.message || 'Failed to generate creative' },
+      { error: 'Failed to generate creative' },
       { status: 500 }
     )
   }

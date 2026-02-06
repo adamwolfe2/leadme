@@ -8,7 +8,7 @@ export { creditReset } from './credit-reset'
 export { weeklyTrends } from './weekly-trends'
 
 // Marketplace functions
-export { processPartnerUpload } from './partner-upload-processor'
+export { processPartnerUpload, retryStalledUploads } from './partner-upload-processor'
 export { processEmailVerification } from './email-verification-processor'
 
 // Marketplace jobs (scoring, freshness, bonuses)
@@ -43,3 +43,95 @@ export {
 // Service subscription reminder emails
 export { sendOnboardingReminders } from './send-onboarding-reminders'
 export { sendRenewalReminders } from './send-renewal-reminders'
+
+// Campaign functions
+export {
+  composeCampaignEmail,
+  batchComposeCampaignEmails,
+} from './campaign-compose'
+
+export {
+  enrichCampaignLead,
+  batchEnrichCampaignLeads,
+} from './campaign-enrichment'
+
+export {
+  processReply,
+  batchProcessReplies,
+} from './campaign-reply'
+
+export {
+  activateScheduledCampaigns,
+  autoCompleteCampaignsCron,
+  onCampaignStatusChange,
+} from './campaign-scheduler'
+
+export {
+  sendApprovedEmail,
+  batchSendApprovedEmails,
+  onEmailApproved,
+} from './campaign-send'
+
+export {
+  processCampaignSequences,
+  handleAutoSendEmail,
+  checkSequenceCompletion,
+} from './campaign-sequence-processor'
+
+// Email verification functions
+export {
+  processEmailVerificationQueue,
+  continueEmailVerification,
+  queueNewLeadsForVerification,
+  reverifyStaleLeads,
+  updatePartnerVerificationRates,
+} from './email-verification'
+
+// Daily operations
+export {
+  resetDailySendCounts,
+  resetWorkspaceSendCount,
+} from './reset-daily-send-counts'
+
+// Error handling and retries
+export {
+  processRetryQueue,
+  cleanupFailedJobs,
+  onJobRetryRequested,
+} from './retry-failed-jobs'
+
+// Timezone optimization
+export {
+  recalculateOptimalTimes,
+  inferLeadTimezones,
+  onCampaignScheduleChanged,
+  updateLeadTimezoneFromEnrichment,
+} from './timezone-optimizer'
+
+// Webhook delivery
+export {
+  deliverLeadWebhook,
+  retryWebhookDeliveries,
+  sendLeadEmailNotification,
+} from './webhook-delivery'
+
+// Website scraping
+export { scrapeWebsite } from './website-scraper'
+
+// Enrichment pipeline
+export {
+  processEnrichmentJob,
+  batchEnrichLeads,
+  enrichNewLead,
+} from './enrichment-pipeline'
+
+// Email sequences
+export {
+  processSequenceEnrollment,
+  processSequenceStep,
+  batchEnrollSequence,
+  processScheduledSteps,
+} from './email-sequences'
+
+// Demo nurture sequence
+export { demoNurtureSequence } from './demo-nurture-sequence'

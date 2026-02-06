@@ -40,9 +40,9 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error: any) {
-    console.error('Get lead limits error:', error)
+    console.error('[Lead Limits] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to get lead limits' },
+      { error: 'Failed to get lead limits' },
       { status: 500 }
     )
   }

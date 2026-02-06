@@ -155,8 +155,8 @@ export async function POST(request: NextRequest) {
       .select('id, name')
 
     if (queryError) {
-      console.error('Query insert error:', queryError)
-      return NextResponse.json({ error: 'Failed to create queries', details: queryError.message }, { status: 500 })
+      console.error('[Seed Demo Data] Query insert error:', queryError)
+      return NextResponse.json({ error: 'Failed to create queries' }, { status: 500 })
     }
 
     // 4. Create leads
@@ -208,8 +208,8 @@ export async function POST(request: NextRequest) {
       .select('id, company_name, status, created_at')
 
     if (leadError) {
-      console.error('Lead insert error:', leadError)
-      return NextResponse.json({ error: 'Failed to create leads', details: leadError.message }, { status: 500 })
+      console.error('[Seed Demo Data] Lead insert error:', leadError)
+      return NextResponse.json({ error: 'Failed to create leads' }, { status: 500 })
     }
 
     // 5. Create activities for leads
@@ -306,9 +306,9 @@ export async function POST(request: NextRequest) {
       queries: queries?.map(q => ({ id: q.id, name: q.name })),
     })
   } catch (error: any) {
-    console.error('[Admin] Seed demo data error:', error)
+    console.error('[Seed Demo Data] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

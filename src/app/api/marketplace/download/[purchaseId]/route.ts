@@ -111,7 +111,7 @@ export async function GET(
   return new NextResponse(csv, {
     headers: {
       'Content-Type': 'text/csv',
-      'Content-Disposition': `attachment; filename="leads-${params.purchaseId}.csv"`,
+      'Content-Disposition': `attachment; filename="leads-${purchaseId}.csv"`,
     },
   })
 }

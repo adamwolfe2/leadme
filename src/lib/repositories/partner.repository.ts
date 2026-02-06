@@ -473,7 +473,7 @@ export class PartnerRepository {
     total: number
   }> {
     let query = this.adminClient
-      .from('payouts')
+      .from('payout_requests')
       .select('*', { count: 'exact' })
       .eq('partner_id', partnerId)
       .order('created_at', { ascending: false })
@@ -530,22 +530,121 @@ export class PartnerRepository {
     if (error) throw new Error(`Failed to record score history: ${error.message}`)
   }
 
+  /**
+   * Get partner analytics (dashboard metrics)
+   */
+  async getPartnerAnalytics(partnerId: string) {
+    const { data, error } = await this.adminClient
+      .from('partner_analytics')
+      .select('*')
+      .eq('partner_id', partnerId)
+      .single()
+
+    if (error) {
+      console.error('[PartnerRepository] Failed to get analytics:', error)
+      return null
+    }
+
+    return data
+  }
+
+  /**
+   * Get partner credit balance
+   */
+  async getPartnerCredits(partnerId: string) {
+    const { data, error } = await this.adminClient
+      .from('partner_credits')
+      .select('*')
+      .eq('partner_id', partnerId)
+      .single()
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return {
+          partner_id: partnerId,
+          balance: 0,
+          total_earned: 0,
+          total_withdrawn: 0,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }
+      }
+      console.error('[PartnerRepository] Failed to get credits:', error)
+      return null
+    }
+
+    return data
+  }
+
+  /**
+   * Get all leads uploaded by a partner (paginated)
+   */
+  async getPartnerUploadedLeads(
+    partnerId: string,
+    limit: number = 50,
+    offset: number = 0
+  ) {
+    const { data, error, count } = await this.adminClient
+      .from('leads')
+      .select(
+        `
+        id,
+        business_name,
+        industry,
+        status,
+        upload_date,
+        sold_at,
+        lead_purchases!left(partner_commission)
+      `,
+        { count: 'exact' }
+      )
+      .eq('uploaded_by_partner_id', partnerId)
+      .order('upload_date', { ascending: false })
+      .range(offset, offset + limit - 1)
+
+    if (error) {
+      console.error('[PartnerRepository] Failed to get uploaded leads:', error)
+      throw new Error('Failed to fetch uploaded leads')
+    }
+
+    const transformedLeads = (data || []).map((lead: any) => ({
+      id: lead.id,
+      business_name: lead.business_name,
+      industry: lead.industry,
+      status: lead.status,
+      upload_date: lead.upload_date,
+      sold_at: lead.sold_at,
+      partner_commission: lead.lead_purchases?.[0]?.partner_commission || null,
+    }))
+
+    return {
+      leads: transformedLeads,
+      total: count || 0,
+      limit,
+      offset,
+    }
+  }
+
   // Helper methods
 
   private generateApiKey(): string {
+    const bytes = new Uint8Array(32)
+    crypto.getRandomValues(bytes)
     const chars = 'abcdef0123456789'
     let result = 'pk_'
     for (let i = 0; i < 32; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length))
+      result += chars.charAt(bytes[i] % chars.length)
     }
     return result
   }
 
   private generateReferralCode(): string {
+    const bytes = new Uint8Array(8)
+    crypto.getRandomValues(bytes)
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
     let result = ''
     for (let i = 0; i < 8; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length))
+      result += chars.charAt(bytes[i] % chars.length)
     }
     return result
   }

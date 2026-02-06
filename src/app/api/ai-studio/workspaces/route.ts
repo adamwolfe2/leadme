@@ -28,7 +28,8 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
 
     if (error) {
-      throw new Error(`Failed to fetch workspaces: ${error.message}`)
+      console.error('[Workspaces] Database error:', error)
+      throw new Error('Failed to fetch workspaces')
     }
 
     return NextResponse.json({
@@ -38,7 +39,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('[Workspaces] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch workspaces' },
+      { error: 'Failed to fetch workspaces' },
       { status: 500 }
     )
   }

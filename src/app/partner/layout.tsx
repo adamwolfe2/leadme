@@ -8,6 +8,7 @@ import {
   Upload,
   History,
   DollarSign,
+  Banknote,
   Settings,
   LogOut,
   Menu,
@@ -56,6 +57,11 @@ export default function PartnerLayout({ children }: PartnerLayoutProps) {
       label: 'Earnings',
       href: '/partner/earnings',
       icon: DollarSign,
+    },
+    {
+      label: 'Payouts',
+      href: '/partner/payouts',
+      icon: Banknote,
     },
     {
       label: 'Settings',

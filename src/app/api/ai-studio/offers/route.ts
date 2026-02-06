@@ -32,14 +32,15 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
 
     if (error) {
-      throw new Error(`Failed to fetch offers: ${error.message}`)
+      console.error('[Offers] Database error:', error)
+      throw new Error('Failed to fetch offers')
     }
 
     return NextResponse.json({ offers: offers || [] })
   } catch (error: any) {
     console.error('[Offers] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch offers' },
+      { error: 'Failed to fetch offers' },
       { status: 500 }
     )
   }

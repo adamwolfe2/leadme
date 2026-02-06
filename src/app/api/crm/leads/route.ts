@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
       )
     }
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to create lead' },
+      { error: 'Failed to create lead' },
       { status: 500 }
     )
   }

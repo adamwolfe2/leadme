@@ -47,5 +47,66 @@ export const { GET, POST, PUT } = serve({
     // Service Subscription Reminders
     functions.sendOnboardingReminders,
     functions.sendRenewalReminders,
+
+    // Campaign Functions
+    functions.composeCampaignEmail,
+    functions.batchComposeCampaignEmails,
+    functions.enrichCampaignLead,
+    functions.batchEnrichCampaignLeads,
+    functions.processReply,
+    functions.batchProcessReplies,
+    functions.activateScheduledCampaigns,
+    functions.autoCompleteCampaignsCron,
+    functions.onCampaignStatusChange,
+    functions.sendApprovedEmail,
+    functions.batchSendApprovedEmails,
+    functions.onEmailApproved,
+    functions.processCampaignSequences,
+    functions.handleAutoSendEmail,
+    functions.checkSequenceCompletion,
+
+    // Email Verification
+    functions.processEmailVerificationQueue,
+    functions.continueEmailVerification,
+    functions.queueNewLeadsForVerification,
+    functions.reverifyStaleLeads,
+    functions.updatePartnerVerificationRates,
+
+    // Daily Operations
+    functions.resetDailySendCounts,
+    functions.resetWorkspaceSendCount,
+
+    // Error Handling & Retries
+    functions.processRetryQueue,
+    functions.cleanupFailedJobs,
+    functions.onJobRetryRequested,
+
+    // Timezone Optimization
+    functions.recalculateOptimalTimes,
+    functions.inferLeadTimezones,
+    functions.onCampaignScheduleChanged,
+    functions.updateLeadTimezoneFromEnrichment,
+
+    // Webhook Delivery
+    functions.deliverLeadWebhook,
+    functions.retryWebhookDeliveries,
+    functions.sendLeadEmailNotification,
+
+    // Website Scraping
+    functions.scrapeWebsite,
+
+    // Enrichment Pipeline
+    functions.processEnrichmentJob,
+    functions.batchEnrichLeads,
+    functions.enrichNewLead,
+
+    // Email Sequences
+    functions.processSequenceEnrollment,
+    functions.processSequenceStep,
+    functions.batchEnrollSequence,
+    functions.processScheduledSteps,
+
+    // Demo Nurture Sequence
+    functions.demoNurtureSequence,
   ],
 })

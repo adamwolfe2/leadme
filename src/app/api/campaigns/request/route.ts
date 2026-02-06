@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: error.message || 'Failed to submit campaign request' },
+      { error: 'Failed to submit campaign request' },
       { status: 500 }
     )
   }

@@ -36,8 +36,9 @@ export async function GET(req: NextRequest) {
     // Apply rate limit headers
     return applyProtectionHeaders(response, req, PROTECTION_PRESETS.authenticated)
   } catch (error: any) {
+    console.error('[Credits Status] Error:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch credit status', message: error.message },
+      { error: 'Failed to fetch credit status' },
       { status: 500 }
     )
   }

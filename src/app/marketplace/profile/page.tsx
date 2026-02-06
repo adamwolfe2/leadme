@@ -2,12 +2,14 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { NavBar } from '@/components/nav-bar'
+import { useUser } from '@/hooks/use-user'
 import { buyerProfileSchema, type BuyerProfileFormData } from '@/lib/validation/schemas'
 import {
   FormField,
@@ -19,11 +21,19 @@ import {
 
 export default function BuyerProfilePage() {
   const router = useRouter()
+  const { user, isLoading: userLoading } = useUser()
   const [serviceStates, setServiceStates] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
   const supabase = createClient()
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!userLoading && !user) {
+      router.push('/login')
+    }
+  }, [user, userLoading, router])
 
   const {
     register,
@@ -91,12 +101,35 @@ export default function BuyerProfilePage() {
     router.push('/marketplace')
   }
 
+  // Show loading while checking auth
+  if (userLoading || !user) {
+    return (
+      <>
+        <NavBar />
+        <div className="min-h-screen bg-zinc-50 flex items-center justify-center">
+          <div className="animate-pulse text-[13px] text-zinc-500">Loading...</div>
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       <NavBar />
-      <div className="min-h-screen bg-white">
-        <div className="max-w-3xl mx-auto px-8 py-8">
-          <h1 className="text-xl font-semibold text-zinc-900 mb-8">Buyer Profile Setup</h1>
+      <div className="min-h-screen bg-zinc-50">
+        <div className="max-w-3xl mx-auto px-4 sm:px-8 py-8">
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-xl font-semibold text-zinc-900">Buyer Profile Setup</h1>
+            <Link
+              href="/marketplace"
+              className="h-9 px-4 text-[13px] font-medium border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 rounded-lg inline-flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Back to Marketplace
+            </Link>
+          </div>
 
           <FormError message={error || undefined} className="mb-6" />
 

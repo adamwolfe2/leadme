@@ -4,7 +4,9 @@ export const dynamic = 'force-dynamic'
 
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { NavBar } from '@/components/nav-bar'
+import { useUser } from '@/hooks/use-user'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -33,6 +35,8 @@ interface PurchasedLead {
 }
 
 export default function PurchaseHistoryPage() {
+  const router = useRouter()
+  const { user, isLoading: userLoading } = useUser()
   const [purchases, setPurchases] = useState<MarketplacePurchase[]>([])
   const [totalSpent, setTotalSpent] = useState(0)
   const [totalLeads, setTotalLeads] = useState(0)
@@ -40,6 +44,13 @@ export default function PurchaseHistoryPage() {
   const [expandedPurchase, setExpandedPurchase] = useState<string | null>(null)
   const [purchaseLeads, setPurchaseLeads] = useState<Record<string, PurchasedLead[]>>({})
   const [loadingLeads, setLoadingLeads] = useState<string | null>(null)
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!userLoading && !user) {
+      router.push('/login')
+    }
+  }, [user, userLoading, router])
 
   const fetchPurchases = useCallback(async () => {
     try {
@@ -49,17 +60,21 @@ export default function PurchaseHistoryPage() {
         setPurchases(data.purchases || [])
         setTotalSpent(data.totalSpent || 0)
         setTotalLeads(data.totalLeads || 0)
+      } else if (response.status === 401) {
+        router.push('/login')
+        return
       }
     } catch (error) {
       console.error('Failed to fetch purchases:', error)
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [router])
 
   useEffect(() => {
+    if (!user) return
     fetchPurchases()
-  }, [fetchPurchases])
+  }, [fetchPurchases, user])
 
   const fetchPurchaseLeads = async (purchaseId: string) => {
     if (purchaseLeads[purchaseId]) {
@@ -110,6 +125,18 @@ export default function PurchaseHistoryPage() {
     link.href = URL.createObjectURL(blob)
     link.download = `leads-${new Date().toISOString().split('T')[0]}.csv`
     link.click()
+  }
+
+  // Show loading while checking auth
+  if (userLoading || !user) {
+    return (
+      <>
+        <NavBar />
+        <div className="min-h-screen bg-zinc-50 flex items-center justify-center">
+          <div className="animate-pulse text-[13px] text-zinc-500">Loading...</div>
+        </div>
+      </>
+    )
   }
 
   return (

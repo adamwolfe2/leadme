@@ -2,19 +2,31 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { NavBar } from '@/components/nav-bar'
 import { useToast } from '@/lib/hooks/use-toast'
+import { useUser } from '@/hooks/use-user'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { CREDIT_PACKAGES, type CreditPackage } from '@/lib/constants/credit-packages'
 
 export default function CreditsPage() {
+  const router = useRouter()
   const { toast } = useToast()
+  const { user, isLoading: userLoading } = useUser()
   const [currentBalance, setCurrentBalance] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [isPurchasing, setIsPurchasing] = useState<string | null>(null)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [showCanceled, setShowCanceled] = useState(false)
   const [purchasedCredits, setPurchasedCredits] = useState(0)
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!userLoading && !user) {
+      router.push('/login')
+    }
+  }, [user, userLoading, router])
 
   const fetchCredits = useCallback(async () => {
     try {
@@ -22,15 +34,19 @@ export default function CreditsPage() {
       if (response.ok) {
         const data = await response.json()
         setCurrentBalance(data.balance || 0)
+      } else if (response.status === 401) {
+        router.push('/login')
+        return
       }
     } catch (error) {
       console.error('Failed to fetch credits:', error)
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [router])
 
   useEffect(() => {
+    if (!user) return
     fetchCredits()
 
     // Handle Stripe redirect
@@ -43,8 +59,12 @@ export default function CreditsPage() {
       setShowSuccess(true)
       window.history.replaceState({}, '', '/marketplace/credits')
       setTimeout(() => setShowSuccess(false), 5000)
+    } else if (urlParams.get('canceled') === 'true') {
+      setShowCanceled(true)
+      window.history.replaceState({}, '', '/marketplace/credits')
+      setTimeout(() => setShowCanceled(false), 5000)
     }
-  }, [fetchCredits])
+  }, [fetchCredits, user])
 
   const purchaseCredits = async (pkg: CreditPackage) => {
     setIsPurchasing(pkg.id)
@@ -84,11 +104,43 @@ export default function CreditsPage() {
     }
   }
 
+  // Show loading while checking auth
+  if (userLoading || !user) {
+    return (
+      <>
+        <NavBar />
+        <div className="min-h-screen bg-zinc-50 flex items-center justify-center">
+          <div className="animate-pulse text-[13px] text-zinc-500">Loading...</div>
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       <NavBar />
       <div className="min-h-screen bg-zinc-50">
         <div className="max-w-5xl mx-auto px-4 sm:px-8 py-8">
+          {/* Canceled Message */}
+          {showCanceled && (
+            <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
+              <svg className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              <div>
+                <h3 className="text-[13px] font-medium text-amber-900">Purchase Canceled</h3>
+                <p className="text-[13px] text-amber-700 mt-1">
+                  Your credit purchase was canceled. No charges were made.
+                </p>
+              </div>
+              <button onClick={() => setShowCanceled(false)} className="ml-auto text-amber-600 hover:text-amber-800">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          )}
+
           {/* Success Message */}
           {showSuccess && (
             <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-3">

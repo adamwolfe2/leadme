@@ -231,10 +231,12 @@ export function isValidApiKeyFormat(apiKey: string): boolean {
  * Generate a new API key
  */
 function generateApiKey(): string {
+  const bytes = new Uint8Array(32)
+  crypto.getRandomValues(bytes)
   const chars = 'abcdef0123456789'
   let result = API_KEY_PREFIX
   for (let i = 0; i < 32; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length))
+    result += chars.charAt(bytes[i] % chars.length)
   }
   return result
 }
@@ -243,10 +245,12 @@ function generateApiKey(): string {
  * Generate a unique referral code
  */
 function generateReferralCode(): string {
+  const bytes = new Uint8Array(8)
+  crypto.getRandomValues(bytes)
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // Exclude confusing chars
   let result = ''
   for (let i = 0; i < 8; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length))
+    result += chars.charAt(bytes[i] % chars.length)
   }
   return result
 }

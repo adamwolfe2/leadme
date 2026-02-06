@@ -1,12 +1,206 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { handleServiceWebhookEvent } from '@/lib/stripe/service-webhooks'
+import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
+import { createAdminClient } from '@/lib/supabase/admin'
+import {
+  sendCreditPurchaseConfirmationEmail,
+  sendPurchaseConfirmationEmail,
+} from '@/lib/email/service'
+import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-12-18.acacia'
 })
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
+
+// ============================================================================
+// CHECKOUT SESSION HANDLERS
+// ============================================================================
+
+/**
+ * Handle checkout.session.completed events
+ * Routes to credit purchase or lead purchase handler based on metadata type
+ */
+async function handleCheckoutSessionCompleted(event: Stripe.Event): Promise<void> {
+  const sessionFromEvent = event.data.object as Stripe.Checkout.Session
+
+  // Retrieve the full session to ensure we have all metadata
+  const session = await stripe.checkout.sessions.retrieve(sessionFromEvent.id)
+
+  const metadataType = session.metadata?.type
+
+  if (!metadataType) {
+    safeLog('[Stripe Webhook] checkout.session.completed missing metadata type, skipping')
+    return
+  }
+
+  switch (metadataType) {
+    case 'credit_purchase':
+      await handleCreditPurchaseCompleted(session)
+      break
+    case 'lead_purchase':
+      await handleLeadPurchaseCompleted(session)
+      break
+    default:
+      safeLog(`[Stripe Webhook] Unknown checkout metadata type: ${metadataType}`)
+  }
+}
+
+/**
+ * Handle completed credit purchases
+ * Marks purchase as completed, adds credits, sends confirmation email
+ */
+async function handleCreditPurchaseCompleted(session: Stripe.Checkout.Session): Promise<void> {
+  const { credit_purchase_id, workspace_id, user_id, credits } = session.metadata || {}
+
+  if (!credit_purchase_id || !workspace_id || !user_id || !credits) {
+    safeError('[Stripe Webhook] Credit purchase missing required metadata fields', {
+      credit_purchase_id: !!credit_purchase_id,
+      workspace_id: !!workspace_id,
+      user_id: !!user_id,
+      credits: !!credits,
+    })
+    return
+  }
+
+  const creditsAmount = parseInt(credits, 10)
+  if (isNaN(creditsAmount) || creditsAmount <= 0) {
+    safeError('[Stripe Webhook] Invalid credits amount in metadata', { credits })
+    return
+  }
+
+  safeLog(`[Stripe Webhook] Processing credit purchase: ${credit_purchase_id}`)
+
+  const repo = new MarketplaceRepository()
+
+  // Mark the credit purchase record as completed
+  const completedPurchase = await repo.completeCreditPurchase(credit_purchase_id)
+
+  // Add credits to the workspace
+  await repo.addCredits(workspace_id, creditsAmount, 'purchase')
+
+  // Get the new balance using admin client (webhook has no user auth context)
+  const adminClient = createAdminClient()
+  const { data: creditsData } = await adminClient
+    .from('workspace_credits')
+    .select('balance')
+    .eq('workspace_id', workspace_id)
+    .single()
+
+  const newBalance = creditsData?.balance ?? creditsAmount
+
+  safeLog(`[Stripe Webhook] Credit purchase completed: ${credit_purchase_id}, credits added: ${creditsAmount}, new balance: ${newBalance}`)
+
+  // Send confirmation email (don't fail purchase for email errors)
+  try {
+    const { data: userData } = await adminClient
+      .from('users')
+      .select('email, full_name')
+      .eq('id', user_id)
+      .single()
+
+    if (userData?.email) {
+      await sendCreditPurchaseConfirmationEmail(
+        userData.email,
+        userData.full_name || 'Valued Customer',
+        {
+          creditsAmount,
+          totalPrice: (session.amount_total || 0) / 100, // Stripe amounts are in cents
+          packageName: completedPurchase.package_name || 'Credit Package',
+          newBalance,
+        }
+      )
+    }
+  } catch (emailError) {
+    safeError('[Stripe Webhook] Failed to send credit purchase confirmation email', emailError)
+  }
+}
+
+/**
+ * Handle completed lead purchases
+ * Marks leads as sold, completes purchase, sends confirmation email
+ */
+async function handleLeadPurchaseCompleted(session: Stripe.Checkout.Session): Promise<void> {
+  const { purchase_id, workspace_id, user_id, lead_count } = session.metadata || {}
+
+  if (!purchase_id || !workspace_id || !user_id || !lead_count) {
+    safeError('[Stripe Webhook] Lead purchase missing required metadata fields', {
+      purchase_id: !!purchase_id,
+      workspace_id: !!workspace_id,
+      user_id: !!user_id,
+      lead_count: !!lead_count,
+    })
+    return
+  }
+
+  safeLog(`[Stripe Webhook] Processing lead purchase: ${purchase_id}`)
+
+  const repo = new MarketplaceRepository()
+  const adminClient = createAdminClient()
+
+  // Get purchase items to find lead IDs (use admin client since webhook has no user auth)
+  const { data: purchaseItems, error: itemsError } = await adminClient
+    .from('marketplace_purchase_items')
+    .select('lead_id')
+    .eq('purchase_id', purchase_id)
+
+  if (itemsError) {
+    safeError('[Stripe Webhook] Failed to get purchase items', { error: itemsError.message })
+    throw new Error(`Failed to get purchase items: ${itemsError.message}`)
+  }
+
+  const leadIds = (purchaseItems || []).map((item) => item.lead_id).filter(Boolean) as string[]
+
+  if (leadIds.length === 0) {
+    safeError('[Stripe Webhook] No lead IDs found for purchase', { purchase_id })
+    throw new Error(`No lead IDs found for purchase: ${purchase_id}`)
+  }
+
+  // Mark leads as sold
+  await repo.markLeadsSold(leadIds)
+
+  // Generate download URL
+  const downloadUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/marketplace/download/${purchase_id}`
+
+  // Complete the purchase with download URL
+  const completedPurchase = await repo.completePurchase(purchase_id, downloadUrl)
+
+  safeLog(`[Stripe Webhook] Lead purchase completed: ${purchase_id}, leads sold: ${leadIds.length}`)
+
+  // Send confirmation email (don't fail purchase for email errors)
+  try {
+    const { data: userData } = await adminClient
+      .from('users')
+      .select('email, full_name')
+      .eq('id', user_id)
+      .single()
+
+    if (userData?.email) {
+      const downloadExpiresAt = new Date()
+      downloadExpiresAt.setDate(downloadExpiresAt.getDate() + 90)
+
+      await sendPurchaseConfirmationEmail(
+        userData.email,
+        userData.full_name || 'Valued Customer',
+        {
+          totalLeads: parseInt(lead_count, 10),
+          totalPrice: (session.amount_total || 0) / 100, // Stripe amounts are in cents
+          purchaseId: purchase_id,
+          downloadUrl,
+          downloadExpiresAt,
+        }
+      )
+    }
+  } catch (emailError) {
+    safeError('[Stripe Webhook] Failed to send lead purchase confirmation email', emailError)
+  }
+}
+
+// ============================================================================
+// MAIN WEBHOOK ROUTE HANDLER
+// ============================================================================
 
 /**
  * POST /api/webhooks/stripe
@@ -52,7 +246,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ received: true })
     }
 
-    // TODO: Handle other webhook events (checkout, credits, marketplace, etc.)
+    // Handle checkout session completed (credit purchases and lead purchases)
+    if (event.type === 'checkout.session.completed') {
+      await handleCheckoutSessionCompleted(event)
+      return NextResponse.json({ received: true })
+    }
 
     console.warn('[Stripe Webhook] Unhandled event type:', event.type)
     return NextResponse.json({ received: true, unhandled: true })

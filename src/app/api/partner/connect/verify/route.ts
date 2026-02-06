@@ -42,23 +42,34 @@ export async function GET(request: NextRequest) {
 
     const account = await stripe.accounts.retrieve(partner.stripe_account_id)
 
-    // Check if onboarding is complete
+    // Check if onboarding is complete - require all three conditions from Stripe
     const onboardingComplete =
       account.details_submitted &&
       account.charges_enabled &&
       account.payouts_enabled
 
-    // Update database if onboarding status changed
+    // Only activate partner if Stripe confirms the account is fully onboarded
     if (onboardingComplete && !partner.stripe_onboarding_complete) {
       await supabase
         .from('partners')
         .update({
           stripe_onboarding_complete: true,
-          status: 'active', // Activate partner once onboarding complete
+          status: 'active',
           updated_at: new Date().toISOString(),
         })
         .eq('id', partner.id)
+    }
 
+    // If onboarding is not complete, return status without activating
+    if (!onboardingComplete) {
+      return NextResponse.json({
+        onboardingComplete: false,
+        accountId: partner.stripe_account_id,
+        chargesEnabled: account.charges_enabled,
+        payoutsEnabled: account.payouts_enabled,
+        detailsSubmitted: account.details_submitted,
+        message: 'Stripe onboarding is incomplete. Please complete all required steps in Stripe before your account can be activated.',
+      })
     }
 
     return NextResponse.json({
@@ -71,7 +82,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('[Verify Connect] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to verify account' },
+      { error: 'Failed to verify account' },
       { status: 500 }
     )
   }

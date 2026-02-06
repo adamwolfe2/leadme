@@ -75,9 +75,9 @@ export async function POST(request: NextRequest) {
       enrichedAt: result.enrichedAt,
     })
   } catch (error: any) {
-    console.error('Company enrichment error:', error)
+    console.error('[Company Enrichment POST] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to enrich company' },
+      { error: 'Failed to enrich company' },
       { status: 500 }
     )
   }
@@ -153,9 +153,9 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error: any) {
-    console.error('Company lookup error:', error)
+    console.error('[Company Enrichment GET] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to lookup company' },
+      { error: 'Failed to lookup company' },
       { status: 500 }
     )
   }

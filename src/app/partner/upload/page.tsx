@@ -350,7 +350,7 @@ export default function PartnerUploadPage() {
               accept={{
                 'text/csv': ['.csv'],
               }}
-              maxSize={1024 * 1024 * 100} // 100MB
+              maxSize={1024 * 1024 * 10} // 10MB
               maxFiles={1}
               multiple={false}
               disabled={uploading}

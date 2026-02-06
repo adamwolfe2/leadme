@@ -27,8 +27,17 @@ export async function POST(request: NextRequest) {
     const signature = request.headers.get('x-webhook-signature') || ''
     const webhookSecret = process.env.INBOUND_EMAIL_WEBHOOK_SECRET || ''
 
-    // Verify signature if secret is configured
-    if (webhookSecret && signature) {
+    // Require webhook signature verification
+    if (!webhookSecret) {
+      // Allow without secret only in development
+      if (process.env.NODE_ENV !== 'development') {
+        console.error('INBOUND_EMAIL_WEBHOOK_SECRET is not configured')
+        return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 })
+      }
+    } else {
+      if (!signature) {
+        return NextResponse.json({ error: 'Missing webhook signature' }, { status: 401 })
+      }
       if (!verifySignature(payload, signature, webhookSecret)) {
         return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
       }

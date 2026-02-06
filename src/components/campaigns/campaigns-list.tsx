@@ -53,7 +53,6 @@ export function CampaignsList() {
 
   useEffect(() => {
     async function fetchCampaigns() {
-      console.log('[Campaigns] Fetching campaigns, tab:', activeTab)
       setLoading(true)
       setError(null)
 
@@ -70,18 +69,14 @@ export function CampaignsList() {
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}))
-          console.error('[Campaigns] API Error:', response.status, errorData)
           throw new Error(errorData.error || `Failed to load campaigns (HTTP ${response.status})`)
         }
 
         const result = await response.json()
-        console.log('[Campaigns] Loaded:', result.data?.length || 0, 'campaigns')
         setCampaigns(result.data || [])
         setUsage(result.usage || null)
       } catch (error) {
         clearTimeout(timeoutId)
-        console.error('[Campaigns] Error:', error)
-
         if (error instanceof Error) {
           if (error.name === 'AbortError') {
             setError('Request timed out. Please try again.')

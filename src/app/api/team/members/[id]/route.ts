@@ -62,7 +62,8 @@ export async function PATCH(
       if (error.message.includes('Only owners can promote')) {
         return forbidden('Only owners can promote to admin')
       }
-      throw new Error(`Failed to update role: ${error.message}`)
+      console.error('[Team Member Update] Database error:', error)
+      throw new Error('Failed to update role')
     }
 
     return success({ message: 'Role updated successfully', user: data })
@@ -109,7 +110,8 @@ export async function DELETE(
       if (error.message.includes('Admins cannot remove other admins')) {
         return forbidden('Admins cannot remove other admins')
       }
-      throw new Error(`Failed to remove member: ${error.message}`)
+      console.error('[Team Member Delete] Database error:', error)
+      throw new Error('Failed to remove member')
     }
 
     return success({ message: 'Member removed successfully' })

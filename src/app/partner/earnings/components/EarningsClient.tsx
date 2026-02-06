@@ -72,6 +72,30 @@ export function EarningsClient({
   const [earnings] = useState(initialEarnings)
   const shouldAnimate = useSafeAnimation()
 
+  const handleExportCSV = () => {
+    const headers = ['Date', 'Description', 'Lead ID', 'Status', 'Amount']
+    const rows = earnings.map((earning) => [
+      new Date(earning.created_at).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      }),
+      earning.description || 'Lead sale commission',
+      earning.lead_id || '',
+      earning.status,
+      earning.amount.toFixed(2),
+    ])
+
+    const csv = [headers, ...rows].map((row) => row.join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `earnings-${new Date().toISOString().split('T')[0]}.csv`
+    a.click()
+    window.URL.revokeObjectURL(url)
+  }
+
   if (earnings.length === 0) {
     return (
       <div className="space-y-6">
@@ -101,7 +125,7 @@ export function EarningsClient({
               {totalCount} total transactions
             </p>
           </div>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleExportCSV}>
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
@@ -191,7 +215,7 @@ export function EarningsClient({
               {totalCount} total transactions
             </p>
           </div>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleExportCSV}>
             <Download className="h-4 w-4" />
           </Button>
         </div>

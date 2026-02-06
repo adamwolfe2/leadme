@@ -15,7 +15,7 @@ export default async function CreateDeliveryPage() {
     .eq('auth_user_id', user.id)
     .single()
 
-  if (!userData || userData.role !== 'admin') {
+  if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
     redirect('/dashboard')
   }
 

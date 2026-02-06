@@ -490,9 +490,8 @@ export async function POST(request: NextRequest) {
       rejected_rows_url: rejectedRowsUrl,
     })
   } catch (error: unknown) {
-    console.error('Partner upload error:', error)
-    const message = error instanceof Error ? error.message : 'Unknown error'
-    return NextResponse.json({ error: `Upload failed: ${message}` }, { status: 500 })
+    console.error('[Partner Upload] Error:', error)
+    return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
   }
 }
 

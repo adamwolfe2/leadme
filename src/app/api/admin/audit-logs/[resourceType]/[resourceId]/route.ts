@@ -5,6 +5,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { requireAdmin } from '@/lib/auth/admin'
 import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 import { getResourceActivity, type ResourceType } from '@/lib/services/audit.service'
@@ -43,6 +44,8 @@ export async function GET(
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()
+
+    await requireAdmin()
 
     const resolvedParams = await params
     const validatedParams = paramsSchema.parse(resolvedParams)

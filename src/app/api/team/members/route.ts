@@ -24,7 +24,8 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: true })
 
     if (error) {
-      throw new Error(`Failed to fetch members: ${error.message}`)
+      console.error('[Team Members] Database error:', error)
+      throw new Error('Failed to fetch members')
     }
 
     // Sort by role priority: owner first, then admin, then member

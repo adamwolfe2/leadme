@@ -26,7 +26,10 @@ export async function GET(request: NextRequest) {
       .eq('workspace_id', user.workspace_id)
       .order('name')
 
-    if (error) throw new Error(`Failed to fetch tags: ${error.message}`)
+    if (error) {
+      console.error('[Lead Tags GET] Database error:', error)
+      throw new Error('Failed to fetch tags')
+    }
 
     // Transform to include count
     const tagsWithCount = (tags || []).map(tag => ({
@@ -66,7 +69,8 @@ export async function POST(request: NextRequest) {
       if (error.code === '23505') {
         return badRequest('A tag with this name already exists')
       }
-      throw new Error(`Failed to create tag: ${error.message}`)
+      console.error('[Lead Tags POST] Database error:', error)
+      throw new Error('Failed to create tag')
     }
 
     return success({ tag }, 201)

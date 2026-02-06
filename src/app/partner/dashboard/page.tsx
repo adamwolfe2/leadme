@@ -5,7 +5,7 @@
 
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { PartnerRepository } from '@/lib/db/repositories/partner.repository'
+import { PartnerRepository } from '@/lib/repositories/partner.repository'
 import { StatsCards } from '@/components/partner/StatsCards'
 import { UploadedLeadsTable } from '@/components/partner/UploadedLeadsTable'
 import { Button } from '@/components/ui/button'

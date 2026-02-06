@@ -95,9 +95,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('[API] Error saving onboarding:', error)
+    console.error('[Service Onboarding] Error:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to save onboarding' },
+      { error: 'Failed to save onboarding' },
       { status: 500 }
     )
   }

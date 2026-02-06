@@ -117,9 +117,9 @@ export async function POST(request: NextRequest) {
         .insert(leadsToInsert)
 
       if (insertError) {
-        console.error('Failed to save leads:', insertError)
+        console.error('[Lead Search] Failed to save leads:', insertError)
         return NextResponse.json(
-          { error: 'Failed to save leads to workspace', details: insertError.message },
+          { error: 'Failed to save leads to workspace' },
           { status: 500 }
         )
       }
@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: error.message || 'Failed to search leads' },
+      { error: 'Failed to search leads' },
       { status: 500 }
     )
   }

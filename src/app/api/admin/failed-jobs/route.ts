@@ -5,6 +5,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { requireAdmin } from '@/lib/auth/admin'
 import { handleApiError, unauthorized, success, badRequest } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 import {
@@ -39,6 +40,8 @@ export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()
+
+    await requireAdmin()
 
     const searchParams = Object.fromEntries(request.nextUrl.searchParams)
     const params = listQuerySchema.parse(searchParams)
@@ -104,6 +107,8 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()
+
+    await requireAdmin()
 
     const body = await request.json()
     const validated = actionSchema.parse(body)

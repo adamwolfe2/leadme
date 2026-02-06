@@ -72,8 +72,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       {
-        error: 'Failed to process request',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        error: 'Failed to process request'
       },
       { status: 500 }
     )

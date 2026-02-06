@@ -7,26 +7,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getStripeClient } from '@/lib/stripe/client'
+import { requireAdmin } from '@/lib/auth/admin'
 
 export async function POST(req: NextRequest) {
   try {
+    await requireAdmin()
+
     const stripe = getStripeClient()
     const supabase = await createClient()
 
-    // Check if user is admin
+    // Get current user for audit trail
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { data: userData } = await supabase
-      .from('users')
-      .select('is_admin, full_name')
-      .eq('id', user.id)
-      .single()
-
-    if (!userData?.is_admin) {
-      return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }
 
     // Parse request body
@@ -40,7 +33,7 @@ export async function POST(req: NextRequest) {
 
     // Get payout details
     const { data: payout, error: payoutError } = await adminClient
-      .from('partner_payouts')
+      .from('payout_requests')
       .select(`
         *,
         partner:partners(
@@ -75,7 +68,7 @@ export async function POST(req: NextRequest) {
 
     // Update payout status to 'processing'
     await adminClient
-      .from('partner_payouts')
+      .from('payout_requests')
       .update({
         status: 'processing',
         approved_by_user_id: user.id,
@@ -101,7 +94,7 @@ export async function POST(req: NextRequest) {
 
       // Update payout status to 'completed'
       await adminClient
-        .from('partner_payouts')
+        .from('payout_requests')
         .update({
           status: 'completed',
           stripe_transfer_id: transfer.id,
@@ -135,7 +128,7 @@ export async function POST(req: NextRequest) {
 
       // Update payout status to 'failed'
       await adminClient
-        .from('partner_payouts')
+        .from('payout_requests')
         .update({
           status: 'failed',
           error_message: stripeError.message,
@@ -144,14 +137,14 @@ export async function POST(req: NextRequest) {
         .eq('id', payout_id)
 
       return NextResponse.json(
-        { error: `Stripe transfer failed: ${stripeError.message}` },
+        { error: 'Stripe transfer failed' },
         { status: 500 }
       )
     }
   } catch (error: any) {
     console.error('[Admin Payouts] Approval error:', error)
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

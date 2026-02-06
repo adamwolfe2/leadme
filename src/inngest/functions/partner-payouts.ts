@@ -119,7 +119,7 @@ async function processPartnerPayout(partner: {
 
   // Check if payout already exists for this week
   const { data: existingPayout } = await supabase
-    .from('payouts')
+    .from('payout_requests')
     .select('id, stripe_transfer_id')
     .eq('partner_id', partner.partnerId)
     .eq('idempotency_key', idempotencyKey)
@@ -156,7 +156,7 @@ async function processPartnerPayout(partner: {
 
     // Create payout record
     const { error: insertError } = await supabase
-      .from('payouts')
+      .from('payout_requests')
       .insert({
         partner_id: partner.partnerId,
         amount: partner.availableBalance,
@@ -224,7 +224,7 @@ async function processPartnerPayout(partner: {
 
     // Record failed payout attempt
     await supabase
-      .from('payouts')
+      .from('payout_requests')
       .insert({
         partner_id: partner.partnerId,
         amount: partner.availableBalance,
@@ -340,10 +340,11 @@ export const reconcilePayouts = inngest.createFunction(
   { cron: '0 5 * * 0' }, // 5 AM every Sunday
   async ({ step, logger }) => {
     const supabase = createAdminClient()
+    const stripe = getStripeClient()
 
     // Get recent payouts that might need reconciliation
     const { data: payouts, error } = await supabase
-      .from('payouts')
+      .from('payout_requests')
       .select('id, stripe_transfer_id, status')
       .eq('status', 'completed')
       .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
@@ -364,7 +365,7 @@ export const reconcilePayouts = inngest.createFunction(
           // Check if transfer was reversed or failed
           if (transfer.reversed) {
             await supabase
-              .from('payouts')
+              .from('payout_requests')
               .update({ status: 'reversed' })
               .eq('id', payout.id)
             reconciled++

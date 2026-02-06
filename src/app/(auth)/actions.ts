@@ -9,10 +9,22 @@ const loginSchema = z.object({
   password: z.string().min(1),
 })
 
+function sanitizeRedirectPath(path: string): string {
+  // Only allow relative paths starting with /
+  if (!path || !path.startsWith('/') || path.startsWith('//') || path.includes('\\')) {
+    return '/dashboard'
+  }
+  // Block javascript: and data: URIs
+  if (path.toLowerCase().includes('javascript:') || path.toLowerCase().includes('data:')) {
+    return '/dashboard'
+  }
+  return path
+}
+
 export async function loginAction(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
-  const redirectTo = formData.get('redirect') as string || '/dashboard'
+  const redirectTo = sanitizeRedirectPath(formData.get('redirect') as string || '/dashboard')
 
   // Validate input
   const result = loginSchema.safeParse({ email, password })
@@ -38,6 +50,7 @@ export async function loginAction(formData: FormData) {
 }
 
 export async function googleLoginAction(redirectTo: string = '/dashboard') {
+  redirectTo = sanitizeRedirectPath(redirectTo)
   const supabase = await createClient()
 
   const { data, error } = await supabase.auth.signInWithOAuth({

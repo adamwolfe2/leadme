@@ -3,7 +3,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getCurrentUser } from '@/lib/auth'
+import { getCurrentUser } from '@/lib/auth/helpers'
 
 interface RouteContext {
   params: Promise<{ id: string }>

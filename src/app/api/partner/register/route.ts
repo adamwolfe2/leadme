@@ -3,17 +3,28 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 import { z } from 'zod'
 
 const registerSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  company_name: z.string().min(2, 'Company name must be at least 2 characters'),
-  phone: z.string().optional(),
+  name: z.string().min(2, 'Name must be at least 2 characters').max(100),
+  email: z.string().email('Invalid email address').max(255),
+  company_name: z.string().min(2, 'Company name must be at least 2 characters').max(200),
+  phone: z.string().max(50).optional(),
 })
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: use IP-based key since this is an unauthenticated endpoint
+    const rateLimitResult = await withRateLimit(
+      request,
+      'partner-register',
+      getRequestIdentifier(request)
+    )
+    if (rateLimitResult) {
+      return rateLimitResult
+    }
+
     // Validate input
     const body = await request.json()
     const validatedData = registerSchema.parse(body)

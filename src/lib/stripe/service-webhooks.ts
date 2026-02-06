@@ -199,11 +199,38 @@ export async function handleSubscriptionUpdated(subscription: Stripe.Subscriptio
 
     // Send notification based on status change
     if (status === 'active' && existingSubscription.status !== 'active') {
-      // TODO: Send activation email
-      // await sendActivationEmail(existingSubscription.workspace_id)
+      // Send activation email (payment success)
+      try {
+        const emailInfo = await getWorkspaceEmailInfo(existingSubscription.workspace_id)
+        const tier = await serviceTierRepository.getTierById(existingSubscription.service_tier_id)
+        await sendPaymentSuccessEmail({
+          customerEmail: emailInfo.customerEmail,
+          customerName: emailInfo.customerName,
+          tierName: tier?.name || 'Cursive Service',
+          amount: existingSubscription.monthly_price,
+          periodEnd: existingSubscription.current_period_end,
+        })
+        console.log('[Webhook] Activation email sent to:', emailInfo.customerEmail)
+      } catch (emailError: any) {
+        console.error('[Webhook] Failed to send activation email:', emailError)
+        // Don't throw - email failures shouldn't block webhook processing
+      }
     } else if (status === 'pending_payment') {
-      // TODO: Send payment failed email
-      // await sendPaymentFailedEmail(existingSubscription.workspace_id)
+      // Send payment failed email
+      try {
+        const emailInfo = await getWorkspaceEmailInfo(existingSubscription.workspace_id)
+        const tier = await serviceTierRepository.getTierById(existingSubscription.service_tier_id)
+        await sendPaymentFailedEmail({
+          customerEmail: emailInfo.customerEmail,
+          customerName: emailInfo.customerName,
+          tierName: tier?.name || 'Cursive Service',
+          amount: existingSubscription.monthly_price,
+        })
+        console.log('[Webhook] Payment failed email sent to:', emailInfo.customerEmail)
+      } catch (emailError: any) {
+        console.error('[Webhook] Failed to send payment failed email:', emailError)
+        // Don't throw - email failures shouldn't block webhook processing
+      }
     }
 
   } catch (error: any) {

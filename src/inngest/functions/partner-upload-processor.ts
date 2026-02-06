@@ -477,7 +477,7 @@ export const processPartnerUpload = inngest.createFunction(
 /**
  * Retry stalled uploads - runs every 10 minutes
  */
-export const retryStatledUploads = inngest.createFunction(
+export const retryStalledUploads = inngest.createFunction(
   {
     id: 'retry-stalled-uploads',
     name: 'Retry Stalled Uploads',

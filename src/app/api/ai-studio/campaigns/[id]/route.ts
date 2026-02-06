@@ -56,7 +56,7 @@ export async function GET(
   } catch (error: any) {
     console.error('[Campaign GET] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch campaign' },
+      { error: 'Failed to fetch campaign' },
       { status: 500 }
     )
   }

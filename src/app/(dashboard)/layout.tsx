@@ -26,46 +26,48 @@ export default async function DashboardLayout({
     data: { session },
   } = await supabase.auth.getSession()
 
-  // For admin with bypass cookie, provide mock data
-  if (!session && hasAdminBypass) {
-    const mockUser = {
-      id: '00000000-0000-0000-0000-000000000000',
-      full_name: 'Admin',
-      email: 'adam@meetcursive.com',
-      plan: 'pro' as const,
-      role: 'owner',
-      daily_credit_limit: 10000,
-      daily_credits_used: 0,
-      workspaces: {
-        name: 'Admin Workspace',
-        subdomain: 'admin',
-        website_url: null,
-        branding: null,
-      },
-    }
+  // Development-only: admin bypass cookie for local testing
+  if (process.env.NODE_ENV === 'development') {
+    if (!session && hasAdminBypass) {
+      const mockUser = {
+        id: '00000000-0000-0000-0000-000000000000',
+        full_name: 'Admin',
+        email: 'adam@meetcursive.com',
+        plan: 'pro' as const,
+        role: 'owner',
+        daily_credit_limit: 10000,
+        daily_credits_used: 0,
+        workspaces: {
+          name: 'Admin Workspace',
+          subdomain: 'admin',
+          website_url: null,
+          branding: null,
+        },
+      }
 
-    return (
-      <TierProvider>
-        <ImpersonationBanner />
-        <AppShell
-          user={{
-            name: mockUser.full_name,
-            email: mockUser.email,
-            plan: mockUser.plan,
-            role: mockUser.role,
-            creditsRemaining: mockUser.daily_credit_limit,
-            totalCredits: mockUser.daily_credit_limit,
-            avatarUrl: null,
-          }}
-          workspace={{
-            name: mockUser.workspaces.name,
-            logoUrl: null,
-          }}
-        >
-          {children}
-        </AppShell>
-      </TierProvider>
-    )
+      return (
+        <TierProvider>
+          <ImpersonationBanner />
+          <AppShell
+            user={{
+              name: mockUser.full_name,
+              email: mockUser.email,
+              plan: mockUser.plan,
+              role: mockUser.role,
+              creditsRemaining: mockUser.daily_credit_limit,
+              totalCredits: mockUser.daily_credit_limit,
+              avatarUrl: null,
+            }}
+            workspace={{
+              name: mockUser.workspaces.name,
+              logoUrl: null,
+            }}
+          >
+            {children}
+          </AppShell>
+        </TierProvider>
+      )
+    }
   }
 
   if (!session) {

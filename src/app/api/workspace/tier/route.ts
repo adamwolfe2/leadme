@@ -212,9 +212,9 @@ export async function GET(request: NextRequest) {
         : null,
     })
   } catch (error: any) {
-    console.error('Get tier info error:', error)
+    console.error('[Workspace Tier] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to get tier info' },
+      { error: 'Failed to get tier info' },
       { status: 500 }
     )
   }

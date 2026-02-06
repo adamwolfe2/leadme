@@ -43,7 +43,8 @@ export async function POST(request: NextRequest) {
       if (error.message.includes('Email mismatch')) {
         return badRequest('Please sign in with the email address that was invited')
       }
-      throw new Error(`Failed to accept invite: ${error.message}`)
+      console.error('[Team Invite Accept] Database error:', error)
+      throw new Error('Failed to accept invite')
     }
 
     return success({

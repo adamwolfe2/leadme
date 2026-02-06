@@ -116,7 +116,8 @@ export async function POST(request: NextRequest, context: RouteContext) {
     try {
       leadsToImport = await parseLeadsFromInput(validated, user.workspace_id, supabase)
     } catch (error: any) {
-      return badRequest(error.message)
+      console.error('[Lead Import] Parse error:', error)
+      return badRequest('Failed to parse leads from input')
     }
 
     if (leadsToImport.length === 0) {
@@ -306,7 +307,8 @@ async function fetchExistingLeads(
     .not('email', 'is', null)
 
   if (error) {
-    throw new Error(`Failed to fetch leads: ${error.message}`)
+    console.error('[Fetch Existing Leads] Database error:', error)
+    throw new Error('Failed to fetch leads')
   }
 
   return (data || []).map((l) => ({
@@ -359,7 +361,8 @@ async function fetchFilteredLeads(
   const { data, error } = await query
 
   if (error) {
-    throw new Error(`Failed to fetch filtered leads: ${error.message}`)
+    console.error('[Fetch Filtered Leads] Database error:', error)
+    throw new Error('Failed to fetch filtered leads')
   }
 
   return (data || []).map((l) => ({
@@ -482,7 +485,8 @@ async function processLeadImport(
         .single()
 
       if (createError) {
-        result.errors.push(`Failed to create lead ${lead.email}: ${createError.message}`)
+        console.error('[Lead Import] Create error:', createError)
+        result.errors.push(`Failed to create lead ${lead.email}`)
         result.added--
         continue
       }
@@ -504,7 +508,8 @@ async function processLeadImport(
       .insert(campaignLeadsToInsert)
 
     if (insertError) {
-      result.errors.push(`Failed to add leads to campaign: ${insertError.message}`)
+      console.error('[Lead Import] Bulk insert error:', insertError)
+      result.errors.push('Failed to add leads to campaign')
       result.added = 0
     }
   }

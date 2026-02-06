@@ -46,9 +46,9 @@ export async function POST(request: NextRequest) {
       message: `Enrichment triggered for lead ${lead_id}`,
     })
   } catch (error: any) {
-    console.error('[Admin] Enrichment trigger error:', error)
+    console.error('[Admin Trigger Enrichment] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

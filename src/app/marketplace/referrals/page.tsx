@@ -2,7 +2,9 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { NavBar } from '@/components/nav-bar'
+import { useUser } from '@/hooks/use-user'
 
 interface ReferralStats {
   referralCode: string
@@ -13,9 +15,24 @@ interface ReferralStats {
 }
 
 export default function ReferralsPage() {
+  const router = useRouter()
+  const { user, isLoading: userLoading } = useUser()
   const [stats, setStats] = useState<ReferralStats | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [copied, setCopied] = useState(false)
+  const [origin, setOrigin] = useState('')
+
+  // Set origin on client side only
+  useEffect(() => {
+    setOrigin(window.location.origin)
+  }, [])
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!userLoading && !user) {
+      router.push('/login')
+    }
+  }, [user, userLoading, router])
 
   const fetchStats = useCallback(async () => {
     try {
@@ -23,21 +40,29 @@ export default function ReferralsPage() {
       if (response.ok) {
         const data = await response.json()
         setStats(data)
+      } else if (response.status === 401) {
+        router.push('/login')
+        return
       }
     } catch (error) {
       console.error('Failed to fetch referral stats:', error)
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [router])
 
   useEffect(() => {
+    if (!user) return
     fetchStats()
-  }, [fetchStats])
+  }, [fetchStats, user])
+
+  const getReferralLink = () => {
+    return `${origin}/signup?ref=${stats?.referralCode || ''}`
+  }
 
   const copyReferralLink = () => {
     if (stats?.referralCode) {
-      const link = `${window.location.origin}/signup?ref=${stats.referralCode}`
+      const link = getReferralLink()
       navigator.clipboard.writeText(link)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
@@ -46,7 +71,7 @@ export default function ReferralsPage() {
 
   const shareReferralLink = () => {
     if (stats?.referralCode) {
-      const link = `${window.location.origin}/signup?ref=${stats.referralCode}`
+      const link = getReferralLink()
       const text = `Join me on the Lead Marketplace! Sign up with my referral link and get $10 in free credits: ${link}`
 
       if (navigator.share) {
@@ -59,6 +84,18 @@ export default function ReferralsPage() {
         copyReferralLink()
       }
     }
+  }
+
+  // Show loading while checking auth
+  if (userLoading || !user) {
+    return (
+      <>
+        <NavBar />
+        <div className="min-h-screen bg-zinc-50 flex items-center justify-center">
+          <div className="animate-pulse text-[13px] text-zinc-500">Loading...</div>
+        </div>
+      </>
+    )
   }
 
   return (
@@ -126,7 +163,7 @@ export default function ReferralsPage() {
                 <div className="flex-1 bg-zinc-50 border border-zinc-200 rounded-lg px-4 py-3">
                   <p className="text-[13px] text-zinc-500 mb-1">Referral Link</p>
                   <p className="text-[14px] font-mono text-zinc-900 truncate">
-                    {window.location.origin}/signup?ref={stats?.referralCode}
+                    {origin}/signup?ref={stats?.referralCode}
                   </p>
                 </div>
                 <button

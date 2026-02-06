@@ -27,6 +27,13 @@ export const RATE_LIMITS = {
     message: 'Too many purchase attempts. Please wait.',
   },
 
+  // Partner registration - conservative to prevent abuse on unauthenticated endpoint
+  'partner-register': {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 5, // 5 registration attempts per hour per IP
+    message: 'Too many registration attempts. Please try again later.',
+  },
+
   // Referral endpoints - strict to prevent abuse
   'referral': {
     windowMs: 60 * 60 * 1000, // 1 hour

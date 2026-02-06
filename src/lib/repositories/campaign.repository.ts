@@ -105,6 +105,7 @@ export class CampaignRepository {
     }
 
     // Get leads count
+    // Note: campaign is already workspace-filtered above; RLS provides secondary defense
     const { count: leadsCount, error: leadsError } = await supabase
       .from('campaign_leads')
       .select('*', { count: 'exact', head: true })
@@ -245,9 +246,16 @@ export class CampaignRepository {
 
   /**
    * Get leads for a campaign
+   * Verifies campaign belongs to the specified workspace before returning leads
    */
-  async getCampaignLeads(campaignId: string): Promise<CampaignLead[]> {
+  async getCampaignLeads(campaignId: string, workspaceId: string): Promise<CampaignLead[]> {
     const supabase = await createClient()
+
+    // Verify campaign belongs to workspace
+    const campaign = await this.findById(campaignId, workspaceId)
+    if (!campaign) {
+      throw new DatabaseError('Campaign not found or does not belong to workspace')
+    }
 
     const { data, error } = await supabase
       .from('campaign_leads')
@@ -264,12 +272,20 @@ export class CampaignRepository {
 
   /**
    * Add leads to a campaign
+   * Verifies campaign belongs to the specified workspace before adding leads
    */
   async addLeadsToCampaign(
     campaignId: string,
+    workspaceId: string,
     leadIds: string[]
   ): Promise<CampaignLead[]> {
     const supabase = await createClient()
+
+    // Verify campaign belongs to workspace
+    const campaign = await this.findById(campaignId, workspaceId)
+    if (!campaign) {
+      throw new DatabaseError('Campaign not found or does not belong to workspace')
+    }
 
     const campaignLeads = leadIds.map((leadId) => ({
       campaign_id: campaignId,

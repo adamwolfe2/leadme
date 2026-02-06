@@ -83,7 +83,8 @@ export async function GET(request: NextRequest, context: RouteContext) {
       .order('created_at', { ascending: false })
 
     if (error) {
-      return badRequest(error.message)
+      console.error('[Campaign Experiments GET] Database error:', error)
+      return badRequest('Failed to fetch experiments')
     }
 
     // Get results for running experiments

@@ -49,7 +49,8 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
 
     if (error) {
-      throw new Error(`Failed to fetch invites: ${error.message}`)
+      console.error('[Team Invites GET] Database error:', error)
+      throw new Error('Failed to fetch invites')
     }
 
     return success({ invites: invites || [] })
@@ -94,7 +95,8 @@ export async function POST(request: NextRequest) {
       if (error.message.includes('already exists')) {
         return badRequest('This user is already a member of your workspace')
       }
-      throw new Error(`Failed to create invite: ${error.message}`)
+      console.error('[Team Invites POST] Database error:', error)
+      throw new Error('Failed to create invite')
     }
 
     // 5. Get workspace name for email

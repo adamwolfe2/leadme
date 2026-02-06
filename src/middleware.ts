@@ -16,7 +16,6 @@ export async function middleware(req: NextRequest) {
     if (
       pathname.startsWith('/_next/static') ||
       pathname.startsWith('/_next/image') ||
-      pathname.startsWith('/api/test-simple') || // Test endpoint bypass
       pathname.match(/\.(ico|png|jpg|jpeg|gif|webp|svg)$/)
     ) {
       return NextResponse.next()
@@ -98,7 +97,6 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/api/webhooks') || // Webhooks are authenticated differently
       pathname.startsWith('/api/waitlist') || // Waitlist API is public
       pathname.startsWith('/api/admin/bypass-waitlist') || // Admin bypass endpoint
-      pathname.startsWith('/api/debug') || // Debug endpoints
       pathname === '/api/health' || // Health check endpoint for monitoring
       pathname.startsWith('/api/inngest') // Inngest routes
 
@@ -237,7 +235,7 @@ export async function middleware(req: NextRequest) {
     const pathname = req.nextUrl.pathname
     if (pathname.startsWith('/api')) {
       return NextResponse.json(
-        { error: 'Internal Server Error', details: error instanceof Error ? error.message : 'Unknown error' },
+        { error: 'Internal Server Error' },
         { status: 500 }
       )
     }

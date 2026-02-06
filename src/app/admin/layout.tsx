@@ -93,6 +93,12 @@ export default async function AdminLayout({
                 >
                   Analytics
                 </Link>
+                <Link
+                  href="/admin/payouts"
+                  className="text-sm text-zinc-300 hover:text-white transition-colors"
+                >
+                  Payouts
+                </Link>
               </nav>
             </div>
 

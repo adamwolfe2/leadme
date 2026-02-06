@@ -31,14 +31,15 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
 
     if (error) {
-      throw new Error(`Failed to fetch profiles: ${error.message}`)
+      console.error('[Profiles] Database error:', error)
+      throw new Error('Failed to fetch profiles')
     }
 
     return NextResponse.json({ profiles: profiles || [] })
   } catch (error: any) {
     console.error('[Profiles] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch profiles' },
+      { error: 'Failed to fetch profiles' },
       { status: 500 }
     )
   }

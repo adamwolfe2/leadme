@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       .eq('auth_user_id', user.id)
       .single()
 
-    if (!userData || userData.role !== 'admin') {
+    if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
       return NextResponse.json(
         { error: 'Admin access required' },
         { status: 403 }
@@ -156,9 +156,9 @@ export async function POST(request: NextRequest) {
       message: 'Delivery created successfully'
     })
   } catch (error) {
-    console.error('[API] Error creating delivery:', error)
+    console.error('[Admin Deliveries Create] Error:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to create delivery' },
+      { error: 'Failed to create delivery' },
       { status: 500 }
     )
   }

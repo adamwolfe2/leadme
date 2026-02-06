@@ -95,10 +95,22 @@ const LOADING_PAGE = `
 </html>
 `
 
+function sanitizeRedirectPath(path: string): string {
+  // Only allow relative paths starting with /
+  if (!path || !path.startsWith('/') || path.startsWith('//') || path.includes('\\')) {
+    return '/dashboard'
+  }
+  // Block javascript: and data: URIs
+  if (path.toLowerCase().includes('javascript:') || path.toLowerCase().includes('data:')) {
+    return '/dashboard'
+  }
+  return path
+}
+
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
-  const next = requestUrl.searchParams.get('next') || '/dashboard'
+  const next = sanitizeRedirectPath(requestUrl.searchParams.get('next') || '/dashboard')
 
   if (code) {
     // Create supabase client

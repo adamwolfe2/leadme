@@ -59,7 +59,7 @@ export async function PATCH(
       )
     }
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to update lead' },
+      { error: 'Failed to update lead' },
       { status: 500 }
     )
   }
@@ -88,7 +88,7 @@ export async function DELETE(
   } catch (error) {
     console.error('[Delete Lead] Error:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to delete lead' },
+      { error: 'Failed to delete lead' },
       { status: 500 }
     )
   }

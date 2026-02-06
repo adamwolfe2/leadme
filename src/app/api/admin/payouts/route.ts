@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireAdmin } from '@/lib/auth/admin'
 
 /**
  * GET /api/admin/payouts
@@ -13,23 +14,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
  */
 export async function GET(req: NextRequest) {
   try {
-    const supabase = await createClient()
-
-    // Check if user is admin
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { data: userData } = await supabase
-      .from('users')
-      .select('is_admin')
-      .eq('id', user.id)
-      .single()
-
-    if (!userData?.is_admin) {
-      return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
-    }
+    await requireAdmin()
 
     // Get query parameters
     const searchParams = req.nextUrl.searchParams
@@ -40,7 +25,7 @@ export async function GET(req: NextRequest) {
 
     // Build query
     let query = adminClient
-      .from('partner_payouts')
+      .from('payout_requests')
       .select(`
         *,
         partner:partners(
@@ -98,7 +83,7 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     console.error('[Admin Payouts] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

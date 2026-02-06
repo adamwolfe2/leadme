@@ -1,8 +1,23 @@
 // Commission Calculation Service
 // Handles commission calculation for partner payouts
 
-import type { Partner, CommissionCalculation } from '@/types/database.types'
+import type { CommissionCalculation } from '@/types/database.types'
 import { createAdminClient } from '@/lib/supabase/admin'
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+/**
+ * Subset of Partner fields needed for commission calculation.
+ * Callers pass only these fields rather than the full Partner row.
+ */
+export interface CommissionPartnerInput {
+  id: string
+  verification_pass_rate: number
+  bonus_commission_rate: number
+  base_commission_rate: number | null
+}
 
 // Commission configuration
 export const COMMISSION_CONFIG = {
@@ -33,9 +48,9 @@ export const COMMISSION_CONFIG = {
   VOLUME_THRESHOLD: 10000,
 }
 
-interface CommissionInput {
+export interface CommissionInput {
   salePrice: number
-  partner: Partner
+  partner: CommissionPartnerInput
   leadCreatedAt: Date
   saleDate?: Date
 }
@@ -225,7 +240,12 @@ export async function recordCommission(params: {
   // Calculate commission
   const commission = calculateCommission({
     salePrice: params.salePrice,
-    partner: partner as Partner,
+    partner: {
+      id: partner.id,
+      verification_pass_rate: partner.verification_pass_rate || 0,
+      bonus_commission_rate: partner.bonus_commission_rate || 0,
+      base_commission_rate: partner.base_commission_rate,
+    },
     leadCreatedAt: params.leadCreatedAt,
   })
 

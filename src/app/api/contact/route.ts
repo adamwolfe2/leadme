@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('[Contact] Insert error:', error)
-      throw new Error(error.message)
+      throw new Error('Database insert failed')
     }
 
     return NextResponse.json({

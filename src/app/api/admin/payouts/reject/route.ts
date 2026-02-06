@@ -6,25 +6,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireAdmin } from '@/lib/auth/admin'
 
 export async function POST(req: NextRequest) {
   try {
+    await requireAdmin()
+
     const supabase = await createClient()
 
-    // Check if user is admin
+    // Get current user for audit trail
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { data: userData } = await supabase
-      .from('users')
-      .select('is_admin')
-      .eq('id', user.id)
-      .single()
-
-    if (!userData?.is_admin) {
-      return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }
 
     // Parse request body
@@ -36,10 +29,16 @@ export async function POST(req: NextRequest) {
 
     const adminClient = createAdminClient()
 
-    // Get payout details
+    // Get payout details with partner info for balance refund
     const { data: payout, error: payoutError } = await adminClient
-      .from('partner_payouts')
-      .select('id, status, amount, partner_id')
+      .from('payout_requests')
+      .select(`
+        id, status, amount, partner_id,
+        partner:partners (
+          id,
+          available_balance
+        )
+      `)
       .eq('id', payout_id)
       .single()
 
@@ -56,7 +55,7 @@ export async function POST(req: NextRequest) {
 
     // Update payout status to 'rejected'
     await adminClient
-      .from('partner_payouts')
+      .from('payout_requests')
       .update({
         status: 'rejected',
         rejected_by_user_id: user.id,
@@ -66,6 +65,16 @@ export async function POST(req: NextRequest) {
       })
       .eq('id', payout_id)
 
+    // Refund the amount back to partner's available balance
+    const partner = payout.partner as { id: string; available_balance: number }
+    await adminClient
+      .from('partners')
+      .update({
+        available_balance: Number(partner.available_balance || 0) + Number(payout.amount),
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', partner.id)
+
     return NextResponse.json({
       success: true,
       payout_id,
@@ -74,7 +83,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error('[Admin Payouts] Rejection error:', error)
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

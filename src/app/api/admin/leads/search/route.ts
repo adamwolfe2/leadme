@@ -182,7 +182,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: error.message || 'Failed to search leads' },
+      { error: 'Failed to search leads' },
       { status: 500 }
     )
   }
@@ -245,9 +245,9 @@ export async function GET(request: NextRequest) {
       warning: allWorkspaces && !workspaceId ? 'Results include leads from all workspaces' : undefined,
     })
   } catch (error: any) {
-    console.error('Admin lead search history error:', error)
+    console.error('[Admin Lead Search History] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to get lead history' },
+      { error: 'Failed to get lead history' },
       { status: 500 }
     )
   }

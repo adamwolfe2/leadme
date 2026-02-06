@@ -206,7 +206,8 @@ export async function POST(request: NextRequest) {
         results.routing_summary[workspaceName] = (results.routing_summary[workspaceName] || 0) + 1
 
       } catch (e: any) {
-        results.errors.push(`Row ${rowNum}: ${e.message}`)
+        console.error('[Bulk Upload] Row error:', e)
+        results.errors.push(`Row ${rowNum}: Failed to process`)
         results.failed++
       }
     }
@@ -217,9 +218,9 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error: any) {
-    console.error('Bulk upload error:', error)
+    console.error('[Admin Bulk Upload] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

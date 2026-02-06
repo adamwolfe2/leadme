@@ -102,9 +102,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('[API] Error generating download URL:', error)
+    console.error('[Service Deliveries Download] Error:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to generate download URL' },
+      { error: 'Failed to generate download URL' },
       { status: 500 }
     )
   }

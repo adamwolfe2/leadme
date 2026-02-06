@@ -43,7 +43,8 @@ export async function DELETE(
       if (error.code === 'PGRST116') {
         return notFound('Invite not found or already processed')
       }
-      throw new Error(`Failed to cancel invite: ${error.message}`)
+      console.error('[Team Invite Delete] Database error:', error)
+      throw new Error('Failed to cancel invite')
     }
 
     return success({ message: 'Invite cancelled successfully' })

@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('[Workspace Tags] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch workspace tags' },
+      { error: 'Failed to fetch workspace tags' },
       { status: 500 }
     )
   }
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: error.message || 'Failed to create tag' },
+      { error: 'Failed to create tag' },
       { status: 500 }
     )
   }

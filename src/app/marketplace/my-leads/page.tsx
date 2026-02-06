@@ -2,8 +2,10 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { NavBar } from '@/components/nav-bar'
 import { useToast } from '@/lib/hooks/use-toast'
+import { useUser } from '@/hooks/use-user'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -32,7 +34,9 @@ interface PurchasedLead {
 }
 
 export default function MyLeadsPage() {
+  const router = useRouter()
   const { toast } = useToast()
+  const { user, isLoading: userLoading } = useUser()
   const [leads, setLeads] = useState<PurchasedLead[]>([])
   const [filteredLeads, setFilteredLeads] = useState<PurchasedLead[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -46,6 +50,13 @@ export default function MyLeadsPage() {
   const [states, setStates] = useState<string[]>([])
   const [purchases, setPurchases] = useState<{ id: string; date: string }[]>([])
 
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!userLoading && !user) {
+      router.push('/login')
+    }
+  }, [user, userLoading, router])
+
   const fetchLeads = useCallback(async () => {
     try {
       const response = await fetch('/api/marketplace/my-leads')
@@ -57,14 +68,21 @@ export default function MyLeadsPage() {
         // Extract unique filter values
         const uniqueIndustries = [...new Set(data.leads.map((l: PurchasedLead) => l.company_industry).filter(Boolean))]
         const uniqueStates = [...new Set(data.leads.map((l: PurchasedLead) => l.state).filter(Boolean))]
-        const uniquePurchases = [...new Set(data.leads.map((l: PurchasedLead) => ({
-          id: l.purchase_id,
-          date: l.purchased_at
-        })))]
+        // Deduplicate purchases by id
+        const purchaseMap = new Map<string, string>()
+        data.leads.forEach((l: PurchasedLead) => {
+          if (!purchaseMap.has(l.purchase_id)) {
+            purchaseMap.set(l.purchase_id, l.purchased_at)
+          }
+        })
+        const uniquePurchases = Array.from(purchaseMap.entries()).map(([id, date]) => ({ id, date }))
 
         setIndustries(uniqueIndustries.sort())
         setStates(uniqueStates.sort())
         setPurchases(uniquePurchases.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()))
+      } else if (response.status === 401) {
+        router.push('/login')
+        return
       } else {
         toast({
           title: 'Failed to load leads',
@@ -82,11 +100,12 @@ export default function MyLeadsPage() {
     } finally {
       setIsLoading(false)
     }
-  }, [toast])
+  }, [toast, router])
 
   useEffect(() => {
+    if (!user) return
     fetchLeads()
-  }, [fetchLeads])
+  }, [fetchLeads, user])
 
   // Apply filters
   useEffect(() => {
@@ -177,6 +196,18 @@ export default function MyLeadsPage() {
     setSelectedIndustry('all')
     setSelectedState('all')
     setSelectedPurchase('all')
+  }
+
+  // Show loading while checking auth
+  if (userLoading || !user) {
+    return (
+      <>
+        <NavBar />
+        <div className="min-h-screen bg-zinc-50 flex items-center justify-center">
+          <div className="animate-pulse text-[13px] text-zinc-500">Loading...</div>
+        </div>
+      </>
+    )
   }
 
   return (

@@ -68,15 +68,18 @@ export default async function QueriesPage() {
 
       {/* Queries List */}
       {queries.length === 0 ? (
-        <EmptyState
-          icon={Search}
-          title="No queries yet"
-          description="Create your first query to start tracking companies researching topics you care about."
-          action={{
-            label: 'Create Query',
-            onClick: () => window.location.href = '/queries/new'
-          }}
-        />
+        <>
+          <EmptyState
+            icon={Search}
+            title="No queries yet"
+            description="Create your first query to start tracking companies researching topics you care about."
+          />
+          <div className="flex justify-center mt-4">
+            <Link href="/queries/new">
+              <Button size="lg">Create Query</Button>
+            </Link>
+          </div>
+        </>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {queries.map((query: any) => (

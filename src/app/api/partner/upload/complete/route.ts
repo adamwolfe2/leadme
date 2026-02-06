@@ -114,9 +114,8 @@ export async function POST(request: NextRequest) {
       estimated_time_seconds: estimateProcessingTime(batch.file_size_bytes || 0),
     })
   } catch (error: unknown) {
-    console.error('Upload completion error:', error)
-    const message = error instanceof Error ? error.message : 'Unknown error'
-    return NextResponse.json({ error: `Completion failed: ${message}` }, { status: 500 })
+    console.error('[Partner Upload Complete] Error:', error)
+    return NextResponse.json({ error: 'Completion failed' }, { status: 500 })
   }
 }
 

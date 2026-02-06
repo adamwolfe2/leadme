@@ -132,9 +132,8 @@ export async function POST(request: NextRequest) {
       })
     }
   } catch (error: unknown) {
-    console.error('Upload initiation error:', error)
-    const message = error instanceof Error ? error.message : 'Unknown error'
-    return NextResponse.json({ error: `Initiation failed: ${message}` }, { status: 500 })
+    console.error('[Partner Upload Initiate] Error:', error)
+    return NextResponse.json({ error: 'Initiation failed' }, { status: 500 })
   }
 }
 

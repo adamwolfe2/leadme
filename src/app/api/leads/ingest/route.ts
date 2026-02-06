@@ -163,7 +163,7 @@ export async function POST(req: NextRequest) {
           results.push({
             leadId: '',
             matched: false,
-            error: err instanceof Error ? err.message : 'Failed to process identity',
+            error: 'Failed to process identity',
           })
         }
       }
@@ -189,7 +189,7 @@ export async function POST(req: NextRequest) {
           results.push({
             leadId: '',
             matched: false,
-            error: err instanceof Error ? err.message : 'Failed to create lead',
+            error: 'Failed to create lead',
           })
         }
       }
@@ -214,7 +214,7 @@ export async function POST(req: NextRequest) {
         results.push({
           leadId: '',
           matched: false,
-          error: err instanceof Error ? err.message : 'Failed to create lead',
+          error: 'Failed to create lead',
         })
       }
     }
@@ -278,7 +278,8 @@ async function createLeadFromPush(
     .single()
 
   if (error) {
-    throw new Error(`Failed to create lead: ${error.message}`)
+    console.error('[Lead Ingest] Database error:', error)
+    throw new Error('Failed to create lead')
   }
 
   // Create company association if SIC code provided

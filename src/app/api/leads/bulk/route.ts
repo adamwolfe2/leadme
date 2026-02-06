@@ -44,7 +44,10 @@ export async function POST(request: NextRequest) {
           p_change_note: note,
         })
 
-        if (error) throw new Error(`Failed to update status: ${error.message}`)
+        if (error) {
+          console.error('[Bulk Update Status] Error:', error)
+          throw new Error('Failed to update status')
+        }
         result = { affected: data, message: `Updated ${data} leads to ${status}` }
         break
       }
@@ -58,7 +61,10 @@ export async function POST(request: NextRequest) {
           p_assigned_by: user.id,
         })
 
-        if (error) throw new Error(`Failed to assign leads: ${error.message}`)
+        if (error) {
+          console.error('[Bulk Assign] Error:', error)
+          throw new Error('Failed to assign leads')
+        }
         result = { affected: data, message: `Assigned ${data} leads` }
         break
       }
@@ -72,7 +78,10 @@ export async function POST(request: NextRequest) {
           p_assigned_by: user.id,
         })
 
-        if (error) throw new Error(`Failed to add tags: ${error.message}`)
+        if (error) {
+          console.error('[Bulk Add Tags] Error:', error)
+          throw new Error('Failed to add tags')
+        }
         result = { affected: data, message: `Added tags to leads` }
         break
       }
@@ -85,7 +94,10 @@ export async function POST(request: NextRequest) {
           p_tag_ids: tag_ids,
         })
 
-        if (error) throw new Error(`Failed to remove tags: ${error.message}`)
+        if (error) {
+          console.error('[Bulk Remove Tags] Error:', error)
+          throw new Error('Failed to remove tags')
+        }
         result = { affected: data, message: `Removed tags from leads` }
         break
       }
@@ -102,7 +114,10 @@ export async function POST(request: NextRequest) {
           .in('id', lead_ids)
           .eq('workspace_id', user.workspace_id)
 
-        if (error) throw new Error(`Failed to delete leads: ${error.message}`)
+        if (error) {
+          console.error('[Bulk Delete] Error:', error)
+          throw new Error('Failed to delete leads')
+        }
         result = { affected: lead_ids.length, message: `Deleted ${lead_ids.length} leads` }
         break
       }

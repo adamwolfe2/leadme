@@ -30,9 +30,9 @@ export async function GET(request: NextRequest) {
       domain,
     })
   } catch (error: any) {
-    console.error('Logo fetch error:', error)
+    console.error('[Logo Fetch] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch logo' },
+      { error: 'Failed to fetch logo' },
       { status: 500 }
     )
   }

@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: error.message || 'Failed to extract brand DNA' },
+      { error: 'Failed to extract brand DNA' },
       { status: 500 }
     )
   }

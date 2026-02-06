@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('[Workspace Users] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch workspace users' },
+      { error: 'Failed to fetch workspace users' },
       { status: 500 }
     )
   }

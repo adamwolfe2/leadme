@@ -36,7 +36,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const campaign = await repo.findById(id, user.workspace_id)
     if (!campaign) return notFound('Campaign not found')
 
-    const leads = await repo.getCampaignLeads(id)
+    const leads = await repo.getCampaignLeads(id, user.workspace_id)
 
     return success(leads)
   } catch (error: unknown) {
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       return badRequest('Can only add leads to draft campaigns')
     }
 
-    const campaignLeads = await repo.addLeadsToCampaign(id, validatedData.lead_ids)
+    const campaignLeads = await repo.addLeadsToCampaign(id, user.workspace_id, validatedData.lead_ids)
 
     return created(campaignLeads)
   } catch (error: unknown) {

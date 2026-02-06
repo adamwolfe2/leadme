@@ -70,7 +70,29 @@ const payoutStatusConfig = {
 
 export function SettingsClient({ partner, payouts }: SettingsClientProps) {
   const [isConnecting, setIsConnecting] = useState(false)
+  const [isSavingThreshold, setIsSavingThreshold] = useState(false)
+  const [payoutThreshold, setPayoutThreshold] = useState(partner.payout_threshold || 100)
   const shouldAnimate = useSafeAnimation()
+
+  const handleSavePayoutThreshold = async () => {
+    if (payoutThreshold < 25) return
+    setIsSavingThreshold(true)
+    try {
+      const response = await fetch('/api/partner/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ payout_threshold: payoutThreshold }),
+      })
+      if (!response.ok) {
+        const data = await response.json()
+        console.error('Failed to save payout threshold:', data.error)
+      }
+    } catch (error) {
+      console.error('Failed to save payout threshold:', error)
+    } finally {
+      setIsSavingThreshold(false)
+    }
+  }
 
   const hasStripeAccount = !!partner.stripe_account_id
 
@@ -167,11 +189,18 @@ export function SettingsClient({ partner, payouts }: SettingsClientProps) {
                         type="number"
                         min="25"
                         step="5"
-                        defaultValue={partner.payout_threshold || 100}
+                        value={payoutThreshold}
+                        onChange={(e) => setPayoutThreshold(Number(e.target.value))}
                         className="pl-9"
                       />
                     </div>
-                    <Button variant="outline">Save</Button>
+                    <Button
+                      variant="outline"
+                      onClick={handleSavePayoutThreshold}
+                      disabled={isSavingThreshold || payoutThreshold < 25}
+                    >
+                      {isSavingThreshold ? 'Saving...' : 'Save'}
+                    </Button>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
                     Minimum amount required before a payout is issued (minimum $25)
