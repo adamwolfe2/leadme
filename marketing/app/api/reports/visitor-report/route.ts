@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
     // Example: Send email with report
     // await resend.emails.send({
-    //   from: 'reports@meetcursive.com',
+    //   from: 'hello@meetcursive.com',
     //   to: body.email,
     //   subject: 'Your Free Website Visitor Report',
     //   html: reportEmailTemplate({

@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     // Example: Send welcome email with Resend
     // await resend.emails.send({
-    //   from: 'newsletter@meetcursive.com',
+    //   from: 'hello@meetcursive.com',
     //   to: body.email,
     //   subject: 'Welcome to Cursive Weekly',
     //   html: welcomeEmailTemplate

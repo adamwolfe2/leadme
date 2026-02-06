@@ -78,8 +78,8 @@ export default function PrivacyPage() {
           <h2>8. Contact Us</h2>
           <p>
             If you have questions about this Privacy Policy, please contact us at{" "}
-            <a href="mailto:privacy@meetcursive.com" className="text-primary hover:underline">
-              privacy@meetcursive.com
+            <a href="mailto:hello@meetcursive.com" className="text-primary hover:underline">
+              hello@meetcursive.com
             </a>
           </p>
         </div>

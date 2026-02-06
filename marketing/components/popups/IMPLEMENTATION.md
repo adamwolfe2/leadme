@@ -168,7 +168,7 @@ export async function handleVisitorReportRequest(
   data: { email: string; company?: string }
 ): Promise<void> {
   await resend.emails.send({
-    from: 'reports@meetcursive.com',
+    from: 'hello@meetcursive.com',
     to: data.email,
     subject: 'Your Free Website Visitor Report',
     html: generateReportEmail(data),

@@ -69,7 +69,7 @@ export function DashboardPreview() {
             </div>
             <div className="flex items-center gap-3">
               <div className="text-right text-sm">
-                <div className="text-gray-600">adam@meetcursive.com</div>
+                <div className="text-gray-600">hello@meetcursive.com</div>
               </div>
               <div className="w-10 h-10 bg-[#007AFF] rounded-full flex items-center justify-center text-white font-medium">
                 A

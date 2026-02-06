@@ -53,8 +53,8 @@ export default function TermsPage() {
           <h2>8. Contact</h2>
           <p>
             If you have any questions about these Terms, please contact us at{" "}
-            <a href="mailto:support@meetcursive.com" className="text-primary hover:underline">
-              support@meetcursive.com
+            <a href="mailto:hello@meetcursive.com" className="text-primary hover:underline">
+              hello@meetcursive.com
             </a>
           </p>
         </div>

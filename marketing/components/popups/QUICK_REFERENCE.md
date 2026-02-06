@@ -137,7 +137,7 @@ import { Resend } from 'resend'
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 await resend.emails.send({
-  from: 'reports@meetcursive.com',
+  from: 'hello@meetcursive.com',
   to: email,
   subject: 'Your Free Report',
   html: emailTemplate
