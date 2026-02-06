@@ -13,17 +13,17 @@ export const STRIPE_CONFIG = {
   /**
    * Publishable key for client-side usage
    */
-  publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
+  publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '',
 
   /**
    * Secret key for server-side API calls
    */
-  secretKey: process.env.STRIPE_SECRET_KEY!,
+  secretKey: process.env.STRIPE_SECRET_KEY || '',
 
   /**
    * Webhook secret for signature verification
    */
-  webhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
+  webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
 } as const
 
 /**

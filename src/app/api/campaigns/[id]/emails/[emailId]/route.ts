@@ -130,6 +130,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
         },
       })
       .eq('id', emailId)
+      .eq('campaign_id', campaignId)
       .select()
       .single()
 

@@ -90,14 +90,17 @@ export async function POST(request: NextRequest, context: RouteContext) {
     )
 
     // Trigger send workflow for each approved email via Inngest
-    const events = emails.map((email) => ({
-      name: 'campaign/email-approved' as const,
-      data: {
-        email_send_id: email.id,
-        campaign_lead_id: leadToCampaignLead.get(email.lead_id) || '',
-        workspace_id: user.workspace_id,
-      },
-    }))
+    // Only send events for emails where we found a valid campaign_lead_id
+    const events = emails
+      .filter((email) => leadToCampaignLead.has(email.lead_id))
+      .map((email) => ({
+        name: 'campaign/email-approved' as const,
+        data: {
+          email_send_id: email.id,
+          campaign_lead_id: leadToCampaignLead.get(email.lead_id)!,
+          workspace_id: user.workspace_id,
+        },
+      }))
 
     if (events.length > 0) {
       await inngest.send(events)

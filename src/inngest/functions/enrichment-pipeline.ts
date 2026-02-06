@@ -436,28 +436,29 @@ async function enrichWithClay(lead: LeadData): Promise<{
     }
 
     if (personResult?.success && personResult.data) {
+      const personData = personResult.data
       enrichedData.contact_data = {
         ...contactData,
         contacts: contactData?.contacts?.map((c: any, i: number) => {
           if (i === 0) {
             return {
               ...c,
-              title: personResult!.data!.job_title || c.title,
-              seniority: personResult!.data!.job_seniority,
-              linkedin_url: personResult!.data!.linkedin_url || c.linkedin_url,
-              linkedin_headline: personResult!.data!.linkedin_headline,
-              phone: personResult!.data!.phone || c.phone,
-              phone_verified: personResult!.data!.phone_verified,
+              title: personData.job_title || c.title,
+              seniority: personData.job_seniority,
+              linkedin_url: personData.linkedin_url || c.linkedin_url,
+              linkedin_headline: personData.linkedin_headline,
+              phone: personData.phone || c.phone,
+              phone_verified: personData.phone_verified,
             }
           }
           return c
         }),
       }
-      enrichedData.job_title = personResult.data.job_title
-      enrichedData.job_seniority = personResult.data.job_seniority
-      enrichedData.linkedin_url = personResult.data.linkedin_url
-      enrichedData.linkedin_headline = personResult.data.linkedin_headline
-      enrichedData.phone_verified = personResult.data.phone_verified
+      enrichedData.job_title = personData.job_title
+      enrichedData.job_seniority = personData.job_seniority
+      enrichedData.linkedin_url = personData.linkedin_url
+      enrichedData.linkedin_headline = personData.linkedin_headline
+      enrichedData.phone_verified = personData.phone_verified
     }
 
     return {
