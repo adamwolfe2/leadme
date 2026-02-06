@@ -33,7 +33,7 @@ export const processEmailVerificationQueue = inngest.createFunction(
     id: 'email-verification-queue',
     name: 'Process Email Verification Queue',
     retries: 3,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
     concurrency: {
       limit: 1, // Only one instance at a time
     },
@@ -87,7 +87,7 @@ export const continueEmailVerification = inngest.createFunction(
     id: 'email-verification-continue',
     name: 'Continue Email Verification',
     retries: 2,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
     concurrency: {
       limit: 1,
     },
@@ -120,7 +120,7 @@ export const queueNewLeadsForVerification = inngest.createFunction(
     id: 'email-verification-queue-new-leads',
     name: 'Queue New Leads for Verification',
     retries: 3,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { event: 'partner/upload-completed' },
   async ({ event, step, logger }) => {
@@ -170,7 +170,7 @@ export const reverifyStaleLeads = inngest.createFunction(
     id: 'email-verification-reverify-stale',
     name: 'Re-verify Stale Leads',
     retries: 2,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { cron: '0 3 * * *' }, // 3 AM daily
   async ({ step, logger }) => {
@@ -197,7 +197,7 @@ export const updatePartnerVerificationRates = inngest.createFunction(
     id: 'email-verification-update-partner-rates',
     name: 'Update Partner Verification Rates',
     retries: 2,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { cron: '0 4 * * *' }, // 4 AM daily
   async ({ step, logger }) => {

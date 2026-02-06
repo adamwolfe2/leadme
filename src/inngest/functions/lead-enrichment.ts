@@ -11,7 +11,7 @@ export const leadEnrichment = inngest.createFunction(
     id: 'lead-enrichment',
     name: 'Lead Enrichment',
     retries: 3,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { event: 'lead/enrich' },
   async ({ event, step, logger }) => {
@@ -189,7 +189,7 @@ export const leadEnrichmentFailure = inngest.createFunction(
     id: 'lead-enrichment-failure',
     name: 'Lead Enrichment Failure Handler',
     retries: 2,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { event: 'lead/enrich.failed' },
   async ({ event, step, logger }) => {

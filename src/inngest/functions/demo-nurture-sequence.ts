@@ -25,7 +25,7 @@ export const demoNurtureSequence = inngest.createFunction(
     id: 'demo-nurture-sequence',
     name: 'Demo Nurture Sequence',
     retries: 3,
-    timeout: 300000, // 5 minutes per step
+    timeouts: { finish: "5m" }, // per step
   },
   { event: 'demo/booked' },
   async ({ event, step, logger }) => {

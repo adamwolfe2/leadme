@@ -47,7 +47,7 @@ export const processEnrichmentJob = inngest.createFunction(
     id: 'enrichment-pipeline-process',
     name: 'Process Enrichment Job',
     retries: 3,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
     concurrency: {
       limit: 10, // Max 10 concurrent enrichment jobs
     },
@@ -531,7 +531,7 @@ export const batchEnrichLeads = inngest.createFunction(
     id: 'enrichment-batch-process',
     name: 'Batch Enrich Leads',
     retries: 2,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { event: 'enrichment/batch' },
   async ({ event, step, logger }) => {
@@ -604,7 +604,7 @@ export const enrichNewLead = inngest.createFunction(
     id: 'enrichment-new-lead',
     name: 'Enrich New Lead',
     retries: 2,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { event: 'lead/created' },
   async ({ event, step, logger }) => {

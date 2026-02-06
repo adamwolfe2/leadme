@@ -22,7 +22,7 @@ export const processCampaignSequences = inngest.createFunction(
     id: 'process-campaign-sequences',
     name: 'Process Campaign Sequences',
     retries: 2,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { cron: '0 * * * *' }, // Every hour
   async ({ step, logger }) => {
@@ -163,7 +163,7 @@ export const handleAutoSendEmail = inngest.createFunction(
     id: 'handle-auto-send-email',
     name: 'Handle Auto-Send Email',
     retries: 3,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { event: 'campaign/email-composed' },
   async ({ event, step, logger }) => {
@@ -220,7 +220,7 @@ export const checkSequenceCompletion = inngest.createFunction(
     id: 'check-sequence-completion',
     name: 'Check Sequence Completion',
     retries: 3,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { event: 'campaign/email-sent' },
   async ({ event, step, logger }) => {

@@ -9,7 +9,7 @@ export const webhookRetryProcessor = inngest.createFunction(
   {
     id: 'webhook-retry-processor',
     name: 'Webhook Retry Processor',
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { cron: '*/5 * * * *' }, // Every 5 minutes
   async ({ step, logger }) => {

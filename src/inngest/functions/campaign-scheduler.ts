@@ -22,7 +22,7 @@ export const activateScheduledCampaigns = inngest.createFunction(
     id: 'activate-scheduled-campaigns',
     name: 'Activate Scheduled Campaigns',
     retries: 2,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { cron: '*/15 * * * *' }, // Every 15 minutes
   async ({ step, logger }) => {
@@ -117,7 +117,7 @@ export const autoCompleteCampaignsCron = inngest.createFunction(
     id: 'auto-complete-campaigns',
     name: 'Auto-Complete Finished Campaigns',
     retries: 2,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { cron: '0 * * * *' }, // Every hour
   async ({ step, logger }) => {
@@ -145,7 +145,7 @@ export const onCampaignStatusChange = inngest.createFunction(
     id: 'campaign-status-change-handler',
     name: 'Campaign Status Change Handler',
     retries: 3,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { event: 'campaign/status-changed' },
   async ({ event, step, logger }) => {

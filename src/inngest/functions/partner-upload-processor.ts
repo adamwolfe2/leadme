@@ -88,7 +88,7 @@ export const processPartnerUpload = inngest.createFunction(
     id: 'partner-upload-processor',
     name: 'Process Partner Upload',
     retries: 3,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
     concurrency: {
       limit: 5, // Max 5 concurrent uploads
     },
@@ -318,7 +318,7 @@ export const processPartnerUpload = inngest.createFunction(
             // Calculate scores
             const hashKey = calculateHashKey(email, validatedRow.company_domain || null, validatedRow.phone || null)
             const intentScore = calculateIntentScore({
-              seniorityLevel: validatedRow.seniority_level || 'unknown',
+              seniority_level: validatedRow.seniority_level || 'unknown',
               companySize: validatedRow.company_size || null,
               companyEmployeeCount: validatedRow.company_employee_count || null,
               email: email,
@@ -482,7 +482,7 @@ export const retryStalledUploads = inngest.createFunction(
     id: 'retry-stalled-uploads',
     name: 'Retry Stalled Uploads',
     retries: 1,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { cron: '*/10 * * * *' },
   async ({ step, logger }) => {

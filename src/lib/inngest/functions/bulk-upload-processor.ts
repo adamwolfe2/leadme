@@ -191,7 +191,7 @@ export const enrichLeadFromDataShopper = inngest.createFunction(
     id: 'lead-enrich-from-datashopper',
     name: 'Enrich Lead from DataShopper',
     retries: 3,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { event: 'lead/enrich-from-datashopper' },
   async ({ event, step }) => {
@@ -318,7 +318,7 @@ export const importLeadFromAudienceLabs = inngest.createFunction(
     id: 'lead-import-from-audience-labs',
     name: 'Import Lead from Audience Labs',
     retries: 3,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { event: 'lead/import-from-audience-labs' },
   async ({ event, step }) => {

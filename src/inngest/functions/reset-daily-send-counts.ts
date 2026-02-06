@@ -15,7 +15,7 @@ export const resetDailySendCounts = inngest.createFunction(
     id: 'reset-daily-send-counts',
     name: 'Reset Daily Send Counts',
     retries: 3,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { cron: '0 0 * * *' }, // Midnight UTC daily
   async ({ step, logger }) => {
@@ -136,7 +136,7 @@ export const resetWorkspaceSendCount = inngest.createFunction(
     id: 'reset-workspace-send-count',
     name: 'Reset Workspace Send Count',
     retries: 2,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { event: 'workspace/reset-send-count' },
   async ({ event, step, logger }) => {

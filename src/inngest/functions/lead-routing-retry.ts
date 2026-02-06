@@ -24,7 +24,7 @@ export const processLeadRoutingRetryQueue = inngest.createFunction(
     id: 'lead-routing-retry-queue-processor',
     name: 'Process Lead Routing Retry Queue',
     retries: 3,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { cron: '*/5 * * * *' }, // Every 5 minutes
   async ({ step, logger }) => {
@@ -71,7 +71,7 @@ export const triggerLeadRoutingRetry = inngest.createFunction(
     id: 'lead-routing-retry-manual-trigger',
     name: 'Manual Lead Routing Retry',
     retries: 2,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { event: 'lead/routing.retry.trigger' },
   async ({ event, step, logger }) => {
@@ -103,7 +103,7 @@ export const cleanupStaleRoutingLocks = inngest.createFunction(
     id: 'lead-routing-cleanup-stale-locks',
     name: 'Cleanup Stale Routing Locks',
     retries: 3,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { cron: '*/10 * * * *' }, // Every 10 minutes
   async ({ step, logger }) => {
@@ -134,7 +134,7 @@ export const markExpiredLeads = inngest.createFunction(
     id: 'lead-routing-mark-expired-leads',
     name: 'Mark Expired Leads',
     retries: 3,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { cron: '0 2 * * *' }, // Daily at 2 AM
   async ({ step, logger }) => {
@@ -165,7 +165,7 @@ export const leadRoutingHealthCheck = inngest.createFunction(
     id: 'lead-routing-health-check',
     name: 'Lead Routing Health Check',
     retries: 2,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { cron: '0 * * * *' }, // Every hour
   async ({ step, logger }) => {

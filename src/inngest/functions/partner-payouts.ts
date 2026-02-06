@@ -16,7 +16,7 @@ export const weeklyPartnerPayouts = inngest.createFunction(
     id: 'partner-payouts-weekly',
     name: 'Weekly Partner Payouts',
     retries: 2,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
     concurrency: {
       limit: 1, // Only one instance at a time
     },
@@ -260,7 +260,7 @@ export const triggerManualPayout = inngest.createFunction(
     id: 'partner-payout-manual',
     name: 'Manual Partner Payout',
     retries: 1,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { event: 'partner/payout-requested' },
   async ({ event, step, logger }) => {
@@ -312,7 +312,7 @@ export const dailyCommissionRelease = inngest.createFunction(
     id: 'commission-release-daily',
     name: 'Daily Commission Release',
     retries: 2,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { cron: '0 1 * * *' }, // 1 AM daily
   async ({ step, logger }) => {
@@ -335,7 +335,7 @@ export const reconcilePayouts = inngest.createFunction(
     id: 'payout-reconciliation',
     name: 'Payout Reconciliation',
     retries: 1,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { cron: '0 5 * * 0' }, // 5 AM every Sunday
   async ({ step, logger }) => {

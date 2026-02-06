@@ -24,7 +24,7 @@ export const deliverLeadWebhook = inngest.createFunction(
   {
     id: 'deliver-lead-webhook',
     retries: 5,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { event: 'lead/created' },
   async ({ event, step }) => {
@@ -150,7 +150,7 @@ export const retryWebhookDeliveries = inngest.createFunction(
   {
     id: 'retry-webhook-deliveries',
     retries: 2,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { cron: '*/5 * * * *' }, // Every 5 minutes
   async ({ step }) => {
@@ -287,7 +287,7 @@ export const sendLeadEmailNotification = inngest.createFunction(
   {
     id: 'send-lead-email-notification',
     retries: 3,
-    timeout: 300000, // 5 minutes
+    timeouts: { finish: "5m" },
   },
   { event: 'lead/created' },
   async ({ event, step }) => {
