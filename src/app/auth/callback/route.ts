@@ -5,7 +5,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import type { Database } from '@/types/database.types'
 
 // Add HTML loading page for better UX during callback
 const LOADING_PAGE = `
@@ -131,7 +130,7 @@ export async function GET(request: NextRequest) {
     // Create supabase client
     const cookieStore: { name: string; value: string; options?: any }[] = []
 
-    const supabase = createServerClient<Database>(
+    const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
@@ -139,7 +138,7 @@ export async function GET(request: NextRequest) {
           getAll() {
             return request.cookies.getAll()
           },
-          setAll(cookiesToSet) {
+          setAll(cookiesToSet: any[]) {
             cookieStore.push(...cookiesToSet)
           },
         },

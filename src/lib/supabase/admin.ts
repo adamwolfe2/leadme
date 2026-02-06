@@ -3,7 +3,6 @@
 // (webhooks, background jobs, system operations)
 
 import { createClient } from '@supabase/supabase-js'
-import type { Database } from '@/types/database.types'
 
 /**
  * Creates an admin Supabase client with service role key
@@ -27,7 +26,7 @@ export const createAdminClient = () => {
     throw new Error('Missing Supabase environment variables')
   }
 
-  return createClient<Database>(
+  return createClient(
     supabaseUrl,
     supabaseServiceKey,
     {

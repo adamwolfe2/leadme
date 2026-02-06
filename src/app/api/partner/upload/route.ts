@@ -354,7 +354,7 @@ export async function POST(request: NextRequest) {
 
         // Calculate scores for marketplace
         const intentScore = calculateIntentScore({
-          seniorityLevel: validatedRow.seniority_level || 'unknown',
+          seniority_level: validatedRow.seniority_level || 'unknown',
           companySize: validatedRow.company_size || null,
           companyEmployeeCount: validatedRow.company_employee_count || null,
           email: email,

@@ -78,7 +78,7 @@ export async function PUT(
     const activity = await activityRepo.update(id, user.workspace_id, {
       ...validated,
       updated_by_user_id: user.id,
-    })
+    } as any)
 
     // 5. Return response
     return NextResponse.json({
