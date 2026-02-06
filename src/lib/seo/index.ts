@@ -178,7 +178,7 @@ export function generateOrganizationSchema() {
     '@type': 'Organization',
     name: siteConfig.name,
     url: siteConfig.url,
-    logo: `${siteConfig.url}/logo.png`,
+    logo: `${siteConfig.url}/cursive-logo.png`,
     description: siteConfig.description,
     sameAs: [
       siteConfig.links.twitter,
@@ -270,7 +270,7 @@ export function generateBlogPostSchema(post: {
       name: siteConfig.name,
       logo: {
         '@type': 'ImageObject',
-        url: `${siteConfig.url}/logo.png`,
+        url: `${siteConfig.url}/cursive-logo.png`,
       },
     },
     mainEntityOfPage: {

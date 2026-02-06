@@ -12,7 +12,7 @@ export function OrganizationSchema() {
     '@id': 'https://meetcursive.com/#organization',
     name: 'Cursive',
     url: 'https://meetcursive.com',
-    logo: 'https://meetcursive.com/logo.png',
+    logo: 'https://meetcursive.com/cursive-logo.png',
     description:
       'B2B intent lead intelligence platform that identifies companies actively researching specific topics',
     sameAs: [

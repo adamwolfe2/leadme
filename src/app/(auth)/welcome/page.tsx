@@ -204,7 +204,7 @@ export default function WelcomePage() {
         {/* Logo */}
         <div className="text-center">
           <div className="flex justify-center mb-6">
-            <Image src="/logo.png" alt="Cursive" width={90} height={90} priority />
+            <Image src="/cursive-logo.png" alt="Cursive" width={90} height={90} priority />
           </div>
           <h2 className="text-3xl font-bold text-gray-900">Welcome to Cursive</h2>
           <p className="mt-2 text-sm text-gray-600">

@@ -233,7 +233,7 @@ export function CampaignRequestForm() {
                       id="company_name"
                       autoComplete="organization"
                       {...register('company_name')}
-                      placeholder="Acme Corp"
+                      placeholder="Your company name"
                     />
                     {errors.company_name && (
                       <p className="text-sm text-red-600 mt-1">
@@ -248,7 +248,7 @@ export function CampaignRequestForm() {
                       id="contact_name"
                       autoComplete="name"
                       {...register('contact_name')}
-                      placeholder="John Doe"
+                      placeholder="Your full name"
                     />
                     {errors.contact_name && (
                       <p className="text-sm text-red-600 mt-1">

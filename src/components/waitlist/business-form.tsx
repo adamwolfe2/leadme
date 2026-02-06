@@ -141,7 +141,7 @@ export function BusinessForm({ vslAnswers, onSubmit, onBack }: BusinessFormProps
                 id="companyName"
                 type="text"
                 className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                placeholder="Acme Corp"
+                placeholder="Your company name"
               />
               {errors.companyName && <p className="text-xs text-destructive mt-1">{errors.companyName.message}</p>}
             </div>

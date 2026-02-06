@@ -86,7 +86,7 @@ export function ValidatedFormExample() {
             <FormInput
               id="full_name"
               type="text"
-              placeholder="John Doe"
+              placeholder="Your full name"
               disabled={loading}
               error={errors.full_name}
               {...register('full_name')}

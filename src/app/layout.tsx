@@ -25,9 +25,9 @@ export const metadata: Metadata = {
     follow: true,
   },
   icons: {
-    icon: '/logo.png',
-    shortcut: '/logo.png',
-    apple: '/logo.png',
+    icon: '/cursive-logo.png',
+    shortcut: '/cursive-logo.png',
+    apple: '/cursive-logo.png',
   },
   openGraph: {
     type: 'website',
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#7c3aed',
+  themeColor: '#3B82F6',
 }
 
 export default function RootLayout({

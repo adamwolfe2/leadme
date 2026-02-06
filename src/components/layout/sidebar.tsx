@@ -34,7 +34,7 @@ function CursiveLogo() {
   return (
     <div className="relative h-6 w-6 overflow-hidden rounded-md">
       <Image
-        src="/logo.png"
+        src="/cursive-logo.png"
         alt="Cursive"
         fill
         className="object-contain"

@@ -74,7 +74,7 @@ export default function BlogPost() {
       name: "Cursive",
       logo: {
         "@type": "ImageObject",
-        url: "https://meetcursive.com/logo.png"
+        url: "https://meetcursive.com/cursive-logo.png"
       }
     },
     datePublished: "2026-02-04",

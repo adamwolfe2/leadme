@@ -87,8 +87,8 @@ export const scrapeWebsite = inngest.createFunction(
             branding: {
               logo_url: finalData.logo_url,
               favicon_url: finalData.favicon_url,
-              primary_color: finalData.primary_color || '#7c3aed',
-              secondary_color: '#4f46e5',
+              primary_color: finalData.primary_color || '#3B82F6',
+              secondary_color: '#2563eb',
             },
             scrape_status: 'completed',
           })
@@ -101,8 +101,8 @@ export const scrapeWebsite = inngest.createFunction(
             scrape_status: 'failed',
             branding: {
               logo_url: null,
-              primary_color: '#7c3aed',
-              secondary_color: '#4f46e5',
+              primary_color: '#3B82F6',
+              secondary_color: '#2563eb',
             },
           })
           .eq('id', workspaceId)

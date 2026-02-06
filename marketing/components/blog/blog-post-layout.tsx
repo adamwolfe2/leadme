@@ -46,7 +46,7 @@ export function BlogPostLayout({ post, relatedPosts = [] }: BlogPostLayoutProps)
       name: 'Cursive',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://meetcursive.com/logo.png',
+        url: 'https://meetcursive.com/cursive-logo.png',
       },
     },
     mainEntityOfPage: {

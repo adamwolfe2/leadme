@@ -125,7 +125,7 @@ export default function ContactSalesPage() {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="John Doe"
+                placeholder="Your full name"
                 disabled={loading}
               />
             </div>
@@ -142,7 +142,7 @@ export default function ContactSalesPage() {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="john@company.com"
+                placeholder="you@company.com"
                 disabled={loading}
               />
             </div>

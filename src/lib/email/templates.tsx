@@ -91,7 +91,7 @@ export function EmailLayout({ children, preview }: EmailLayoutProps) {
                         }}
                       >
                         <img
-                          src={`${process.env.NEXT_PUBLIC_APP_URL}/logo.png`}
+                          src={`${process.env.NEXT_PUBLIC_APP_URL}/cursive-logo.png`}
                           alt="Cursive"
                           width="140"
                           height="32"

@@ -32,7 +32,7 @@ export const EMAIL_CONFIG = {
   },
 
   // Logo
-  logoUrl: 'https://leads.meetcursive.com/logo.png', // Update with actual logo URL
+  logoUrl: 'https://leads.meetcursive.com/cursive-logo.png',
 
   // Base URL
   baseUrl: process.env.NEXT_PUBLIC_BASE_URL || 'https://leads.meetcursive.com',
