@@ -69,12 +69,7 @@ export function DemoIntentHeatmap() {
   }, [])
 
   return (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h3 className="text-2xl text-gray-900 mb-2">Intent Signal Heatmap</h3>
-        <p className="text-gray-600">Real-time buyer intent across the United States</p>
-      </div>
-
+    <div className="space-y-3">
       {/* Stats Bar */}
       <div className="grid grid-cols-3 gap-4">
         <motion.div
@@ -119,7 +114,7 @@ export function DemoIntentHeatmap() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.3 }}
         className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 border border-gray-200 relative overflow-hidden"
-        style={{ minHeight: "400px" }}
+        style={{ minHeight: "250px" }}
       >
         {/* Map Background */}
         <div className="absolute inset-0 opacity-10">

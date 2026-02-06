@@ -54,12 +54,7 @@ export function DemoLeadSequence() {
   ]
 
   return (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h3 className="text-2xl text-gray-900 mb-2">Automated Lead Sequences</h3>
-        <p className="text-gray-600">Multi-touch campaigns that convert on autopilot</p>
-      </div>
-
+    <div className="space-y-3">
       {/* Sequence Timeline */}
       <div className="relative">
         <div className="flex items-center justify-between gap-3 overflow-x-auto pb-2">

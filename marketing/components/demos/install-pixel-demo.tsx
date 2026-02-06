@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Eye } from 'lucide-react';
 
 const FULL_CODE = `<!-- Cursive Tracking Pixel -->
@@ -22,43 +22,36 @@ export default function InstallPixelDemo() {
   const [showInstalled, setShowInstalled] = useState(false);
   const [showEyes, setShowEyes] = useState(false);
   const [eyePositions, setEyePositions] = useState<Array<{ x: number; y: number; delay: number }>>([]);
-  const [hasAnimated, setHasAnimated] = useState(false);
 
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { amount: 0.3 });
-
+  // Start typing animation immediately on mount
   useEffect(() => {
-    // Start animation when component comes into view (and hasn't animated yet)
-    if (isInView && !hasAnimated) {
-      setHasAnimated(true);
-      let currentIndex = 0;
-      const typingInterval = setInterval(() => {
-        if (currentIndex < FULL_CODE.length) {
-          setDisplayedCode(FULL_CODE.slice(0, currentIndex + 1));
-          currentIndex++;
-        } else {
-          clearInterval(typingInterval);
-          // Show "Installed" text after typing completes
-          setTimeout(() => {
-            setShowInstalled(true);
-            // Generate random eye positions
-            const eyes = Array.from({ length: 20 }, (_, i) => ({
-              x: Math.random() * 100,
-              y: Math.random() * 100,
-              delay: i * 0.05
-            }));
-            setEyePositions(eyes);
-            setShowEyes(true);
-          }, 300);
-        }
-      }, 40); // Type at 40ms per character for smooth effect
+    let currentIndex = 0;
+    const typingInterval = setInterval(() => {
+      if (currentIndex < FULL_CODE.length) {
+        setDisplayedCode(FULL_CODE.slice(0, currentIndex + 1));
+        currentIndex++;
+      } else {
+        clearInterval(typingInterval);
+        // Show "Installed" text after typing completes
+        setTimeout(() => {
+          setShowInstalled(true);
+          // Generate random eye positions
+          const eyes = Array.from({ length: 20 }, (_, i) => ({
+            x: Math.random() * 100,
+            y: Math.random() * 100,
+            delay: i * 0.05
+          }));
+          setEyePositions(eyes);
+          setShowEyes(true);
+        }, 300);
+      }
+    }, 30); // Type at 30ms per character
 
-      return () => clearInterval(typingInterval);
-    }
-  }, [isInView, hasAnimated]);
+    return () => clearInterval(typingInterval);
+  }, []);
 
   return (
-    <div ref={ref} className="w-full relative">
+    <div className="w-full relative">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}

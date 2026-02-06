@@ -9,6 +9,7 @@ import {
   ArrowRight, Sparkles, Database, Lock
 } from "lucide-react"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { IntegrationsShowcase } from "@/components/integrations-showcase"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 
 export default function VisitorIdentificationPage() {
@@ -468,35 +469,11 @@ export default function VisitorIdentificationPage() {
         {/* Integrations */}
         <section className="py-20 bg-[#F7F9FB]">
           <Container>
-            <div className="text-center mb-16">
-              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                Works With Your Existing Stack
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Native integrations with 200+ CRMs, ad platforms, and marketing tools
-              </p>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 max-w-5xl mx-auto mb-8">
-              {[
-                "Salesforce", "HubSpot", "Marketo", "Pardot", "Pipedrive", "Close",
-                "Google Ads", "Facebook Ads", "LinkedIn Ads", "Twitter Ads", "TikTok Ads", "Snapchat Ads",
-                "Mailchimp", "SendGrid", "ActiveCampaign", "Klaviyo", "Braze", "Iterable",
-                "Slack", "Zapier"
-              ].map((integration, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.02 }}
-                  className="bg-white rounded-lg p-4 border border-gray-200 flex items-center justify-center text-center h-20"
-                >
-                  <span className="text-sm font-medium text-gray-700">{integration}</span>
-                </motion.div>
-              ))}
-            </div>
-            <div className="text-center">
-              <p className="text-gray-600 mb-4">And 180+ more integrations</p>
+            <IntegrationsShowcase
+              title="Works With Your Existing Stack"
+              subtitle="Native integrations with 200+ CRMs, ad platforms, and marketing tools"
+            />
+            <div className="text-center mt-8">
               <Button variant="outline" href="/integrations">
                 View All Integrations
                 <ArrowRight className="ml-2 h-4 w-4" />

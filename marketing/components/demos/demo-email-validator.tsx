@@ -113,12 +113,7 @@ export function DemoEmailValidator() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h3 className="text-2xl text-gray-900 mb-2">Email Deliverability Validator</h3>
-        <p className="text-gray-600">Real-time verification with multi-step validation</p>
-      </div>
-
+    <div className="space-y-3">
       {/* Email Input */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -147,18 +142,18 @@ export function DemoEmailValidator() {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 text-center border border-gray-200"
+        className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 text-center border border-gray-200"
       >
-        <div className="text-sm text-gray-600 mb-4">Deliverability Score</div>
+        <div className="text-sm text-gray-600 mb-2">Deliverability Score</div>
         <motion.div
           key={score}
           initial={{ scale: 1.2 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.3 }}
-          className={`text-6xl font-light mb-2 ${getScoreColor(score)}`}
+          className={`text-4xl font-light mb-2 ${getScoreColor(score)}`}
         >
           {score}
-          <span className="text-3xl">/100</span>
+          <span className="text-xl">/100</span>
         </motion.div>
         <motion.div
           key={`${score}-label`}
@@ -170,20 +165,20 @@ export function DemoEmailValidator() {
         </motion.div>
 
         {/* Circular Progress */}
-        <div className="mt-6 relative w-32 h-32 mx-auto">
+        <div className="mt-3 relative w-20 h-20 mx-auto">
           <svg className="w-full h-full transform -rotate-90">
             <circle
-              cx="64"
-              cy="64"
-              r="56"
+              cx="40"
+              cy="40"
+              r="34"
               stroke="#E5E7EB"
               strokeWidth="8"
               fill="none"
             />
             <motion.circle
-              cx="64"
-              cy="64"
-              r="56"
+              cx="40"
+              cy="40"
+              r="34"
               stroke={score >= 90 ? "#10B981" : score >= 70 ? "#F59E0B" : "#EF4444"}
               strokeWidth="8"
               fill="none"

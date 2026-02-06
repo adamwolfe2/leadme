@@ -53,12 +53,7 @@ export function DemoPipelineDashboard() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h3 className="text-2xl text-gray-900 mb-2">Pipeline Dashboard</h3>
-        <p className="text-gray-600">Live email metrics and outbound performance</p>
-      </div>
-
+    <div className="space-y-3">
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {statsData.map((stat, i) => (
@@ -126,7 +121,7 @@ export function DemoPipelineDashboard() {
         className="bg-white rounded-lg p-4 border border-gray-200"
       >
         <div className="text-sm text-gray-900 font-medium mb-4">Outbound Activity (Last 7 Days)</div>
-        <div className="flex items-end justify-between gap-2 h-32">
+        <div className="flex items-end justify-between gap-2 h-20">
           {[40, 65, 45, 80, 55, 90, 70].map((height, i) => (
             <motion.div
               key={i}

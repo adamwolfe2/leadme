@@ -323,7 +323,7 @@ export default function PricingPage() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-[#007AFF] rounded-2xl p-8 border-2 border-[#007AFF] shadow-xl relative transform lg:scale-105 z-10"
+              className="bg-white rounded-2xl p-8 border border-[#007AFF] shadow-xl relative transform lg:scale-105 z-10"
             >
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                 <div className="bg-[#007AFF] text-white px-4 py-1 rounded-full text-sm font-medium shadow-lg">
@@ -331,78 +331,78 @@ export default function PricingPage() {
                 </div>
               </div>
 
-              <div className="mb-6 text-white">
-                <div className="text-xs font-medium mb-2 opacity-90">RECOMMENDED</div>
-                <h3 className="text-2xl font-light mb-2">
+              <div className="mb-6">
+                <div className="text-xs font-medium text-gray-500 mb-2">RECOMMENDED</div>
+                <h3 className="text-2xl font-light text-gray-900 mb-2">
                   Cursive Outbound
                 </h3>
-                <p className="opacity-90">Done-for-you email campaigns</p>
+                <p className="text-gray-600">Done-for-you email campaigns</p>
               </div>
 
-              <div className="mb-8 text-white">
+              <div className="mb-8">
                 {billingCycle === 'annual' ? (
                   <>
-                    <div className="text-4xl font-light mb-1">
-                      $2,000<span className="text-lg opacity-90">/mo</span>
+                    <div className="text-4xl font-light text-[#007AFF] mb-1">
+                      $2,000<span className="text-lg text-gray-600">/mo</span>
                     </div>
-                    <div className="text-sm opacity-75 line-through mb-1">$2,500/mo</div>
-                    <div className="inline-block bg-white/20 text-white text-xs px-2 py-1 rounded">
+                    <div className="text-sm text-gray-500 line-through mb-1">$2,500/mo</div>
+                    <div className="inline-block bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">
                       Save $6,000/year
                     </div>
                   </>
                 ) : (
-                  <div className="text-4xl font-light mb-2">
-                    $2,500<span className="text-lg opacity-90">/mo</span>
+                  <div className="text-4xl font-light text-[#007AFF] mb-2">
+                    $2,500<span className="text-lg text-gray-600">/mo</span>
                   </div>
                 )}
               </div>
 
-              <div className="mb-6 text-white">
-                <div className="text-xs font-medium opacity-75 uppercase tracking-wide mb-3">
+              <div className="mb-6">
+                <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
                   Perfect For
                 </div>
-                <p className="text-sm opacity-90">
+                <p className="text-sm text-gray-600">
                   B2B SaaS and agencies ready to scale outbound without hiring more SDRs
                 </p>
               </div>
 
-              <ul className="space-y-3 mb-8 text-white">
+              <ul className="space-y-3 mb-8">
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 flex-shrink-0" />
-                  <span>Everything in Data plan</span>
+                  <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                  <span className="text-gray-700">Everything in Data plan</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 flex-shrink-0" />
-                  <span>AI-powered email personalization</span>
+                  <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                  <span className="text-gray-700">AI-powered email personalization</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 flex-shrink-0" />
-                  <span>Email infrastructure setup + warmup</span>
+                  <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                  <span className="text-gray-700">Email infrastructure setup + warmup</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 flex-shrink-0" />
-                  <span>500 verified leads included monthly</span>
+                  <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                  <span className="text-gray-700">500 verified leads included monthly</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 flex-shrink-0" />
-                  <span>A/B testing + continuous optimization</span>
+                  <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                  <span className="text-gray-700">A/B testing + continuous optimization</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 flex-shrink-0" />
-                  <span>Weekly strategy calls</span>
+                  <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                  <span className="text-gray-700">Weekly strategy calls</span>
                 </li>
               </ul>
 
-              <Button className="w-full bg-white text-[#007AFF] hover:bg-gray-100" href="https://pay.meetcursive.com/b/8x27sLaTPcNL7p38Hp8g002" target="_blank">
+              <Button className="w-full" href={billingCycle === 'annual' ? "https://pay.meetcursive.com/b/dRmbJ17HDeVT6kZ3n58g00c" : "https://pay.meetcursive.com/b/8x27sLaTPcNL7p38Hp8g002"} target="_blank">
                 Start Outbound
                 <ArrowRight className="w-4 h-4" />
               </Button>
 
-              <div className="mt-4 text-center text-white">
-                <div className="text-xs opacity-75">2-week setup</div>
+              <div className="mt-4 text-center">
+                <div className="text-xs text-gray-500">2-week setup</div>
                 <div className="flex items-center justify-center gap-1 mt-2">
-                  <Shield className="w-4 h-4" />
-                  <span className="text-xs">30-day money-back guarantee</span>
+                  <Shield className="w-4 h-4 text-blue-600" />
+                  <span className="text-xs text-blue-600">30-day money-back guarantee</span>
                 </div>
               </div>
             </motion.div>
@@ -477,7 +477,7 @@ export default function PricingPage() {
                 </li>
               </ul>
 
-              <Button className="w-full" href="https://pay.meetcursive.com/b/6oU9AT3rnfZX6kZg9R8g003" target="_blank">
+              <Button className="w-full" href={billingCycle === 'annual' ? "https://pay.meetcursive.com/b/bJebJ1bXT153cJn2j18g00d" : "https://pay.meetcursive.com/b/6oU9AT3rnfZX6kZg9R8g003"} target="_blank">
                 Get Data Access
                 <ArrowRight className="w-4 h-4" />
               </Button>

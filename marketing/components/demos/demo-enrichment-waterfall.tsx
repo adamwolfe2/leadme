@@ -75,12 +75,7 @@ export function DemoEnrichmentWaterfall() {
   const completionPercent = Math.round((completedSteps / steps.length) * 100)
 
   return (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h3 className="text-2xl text-gray-900 mb-2">Data Enrichment Waterfall</h3>
-        <p className="text-gray-600">Watch data transform from email to complete profile</p>
-      </div>
-
+    <div className="space-y-3">
       {/* Input */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -130,7 +125,7 @@ export function DemoEnrichmentWaterfall() {
       </motion.div>
 
       {/* Enrichment Steps */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         {steps.map((step, index) => (
           <motion.div
             key={step.id}

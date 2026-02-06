@@ -68,12 +68,7 @@ export function DemoAIStudio() {
   }, [showKnowledgeBase])
 
   return (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h3 className="text-2xl text-gray-900 mb-2">AI Studio</h3>
-        <p className="text-gray-600">Train AI on your brand, generate personalized campaigns</p>
-      </div>
-
+    <div className="space-y-3">
       {/* URL Input */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -120,7 +115,7 @@ export function DemoAIStudio() {
       </motion.div>
 
       {/* Processing Steps */}
-      <div className="space-y-2">
+      <div className="space-y-1">
         {processingSteps.map((step, i) => {
           const isComplete = i < completedSteps
           const isActive = i === completedSteps && completedSteps < processingSteps.length

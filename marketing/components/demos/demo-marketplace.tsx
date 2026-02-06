@@ -30,12 +30,7 @@ export function DemoMarketplace() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h3 className="text-2xl text-gray-900 mb-2">Lead Marketplace</h3>
-        <p className="text-gray-600">AI-curated, pre-verified lead lists ready to purchase</p>
-      </div>
-
+    <div className="space-y-3">
       {/* Lead Lists Grid */}
       <div className="grid md:grid-cols-2 gap-4">
         {visibleLists.slice(0, 2).map((list, i) => (

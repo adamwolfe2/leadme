@@ -143,12 +143,7 @@ export function DemoAudienceBuilder() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h3 className="text-2xl text-gray-900 mb-2">Audience Builder</h3>
-        <p className="text-gray-600">Build precise audiences with unlimited filtering</p>
-      </div>
-
+    <div className="space-y-3">
       {/* Top Stats Row */}
       <div className="grid grid-cols-3 gap-4">
         {/* Audience Count */}
@@ -217,7 +212,7 @@ export function DemoAudienceBuilder() {
               className="w-2 h-2 rounded-full bg-[#007AFF]"
             />
           </div>
-          <div className="space-y-2 min-h-[200px]">
+          <div className="space-y-2 min-h-[120px]">
             <AnimatePresence mode="popLayout">
               {recentContacts.map((contact, index) => (
                 <motion.div
@@ -255,7 +250,7 @@ export function DemoAudienceBuilder() {
         {/* Growth Chart */}
         <div className="bg-white rounded-xl p-4 border border-gray-200">
           <h4 className="text-sm text-gray-900 font-medium mb-3">Growth Over Time</h4>
-          <div className="h-[200px] flex items-end justify-between gap-1">
+          <div className="h-[120px] flex items-end justify-between gap-1">
             {growthData.map((value, index) => {
               const maxValue = Math.max(...growthData, 1)
               const height = (value / maxValue) * 100
