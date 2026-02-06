@@ -7,10 +7,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Platform Features | Cursive - Lead Generation & AI Outreach",
     description: "Explore Cursive's powerful platform: visitor identification, AI Studio for brand voice, people search (500M+ contacts), lead marketplace, campaign manager, and visitor intelligence.",
-    url: "https://www.meetcursive.com/platform",
+    url: "https://meetcursive.com/platform",
     siteName: "Cursive",
     images: [{
-      url: "https://www.meetcursive.com/cursive-social-preview.png",
+      url: "https://meetcursive.com/cursive-social-preview.png",
       width: 1200,
       height: 630,
     }],
@@ -21,11 +21,11 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Platform Features | Cursive - Lead Generation & AI Outreach",
     description: "Explore Cursive's powerful platform: visitor identification, AI Studio for brand voice, people search (500M+ contacts), lead marketplace, campaign manager, and visitor intelligence.",
-    images: ["https://www.meetcursive.com/cursive-social-preview.png"],
+    images: ["https://meetcursive.com/cursive-social-preview.png"],
     creator: "@meetcursive",
   },
   alternates: {
-    canonical: "https://www.meetcursive.com/platform",
+    canonical: "https://meetcursive.com/platform",
   },
   other: {
     // Product Schema - Main Platform

@@ -12,10 +12,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Identify Website Visitors & Automate Outreach | Cursive",
     description: "Turn anonymous visitors into qualified leads. Cursive identifies website visitors, enriches contact data, and automates AI-powered outreach.",
-    url: "https://www.meetcursive.com",
+    url: "https://meetcursive.com",
     siteName: "Cursive",
     images: [{
-      url: "https://www.meetcursive.com/cursive-social-preview.png",
+      url: "https://meetcursive.com/cursive-social-preview.png",
       width: 1200,
       height: 630,
     }],
@@ -26,11 +26,11 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Identify Website Visitors & Automate Outreach | Cursive",
     description: "Turn anonymous visitors into qualified leads. Cursive identifies website visitors, enriches contact data, and automates AI-powered outreach.",
-    images: ["https://www.meetcursive.com/cursive-social-preview.png"],
+    images: ["https://meetcursive.com/cursive-social-preview.png"],
     creator: "@meetcursive",
   },
   alternates: {
-    canonical: "https://www.meetcursive.com",
+    canonical: "https://meetcursive.com",
   },
   other: {
     // FAQ Schema

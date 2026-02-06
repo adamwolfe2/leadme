@@ -43,6 +43,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changefreq: 'monthly' as const,
   }))
 
+  // Conversion pages - high priority
+  const conversionPages = [
+    { url: '/free-audit', priority: 0.9, changefreq: 'weekly' as const },
+  ]
+
   // Secondary pages - medium priority
   const secondaryPages = [
     '/services',
@@ -107,6 +112,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Combine all pages
   const allPages = [
     ...corePages,
+    ...conversionPages,
     ...solutionPages,
     ...industryPages,
     ...secondaryPages,

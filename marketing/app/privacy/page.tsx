@@ -8,10 +8,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Privacy Policy | Cursive",
     description: "Learn how Cursive collects, uses, and protects your personal information. Our privacy policy covers data collection, cookies, your rights under GDPR and CCPA, and how to contact us.",
-    url: "https://www.meetcursive.com/privacy",
+    url: "https://meetcursive.com/privacy",
     siteName: "Cursive",
     images: [{
-      url: "https://www.meetcursive.com/cursive-social-preview.png",
+      url: "https://meetcursive.com/cursive-social-preview.png",
       width: 1200,
       height: 630,
     }],
@@ -22,11 +22,11 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Privacy Policy | Cursive",
     description: "Learn how Cursive collects, uses, and protects your personal information. Our privacy policy covers data collection, cookies, your rights under GDPR and CCPA, and how to contact us.",
-    images: ["https://www.meetcursive.com/cursive-social-preview.png"],
+    images: ["https://meetcursive.com/cursive-social-preview.png"],
     creator: "@meetcursive",
   },
   alternates: {
-    canonical: "https://www.meetcursive.com/privacy",
+    canonical: "https://meetcursive.com/privacy",
   },
 }
 

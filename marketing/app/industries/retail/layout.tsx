@@ -2,7 +2,7 @@ import { generateMetadata } from '@/lib/seo/metadata'
 
 export const metadata = generateMetadata({
   title: 'Retail Marketing Solutions',
-  description: 'Drive foot traffic and online sales with location-based targeting and consumer intent data.',
+  description: 'Drive foot traffic and online sales with location-based targeting and consumer intent data. Identify shoppers, build audiences, and activate across channels.',
   keywords: ['retail marketing', 'store traffic', 'retail customer acquisition', 'location based marketing', 'retail analytics'],
   canonical: 'https://meetcursive.com/industries/retail',
 })
