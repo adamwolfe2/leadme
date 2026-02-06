@@ -137,6 +137,34 @@ export class CRMLeadRepository {
     return data as LeadTableRow
   }
 
+  async create(
+    leadData: Omit<LeadTableRow, 'id' | 'updated_at'>
+  ): Promise<LeadTableRow> {
+    const supabase = await createClient()
+
+    const { data, error } = await supabase
+      .from('leads')
+      .insert(leadData)
+      .select(
+        `
+        *,
+        assigned_user:users!leads_assigned_user_id_fkey(
+          id,
+          full_name,
+          email
+        )
+      `
+      )
+      .single()
+
+    if (error) {
+      console.error('[CRMLeadRepository] Failed to create lead:', error)
+      throw new Error('Failed to create lead')
+    }
+
+    return data as LeadTableRow
+  }
+
   async update(
     leadId: string,
     updates: LeadUpdatePayload,

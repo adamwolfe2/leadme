@@ -220,13 +220,31 @@ export class AgentRepository {
   }
 
   // ============================================================================
+  // WORKSPACE VERIFICATION HELPER
+  // ============================================================================
+
+  /**
+   * Verify an agent belongs to a workspace before accessing sub-entities.
+   * Throws DatabaseError if the agent does not belong to the workspace.
+   */
+  private async verifyAgentWorkspace(agentId: string, workspaceId: string): Promise<void> {
+    const agent = await this.findById(agentId, workspaceId)
+    if (!agent) {
+      throw new DatabaseError('Agent not found or does not belong to workspace')
+    }
+  }
+
+  // ============================================================================
   // EMAIL INSTRUCTIONS
   // ============================================================================
 
   /**
    * Get instructions for an agent
+   * SECURITY: Verifies agent belongs to workspace before returning instructions
    */
-  async getInstructions(agentId: string): Promise<EmailInstruction[]> {
+  async getInstructions(agentId: string, workspaceId: string): Promise<EmailInstruction[]> {
+    await this.verifyAgentWorkspace(agentId, workspaceId)
+
     const supabase = await createClient()
 
     const { data, error } = await supabase
@@ -244,8 +262,11 @@ export class AgentRepository {
 
   /**
    * Add instruction to agent
+   * SECURITY: Verifies agent belongs to workspace before adding instruction
    */
-  async addInstruction(instruction: EmailInstructionInsert): Promise<EmailInstruction> {
+  async addInstruction(instruction: EmailInstructionInsert, workspaceId: string): Promise<EmailInstruction> {
+    await this.verifyAgentWorkspace(instruction.agent_id, workspaceId)
+
     const supabase = await createClient()
 
     const { data, error } = await supabase
@@ -263,8 +284,11 @@ export class AgentRepository {
 
   /**
    * Delete instruction
+   * SECURITY: Verifies agent belongs to workspace before deleting instruction
    */
-  async deleteInstruction(instructionId: string, agentId: string): Promise<void> {
+  async deleteInstruction(instructionId: string, agentId: string, workspaceId: string): Promise<void> {
+    await this.verifyAgentWorkspace(agentId, workspaceId)
+
     const supabase = await createClient()
 
     const { error } = await supabase
@@ -284,8 +308,11 @@ export class AgentRepository {
 
   /**
    * Get KB entries for an agent
+   * SECURITY: Verifies agent belongs to workspace before returning KB entries
    */
-  async getKBEntries(agentId: string): Promise<KBEntry[]> {
+  async getKBEntries(agentId: string, workspaceId: string): Promise<KBEntry[]> {
+    await this.verifyAgentWorkspace(agentId, workspaceId)
+
     const supabase = await createClient()
 
     const { data, error } = await supabase
@@ -302,8 +329,11 @@ export class AgentRepository {
 
   /**
    * Add KB entry to agent
+   * SECURITY: Verifies agent belongs to workspace before adding KB entry
    */
-  async addKBEntry(entry: KBEntryInsert): Promise<KBEntry> {
+  async addKBEntry(entry: KBEntryInsert, workspaceId: string): Promise<KBEntry> {
+    await this.verifyAgentWorkspace(entry.agent_id, workspaceId)
+
     const supabase = await createClient()
 
     const { data, error } = await supabase
@@ -321,8 +351,11 @@ export class AgentRepository {
 
   /**
    * Delete KB entry
+   * SECURITY: Verifies agent belongs to workspace before deleting KB entry
    */
-  async deleteKBEntry(entryId: string, agentId: string): Promise<void> {
+  async deleteKBEntry(entryId: string, agentId: string, workspaceId: string): Promise<void> {
+    await this.verifyAgentWorkspace(agentId, workspaceId)
+
     const supabase = await createClient()
 
     const { error } = await supabase
@@ -342,11 +375,15 @@ export class AgentRepository {
 
   /**
    * Get threads for an agent
+   * SECURITY: Verifies agent belongs to workspace before returning threads
    */
   async getThreads(
     agentId: string,
+    workspaceId: string,
     options: { status?: string; limit?: number; offset?: number } = {}
   ): Promise<EmailThread[]> {
+    await this.verifyAgentWorkspace(agentId, workspaceId)
+
     const supabase = await createClient()
     const { status, limit = 50, offset = 0 } = options
 
@@ -372,11 +409,15 @@ export class AgentRepository {
 
   /**
    * Get thread with messages
+   * SECURITY: Verifies agent belongs to workspace before returning thread and messages
    */
   async getThreadWithMessages(
     threadId: string,
-    agentId: string
+    agentId: string,
+    workspaceId: string
   ): Promise<{ thread: EmailThread; messages: EmailMessage[] } | null> {
+    await this.verifyAgentWorkspace(agentId, workspaceId)
+
     const supabase = await createClient()
 
     const { data: thread, error: threadError } = await supabase
@@ -415,8 +456,11 @@ export class AgentRepository {
 
   /**
    * Get pending tasks for an agent
+   * SECURITY: Verifies agent belongs to workspace before returning tasks
    */
-  async getPendingTasks(agentId: string): Promise<EmailTask[]> {
+  async getPendingTasks(agentId: string, workspaceId: string): Promise<EmailTask[]> {
+    await this.verifyAgentWorkspace(agentId, workspaceId)
+
     const supabase = await createClient()
 
     const { data, error } = await supabase
@@ -435,13 +479,16 @@ export class AgentRepository {
 
   /**
    * Get task stats for an agent
+   * SECURITY: Verifies agent belongs to workspace before returning task stats
    */
-  async getTaskStats(agentId: string): Promise<{
+  async getTaskStats(agentId: string, workspaceId: string): Promise<{
     ready: number
     pending: number
     sent: number
     failed: number
   }> {
+    await this.verifyAgentWorkspace(agentId, workspaceId)
+
     const supabase = await createClient()
 
     const statuses = ['ready', 'pending', 'sent', 'failed']

@@ -30,8 +30,8 @@ export async function POST(req: NextRequest) {
     const supabase = await createClient()
 
     // Auth check
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) {
+    const { data: { user: authUser } } = await supabase.auth.getUser()
+    if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     const { data: user } = await supabase
       .from('users')
       .select('workspace_id')
-      .eq('auth_user_id', session.user.id)
+      .eq('auth_user_id', authUser.id)
       .single()
 
     if (!user) {
@@ -98,8 +98,8 @@ export async function GET(req: NextRequest) {
     const supabase = await createClient()
 
     // Auth check
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) {
+    const { data: { user: authUser } } = await supabase.auth.getUser()
+    if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -107,7 +107,7 @@ export async function GET(req: NextRequest) {
     const { data: user } = await supabase
       .from('users')
       .select('workspace_id')
-      .eq('auth_user_id', session.user.id)
+      .eq('auth_user_id', authUser.id)
       .single()
 
     if (!user) {

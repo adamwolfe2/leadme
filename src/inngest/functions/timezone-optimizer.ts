@@ -4,7 +4,7 @@
  */
 
 import { inngest } from '../client'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import {
   updateCampaignLeadOptimalTimes,
   inferTimezone,
@@ -25,7 +25,7 @@ export const recalculateOptimalTimes = inngest.createFunction(
   async ({ step, logger }) => {
     // Get all active campaigns
     const campaigns = await step.run('get-active-campaigns', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { data, error } = await supabase
         .from('email_campaigns')
@@ -104,7 +104,7 @@ export const inferLeadTimezones = inngest.createFunction(
   async ({ step, logger }) => {
     // Find leads missing timezone
     const leadsToUpdate = await step.run('find-leads-without-timezone', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { data, error } = await supabase
         .from('leads')
@@ -127,7 +127,7 @@ export const inferLeadTimezones = inngest.createFunction(
 
     // Infer and update timezones
     const result = await step.run('infer-timezones', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
       let updated = 0
       let errors = 0
 
@@ -238,7 +238,7 @@ export const updateLeadTimezoneFromEnrichment = inngest.createFunction(
 
     // Update lead timezone
     await step.run('update-lead', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { error } = await supabase
         .from('leads')

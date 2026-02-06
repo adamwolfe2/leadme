@@ -19,9 +19,9 @@ export async function POST(request: NextRequest) {
   try {
     // Verify authentication
     const supabase = await createClient()
-    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { user } } = await supabase.auth.getUser()
 
-    if (!session?.user) {
+    if (!user) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     const { data: userData } = await supabase
       .from('users')
       .select('workspace_id, workspaces(billing_email)')
-      .eq('auth_user_id', session.user.id)
+      .eq('auth_user_id', user.id)
       .single()
 
     if (!userData || !userData.workspace_id) {
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get billing email
-    const billingEmail = (userData.workspaces as any)?.billing_email || session.user.email
+    const billingEmail = (userData.workspaces as any)?.billing_email || user.email
 
     // Create Stripe Checkout session
     const checkoutResult = await createServiceCheckout({

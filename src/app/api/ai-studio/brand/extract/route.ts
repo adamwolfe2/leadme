@@ -10,6 +10,10 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { extractBrandDNA, isValidUrl } from '@/lib/ai-studio/firecrawl'
 import { generateKnowledgeBase, generateCustomerProfiles } from '@/lib/ai-studio/knowledge'
 import { z } from 'zod'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from '@/types/database.types'
+
+const PROCESSING_TIMEOUT = 60000 // 60 seconds
 
 const extractSchema = z.object({
   url: z.string().url('Invalid URL format'),
@@ -21,7 +25,7 @@ export async function POST(request: NextRequest) {
     if (!process.env.FIRECRAWL_API_KEY) {
       console.error('[Brand Extract] FIRECRAWL_API_KEY not set')
       return NextResponse.json(
-        { error: 'Firecrawl API key not configured. Please contact support.' },
+        { error: 'Required service not configured. Please contact support.' },
         { status: 500 }
       )
     }
@@ -29,7 +33,7 @@ export async function POST(request: NextRequest) {
     if (!process.env.ANTHROPIC_API_KEY && !process.env.OPENAI_API_KEY) {
       console.error('[Brand Extract] No AI API key set')
       return NextResponse.json(
-        { error: 'AI API key not configured. Please contact support.' },
+        { error: 'Required service not configured. Please contact support.' },
         { status: 500 }
       )
     }
@@ -91,19 +95,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 5. Extract brand DNA with Firecrawl (async - don't await)
-    processBrandExtraction(workspace.id, url, supabase)
-      .catch(error => {
-        console.error('[Brand Extract] Background extraction failed:', error)
-        // Update status to failed
-        supabase
-          .from('brand_workspaces')
-          .update({
-            extraction_status: 'failed',
-            extraction_error: error.message,
-          })
-          .eq('id', workspace.id)
-          .then(() => {})
-      })
+    processBrandExtractionWithTimeout(workspace.id, url, supabase)
 
     // 6. Return immediately with workspace ID
     return NextResponse.json({
@@ -131,12 +123,41 @@ export async function POST(request: NextRequest) {
 }
 
 /**
+ * Wraps processBrandExtraction with a timeout to prevent indefinite "processing" state
+ */
+async function processBrandExtractionWithTimeout(
+  workspaceId: string,
+  url: string,
+  supabase: SupabaseClient<Database>
+) {
+  const timeoutPromise = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error('Processing timed out')), PROCESSING_TIMEOUT)
+  )
+
+  try {
+    await Promise.race([
+      processBrandExtraction(workspaceId, url, supabase),
+      timeoutPromise,
+    ])
+  } catch (error: any) {
+    console.error('[Brand Extract] Background extraction failed:', error)
+    await supabase
+      .from('brand_workspaces')
+      .update({
+        extraction_status: 'error',
+        extraction_error: error.message,
+      })
+      .eq('id', workspaceId)
+  }
+}
+
+/**
  * Background process for brand extraction
  */
 async function processBrandExtraction(
   workspaceId: string,
   url: string,
-  supabase: any
+  supabase: SupabaseClient<Database>
 ) {
   try {
     // Step 1: Extract brand DNA with Firecrawl

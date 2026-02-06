@@ -6,7 +6,7 @@
  */
 
 import { inngest } from '../client'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { firecrawlService } from '@/lib/services/firecrawl.service'
 import { tavilyService } from '@/lib/services/tavily.service'
 
@@ -18,25 +18,25 @@ export const scrapeWebsite = inngest.createFunction(
   },
   { event: 'workspace/scrape-website' },
   async ({ event, step }) => {
-    const { workspace_id, website_url } = event.data
+    const { workspaceId, websiteUrl } = event.data
 
-    if (!workspace_id || !website_url) {
-      throw new Error('Missing workspace_id or website_url')
+    if (!workspaceId || !websiteUrl) {
+      throw new Error('Missing workspaceId or websiteUrl')
     }
 
     // Update status to processing
     await step.run('update-status-processing', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
       await supabase
         .from('workspaces')
         .update({ scrape_status: 'processing' })
-        .eq('id', workspace_id)
+        .eq('id', workspaceId)
     })
 
     // Try Firecrawl first
     const websiteData = await step.run('scrape-with-firecrawl', async () => {
       try {
-        const data = await firecrawlService.scrapeWebsite(website_url)
+        const data = await firecrawlService.scrapeWebsite(websiteUrl)
         return { success: true, data }
       } catch (error: any) {
         console.error('Firecrawl failed:', error.message)
@@ -51,7 +51,7 @@ export const scrapeWebsite = inngest.createFunction(
       const tavilyData = await step.run('fallback-to-tavily', async () => {
         try {
           // Extract domain for company name
-          const domain = new URL(website_url).hostname.replace('www.', '')
+          const domain = new URL(websiteUrl).hostname.replace('www.', '')
           const companyName = domain.split('.')[0]
 
           const data = await tavilyService.searchCompany(companyName, domain)
@@ -76,7 +76,7 @@ export const scrapeWebsite = inngest.createFunction(
 
     // Update workspace with scraped data
     await step.run('update-workspace', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       if (finalData) {
         await supabase
@@ -92,7 +92,7 @@ export const scrapeWebsite = inngest.createFunction(
             },
             scrape_status: 'completed',
           })
-          .eq('id', workspace_id)
+          .eq('id', workspaceId)
       } else {
         // Mark as failed but don't block
         await supabase
@@ -105,12 +105,12 @@ export const scrapeWebsite = inngest.createFunction(
               secondary_color: '#4f46e5',
             },
           })
-          .eq('id', workspace_id)
+          .eq('id', workspaceId)
       }
     })
 
     return {
-      workspace_id,
+      workspace_id: workspaceId,
       success: !!finalData,
       data: finalData,
     }

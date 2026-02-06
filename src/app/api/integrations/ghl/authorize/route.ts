@@ -41,17 +41,17 @@ async function getAuthenticatedUser() {
   )
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user: authUser },
+  } = await supabase.auth.getUser()
 
-  if (!session) {
+  if (!authUser) {
     return null
   }
 
   const { data: user } = await supabase
     .from('users')
     .select('id, workspace_id, email')
-    .eq('auth_user_id', session.user.id)
+    .eq('auth_user_id', authUser.id)
     .single()
 
   return user

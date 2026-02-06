@@ -114,6 +114,8 @@ export async function POST(request: NextRequest) {
         from_name: inboundEmail.fromName,
         subject: inboundEmail.subject,
         body_text: inboundEmail.text,
+        // WARNING: Raw HTML from untrusted inbound email - MUST be sanitized before rendering in UI
+        // Consider using DOMPurify or similar sanitization library when displaying this content
         body_html: inboundEmail.html,
         raw_payload: data,
         processed: false,

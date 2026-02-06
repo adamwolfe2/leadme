@@ -76,11 +76,7 @@ export async function PUT(
 
     // 3. Update lead with workspace filtering
     const leadRepo = new LeadRepository()
-    const lead = await leadRepo.update({
-      id,
-      workspace_id: user.workspace_id,
-      ...validated,
-    })
+    const lead = await leadRepo.update(id, user.workspace_id, validated)
 
     // 4. Return response
     return success(lead)

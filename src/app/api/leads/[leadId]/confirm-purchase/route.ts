@@ -11,9 +11,21 @@ import { PartnerRepository } from '@/lib/db/repositories/partner.repository'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { leadId: string } }
+  { params }: { params: Promise<{ leadId: string }> }
 ) {
   try {
+    const { leadId: resolvedLeadId } = await params
+
+    // Authenticate user
+    const supabaseAuth = await createClient()
+    const { data: { user: authUser } } = await supabaseAuth.auth.getUser()
+    if (!authUser) {
+      return NextResponse.json(
+        { error: 'Not authenticated' },
+        { status: 401 }
+      )
+    }
+
     const stripe = getStripeClient()
     const body = await request.json()
     const { paymentIntentId } = body
@@ -40,10 +52,24 @@ export async function POST(
     const partnerId = paymentIntent.metadata.partner_id
     const buyerId = paymentIntent.metadata.buyer_user_id
 
-    if (leadId !== params.leadId) {
+    if (leadId !== resolvedLeadId) {
       return NextResponse.json(
         { error: 'Lead ID mismatch' },
         { status: 400 }
+      )
+    }
+
+    // Verify the authenticated user matches the buyer in the Stripe metadata
+    const { data: buyerProfile } = await supabaseAuth
+      .from('users')
+      .select('id')
+      .eq('auth_user_id', authUser.id)
+      .single()
+
+    if (!buyerProfile || buyerProfile.id !== buyerId) {
+      return NextResponse.json(
+        { error: 'Authenticated user does not match buyer' },
+        { status: 403 }
       )
     }
 

@@ -2,7 +2,7 @@
 // Resets daily_credits_used for all users at midnight
 
 import { inngest } from '../client'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export const creditReset = inngest.createFunction(
   {
@@ -14,7 +14,7 @@ export const creditReset = inngest.createFunction(
   async ({ step, logger }) => {
     // Reset all users' daily credits
     const result = await step.run('reset-daily-credits', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { data, error } = await supabase
         .from('users')

@@ -2,7 +2,7 @@
 // Delivers leads via email, Slack, webhooks, and industry platforms
 
 import { inngest } from '../client'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
 import type { LeadCompanyData, LeadContactData, LeadIntentData, IntegrationConfig } from '@/types'
 
@@ -29,7 +29,7 @@ export const leadDelivery = inngest.createFunction(
     const { lead, workspace, users } = await step.run(
       'fetch-lead-and-workspace',
       async () => {
-        const supabase = await createClient()
+        const supabase = createAdminClient()
 
         const { data: leadData, error: leadError } = await supabase
           .from('leads')
@@ -105,7 +105,7 @@ export const leadDelivery = inngest.createFunction(
     if (delivery_channels.includes('slack')) {
       await step.run('send-slack', async () => {
         try {
-          const supabase = await createClient()
+          const supabase = createAdminClient()
           const { data: slackIntegration } = await supabase
             .from('integrations')
             .select('config')
@@ -187,7 +187,7 @@ export const leadDelivery = inngest.createFunction(
     if (delivery_channels.includes('webhook')) {
       await step.run('send-webhook', async () => {
         try {
-          const supabase = await createClient()
+          const supabase = createAdminClient()
           const { data: webhookIntegration } = await supabase
             .from('integrations')
             .select('config')
@@ -227,7 +227,7 @@ export const leadDelivery = inngest.createFunction(
 
     // Step 5: Update lead delivery status
     await step.run('update-delivery-status', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       await supabase
         .from('leads')

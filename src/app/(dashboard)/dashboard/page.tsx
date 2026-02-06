@@ -51,10 +51,10 @@ export default async function DashboardPage() {
     .select('*', { count: 'exact', head: true })
     .eq('workspace_id', user.workspace_id)
 
-  // Get recent leads
+  // Get recent leads - only select needed columns, NOT contact_email
   const { data: recentLeads } = await supabase
     .from('leads')
-    .select('*')
+    .select('id, company_name, contact_name, industry, status, created_at, intent_score_calculated, source')
     .eq('workspace_id', user.workspace_id)
     .order('created_at', { ascending: false })
     .limit(5)
@@ -197,7 +197,7 @@ export default async function DashboardPage() {
                     {lead.company_name || lead.contact_name || 'Unknown'}
                   </p>
                   <p className="text-sm text-muted-foreground truncate">
-                    {lead.contact_email || lead.industry || 'No details'}
+                    {lead.industry || lead.source || 'No details'}
                   </p>
                 </div>
                 <GradientBadge className={`flex-shrink-0 ${

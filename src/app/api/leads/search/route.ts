@@ -15,10 +15,10 @@ export async function POST(request: NextRequest) {
 
     // Check authentication
     const {
-      data: { session },
-    } = await supabase.auth.getSession()
+      data: { user: authUser },
+    } = await supabase.auth.getUser()
 
-    if (!session) {
+    if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     const { data: user, error: userError } = await supabase
       .from('users')
       .select('workspace_id')
-      .eq('auth_user_id', session.user.id)
+      .eq('auth_user_id', authUser.id)
       .single()
 
     if (userError || !user?.workspace_id) {

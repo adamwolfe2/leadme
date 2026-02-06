@@ -35,6 +35,28 @@ export async function GET(request: NextRequest) {
 
     const supabase = await createClient()
 
+    // Verify brand workspace belongs to user's workspace
+    const { data: userData } = await supabase
+      .from('users')
+      .select('workspace_id')
+      .eq('auth_user_id', user.id)
+      .single()
+
+    if (!userData) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    const { data: brandWorkspace } = await supabase
+      .from('brand_workspaces')
+      .select('id')
+      .eq('id', workspaceId)
+      .eq('workspace_id', userData.workspace_id)
+      .single()
+
+    if (!brandWorkspace) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
     // Fetch creatives for the workspace
     const { data: creatives, error } = await supabase
       .from('ad_creatives')
@@ -69,15 +91,27 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient()
 
+    // Verify brand workspace belongs to user's workspace
+    const { data: userData } = await supabase
+      .from('users')
+      .select('workspace_id')
+      .eq('auth_user_id', user.id)
+      .single()
+
+    if (!userData) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
     // 1. Get workspace with brand data and knowledge base
     const { data: workspace, error: workspaceError } = await supabase
       .from('brand_workspaces')
       .select('*, customer_profiles(*), offers(*)')
       .eq('id', workspaceId)
+      .eq('workspace_id', userData.workspace_id)
       .single()
 
     if (workspaceError || !workspace) {
-      throw new Error('Workspace not found')
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     // 2. Get selected ICP and offer

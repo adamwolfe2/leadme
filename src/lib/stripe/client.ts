@@ -28,3 +28,85 @@ export function getStripeClient(): Stripe {
 export function resetStripeClient() {
   stripeClient = null
 }
+
+/**
+ * Create a Stripe Checkout session
+ */
+export async function createCheckoutSession(params: {
+  userId: string
+  userEmail: string
+  workspaceId: string
+  priceId: string
+  successUrl: string
+  cancelUrl: string
+}) {
+  const stripe = getStripeClient()
+
+  const session = await stripe.checkout.sessions.create({
+    mode: 'subscription',
+    customer_email: params.userEmail,
+    line_items: [
+      {
+        price: params.priceId,
+        quantity: 1,
+      },
+    ],
+    metadata: {
+      user_id: params.userId,
+      workspace_id: params.workspaceId,
+    },
+    subscription_data: {
+      metadata: {
+        user_id: params.userId,
+        workspace_id: params.workspaceId,
+      },
+    },
+    success_url: params.successUrl,
+    cancel_url: params.cancelUrl,
+  })
+
+  return session
+}
+
+/**
+ * Cancel a Stripe subscription at the end of the billing period
+ */
+export async function cancelSubscription(subscriptionId: string) {
+  const stripe = getStripeClient()
+
+  const subscription = await stripe.subscriptions.update(subscriptionId, {
+    cancel_at_period_end: true,
+  })
+
+  return subscription
+}
+
+/**
+ * Resume a canceled Stripe subscription (undo cancel_at_period_end)
+ */
+export async function resumeSubscription(subscriptionId: string) {
+  const stripe = getStripeClient()
+
+  const subscription = await stripe.subscriptions.update(subscriptionId, {
+    cancel_at_period_end: false,
+  })
+
+  return subscription
+}
+
+/**
+ * Create a Stripe Customer Portal session
+ */
+export async function createPortalSession(params: {
+  customerId: string
+  returnUrl: string
+}) {
+  const stripe = getStripeClient()
+
+  const session = await stripe.billingPortal.sessions.create({
+    customer: params.customerId,
+    return_url: params.returnUrl,
+  })
+
+  return session
+}

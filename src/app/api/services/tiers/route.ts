@@ -10,12 +10,12 @@ import { isAdmin } from '@/lib/auth/roles'
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient()
-    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { user } } = await supabase.auth.getUser()
 
     // Check if user is admin
     let showAllTiers = false
-    if (session?.user) {
-      showAllTiers = await isAdmin(session.user)
+    if (user) {
+      showAllTiers = await isAdmin(user)
     }
 
     // Get tiers based on user role

@@ -201,8 +201,8 @@ export default function CampaignSuccessPage() {
           <div className="mt-8 pt-8 border-t border-gray-200">
             <p className="text-sm text-gray-500">
               Questions? Contact us at{' '}
-              <a href="mailto:support@openinfo.com" className="text-blue-600 hover:underline">
-                support@openinfo.com
+              <a href="mailto:hello@meetcursive.com" className="text-blue-600 hover:underline">
+                hello@meetcursive.com
               </a>
             </p>
           </div>

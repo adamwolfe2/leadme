@@ -2,7 +2,7 @@
 // Updates topic trends data every week
 
 import { inngest } from '../client'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export const weeklyTrends = inngest.createFunction(
   {
@@ -26,7 +26,7 @@ export const weeklyTrends = inngest.createFunction(
 
     // Fetch all topics
     const topics = await step.run('fetch-topics', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { data, error } = await supabase
         .from('global_topics')
@@ -45,7 +45,7 @@ export const weeklyTrends = inngest.createFunction(
     const trendResults = await Promise.all(
       topics.map(async (topic: any) => {
         return await step.run(`update-trend-${topic.id}`, async () => {
-          const supabase = await createClient()
+          const supabase = createAdminClient()
 
           // Get previous week's volume
           const { data: previousTrend } = await supabase

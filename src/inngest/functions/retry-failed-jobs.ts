@@ -4,7 +4,7 @@
  */
 
 import { inngest } from '../client'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import {
   getJobsForRetry,
   markRetrySuccess,
@@ -203,7 +203,7 @@ export const onJobRetryRequested = inngest.createFunction(
 
     // Get the job
     const job = await step.run('get-job', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
       const { data } = await supabase
         .from('failed_jobs')
         .select('*')

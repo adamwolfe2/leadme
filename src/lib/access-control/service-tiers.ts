@@ -1,5 +1,5 @@
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
-import type { Database } from '@/types/supabase'
+import type { Database } from '@/types/database.types'
 
 type ServiceTier = Database['public']['Tables']['service_tiers']['Row']
 type PlatformFeatures = {

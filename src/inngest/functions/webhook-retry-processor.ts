@@ -3,6 +3,7 @@
 
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
+import Stripe from 'stripe'
 
 export const webhookRetryProcessor = inngest.createFunction(
   {
@@ -10,7 +11,7 @@ export const webhookRetryProcessor = inngest.createFunction(
     name: 'Webhook Retry Processor',
     timeout: 300000, // 5 minutes
   },
-  { cron: '* * * * *' }, // Every minute
+  { cron: '*/5 * * * *' }, // Every 5 minutes
   async ({ step, logger }) => {
     const result = await step.run('process-retry-queue', async () => {
       const supabase = createAdminClient()

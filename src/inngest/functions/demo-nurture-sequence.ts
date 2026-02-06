@@ -7,7 +7,7 @@
  */
 
 import { inngest } from '../client'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { sendEmail } from '@/lib/services/outreach/email-sender.service'
 import type {
   DemoSequenceTokens,
@@ -54,7 +54,7 @@ export const demoNurtureSequence = inngest.createFunction(
     // ========================================================================
 
     const enrollment = await step.run('create-enrollment', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       // Check if already enrolled
       const { data: existing } = await supabase
@@ -353,7 +353,7 @@ export const demoNurtureSequence = inngest.createFunction(
     // ========================================================================
 
     await step.run('complete-sequence', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       await supabase
         .from('sequence_enrollments')
@@ -384,7 +384,7 @@ async function buildEmailTokens(
   timezone: string,
   additional: Partial<DemoSequenceTokens>
 ): Promise<DemoSequenceTokens> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const { data: lead } = await supabase
     .from('leads')
@@ -444,7 +444,7 @@ async function sendSequenceEmail({
   tokens: DemoSequenceTokens
   stepNumber: number
 }) {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   // Get email template
   const { data: template } = await supabase
@@ -526,7 +526,7 @@ async function sendSequenceEmail({
  * Check if lead has responded
  */
 async function checkIfLeadResponded(leadId: string): Promise<boolean> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const { data } = await supabase
     .from('lead_activities')
@@ -543,7 +543,7 @@ async function checkIfLeadResponded(leadId: string): Promise<boolean> {
  * Check if lead has started trial
  */
 async function checkIfLeadStartedTrial(leadId: string): Promise<boolean> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const { data } = await supabase
     .from('lead_activities')
@@ -569,7 +569,7 @@ async function shouldExitSequence(leadId: string, enrollmentId: string): Promise
  * Exit sequence with reason
  */
 async function exitSequence(enrollmentId: string, reason: string) {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   await supabase
     .from('sequence_enrollments')

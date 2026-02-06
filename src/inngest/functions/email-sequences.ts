@@ -10,7 +10,7 @@
  */
 
 import { inngest } from '../client'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { sendEmail, logSentEmail } from '@/lib/services/outreach/email-sender.service'
 import { generateSalesEmail } from '@/lib/services/ai/claude.service'
 import type { LeadContactData, LeadCompanyData } from '@/types'
@@ -59,7 +59,7 @@ export const processSequenceEnrollment = inngest.createFunction(
 
     // Step 1: Create enrollment record
     const enrollment = await step.run('create-enrollment', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       // Check if already enrolled
       const { data: existing } = await supabase
@@ -150,7 +150,7 @@ export const processSequenceStep = inngest.createFunction(
 
     // Step 1: Check enrollment status
     const { enrollment, sequenceStep, lead } = await step.run('fetch-data', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const [enrollmentResult, stepResult, leadResult] = await Promise.all([
         supabase
@@ -189,7 +189,7 @@ export const processSequenceStep = inngest.createFunction(
     if (!sequenceStep) {
       // No more steps, complete the sequence
       await step.run('complete-sequence', async () => {
-        const supabase = await createClient()
+        const supabase = createAdminClient()
         await supabase
           .from('email_sequence_enrollments')
           .update({
@@ -234,7 +234,7 @@ export const processSequenceStep = inngest.createFunction(
       // Mark as failed if email bounced
       if (stepResult.bounced) {
         await step.run('mark-bounced', async () => {
-          const supabase = await createClient()
+          const supabase = createAdminClient()
           await supabase
             .from('email_sequence_enrollments')
             .update({ status: 'bounced' })
@@ -249,7 +249,7 @@ export const processSequenceStep = inngest.createFunction(
 
     // Step 3: Schedule next step
     await step.run('schedule-next-step', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       // Update current step
       await supabase
@@ -332,7 +332,7 @@ async function executeEmailStep(
   }
 
   // Get workspace info for sender
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data: workspace } = await supabase
     .from('workspaces')
     .select('name')
@@ -469,7 +469,7 @@ async function executeConditionStep(
     switch (condition.type) {
       case 'email_opened':
         // Check if any previous email in sequence was opened
-        const supabase = await createClient()
+        const supabase = createAdminClient()
         const { data: openedEmails } = await supabase
           .from('sent_emails')
           .select('id')
@@ -481,7 +481,7 @@ async function executeConditionStep(
         break
 
       case 'email_clicked':
-        const { data: clickedEmails } = await (await createClient())
+        const { data: clickedEmails } = await createAdminClient()
           .from('sent_emails')
           .select('id')
           .eq('sequence_enrollment_id', enrollment.id)
@@ -518,7 +518,7 @@ async function executeActionStep(
     return { success: true }
   }
 
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   switch (config.action) {
     case 'add_tag':
@@ -626,7 +626,7 @@ export const processScheduledSteps = inngest.createFunction(
   { cron: '*/5 * * * *' }, // Every 5 minutes
   async ({ step, logger }) => {
     const enrollments = await step.run('fetch-due-enrollments', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { data } = await supabase
         .from('email_sequence_enrollments')

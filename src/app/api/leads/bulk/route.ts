@@ -9,11 +9,11 @@ import { handleApiError, unauthorized, success, badRequest } from '@/lib/utils/a
 
 const bulkActionSchema = z.object({
   action: z.enum(['update_status', 'assign', 'add_tags', 'remove_tags', 'delete', 'export']),
-  lead_ids: z.array(z.string().uuid()).min(1, 'At least one lead is required'),
+  lead_ids: z.array(z.string().uuid()).min(1, 'At least one lead is required').max(500, 'Cannot process more than 500 leads at once'),
   // Action-specific params
   status: z.enum(['new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost']).optional(),
   assigned_to: z.string().uuid().optional(),
-  tag_ids: z.array(z.string().uuid()).optional(),
+  tag_ids: z.array(z.string().uuid()).max(50, 'Cannot apply more than 50 tags at once').optional(),
   note: z.string().max(500).optional(),
 })
 

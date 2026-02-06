@@ -144,11 +144,6 @@ export async function middleware(req: NextRequest) {
     // Auth routes (login, signup) - allow access even if authenticated
     // Users may want to re-login or access these pages directly
 
-    // Admin bypass cookie allows full access
-    if (hasAdminBypass) {
-      return client.response
-    }
-
     // Protected routes require authentication
     if (!isPublicRoute && !user) {
       const redirectUrl = new URL('/login', req.url)

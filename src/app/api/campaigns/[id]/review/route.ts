@@ -96,6 +96,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       validatedData.review_id,
       user.id,
       validatedData.status,
+      user.workspace_id,
       validatedData.notes,
       validatedData.requested_changes
     )
@@ -121,7 +122,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const campaign = await repo.findById(id, user.workspace_id)
     if (!campaign) return notFound('Campaign not found')
 
-    const reviews = await repo.getCampaignReviews(id)
+    const reviews = await repo.getCampaignReviews(id, user.workspace_id)
 
     return success(reviews)
   } catch (error: unknown) {

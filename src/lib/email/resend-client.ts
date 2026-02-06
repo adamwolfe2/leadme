@@ -5,11 +5,17 @@
 
 import { Resend } from 'resend'
 
-if (!process.env.RESEND_API_KEY) {
-  throw new Error('RESEND_API_KEY is not defined in environment variables')
-}
+let resendInstance: Resend | null = null
 
-export const resend = new Resend(process.env.RESEND_API_KEY)
+function getResend(): Resend {
+  if (!resendInstance) {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error('RESEND_API_KEY is not configured')
+    }
+    resendInstance = new Resend(process.env.RESEND_API_KEY)
+  }
+  return resendInstance
+}
 
 // Email configuration
 export const EMAIL_CONFIG = {
@@ -47,7 +53,7 @@ export async function sendEmail({
   text?: string
 }) {
   try {
-    const result = await resend.emails.send({
+    const result = await getResend().emails.send({
       from: EMAIL_CONFIG.from,
       replyTo: EMAIL_CONFIG.replyTo,
       to,

@@ -21,10 +21,10 @@ export async function isAdmin(): Promise<boolean> {
   try {
     const supabase = await createClient()
 
-    // Get current session
-    const { data: { session } } = await supabase.auth.getSession()
+    // Get current user
+    const { data: { user } } = await supabase.auth.getUser()
 
-    if (!session?.user?.email) {
+    if (!user?.email) {
       return false
     }
 
@@ -32,7 +32,7 @@ export async function isAdmin(): Promise<boolean> {
     const { data: admin } = await supabase
       .from('platform_admins')
       .select('id')
-      .eq('email', session.user.email)
+      .eq('email', user.email)
       .eq('is_active', true)
       .single()
 
@@ -49,8 +49,8 @@ export async function isAdmin(): Promise<boolean> {
 export async function getCurrentAdminEmail(): Promise<string | null> {
   try {
     const supabase = await createClient()
-    const { data: { session } } = await supabase.auth.getSession()
-    return session?.user?.email || null
+    const { data: { user } } = await supabase.auth.getUser()
+    return user?.email || null
   } catch {
     return null
   }
@@ -73,16 +73,16 @@ export async function requireAdmin(): Promise<void> {
 export async function getCurrentAdminId(): Promise<string | null> {
   try {
     const supabase = await createClient()
-    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { user } } = await supabase.auth.getUser()
 
-    if (!session?.user?.email) {
+    if (!user?.email) {
       return null
     }
 
     const { data: admin } = await supabase
       .from('platform_admins')
       .select('id')
-      .eq('email', session.user.email)
+      .eq('email', user.email)
       .eq('is_active', true)
       .single()
 
@@ -98,16 +98,16 @@ export async function getCurrentAdminId(): Promise<string | null> {
 export async function getCurrentAdmin(): Promise<PlatformAdmin | null> {
   try {
     const supabase = await createClient()
-    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { user } } = await supabase.auth.getUser()
 
-    if (!session?.user?.email) {
+    if (!user?.email) {
       return null
     }
 
     const { data: admin } = await supabase
       .from('platform_admins')
       .select('*')
-      .eq('email', session.user.email)
+      .eq('email', user.email)
       .eq('is_active', true)
       .single()
 

@@ -107,6 +107,21 @@ function sanitizeRedirectPath(path: string): string {
   return path
 }
 
+/**
+ * Escape a string for safe inclusion in a JavaScript string literal.
+ * Prevents XSS when injecting into: window.location.href = '...'
+ */
+function escapeForJsStringLiteral(str: string): string {
+  return str
+    .replace(/\\/g, '\\\\')   // backslashes first
+    .replace(/'/g, "\\'")      // single quotes
+    .replace(/"/g, '\\"')      // double quotes
+    .replace(/</g, '\\x3c')   // opening angle brackets (prevents </script> breakout)
+    .replace(/>/g, '\\x3e')   // closing angle brackets
+    .replace(/\n/g, '\\n')    // newlines
+    .replace(/\r/g, '\\r')    // carriage returns
+}
+
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
@@ -142,15 +157,15 @@ export async function GET(request: NextRequest) {
 
     // Get user and check if they have a workspace
     const {
-      data: { session },
-    } = await supabase.auth.getSession()
+      data: { user: authUser },
+    } = await supabase.auth.getUser()
 
     let redirectUrl = next
-    if (session) {
+    if (authUser) {
       const { data: user } = await supabase
         .from('users')
         .select('workspace_id')
-        .eq('auth_user_id', session.user.id)
+        .eq('auth_user_id', authUser.id)
         .single()
 
       // Redirect to welcome page if no user profile exists
@@ -160,12 +175,14 @@ export async function GET(request: NextRequest) {
     }
 
     // Show loading page with auto-redirect
-    const loadingHtml = LOADING_PAGE.replace('{{REDIRECT_URL}}', redirectUrl)
+    // Escape for safe injection into JavaScript string literal to prevent XSS
+    const safeRedirectUrl = escapeForJsStringLiteral(redirectUrl)
+    const loadingHtml = LOADING_PAGE.replace('{{REDIRECT_URL}}', safeRedirectUrl)
     const response = new NextResponse(loadingHtml, {
       status: 200,
       headers: {
         'Content-Type': 'text/html',
-        'Refresh': `0; url=${redirectUrl}`, // Meta refresh for instant redirect
+        'Refresh': `0; url=${encodeURI(redirectUrl)}`, // Meta refresh for instant redirect
       },
     })
 

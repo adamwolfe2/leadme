@@ -6,6 +6,19 @@
 import { createEmailTemplate, EMAIL_CONFIG } from './resend-client'
 
 /**
+ * Escape user-provided strings before interpolating into HTML
+ * to prevent HTML injection / XSS.
+ */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
+/**
  * Welcome Email - Sent after subscription is created
  */
 export function createWelcomeEmail({
@@ -17,15 +30,18 @@ export function createWelcomeEmail({
   tierName: string
   monthlyPrice: number
 }) {
+  const safeCustomerName = escapeHtml(customerName)
+  const safeTierName = escapeHtml(tierName)
+
   const content = `
     <h1 class="email-title">You're in. Here's what happens next.</h1>
 
     <p class="email-text">
-      Hi ${customerName},
+      Hi ${safeCustomerName},
     </p>
 
     <p class="email-text">
-      Your ${tierName} subscription is live at $${monthlyPrice.toLocaleString()}/month.
+      Your ${safeTierName} subscription is live at $${monthlyPrice.toLocaleString()}/month.
     </p>
 
     <p class="email-text">
@@ -95,6 +111,9 @@ export function createPaymentSuccessEmail({
   amount: number
   periodEnd: string
 }) {
+  const safeCustomerName = escapeHtml(customerName)
+  const safeTierName = escapeHtml(tierName)
+
   const formattedDate = new Date(periodEnd).toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
@@ -102,10 +121,10 @@ export function createPaymentSuccessEmail({
   })
 
   const content = `
-    <h1 class="email-title">Payment received for ${tierName}</h1>
+    <h1 class="email-title">Payment received for ${safeTierName}</h1>
 
     <p class="email-text">
-      Hi ${customerName},
+      Hi ${safeCustomerName},
     </p>
 
     <p class="email-text">
@@ -142,7 +161,7 @@ Adam
   return {
     html: createEmailTemplate({
       preheader: `Payment confirmed - $${amount.toLocaleString()}`,
-      title: `Payment received for ${tierName}`,
+      title: `Payment received for ${safeTierName}`,
       content,
     }),
     text,
@@ -161,15 +180,18 @@ export function createPaymentFailedEmail({
   tierName: string
   amount: number
 }) {
+  const safeCustomerName = escapeHtml(customerName)
+  const safeTierName = escapeHtml(tierName)
+
   const content = `
     <h1 class="email-title">Quick heads up: payment didn't go through</h1>
 
     <p class="email-text">
-      Hi ${customerName},
+      Hi ${safeCustomerName},
     </p>
 
     <p class="email-text">
-      Your $${amount.toLocaleString()} charge for ${tierName} got declined. Usually it's an expired card or a bank flag.
+      Your $${amount.toLocaleString()} charge for ${safeTierName} got declined. Usually it's an expired card or a bank flag.
     </p>
 
     <p class="email-text">
@@ -227,6 +249,9 @@ export function createSubscriptionCancelledEmail({
   tierName: string
   accessUntil: string
 }) {
+  const safeCustomerName = escapeHtml(customerName)
+  const safeTierName = escapeHtml(tierName)
+
   const formattedDate = new Date(accessUntil).toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
@@ -237,11 +262,11 @@ export function createSubscriptionCancelledEmail({
     <h1 class="email-title">You're cancelled. Door's always open.</h1>
 
     <p class="email-text">
-      Hi ${customerName},
+      Hi ${safeCustomerName},
     </p>
 
     <p class="email-text">
-      Your ${tierName} subscription is cancelled. You'll still have access through ${formattedDate}.
+      Your ${safeTierName} subscription is cancelled. You'll still have access through ${formattedDate}.
     </p>
 
     <p class="email-text">
@@ -303,15 +328,18 @@ export function createOnboardingReminderEmail({
   customerName: string
   tierName: string
 }) {
+  const safeCustomerName = escapeHtml(customerName)
+  const safeTierName = escapeHtml(tierName)
+
   const content = `
     <h1 class="email-title">Let's get your first leads rolling</h1>
 
     <p class="email-text">
-      Hi ${customerName},
+      Hi ${safeCustomerName},
     </p>
 
     <p class="email-text">
-      You signed up for ${tierName} a few days ago but haven't finished onboarding yet.
+      You signed up for ${safeTierName} a few days ago but haven't finished onboarding yet.
     </p>
 
     <p class="email-text">
@@ -371,6 +399,9 @@ export function createRenewalReminderEmail({
   amount: number
   renewalDate: string
 }) {
+  const safeCustomerName = escapeHtml(customerName)
+  const safeTierName = escapeHtml(tierName)
+
   const formattedDate = new Date(renewalDate).toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
@@ -381,11 +412,11 @@ export function createRenewalReminderEmail({
     <h1 class="email-title">Heads up: renewal in 7 days</h1>
 
     <p class="email-text">
-      Hi ${customerName},
+      Hi ${safeCustomerName},
     </p>
 
     <p class="email-text">
-      Your ${tierName} subscription renews on ${formattedDate} for $${amount.toLocaleString()}.
+      Your ${safeTierName} subscription renews on ${formattedDate} for $${amount.toLocaleString()}.
     </p>
 
     <p class="email-text">
@@ -457,16 +488,18 @@ export function createDeliveryNotificationEmail({
   }
 
   const deliveryLabel = typeLabels[deliveryType] || deliveryType
+  const safeCustomerName = escapeHtml(customerName)
+  const safeDeliveryLabel = escapeHtml(deliveryLabel)
 
   const content = `
-    <h1 class="email-title">Your ${deliveryLabel} is ready</h1>
+    <h1 class="email-title">Your ${safeDeliveryLabel} is ready</h1>
 
     <p class="email-text">
-      Hi ${customerName},
+      Hi ${safeCustomerName},
     </p>
 
     <p class="email-text">
-      Just finished your ${deliveryLabel}. It's ready to download.
+      Just finished your ${safeDeliveryLabel}. It's ready to download.
     </p>
 
     <a href="${downloadUrl}" class="email-button">
@@ -498,8 +531,8 @@ Adam
 
   return {
     html: createEmailTemplate({
-      preheader: `Your ${deliveryLabel} is ready to download`,
-      title: `Your ${deliveryLabel} is ready`,
+      preheader: `Your ${safeDeliveryLabel} is ready to download`,
+      title: `Your ${safeDeliveryLabel} is ready`,
       content,
     }),
     text,

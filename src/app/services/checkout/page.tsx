@@ -71,7 +71,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
       serviceTierSlug: tierSlug,
     })
 
-    redirect(checkoutUrl)
+    redirect(checkoutUrl.checkout_url)
   } catch (error) {
     console.error('Checkout error:', error)
     redirect('/?error=checkout_failed')

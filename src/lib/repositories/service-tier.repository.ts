@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import type { Database } from '@/types/supabase'
+import type { Database } from '@/types/database.types'
 
 type ServiceTier = Database['public']['Tables']['service_tiers']['Row']
 type ServiceTierInsert = Database['public']['Tables']['service_tiers']['Insert']
@@ -104,7 +104,7 @@ export class ServiceTierRepository {
 
     const { data, error } = await supabase
       .from('service_subscriptions')
-      .select('*')
+      .select('*, service_tiers(*)')
       .eq('workspace_id', workspaceId)
       .eq('status', 'active')
       .single()

@@ -98,7 +98,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
       return badRequest('Can only remove leads from draft campaigns')
     }
 
-    await repo.removeLeadFromCampaign(id, validatedData.lead_id)
+    await repo.removeLeadFromCampaign(id, validatedData.lead_id, user.workspace_id)
 
     return success({ message: 'Lead removed from campaign' })
   } catch (error: unknown) {

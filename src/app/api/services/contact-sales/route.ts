@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
   try {
     // Optionally verify authentication (can be public or authenticated)
     const supabase = await createClient()
-    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { user } } = await supabase.auth.getUser()
 
     // Parse and validate request body
     const body = await request.json()

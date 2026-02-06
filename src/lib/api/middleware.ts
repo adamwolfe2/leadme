@@ -56,10 +56,10 @@ async function getCurrentUser(): Promise<AuthenticatedUser | null> {
     )
 
     const {
-      data: { session },
-    } = await supabase.auth.getSession()
+      data: { user: authUser },
+    } = await supabase.auth.getUser()
 
-    if (!session) {
+    if (!authUser) {
       return null
     }
 
@@ -67,7 +67,7 @@ async function getCurrentUser(): Promise<AuthenticatedUser | null> {
     const { data: user } = await supabase
       .from('users')
       .select('*, workspaces(*)')
-      .eq('auth_user_id', session.user.id)
+      .eq('auth_user_id', authUser.id)
       .single()
 
     if (!user) {
@@ -80,7 +80,7 @@ async function getCurrentUser(): Promise<AuthenticatedUser | null> {
     return {
       id: typedUser.id,
       auth_user_id: typedUser.auth_user_id,
-      email: session.user.email || '',
+      email: authUser.email || '',
       full_name: typedUser.full_name || '',
       workspace_id: typedUser.workspace_id,
       plan: workspace?.plan || 'free',

@@ -2,7 +2,7 @@
 // Enriches leads added to campaigns with AI-powered research
 
 import { inngest } from '../client'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import Anthropic from '@anthropic-ai/sdk'
 
 // Mock flag for development when API keys aren't available
@@ -47,7 +47,7 @@ export const enrichCampaignLead = inngest.createFunction(
 
     // Step 1: Fetch lead and campaign data
     const { lead, campaign } = await step.run('fetch-data', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const [leadResult, campaignResult] = await Promise.all([
         supabase
@@ -112,7 +112,7 @@ export const enrichCampaignLead = inngest.createFunction(
 
     // Step 4: Update campaign_lead record
     await step.run('update-campaign-lead', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { error } = await supabase
         .from('campaign_leads')
@@ -170,7 +170,7 @@ export const batchEnrichCampaignLeads = inngest.createFunction(
 
     // Fetch all pending leads for this campaign
     const pendingLeads = await step.run('fetch-pending-leads', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { data, error } = await supabase
         .from('campaign_leads')

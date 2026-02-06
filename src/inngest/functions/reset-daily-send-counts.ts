@@ -4,7 +4,7 @@
  */
 
 import { inngest } from '../client'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 /**
  * Daily reset cron job
@@ -25,7 +25,7 @@ export const resetDailySendCounts = inngest.createFunction(
 
     // Step 1: Reset workspace counts using database function
     const workspaceResult = await step.run('reset-workspace-counts', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       // Use the database function for atomic reset
       const { error } = await supabase.rpc('reset_all_daily_send_counts')
@@ -41,7 +41,7 @@ export const resetDailySendCounts = inngest.createFunction(
 
     // Step 2: Log the reset for audit purposes
     await step.run('log-reset', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       // Get count of active workspaces and campaigns for logging
       const [workspaceCount, campaignCount] = await Promise.all([
@@ -77,7 +77,7 @@ export const resetDailySendCounts = inngest.createFunction(
  * Manual fallback for resetting counts if database function fails
  */
 async function manualResetCounts(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: ReturnType<typeof createAdminClient>,
   logger: any
 ): Promise<{ success: boolean; method: string; errors?: string[] }> {
   const today = new Date().toISOString().split('T')[0]
@@ -146,7 +146,7 @@ export const resetWorkspaceSendCount = inngest.createFunction(
     logger.info(`Resetting send count for workspace ${workspace_id}`)
 
     await step.run('reset-counts', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       // Reset workspace count
       const { error: workspaceError } = await supabase

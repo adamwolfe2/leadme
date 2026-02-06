@@ -22,6 +22,7 @@ export const { GET, POST, PUT } = serve({
 
     // Marketplace Functions
     functions.processPartnerUpload,
+    functions.retryStalledUploads,
     functions.processEmailVerification,
 
     // Marketplace Jobs

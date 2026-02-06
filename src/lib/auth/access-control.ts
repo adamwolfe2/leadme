@@ -4,7 +4,7 @@
  */
 
 import { redirect } from 'next/navigation'
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 
 export type UserRole = 'owner' | 'admin' | 'member' | 'partner'
 
@@ -22,7 +22,7 @@ export interface AccessControlUser {
  * Get current user with access control fields
  */
 export async function getCurrentUserWithAccess(): Promise<AccessControlUser | null> {
-  const supabase = createServerClient()
+  const supabase = await createClient()
 
   const { data: { user: authUser } } = await supabase.auth.getUser()
   if (!authUser) return null

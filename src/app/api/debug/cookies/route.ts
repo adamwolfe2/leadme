@@ -19,9 +19,9 @@ export async function GET(req: NextRequest) {
     c.name.includes('supabase')
   )
 
-  // Try to read session
+  // Try to read user
   const supabase = await createClient()
-  const { data: { session }, error } = await supabase.auth.getSession()
+  const { data: { user }, error } = await supabase.auth.getUser()
 
   return NextResponse.json({
     totalCookies: allCookies.length,
@@ -31,11 +31,10 @@ export async function GET(req: NextRequest) {
       valueLength: c.value?.length || 0,
       hasValue: !!c.value,
     })),
-    session: {
-      exists: !!session,
-      userId: session?.user?.id || null,
-      userEmail: session?.user?.email || null,
-      expiresAt: session?.expires_at || null,
+    user: {
+      exists: !!user,
+      userId: user?.id || null,
+      userEmail: user?.email || null,
     },
     error: error?.message || null,
     adminBypassCookie: cookieStore.get('admin_bypass_waitlist')?.value || null,

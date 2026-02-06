@@ -250,7 +250,7 @@ export async function POST(request: NextRequest) {
       const completedPurchase = await repo.completePurchase(purchase.id)
 
       // Get full lead details for the buyer
-      const purchasedLeads = await repo.getPurchasedLeads(purchase.id)
+      const purchasedLeads = await repo.getPurchasedLeads(purchase.id, userData.workspace_id)
 
       // Send purchase confirmation email
       try {
@@ -494,7 +494,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Purchase not found' }, { status: 404 })
     }
 
-    const leads = await repo.getPurchasedLeads(purchaseId)
+    const leads = await repo.getPurchasedLeads(purchaseId, userData.workspace_id)
 
     return NextResponse.json({
       purchase,

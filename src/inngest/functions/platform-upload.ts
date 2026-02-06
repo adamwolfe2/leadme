@@ -2,7 +2,7 @@
 // Uploads hot and warm leads to industry-specific platforms
 
 import { inngest } from '../client'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export const platformUpload = inngest.createFunction(
   {
@@ -21,7 +21,7 @@ export const platformUpload = inngest.createFunction(
 
     // Step 1: Fetch leads with full data
     const leads = await step.run('fetch-leads', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { data, error } = await supabase
         .from('leads')
@@ -38,7 +38,7 @@ export const platformUpload = inngest.createFunction(
 
     // Step 2: Get platform credentials from workspace integrations
     const platformConfig = await step.run('get-platform-config', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { data: integration } = await supabase
         .from('integrations')
@@ -105,7 +105,7 @@ export const platformUpload = inngest.createFunction(
 
     // Step 5: Record upload in database
     await step.run('record-upload', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       // Update leads with platform upload status
       await supabase

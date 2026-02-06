@@ -7,13 +7,13 @@ export async function GET() {
   try {
     // Check admin authentication
     const supabase = await createClient()
-    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { user } } = await supabase.auth.getUser()
 
-    if (!session?.user) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const hasAdminAccess = await isAdmin(session.user)
+    const hasAdminAccess = await isAdmin(user)
     if (!hasAdminAccess) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }

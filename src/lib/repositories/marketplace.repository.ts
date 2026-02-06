@@ -331,21 +331,17 @@ export class MarketplaceRepository {
 
   /**
    * Get purchase by ID with workspace validation
+   * SECURITY: workspaceId is required to prevent cross-tenant data access
    */
-  async getPurchase(purchaseId: string, workspaceId?: string): Promise<MarketplacePurchase | null> {
+  async getPurchase(purchaseId: string, workspaceId: string): Promise<MarketplacePurchase | null> {
     const supabase = await createClient()
 
-    let query = supabase
+    const { data, error } = await supabase
       .from('marketplace_purchases')
       .select('*')
       .eq('id', purchaseId)
-
-    // SECURITY: Filter by workspace if provided (prevents cross-workspace access)
-    if (workspaceId) {
-      query = query.eq('buyer_workspace_id', workspaceId)
-    }
-
-    const { data, error } = await query.single()
+      .eq('buyer_workspace_id', workspaceId)
+      .single()
 
     if (error || !data) return null
     return data as MarketplacePurchase
@@ -403,19 +399,21 @@ export class MarketplaceRepository {
 
   /**
    * Get leads purchased in a specific purchase (full details)
+   * SECURITY: workspaceId is required to verify purchase ownership before returning lead data
    */
-  async getPurchasedLeads(purchaseId: string): Promise<MarketplaceLead[]> {
+  async getPurchasedLeads(purchaseId: string, workspaceId: string): Promise<MarketplaceLead[]> {
     const supabase = await createClient()
 
-    // First verify the purchase belongs to the user's workspace
+    // SECURITY: Verify the purchase belongs to the specified workspace
     const { data: purchase } = await supabase
       .from('marketplace_purchases')
       .select('id')
       .eq('id', purchaseId)
+      .eq('buyer_workspace_id', workspaceId)
       .single()
 
     if (!purchase) {
-      throw new Error('Purchase not found')
+      throw new Error('Purchase not found or does not belong to workspace')
     }
 
     // Get the lead IDs from purchase items

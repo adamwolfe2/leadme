@@ -82,8 +82,8 @@ export async function createServiceCheckout(
       workspace_id: workspaceId,
       service_tier_id: tier.id,
       service_tier_slug: tier.slug,
-      monthly_price: monthlyPrice.toString(),
-      setup_fee: setupFee.toString()
+      monthly_price: (negotiatedMonthlyPrice ?? tier.monthly_price ?? 0).toString(),
+      setup_fee: (tier.setup_fee ?? 0).toString()
     },
     subscription_data: {
       metadata: {

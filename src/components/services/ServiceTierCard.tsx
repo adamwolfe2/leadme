@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { ArrowRight, CheckCircle } from 'lucide-react'
-import type { Database } from '@/types/supabase'
+import type { Database } from '@/types/database.types'
 import { trackCTAClick } from '@/lib/analytics/service-tier-events'
 
 type ServiceTier = Database['public']['Tables']['service_tiers']['Row']

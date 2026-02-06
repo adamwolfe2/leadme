@@ -2,7 +2,7 @@
 // Runs every day at 2 AM to discover new companies with intent signals
 
 import { inngest } from '../client'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { DataShopperClient } from '@/lib/integrations/datashopper'
 import type { Query, QueryFilters } from '@/types'
 
@@ -17,7 +17,7 @@ export const dailyLeadGeneration = inngest.createFunction(
   async ({ step, logger }) => {
     // Step 1: Fetch all active queries
     const queries = await step.run('fetch-active-queries', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { data, error } = await supabase
         .from('queries')
@@ -76,7 +76,7 @@ export const dailyLeadGeneration = inngest.createFunction(
             }
 
             // Step 3: Insert leads into database
-            const supabase = await createClient()
+            const supabase = createAdminClient()
             const leadsToInsert = response.results.map((company) => {
               const intentScore = dataShopperClient.calculateIntentScore(
                 company.intent_signals

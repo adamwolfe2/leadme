@@ -85,7 +85,7 @@ export async function generateAdCreative({
         image_size: dimensions,
         num_inference_steps: steps,
         num_images: 1,
-        enable_safety_checker: false, // We're generating professional ads
+        enable_safety_checker: true,
         guidance_scale: quality === 'high' ? 3.5 : 3.0, // Higher guidance for better brand adherence
       }
     }) as any

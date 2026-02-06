@@ -2,7 +2,7 @@
 // Enriches leads with contact data from Clay
 
 import { inngest } from '../client'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { ClayClient } from '@/lib/integrations/clay'
 import type { LeadCompanyData } from '@/types'
 
@@ -19,7 +19,7 @@ export const leadEnrichment = inngest.createFunction(
 
     // Step 1: Fetch lead from database
     const lead = await step.run('fetch-lead', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { data, error } = await supabase
         .from('leads')
@@ -80,7 +80,7 @@ export const leadEnrichment = inngest.createFunction(
 
     // Step 3: Update lead with enriched data
     await step.run('update-lead', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const updateData: any = {
         enrichment_status: 'completed',
@@ -133,7 +133,7 @@ export const leadEnrichment = inngest.createFunction(
     // Step 4: Trigger delivery
     await step.run('trigger-delivery', async () => {
       // Determine delivery channels based on workspace settings
-      const supabase = await createClient()
+      const supabase = createAdminClient()
       const { data: workspace } = await supabase
         .from('workspaces')
         .select('id')
@@ -191,7 +191,7 @@ export const leadEnrichmentFailure = inngest.createFunction(
     const { lead_id, workspace_id } = event.data
 
     await step.run('mark-as-failed', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       await supabase
         .from('leads')

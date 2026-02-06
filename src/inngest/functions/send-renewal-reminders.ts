@@ -1,5 +1,5 @@
 import { inngest } from '../client'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { sendRenewalReminderEmail } from '@/lib/email/service-emails'
 
 /**
@@ -18,7 +18,7 @@ export const sendRenewalReminders = inngest.createFunction(
   { cron: '0 9 * * *' }, // Daily at 9 AM UTC
   async ({ step }) => {
     const results = await step.run('find-upcoming-renewals', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       // Find subscriptions renewing in 7 days
       const sevenDaysFromNow = new Date()

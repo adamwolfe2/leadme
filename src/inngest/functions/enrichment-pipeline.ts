@@ -7,7 +7,7 @@
  */
 
 import { inngest } from '../client'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { validateEmail, findBestEmail } from '@/lib/services/enrichment/email-validation.service'
 import {
   analyzeCompany,
@@ -58,7 +58,7 @@ export const processEnrichmentJob = inngest.createFunction(
 
     // Step 1: Mark job as in progress and fetch lead
     const { job, lead } = await step.run('fetch-job-and-lead', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       // Update job status
       await supabase
@@ -116,7 +116,7 @@ export const processEnrichmentJob = inngest.createFunction(
 
     // Step 3: Update lead with enrichment results
     await step.run('update-lead', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       if (enrichmentResult.success && enrichmentResult.data) {
         const updatePayload: Record<string, any> = {
@@ -169,7 +169,7 @@ export const processEnrichmentJob = inngest.createFunction(
 
     // Step 4: Trigger next enrichment or delivery if this was the last one
     await step.run('check-completion', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       // Check if there are more pending jobs for this lead
       const { data: pendingJobs } = await supabase
@@ -309,7 +309,7 @@ async function enrichWithAI(
 
   try {
     // Fetch workspace ICP for qualification
-    const supabase = await createClient()
+    const supabase = createAdminClient()
     const { data: workspace } = await supabase
       .from('workspaces')
       .select('industry_vertical, allowed_industries, allowed_regions')
@@ -545,7 +545,7 @@ export const batchEnrichLeads = inngest.createFunction(
 
     // Queue enrichment jobs for each lead
     const jobIds = await step.run('queue-jobs', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
       const jobs: string[] = []
 
       for (const leadId of lead_ids) {
@@ -616,7 +616,7 @@ export const enrichNewLead = inngest.createFunction(
 
     // Check workspace settings
     const autoEnrich = await step.run('check-settings', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
       const { data: workspace } = await supabase
         .from('workspaces')
         .select('auto_enrich_leads, enrichment_provider')

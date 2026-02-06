@@ -48,10 +48,10 @@ export async function POST(req: NextRequest) {
 
     // Check authentication
     const {
-      data: { session },
-    } = await supabase.auth.getSession()
+      data: { user },
+    } = await supabase.auth.getUser()
 
-    if (!session) {
+    if (!user) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
 
     // Verify current password by attempting to sign in
     const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: session.user.email!,
+      email: user.email!,
       password: currentPassword,
     })
 

@@ -10,9 +10,10 @@ import { withRateLimit } from '@/lib/middleware/rate-limiter'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { leadId: string } }
+  { params }: { params: Promise<{ leadId: string }> }
 ) {
   try {
+    const { leadId } = await params
     const stripe = getStripeClient()
     const supabase = await createClient()
 
@@ -56,7 +57,7 @@ export async function POST(
     const { data: lead, error: leadError } = await supabase
       .from('leads')
       .select('id, business_name, industry, uploaded_by_partner_id, status')
-      .eq('id', params.leadId)
+      .eq('id', leadId)
       .single()
 
     if (leadError || !lead) {
@@ -77,7 +78,7 @@ export async function POST(
       automatic_payment_methods: { enabled: true },
       metadata: {
         type: 'lead_purchase',
-        lead_id: params.leadId,
+        lead_id: leadId,
         buyer_user_id: user.id,
         buyer_workspace_id: user.workspace_id,
         partner_id: lead.uploaded_by_partner_id || 'none',

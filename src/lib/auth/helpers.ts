@@ -35,10 +35,10 @@ export async function getCurrentUser(): Promise<User | null> {
   const supabase = await createClient()
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user: authUser },
+  } = await supabase.auth.getUser()
 
-  if (!session?.user) {
+  if (!authUser) {
     return null
   }
 
@@ -46,7 +46,7 @@ export async function getCurrentUser(): Promise<User | null> {
   const { data: user } = await supabase
     .from('users')
     .select('*')
-    .eq('auth_user_id', session.user.id)
+    .eq('auth_user_id', authUser.id)
     .single()
 
   return user as User | null
@@ -92,17 +92,17 @@ export async function getUserWithWorkspace() {
   const supabase = await createClient()
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user: authUser },
+  } = await supabase.auth.getUser()
 
-  if (!session?.user) {
+  if (!authUser) {
     return null
   }
 
   const { data: user } = await supabase
     .from('users')
     .select('*, workspaces(*)')
-    .eq('auth_user_id', session.user.id)
+    .eq('auth_user_id', authUser.id)
     .single()
 
   return user
@@ -176,23 +176,23 @@ export async function requirePermission(
 }
 
 /**
- * Get auth session
- * Returns the raw Supabase session
+ * Get authenticated user
+ * Returns the verified Supabase auth user via getUser() (server-validated)
  */
-export async function getSession() {
+export async function getAuthUser() {
   const supabase = await createClient()
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  return session
+    data: { user },
+  } = await supabase.auth.getUser()
+  return user
 }
 
 /**
  * Check if user's email is verified
  */
 export async function isEmailVerified(): Promise<boolean> {
-  const session = await getSession()
-  return !!session?.user.email_confirmed_at
+  const authUser = await getAuthUser()
+  return !!authUser?.email_confirmed_at
 }
 
 /**

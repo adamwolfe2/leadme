@@ -91,7 +91,7 @@ export async function POST(
       const emails = await generateEmailSequence(draft, validated.custom_prompt)
 
       // Save generated emails
-      const updatedDraft = await repo.saveGeneratedEmails(id, emails, {
+      const updatedDraft = await repo.saveGeneratedEmails(id, userData.workspace_id, emails, {
         prompt: validated.custom_prompt,
         model: 'claude-3-5-sonnet-20241022',
       })
@@ -103,7 +103,7 @@ export async function POST(
       })
     } catch (generationError) {
       // Save error to draft
-      await repo.saveGeneratedEmails(id, [], {
+      await repo.saveGeneratedEmails(id, userData.workspace_id, [], {
         error: generationError instanceof Error ? generationError.message : 'Unknown error',
       })
 

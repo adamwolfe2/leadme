@@ -7,7 +7,7 @@
  */
 
 import { inngest } from '../client'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import {
   getLeadsReadyForSend,
   updateCampaignLeadOptimalTimes,
@@ -30,7 +30,7 @@ export const processCampaignSequences = inngest.createFunction(
 
     // Step 1: Get all active campaigns
     const activeCampaigns = await step.run('get-active-campaigns', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { data, error } = await supabase
         .from('email_campaigns')
@@ -53,7 +53,7 @@ export const processCampaignSequences = inngest.createFunction(
 
     // Step 2: For each campaign, find leads ready for next email (timezone-aware)
     const results = await step.run('process-campaigns', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
       const processed: Array<{
         campaign_id: string
         leads_queued: number
@@ -178,7 +178,7 @@ export const handleAutoSendEmail = inngest.createFunction(
 
     // Step 1: Update email status to approved
     await step.run('approve-email', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { error } = await supabase
         .from('email_sends')
@@ -226,7 +226,7 @@ export const checkSequenceCompletion = inngest.createFunction(
 
     // Step 1: Check if sequence is complete
     const isComplete = await step.run('check-completion', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       // Get campaign sequence steps
       const { data: campaign, error: campaignError } = await supabase
@@ -249,7 +249,7 @@ export const checkSequenceCompletion = inngest.createFunction(
 
     // Step 2: Mark lead as completed
     await step.run('mark-completed', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { error } = await supabase
         .from('campaign_leads')

@@ -2,7 +2,7 @@
 // Handles sending approved emails via EmailBison
 
 import { inngest } from '../client'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { EmailBisonClient } from '@/lib/services/emailbison'
 import { isEmailSuppressed } from '@/lib/services/campaign/suppression.service'
 import { checkSendLimits, incrementSendCount } from '@/lib/services/campaign/send-limits.service'
@@ -39,7 +39,7 @@ export const sendApprovedEmail = inngest.createFunction(
 
     // Step 1: Fetch email send record
     const emailSend = await step.run('fetch-email-send', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { data, error } = await supabase
         .from('email_sends')
@@ -77,7 +77,7 @@ export const sendApprovedEmail = inngest.createFunction(
 
       // Update email status to indicate suppression
       await step.run('mark-suppressed', async () => {
-        const supabase = await createClient()
+        const supabase = createAdminClient()
         await supabase
           .from('email_sends')
           .update({
@@ -108,7 +108,7 @@ export const sendApprovedEmail = inngest.createFunction(
 
       // Update email status to indicate rate limit
       await step.run('mark-rate-limited', async () => {
-        const supabase = await createClient()
+        const supabase = createAdminClient()
         await supabase
           .from('email_sends')
           .update({
@@ -176,7 +176,7 @@ export const sendApprovedEmail = inngest.createFunction(
 
     // Step 7: Update email_sends record
     await step.run('update-email-record', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { error } = await supabase
         .from('email_sends')
@@ -200,7 +200,7 @@ export const sendApprovedEmail = inngest.createFunction(
 
     // Step 8: Update campaign_lead record
     await step.run('update-campaign-lead', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       // Get current campaign lead
       const { data: campaignLead, error: fetchError } = await supabase
@@ -270,7 +270,7 @@ export const batchSendApprovedEmails = inngest.createFunction(
 
     // Fetch approved emails ready to send
     const approvedEmails = await step.run('fetch-approved-emails', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { data, error } = await supabase
         .from('email_sends')
@@ -295,7 +295,7 @@ export const batchSendApprovedEmails = inngest.createFunction(
 
     // Get campaign_lead_id for each email
     const emailsWithLeads = await step.run('get-campaign-leads', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const leadIds = [...new Set(approvedEmails.map(e => e.lead_id))]
 
@@ -359,7 +359,7 @@ export const onEmailApproved = inngest.createFunction(
 
     // Fetch email to check campaign settings
     const { campaign, emailSend } = await step.run('fetch-context', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { data: email, error: emailError } = await supabase
         .from('email_sends')

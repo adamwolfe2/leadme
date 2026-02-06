@@ -10,8 +10,8 @@ export async function PATCH(
     const { id } = await params
 
     // Get current user
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) {
+    const { data: { user: authUser } } = await supabase.auth.getUser()
+    if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -19,7 +19,7 @@ export async function PATCH(
     const { data: user } = await supabase
       .from('users')
       .select('workspace_id')
-      .eq('auth_user_id', session.user.id)
+      .eq('auth_user_id', authUser.id)
       .single()
 
     if (!user?.workspace_id) {
@@ -84,8 +84,8 @@ export async function DELETE(
     const { id } = await params
 
     // Get current user
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) {
+    const { data: { user: authUser } } = await supabase.auth.getUser()
+    if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -93,7 +93,7 @@ export async function DELETE(
     const { data: user } = await supabase
       .from('users')
       .select('workspace_id')
-      .eq('auth_user_id', session.user.id)
+      .eq('auth_user_id', authUser.id)
       .single()
 
     if (!user?.workspace_id) {

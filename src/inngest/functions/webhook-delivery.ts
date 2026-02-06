@@ -31,14 +31,14 @@ export const deliverLeadWebhook = inngest.createFunction(
   },
   { event: 'lead/created' },
   async ({ event, step }) => {
-    const { leadId, workspaceId } = event.data
+    const { lead_id, workspace_id } = event.data
 
     // Get workspace webhook settings
     const workspace = await step.run('get-workspace', async () => {
       const supabase = getSupabaseAdmin(); const { data, error } = await supabase
         .from('workspaces')
         .select('id, name, webhook_url, webhook_secret, webhook_enabled')
-        .eq('id', workspaceId)
+        .eq('id', workspace_id)
         .single()
 
       if (error) throw new Error(`Workspace not found: ${error.message}`)
@@ -55,7 +55,7 @@ export const deliverLeadWebhook = inngest.createFunction(
       const supabase = getSupabaseAdmin(); const { data, error } = await supabase
         .from('leads')
         .select('*')
-        .eq('id', leadId)
+        .eq('id', lead_id)
         .single()
 
       if (error) throw new Error(`Lead not found: ${error.message}`)
@@ -69,8 +69,8 @@ export const deliverLeadWebhook = inngest.createFunction(
       const supabase = getSupabaseAdmin(); const { data, error } = await supabase
         .from('webhook_deliveries')
         .insert({
-          workspace_id: workspaceId,
-          lead_id: leadId,
+          workspace_id: workspace_id,
+          lead_id: lead_id,
           event_type: 'lead.created',
           payload,
           status: 'pending',
@@ -116,7 +116,7 @@ export const deliverLeadWebhook = inngest.createFunction(
             delivered_at: new Date().toISOString(),
             delivery_method: 'webhook',
           })
-          .eq('id', leadId)
+          .eq('id', lead_id)
       } else {
         const nextRetry = calculateNextRetry(1)
 
@@ -289,14 +289,14 @@ export const sendLeadEmailNotification = inngest.createFunction(
   },
   { event: 'lead/created' },
   async ({ event, step }) => {
-    const { leadId, workspaceId } = event.data
+    const { lead_id, workspace_id } = event.data
 
     // Get workspace settings
     const workspace = await step.run('get-workspace', async () => {
       const supabase = getSupabaseAdmin(); const { data, error } = await supabase
         .from('workspaces')
         .select('id, name, email_notifications, notification_email')
-        .eq('id', workspaceId)
+        .eq('id', workspace_id)
         .single()
 
       if (error) throw new Error(`Workspace not found: ${error.message}`)
@@ -313,7 +313,7 @@ export const sendLeadEmailNotification = inngest.createFunction(
       const supabase = getSupabaseAdmin(); const { data, error } = await supabase
         .from('leads')
         .select('*')
-        .eq('id', leadId)
+        .eq('id', lead_id)
         .single()
 
       if (error) throw new Error(`Lead not found: ${error.message}`)
@@ -382,8 +382,8 @@ export const sendLeadEmailNotification = inngest.createFunction(
     await step.run('record-notification', async () => {
       const supabase = getSupabaseAdmin()
       await supabase.from('email_notifications').insert({
-        workspace_id: workspaceId,
-        lead_id: leadId,
+        workspace_id: workspace_id,
+        lead_id: lead_id,
         email_type: 'new_lead',
         recipient_email: workspace.notification_email,
         subject: `New Lead: ${lead.first_name} ${lead.last_name}`,

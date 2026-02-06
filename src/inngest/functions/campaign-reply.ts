@@ -2,7 +2,7 @@
 // Handles AI classification and response generation for email replies
 
 import { inngest } from '../client'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import Anthropic from '@anthropic-ai/sdk'
 import { quickClassify, type IntentCategory, type SuggestedAction } from '@/lib/services/ai/intent'
 
@@ -54,7 +54,7 @@ export const processReply = inngest.createFunction(
 
     // Step 1: Find the reply record
     const reply = await step.run('fetch-reply', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       // Try to find by ID first, then by email
       let query = supabase
@@ -113,7 +113,7 @@ export const processReply = inngest.createFunction(
 
     // Step 3: Update reply with classification
     await step.run('update-classification', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { error } = await supabase
         .from('email_replies')
@@ -152,7 +152,7 @@ export const processReply = inngest.createFunction(
 
       // Update reply with suggested response
       await step.run('update-response', async () => {
-        const supabase = await createClient()
+        const supabase = createAdminClient()
 
         const { error } = await supabase
           .from('email_replies')
@@ -176,7 +176,7 @@ export const processReply = inngest.createFunction(
 
     // Step 5: Update campaign lead status
     await step.run('update-campaign-lead', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       // Determine new status based on sentiment
       const statusMap: Record<string, string> = {
@@ -225,7 +225,7 @@ export const batchProcessReplies = inngest.createFunction(
   async ({ step, logger }) => {
     // Fetch unclassified replies
     const unclassifiedReplies = await step.run('fetch-unclassified', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { data, error } = await supabase
         .from('email_replies')

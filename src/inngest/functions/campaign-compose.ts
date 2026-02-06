@@ -2,7 +2,7 @@
 // Composes personalized emails for campaign leads
 
 import { inngest } from '../client'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { emailComposerService } from '@/lib/services/composition/email-composer.service'
 import { assignVariant, getAssignedVariant, type Variant } from '@/lib/services/campaign/ab-testing.service'
 
@@ -28,7 +28,7 @@ export const composeCampaignEmail = inngest.createFunction(
     const { campaignLead, campaign, lead, templates, workspace } = await step.run(
       'fetch-data',
       async () => {
-        const supabase = await createClient()
+        const supabase = createAdminClient()
 
         const [
           campaignLeadResult,
@@ -165,7 +165,7 @@ export const composeCampaignEmail = inngest.createFunction(
 
     // Step 6: Create email_sends record (pending approval)
     const emailSend = await step.run('create-email-send', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const insertData: Record<string, any> = {
         workspace_id,
@@ -205,7 +205,7 @@ export const composeCampaignEmail = inngest.createFunction(
 
     // Step 7: Update campaign lead status
     await step.run('update-campaign-lead', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       await supabase
         .from('campaign_leads')
@@ -261,7 +261,7 @@ export const batchComposeCampaignEmails = inngest.createFunction(
 
     // Fetch all ready leads
     const readyLeads = await step.run('fetch-ready-leads', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       const { data, error } = await supabase
         .from('campaign_leads')

@@ -10,13 +10,13 @@ export async function PATCH(
   try {
     // Check admin authentication
     const supabase = await createClient()
-    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { user } } = await supabase.auth.getUser()
 
-    if (!session?.user) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const hasAdminAccess = await isAdmin(session.user)
+    const hasAdminAccess = await isAdmin(user)
     if (!hasAdminAccess) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }
@@ -38,7 +38,7 @@ export async function PATCH(
         const { data: userData } = await supabase
           .from('users')
           .select('id')
-          .eq('auth_user_id', session.user.id)
+          .eq('auth_user_id', user.id)
           .single()
 
         if (userData) {

@@ -306,8 +306,15 @@ export class CampaignRepository {
 
   /**
    * Remove a lead from a campaign
+   * SECURITY: Verifies campaign belongs to workspace before removing lead
    */
-  async removeLeadFromCampaign(campaignId: string, leadId: string): Promise<void> {
+  async removeLeadFromCampaign(campaignId: string, leadId: string, workspaceId: string): Promise<void> {
+    // Verify campaign belongs to workspace
+    const campaign = await this.findById(campaignId, workspaceId)
+    if (!campaign) {
+      throw new DatabaseError('Campaign not found or does not belong to workspace')
+    }
+
     const supabase = await createClient()
 
     const { error } = await supabase
@@ -323,12 +330,31 @@ export class CampaignRepository {
 
   /**
    * Update campaign lead status
+   * SECURITY: Verifies campaign lead belongs to a campaign in the workspace
    */
   async updateCampaignLeadStatus(
     campaignLeadId: string,
-    status: string
+    status: string,
+    workspaceId: string
   ): Promise<CampaignLead> {
     const supabase = await createClient()
+
+    // First get the campaign lead to find its campaign_id
+    const { data: campaignLead, error: lookupError } = await supabase
+      .from('campaign_leads')
+      .select('campaign_id')
+      .eq('id', campaignLeadId)
+      .single()
+
+    if (lookupError || !campaignLead) {
+      throw new DatabaseError('Campaign lead not found')
+    }
+
+    // Verify the campaign belongs to the workspace
+    const campaign = await this.findById(campaignLead.campaign_id, workspaceId)
+    if (!campaign) {
+      throw new DatabaseError('Campaign not found or does not belong to workspace')
+    }
 
     const { data, error } = await supabase
       .from('campaign_leads')
@@ -350,8 +376,15 @@ export class CampaignRepository {
 
   /**
    * Get reviews for a campaign
+   * SECURITY: Verifies campaign belongs to workspace before returning reviews
    */
-  async getCampaignReviews(campaignId: string): Promise<CampaignReview[]> {
+  async getCampaignReviews(campaignId: string, workspaceId: string): Promise<CampaignReview[]> {
+    // Verify campaign belongs to workspace
+    const campaign = await this.findById(campaignId, workspaceId)
+    if (!campaign) {
+      throw new DatabaseError('Campaign not found or does not belong to workspace')
+    }
+
     const supabase = await createClient()
 
     const { data, error } = await supabase
@@ -411,15 +444,34 @@ export class CampaignRepository {
 
   /**
    * Complete a review (approve/reject/request changes)
+   * SECURITY: Verifies review's campaign belongs to workspace before updating
    */
   async completeReview(
     reviewId: string,
     reviewerId: string,
     status: 'approved' | 'approved_with_changes' | 'rejected' | 'changes_requested',
+    workspaceId: string,
     notes?: string,
     requestedChanges?: object[]
   ): Promise<CampaignReview> {
     const supabase = await createClient()
+
+    // First get the review to find its campaign_id
+    const { data: existingReview, error: lookupError } = await supabase
+      .from('campaign_reviews')
+      .select('campaign_id')
+      .eq('id', reviewId)
+      .single()
+
+    if (lookupError || !existingReview) {
+      throw new DatabaseError('Review not found')
+    }
+
+    // SECURITY: Verify the campaign belongs to the workspace
+    const campaign = await this.findById(existingReview.campaign_id, workspaceId)
+    if (!campaign) {
+      throw new DatabaseError('Campaign not found or does not belong to workspace')
+    }
 
     // Update review
     const { data: review, error: reviewError } = await supabase
@@ -452,6 +504,7 @@ export class CampaignRepository {
       campaignStatus = 'draft' // changes_requested
     }
 
+    // SECURITY: Filter campaign update by workspace_id
     const { error: campaignError } = await supabase
       .from('email_campaigns')
       .update({
@@ -461,6 +514,7 @@ export class CampaignRepository {
         review_notes: notes,
       })
       .eq('id', campaignId)
+      .eq('workspace_id', workspaceId)
 
     if (campaignError) {
       throw new DatabaseError(campaignError.message)

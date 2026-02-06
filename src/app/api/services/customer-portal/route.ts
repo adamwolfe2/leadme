@@ -20,9 +20,9 @@ export async function POST(request: NextRequest) {
   try {
     // Verify authentication
     const supabase = await createClient()
-    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { user } } = await supabase.auth.getUser()
 
-    if (!session?.user) {
+    if (!user) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     const { data: userData } = await supabase
       .from('users')
       .select('workspace_id')
-      .eq('auth_user_id', session.user.id)
+      .eq('auth_user_id', user.id)
       .single()
 
     if (!userData || userData.workspace_id !== validated.workspace_id) {

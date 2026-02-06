@@ -1,5 +1,5 @@
 import { inngest } from '../client'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { sendOnboardingReminderEmail } from '@/lib/email/service-emails'
 
 /**
@@ -18,7 +18,7 @@ export const sendOnboardingReminders = inngest.createFunction(
   { cron: '0 10 * * *' }, // Daily at 10 AM UTC
   async ({ step }) => {
     const results = await step.run('find-incomplete-onboarding', async () => {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
 
       // Find subscriptions created 3+ days ago with incomplete onboarding
       const threeDaysAgo = new Date()

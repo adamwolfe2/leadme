@@ -147,9 +147,11 @@ export class CampaignBuilderRepository {
 
   /**
    * Save generated emails (called after AI generation)
+   * SECURITY: Filters by workspace_id to prevent cross-tenant updates
    */
   async saveGeneratedEmails(
     draftId: string,
+    workspaceId: string,
     emails: GeneratedEmail[],
     options: {
       prompt?: string
@@ -184,6 +186,7 @@ export class CampaignBuilderRepository {
       .from('campaign_drafts')
       .update(updateData)
       .eq('id', draftId)
+      .eq('workspace_id', workspaceId)
       .select()
       .single()
 
