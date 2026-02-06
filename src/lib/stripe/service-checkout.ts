@@ -2,9 +2,19 @@ import Stripe from 'stripe'
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
 import { getStripeConfigForTier } from './service-products'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia'
-})
+// Lazy-load Stripe to avoid build-time initialization
+let stripeClient: Stripe | null = null
+function getStripe(): Stripe {
+  if (!stripeClient) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error('STRIPE_SECRET_KEY is not configured')
+    }
+    stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2024-12-18.acacia',
+    })
+  }
+  return stripeClient
+}
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
@@ -74,7 +84,7 @@ export async function createServiceCheckout(
   })
 
   // Create Stripe Checkout session
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     mode: 'subscription',
     line_items: lineItems,
     customer_email: billingEmail,
@@ -313,14 +323,14 @@ export async function cancelServiceSubscription(
 
   if (cancelAtPeriodEnd) {
     // Cancel at period end (let them use it until the end)
-    await stripe.subscriptions.update(subscription.stripe_subscription_id, {
+    await getStripe().subscriptions.update(subscription.stripe_subscription_id, {
       cancel_at_period_end: true
     })
 
     await serviceTierRepository.cancelSubscriptionAtPeriodEnd(subscriptionId)
   } else {
     // Cancel immediately
-    await stripe.subscriptions.cancel(subscription.stripe_subscription_id)
+    await getStripe().subscriptions.cancel(subscription.stripe_subscription_id)
 
     await serviceTierRepository.updateSubscription(subscriptionId, {
       status: 'cancelled'
@@ -341,7 +351,7 @@ export async function createServicePortalSession(
     throw new Error('No active subscription found')
   }
 
-  const session = await stripe.billingPortal.sessions.create({
+  const session = await getStripe().billingPortal.sessions.create({
     customer: subscription.stripe_customer_id,
     return_url: returnUrl || `${baseUrl}/services/manage`
   })
