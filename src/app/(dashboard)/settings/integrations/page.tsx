@@ -1,12 +1,72 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useToast } from '@/lib/hooks/use-toast'
 import { SlackIntegration } from '@/components/integrations/slack-integration'
 import { ZapierIntegration } from '@/components/integrations/zapier-integration'
+
+// CRM connection response type (matches /api/crm/connections)
+interface CrmConnection {
+  provider: string
+  connected: boolean
+  status: string
+  lastSyncAt: string | null
+  connectedAt: string | null
+}
+
+// CRM platform configuration
+const CRM_PLATFORMS = [
+  {
+    name: 'HubSpot',
+    key: 'hubspot',
+    providerKey: 'hubspot',
+    description: 'Push leads to HubSpot contacts and companies',
+    color: 'orange',
+    setupSteps: [
+      'Create a HubSpot private app at Settings > Integrations > Private Apps in your HubSpot account.',
+      'Grant the app scopes: crm.objects.contacts.write, crm.objects.contacts.read, crm.objects.companies.write, crm.objects.companies.read.',
+      'Copy the generated access token.',
+      'Add it as HUBSPOT_ACCESS_TOKEN in your environment variables, or store it via the Supabase dashboard in the crm_connections table for your workspace.',
+      'Once configured, Cursive will automatically sync leads to HubSpot when you export.',
+    ],
+    docsUrl: 'https://developers.hubspot.com/docs/api/private-apps',
+  },
+  {
+    name: 'Salesforce',
+    key: 'salesforce',
+    providerKey: 'salesforce',
+    description: 'Sync leads directly to Salesforce CRM',
+    color: 'blue',
+    setupSteps: [
+      'Create a Connected App in Salesforce Setup > App Manager > New Connected App.',
+      'Enable OAuth settings with scopes: api, refresh_token, offline_access.',
+      'Set the callback URL to your Cursive deployment URL + /api/crm/auth/salesforce/callback.',
+      'Copy the Consumer Key and Consumer Secret.',
+      'Add SALESFORCE_CLIENT_ID and SALESFORCE_CLIENT_SECRET to your environment variables.',
+      'Store your access and refresh tokens in the crm_connections table via the Supabase dashboard.',
+    ],
+    docsUrl: 'https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/',
+  },
+  {
+    name: 'Google Sheets',
+    key: 'google-sheets',
+    providerKey: 'google_sheets',
+    description: 'Export leads to Google Sheets spreadsheets',
+    color: 'green',
+    setupSteps: [
+      'Create a project in Google Cloud Console and enable the Google Sheets API and Google Drive API.',
+      'Create OAuth 2.0 credentials (Web application type).',
+      'Set the authorized redirect URI to your Cursive deployment URL + /api/crm/auth/google-sheets/callback.',
+      'Copy the Client ID and Client Secret.',
+      'Add GOOGLE_SHEETS_CLIENT_ID and GOOGLE_SHEETS_CLIENT_SECRET to your environment variables.',
+      'Store your access and refresh tokens in the crm_connections table via the Supabase dashboard.',
+    ],
+    docsUrl: 'https://developers.google.com/sheets/api/guides/concepts',
+  },
+] as const
 
 // Integration logo configuration - using uploaded files from public folder
 const INTEGRATION_LOGOS: Record<string, { src: string; alt: string }> = {
@@ -68,10 +128,102 @@ function IntegrationLogo({ name }: { name: string }) {
   )
 }
 
+// Format a date string to a human-friendly relative or absolute format
+function formatSyncTime(dateString: string | null): string {
+  if (!dateString) return 'Never'
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffMins = Math.floor(diffMs / 60000)
+  const diffHours = Math.floor(diffMins / 60)
+  const diffDays = Math.floor(diffHours / 24)
+
+  if (diffMins < 1) return 'Just now'
+  if (diffMins < 60) return `${diffMins}m ago`
+  if (diffHours < 24) return `${diffHours}h ago`
+  if (diffDays < 7) return `${diffDays}d ago`
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+// Setup instructions modal for CRM platforms
+function CrmSetupModal({
+  platform,
+  onClose,
+}: {
+  platform: typeof CRM_PLATFORMS[number]
+  onClose: () => void
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
+      <div className="relative z-10 w-full max-w-lg rounded-xl bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-zinc-200 p-6 pb-4">
+          <div className="flex items-center gap-3">
+            <IntegrationLogo name={platform.key} />
+            <div>
+              <h2 className="text-lg font-semibold text-zinc-900">
+                Connect {platform.name}
+              </h2>
+              <p className="text-sm text-zinc-500">{platform.description}</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-lg p-1.5 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="p-6 space-y-4">
+          <h3 className="text-sm font-semibold text-zinc-800">Setup Instructions</h3>
+          <ol className="space-y-3">
+            {platform.setupSteps.map((step, i) => (
+              <li key={i} className="flex gap-3 text-sm text-zinc-700">
+                <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-zinc-100 text-zinc-600 text-xs font-semibold">
+                  {i + 1}
+                </span>
+                <span className="pt-0.5">{step}</span>
+              </li>
+            ))}
+          </ol>
+
+          <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 mt-4">
+            <p className="text-xs text-amber-800">
+              After configuring the credentials, the connection will appear as active on this page.
+              You can then export leads from the Leads page or set up automatic sync.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between border-t border-zinc-200 p-6 pt-4">
+          <a
+            href={platform.docsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+          >
+            View Documentation
+          </a>
+          <button
+            onClick={onClose}
+            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-800 transition-colors"
+          >
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function IntegrationsPage() {
   const toast = useToast()
   const queryClient = useQueryClient()
   const [customWebhookUrl, setCustomWebhookUrl] = useState('')
+  const [setupModalPlatform, setSetupModalPlatform] = useState<typeof CRM_PLATFORMS[number] | null>(null)
 
   // Fetch current user
   const { data: userData, isLoading } = useQuery({
@@ -84,6 +236,51 @@ export default function IntegrationsPage() {
   })
 
   const user = userData?.data
+
+  // Fetch CRM connection statuses
+  const { data: connectionsData } = useQuery({
+    queryKey: ['crm', 'connections'],
+    queryFn: async () => {
+      const response = await fetch('/api/crm/connections')
+      if (!response.ok) throw new Error('Failed to fetch CRM connections')
+      return response.json()
+    },
+    enabled: !!user,
+  })
+
+  const crmConnections: CrmConnection[] = connectionsData?.data?.connections ?? []
+
+  // Helper to get connection for a given provider key
+  const getConnection = useCallback(
+    (providerKey: string): CrmConnection | undefined => {
+      return crmConnections.find((c) => c.provider === providerKey)
+    },
+    [crmConnections]
+  )
+
+  // Disconnect a CRM provider
+  const disconnectCrmMutation = useMutation({
+    mutationFn: async (provider: string) => {
+      const response = await fetch('/api/crm/connections', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ provider }),
+      })
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || `Failed to disconnect ${provider}`)
+      }
+      return response.json()
+    },
+    onSuccess: (_data, provider) => {
+      queryClient.invalidateQueries({ queryKey: ['crm', 'connections'] })
+      const label = CRM_PLATFORMS.find((p) => p.providerKey === provider)?.name ?? provider
+      toast.success(`${label} disconnected successfully`)
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to disconnect')
+    },
+  })
 
   // Save custom webhook mutation
   const saveCustomWebhookMutation = useMutation({
@@ -380,31 +577,149 @@ export default function IntegrationsPage() {
         )}
       </div>
 
-      {/* Coming Soon - with real logos */}
+      {/* CRM Integrations */}
+      <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <div className="flex items-start justify-between mb-6">
+          <div>
+            <h2 className="text-lg font-semibold text-zinc-900">CRM Integrations</h2>
+            <p className="text-sm text-zinc-500 mt-1">
+              Export and sync your leads with external CRM platforms and spreadsheets.
+            </p>
+          </div>
+          {!isPro && (
+            <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 ml-4">
+              Pro
+            </span>
+          )}
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {CRM_PLATFORMS.map((platform) => {
+            const connection = getConnection(platform.providerKey)
+            const isConnected = connection?.connected === true
+            const isExpired = connection?.status === 'token_expired'
+
+            return (
+              <div
+                key={platform.key}
+                className={`rounded-xl border p-4 transition-all ${
+                  isConnected
+                    ? 'border-green-200 bg-green-50/30'
+                    : isExpired
+                      ? 'border-amber-200 bg-amber-50/30'
+                      : 'border-zinc-200 bg-white hover:border-zinc-300'
+                }`}
+              >
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0">
+                    <IntegrationLogo name={platform.key} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-sm font-semibold text-zinc-900">
+                        {platform.name}
+                      </h3>
+                      {isConnected && (
+                        <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium bg-green-100 text-green-700">
+                          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                          </svg>
+                          Connected
+                        </span>
+                      )}
+                      {isExpired && (
+                        <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-700">
+                          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          Expired
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-1 text-xs text-zinc-500 line-clamp-2">
+                      {platform.description}
+                    </p>
+                  </div>
+                </div>
+
+                {isConnected && (
+                  <div className="mt-3 pt-3 border-t border-green-200/60">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-zinc-500">
+                        Last sync: {formatSyncTime(connection?.lastSyncAt ?? null)}
+                      </p>
+                      <button
+                        onClick={() => {
+                          if (confirm(`Are you sure you want to disconnect ${platform.name}?`)) {
+                            disconnectCrmMutation.mutate(platform.providerKey)
+                          }
+                        }}
+                        disabled={disconnectCrmMutation.isPending}
+                        className="text-xs text-red-600 hover:text-red-700 font-medium disabled:opacity-50"
+                      >
+                        Disconnect
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {isExpired && (
+                  <div className="mt-3 pt-3 border-t border-amber-200/60">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-amber-700">
+                        Token expired. Please reconnect.
+                      </p>
+                      <button
+                        onClick={() => setSetupModalPlatform(platform)}
+                        className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                      >
+                        Reconnect
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {!isConnected && !isExpired && (
+                  <div className="mt-4">
+                    {isPro ? (
+                      <button
+                        onClick={() => setSetupModalPlatform(platform)}
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3.5 py-2 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors shadow-sm"
+                      >
+                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                        </svg>
+                        Connect
+                      </button>
+                    ) : (
+                      <p className="text-xs text-zinc-500">
+                        <Link
+                          href="/settings/billing"
+                          className="text-blue-600 hover:text-blue-700 font-medium"
+                        >
+                          Upgrade to Pro
+                        </Link>{' '}
+                        to connect
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Coming Soon */}
       <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-zinc-900 mb-6">Coming Soon</h2>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[
             {
-              name: 'Salesforce',
-              key: 'salesforce',
-              description: 'Sync leads directly to Salesforce CRM',
-            },
-            {
-              name: 'HubSpot',
-              key: 'hubspot',
-              description: 'Push leads to HubSpot contacts',
-            },
-            {
               name: 'Pipedrive',
               key: 'pipedrive',
               description: 'Create deals in Pipedrive automatically',
-            },
-            {
-              name: 'Google Sheets',
-              key: 'google-sheets',
-              description: 'Export leads to Google Sheets',
             },
             {
               name: 'Microsoft Teams',
@@ -449,8 +764,8 @@ export default function IntegrationsPage() {
             <div>
               <h2 className="text-2xl font-bold mb-2">Unlock All Integrations</h2>
               <p className="text-blue-100">
-                Upgrade to Pro to connect Slack, Zapier, custom webhooks, and access our API.
-                Automate your entire lead workflow.
+                Upgrade to Pro to connect Slack, Zapier, HubSpot, Salesforce, Google Sheets,
+                custom webhooks, and access our API. Automate your entire lead workflow.
               </p>
             </div>
             <div className="flex-shrink-0">
@@ -463,6 +778,14 @@ export default function IntegrationsPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* CRM Setup Modal */}
+      {setupModalPlatform && (
+        <CrmSetupModal
+          platform={setupModalPlatform}
+          onClose={() => setSetupModalPlatform(null)}
+        />
       )}
     </div>
   )

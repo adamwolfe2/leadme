@@ -322,7 +322,7 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
                           {lead.intent_score_calculated}%
                         </span>
                       </div>
-                      <ScoreProgress score={lead.intent_score_calculated} />
+                      <ScoreProgress score={lead.intent_score_calculated ?? null} />
                     </div>
                   )}
                   {lead.freshness_score !== null && (
@@ -331,7 +331,7 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
                         <span className="text-sm text-gray-600">Freshness Score</span>
                         <span className="text-sm font-medium">{lead.freshness_score}%</span>
                       </div>
-                      <ScoreProgress score={lead.freshness_score} />
+                      <ScoreProgress score={lead.freshness_score ?? null} />
                     </div>
                   )}
                 </div>

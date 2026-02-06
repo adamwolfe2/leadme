@@ -32,11 +32,7 @@ export default async function QueriesPage() {
       <PageHeader
         title="Queries"
         description="Manage your topic tracking queries"
-        breadcrumbs={[
-          { label: 'Dashboard', href: '/dashboard' },
-          { label: 'Queries' },
-        ]}
-        actions={
+        action={
           <Link href="/queries/new">
             <Button>
               <Plus className="h-4 w-4 mr-2" />

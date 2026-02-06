@@ -194,7 +194,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Service Tier Upsell Banner */}
-      {!activeSubscription && user.plan === 'free' && leadsCount > 0 && (
+      {!activeSubscription && user.plan === 'free' && (leadsCount ?? 0) > 0 && (
         <GradientCard variant="primary" className="mb-8">
           <div className="flex flex-col sm:flex-row items-start gap-4">
             <div className="p-3 rounded-lg bg-white/20">

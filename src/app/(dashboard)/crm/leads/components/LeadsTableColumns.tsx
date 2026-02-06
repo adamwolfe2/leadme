@@ -70,18 +70,16 @@ export function createLeadsTableColumns(
     id: 'select',
     header: ({ table }) => (
       <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        checked={table.getIsAllPageRowsSelected()}
+        indeterminate={table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => table.toggleAllPageRowsSelected(e.target.checked)}
         aria-label="Select all"
       />
     ),
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => row.toggleSelected(e.target.checked)}
         aria-label="Select row"
       />
     ),

@@ -5,7 +5,7 @@
 
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Select } from '@/components/ui/select-radix'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select-radix'
 import { useCRMStore } from '@/lib/crm/crm-state'
 
 interface PaginationControlsProps {
@@ -52,17 +52,18 @@ export function PaginationControls({
           <span className="text-sm text-muted-foreground">Rows per page:</span>
           <Select
             value={String(pageSize)}
-            onChange={(e) => handlePageSizeChange(e.target.value)}
-            options={[
-              { value: '10', label: '10' },
-              { value: '20', label: '20' },
-              { value: '50', label: '50' },
-              { value: '100', label: '100' },
-            ]}
-            selectSize="sm"
-            className="w-[70px]"
-            aria-label="Select page size"
-          />
+            onValueChange={handlePageSizeChange}
+          >
+            <SelectTrigger className="w-[70px] h-8 text-sm" aria-label="Select page size">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="10">10</SelectItem>
+              <SelectItem value="20">20</SelectItem>
+              <SelectItem value="50">50</SelectItem>
+              <SelectItem value="100">100</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
