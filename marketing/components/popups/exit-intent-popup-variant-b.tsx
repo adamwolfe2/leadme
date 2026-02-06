@@ -11,7 +11,7 @@
  * - Added social proof element
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, TrendingUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -65,6 +65,12 @@ export function ExitIntentPopupVariantB({
     }
   }, [isOpen])
 
+  const handleClose = useCallback((method: 'close-button' | 'outside-click' | 'escape-key') => {
+    setIsOpen(false)
+    markPopupDismissed(POPUP_ID)
+    analytics.trackDismiss(method)
+  }, [analytics])
+
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -81,13 +87,7 @@ export function ExitIntentPopupVariantB({
       document.removeEventListener('keydown', handleEscape)
       document.body.style.overflow = 'unset'
     }
-  }, [isOpen])
-
-  const handleClose = (method: 'close-button' | 'outside-click' | 'escape-key') => {
-    setIsOpen(false)
-    markPopupDismissed(POPUP_ID)
-    analytics.trackDismiss(method)
-  }
+  }, [isOpen, handleClose])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

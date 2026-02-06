@@ -6,7 +6,7 @@
  * Offers: Newsletter subscription
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Mail } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -82,23 +82,23 @@ export function BlogScrollPopup({
     return () => {
       document.removeEventListener('keydown', handleEscape)
     }
-  }, [isOpen, isMinimized])
+  }, [isOpen, isMinimized, handleMinimize])
 
-  const handleClose = (method: 'close-button' | 'escape-key') => {
+  const handleClose = useCallback((method: 'close-button' | 'escape-key') => {
     setIsOpen(false)
     markPopupDismissed(POPUP_ID)
     analytics.trackDismiss(method)
-  }
+  }, [analytics])
 
-  const handleMinimize = () => {
+  const handleMinimize = useCallback(() => {
     setIsMinimized(true)
     analytics.trackDismiss('escape-key')
-  }
+  }, [analytics])
 
-  const handleExpand = () => {
+  const handleExpand = useCallback(() => {
     setIsMinimized(false)
     analytics.trackInteraction()
-  }
+  }, [analytics])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

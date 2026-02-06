@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "node scripts/notify-indexnow.js",
+    "postbuild": "node scripts/notify-indexnow.mjs",
     "start": "next start",
     "lint": "eslint"
   },

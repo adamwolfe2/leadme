@@ -6,7 +6,7 @@
  * Offers: Free Website Visitor Report
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -60,6 +60,12 @@ export function ExitIntentPopup({ enabled = true, onSubmit }: ExitIntentPopupPro
     }
   }, [isOpen])
 
+  const handleClose = useCallback((method: 'close-button' | 'outside-click' | 'escape-key') => {
+    setIsOpen(false)
+    markPopupDismissed(POPUP_ID)
+    analytics.trackDismiss(method)
+  }, [analytics])
+
   // Keyboard handling (Escape to close)
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -78,13 +84,7 @@ export function ExitIntentPopup({ enabled = true, onSubmit }: ExitIntentPopupPro
       document.removeEventListener('keydown', handleEscape)
       document.body.style.overflow = 'unset'
     }
-  }, [isOpen])
-
-  const handleClose = (method: 'close-button' | 'outside-click' | 'escape-key') => {
-    setIsOpen(false)
-    markPopupDismissed(POPUP_ID)
-    analytics.trackDismiss(method)
-  }
+  }, [isOpen, handleClose])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

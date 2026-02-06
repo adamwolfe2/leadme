@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, ArrowRight, Target } from "lucide-react"
 import { Metadata } from "next"
+import Link from "next/link"
 
 export const metadata: Metadata = {
   title: "Complete ICP Targeting Guide for B2B Marketers | Cursive",
@@ -47,10 +48,10 @@ export default function BlogPost() {
       {/* Header */}
       <section className="py-12 bg-white">
         <Container>
-          <a href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
+          <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
             <ArrowLeft className="w-4 h-4" />
             Back to Blog
-          </a>
+          </Link>
 
           <div className="max-w-4xl">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
@@ -543,18 +544,18 @@ export default function BlogPost() {
         <Container>
           <h2 className="text-3xl font-bold mb-8 text-center">Read Next</h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <a href="/blog/cold-email-2026" className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
+            <Link href="/blog/cold-email-2026" className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
               <h3 className="font-bold mb-2">Cold Email in 2026</h3>
               <p className="text-sm text-gray-600">What's still working and what's not</p>
-            </a>
-            <a href="/blog/ai-sdr-vs-human-bdr" className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
+            </Link>
+            <Link href="/blog/ai-sdr-vs-human-bdr" className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
               <h3 className="font-bold mb-2">AI SDR vs. Human BDR</h3>
               <p className="text-sm text-gray-600">90-day head-to-head comparison</p>
-            </a>
-            <a href="/blog/scaling-outbound" className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
+            </Link>
+            <Link href="/blog/scaling-outbound" className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
               <h3 className="font-bold mb-2">Scaling Outbound</h3>
               <p className="text-sm text-gray-600">10 to 200+ emails without killing quality</p>
-            </a>
+            </Link>
           </div>
         </Container>
       </section>

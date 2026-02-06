@@ -14,16 +14,49 @@ export default function ContactPage() {
     message: "",
   })
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle")
+  const [errorMessage, setErrorMessage] = useState<string>("")
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({})
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setStatus("submitting")
+    setErrorMessage("")
+    setFieldErrors({})
 
-    // Simulate form submission
-    setTimeout(() => {
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setStatus("error")
+        if (data.errors && Array.isArray(data.errors)) {
+          // Set field-specific errors
+          const errors: { [key: string]: string } = {}
+          data.errors.forEach((err: { field: string; message: string }) => {
+            errors[err.field] = err.message
+          })
+          setFieldErrors(errors)
+          setErrorMessage("Please fix the errors below and try again.")
+        } else {
+          setErrorMessage(data.error || "Failed to submit form. Please try again.")
+        }
+        return
+      }
+
       setStatus("success")
       setFormData({ name: "", email: "", company: "", message: "" })
-    }, 1000)
+    } catch (error) {
+      setStatus("error")
+      setErrorMessage("An unexpected error occurred. Please try again later.")
+      console.error("Form submission error:", error)
+    }
   }
 
   return (
@@ -71,10 +104,20 @@ export default function ContactPage() {
                     id="name"
                     required
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent"
+                    onChange={(e) => {
+                      setFormData({ ...formData, name: e.target.value })
+                      if (fieldErrors.name) {
+                        setFieldErrors({ ...fieldErrors, name: "" })
+                      }
+                    }}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent ${
+                      fieldErrors.name ? "border-red-500" : "border-gray-300"
+                    }`}
                     placeholder="Your name"
                   />
+                  {fieldErrors.name && (
+                    <p className="text-red-500 text-sm mt-1">{fieldErrors.name}</p>
+                  )}
                 </div>
 
                 <div>
@@ -86,10 +129,20 @@ export default function ContactPage() {
                     id="email"
                     required
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent"
+                    onChange={(e) => {
+                      setFormData({ ...formData, email: e.target.value })
+                      if (fieldErrors.email) {
+                        setFieldErrors({ ...fieldErrors, email: "" })
+                      }
+                    }}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent ${
+                      fieldErrors.email ? "border-red-500" : "border-gray-300"
+                    }`}
                     placeholder="you@company.com"
                   />
+                  {fieldErrors.email && (
+                    <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>
+                  )}
                 </div>
 
                 <div>
@@ -100,10 +153,20 @@ export default function ContactPage() {
                     type="text"
                     id="company"
                     value={formData.company}
-                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent"
+                    onChange={(e) => {
+                      setFormData({ ...formData, company: e.target.value })
+                      if (fieldErrors.company) {
+                        setFieldErrors({ ...fieldErrors, company: "" })
+                      }
+                    }}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent ${
+                      fieldErrors.company ? "border-red-500" : "border-gray-300"
+                    }`}
                     placeholder="Your company name"
                   />
+                  {fieldErrors.company && (
+                    <p className="text-red-500 text-sm mt-1">{fieldErrors.company}</p>
+                  )}
                 </div>
 
                 <div>
@@ -114,16 +177,34 @@ export default function ContactPage() {
                     id="message"
                     required
                     value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, message: e.target.value })
+                      if (fieldErrors.message) {
+                        setFieldErrors({ ...fieldErrors, message: "" })
+                      }
+                    }}
                     rows={6}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none ${
+                      fieldErrors.message ? "border-red-500" : "border-gray-300"
+                    }`}
                     placeholder="Tell us about your needs..."
                   />
+                  {fieldErrors.message && (
+                    <p className="text-red-500 text-sm mt-1">{fieldErrors.message}</p>
+                  )}
                 </div>
 
                 {status === "success" && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-[#007AFF]">
-                    Thanks! We'll get back to you within 24 hours.
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-green-800">
+                    <p className="font-medium">Success!</p>
+                    <p className="text-sm mt-1">Thanks! We'll get back to you within 24 hours.</p>
+                  </div>
+                )}
+
+                {status === "error" && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-800">
+                    <p className="font-medium">Error</p>
+                    <p className="text-sm mt-1">{errorMessage}</p>
                   </div>
                 )}
 

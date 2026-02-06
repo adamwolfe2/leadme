@@ -6,6 +6,7 @@ import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
+import Link from "next/link"
 
 export const metadata = generateMetadata({
   title: "Clearbit Alternatives: 10 Tools Compared (2026)",
@@ -56,10 +57,10 @@ export default function BlogPost() {
       {/* Header */}
       <section className="py-12 bg-white">
         <Container>
-          <a href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
+          <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
             <ArrowLeft className="w-4 h-4" />
             Back to Blog
-          </a>
+          </Link>
 
           <div className="max-w-4xl">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
@@ -116,8 +117,8 @@ export default function BlogPost() {
 
             <p>
               The good news? The B2B data landscape has exploded. Whether you need better pricing, more accurate data,
-              or specialized features like <a href="/visitor-identification">visitor identification</a> or
-              <a href="/intent-audiences">intent data</a>, there's likely a better fit for your needs.
+              or specialized features like <Link href="/visitor-identification">visitor identification</Link> or
+              <Link href="/intent-audiences">intent data</Link>, there's likely a better fit for your needs.
             </p>
 
             <h2>10 Best Clearbit Alternatives (Detailed Comparison)</h2>
@@ -134,8 +135,8 @@ export default function BlogPost() {
 
               <p className="text-gray-700 mb-4">
                 <strong>What makes it different:</strong> While Clearbit focuses on enriching known contacts, Cursive
-                specializes in <a href="/visitor-identification" className="text-blue-600 hover:underline">identifying anonymous website visitors</a> and automating personalized outreach based on their
-                behavior and <a href="/intent-audiences" className="text-blue-600 hover:underline">intent signals</a>.
+                specializes in <Link href="/visitor-identification" className="text-blue-600 hover:underline">identifying anonymous website visitors</Link> and automating personalized outreach based on their
+                behavior and <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent signals</Link>.
               </p>
 
               <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -182,7 +183,7 @@ export default function BlogPost() {
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> B2B SaaS companies that want to convert website traffic into pipeline through
-                  automated, intent-based outreach. Ideal replacement if you're using Clearbit Reveal + manual follow-up. See our <a href="/pricing" className="text-blue-600 hover:underline">pricing</a> for details.
+                  automated, intent-based outreach. Ideal replacement if you're using Clearbit Reveal + manual follow-up. See our <Link href="/pricing" className="text-blue-600 hover:underline">pricing</Link> for details.
                 </p>
               </div>
             </div>
@@ -859,8 +860,8 @@ export default function BlogPost() {
 
             <h3>If You Need Visitor Identification and Intent:</h3>
             <p>
-              Choose <strong><a href="/" className="text-blue-600 hover:underline">Cursive</a></strong> for real-time <a href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</a> with automated outreach,
-              or <strong>6sense</strong> if you have an enterprise budget and want a full ABM platform. Our <a href="/audience-builder" className="text-blue-600 hover:underline">audience builder</a> makes it easy to segment and target your ideal customers.
+              Choose <strong><Link href="/" className="text-blue-600 hover:underline">Cursive</Link></strong> for real-time <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link> with automated outreach,
+              or <strong>6sense</strong> if you have an enterprise budget and want a full ABM platform. Our <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link> makes it easy to segment and target your ideal customers.
             </p>
 
             <h3>If You Need the Largest Database:</h3>
@@ -883,8 +884,8 @@ export default function BlogPost() {
 
             <h3>If You Need Intent Data:</h3>
             <p>
-              Choose <strong><a href="/" className="text-blue-600 hover:underline">Cursive</a></strong> for website-level <a href="/intent-audiences" className="text-blue-600 hover:underline">intent data</a>, <strong>Bombora</strong> for
-              topic-based intent across the web, or <strong>6sense</strong> for predictive intent scoring. Combine intent data with our <a href="/direct-mail" className="text-blue-600 hover:underline">direct mail</a> campaigns for maximum impact.
+              Choose <strong><Link href="/" className="text-blue-600 hover:underline">Cursive</Link></strong> for website-level <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent data</Link>, <strong>Bombora</strong> for
+              topic-based intent across the web, or <strong>6sense</strong> for predictive intent scoring. Combine intent data with our <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link> campaigns for maximum impact.
             </p>
 
             <h2>Frequently Asked Questions</h2>
@@ -902,15 +903,15 @@ export default function BlogPost() {
 
             <p>
               Clearbit is no longer the only game in town. Whether you're looking for better pricing, more features,
-              or specialized capabilities like <a href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</a> or
+              or specialized capabilities like <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link> or
               automated lead generation, there's likely an alternative that's a
-              better fit for your needs. Check out our <a href="/integrations" className="text-blue-600 hover:underline">integrations</a> to see how easily you can connect these tools to your existing stack.
+              better fit for your needs. Check out our <Link href="/integrations" className="text-blue-600 hover:underline">integrations</Link> to see how easily you can connect these tools to your existing stack.
             </p>
 
             <p>
-              For teams focused on converting website traffic into pipeline, we built <a href="/" className="text-blue-600 hover:underline">Cursive</a> to solve the gaps we saw
-              in the market: real-time <a href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</a>, <a href="/intent-audiences" className="text-blue-600 hover:underline">intent signals</a>, and automated personalized outreach—all
-              at a <a href="/pricing" className="text-blue-600 hover:underline">transparent price point</a>.
+              For teams focused on converting website traffic into pipeline, we built <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> to solve the gaps we saw
+              in the market: real-time <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link>, <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent signals</Link>, and automated personalized outreach—all
+              at a <Link href="/pricing" className="text-blue-600 hover:underline">transparent price point</Link>.
             </p>
 
 

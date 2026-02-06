@@ -149,7 +149,7 @@ function PricingCard({
 // Main Pricing Page Component
 export default function PricingPageExample() {
   const { variant, trackConversion } = useABTest('pricing-page-structure');
-  const [startTime] = useState(Date.now());
+  const [startTime] = useState(() => Date.now());
 
   // Track time on page
   useEffect(() => {

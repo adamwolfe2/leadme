@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Mail, Linkedin, MessageSquare, Phone, RefreshCw, Database } from 'lucide-react';
 
@@ -9,14 +9,14 @@ export default function LaunchCampaignsDemo() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
 
-  const channels = [
+  const channels = useMemo(() => [
     { name: 'Email', icon: Mail },
     { name: 'LinkedIn', icon: Linkedin },
     { name: 'Direct Mail', icon: MessageSquare },
     { name: 'Phone', icon: Phone },
     { name: 'SMS', icon: MessageSquare },
     { name: 'Database Reactivation', icon: RefreshCw },
-  ];
+  ], []);
 
   useEffect(() => {
     if (isInView && activeChannels.length === 0) {
@@ -27,7 +27,7 @@ export default function LaunchCampaignsDemo() {
         }, 800 + (index * 300));
       });
     }
-  }, [isInView, activeChannels.length]);
+  }, [isInView, activeChannels.length, channels]);
 
   return (
     <div ref={ref} className="w-full">

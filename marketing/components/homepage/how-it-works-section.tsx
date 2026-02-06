@@ -1,6 +1,7 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { useState, useEffect, useRef } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { Container } from "@/components/ui/container"
 import {
   MousePointerClick,
@@ -9,7 +10,8 @@ import {
   Zap,
   Rocket,
   TrendingUp,
-  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
   type LucideIcon
 } from "lucide-react"
 
@@ -104,6 +106,43 @@ const processSteps: ProcessStep[] = [
 ]
 
 export function HowItWorksSection() {
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [isAutoPlay, setIsAutoPlay] = useState(true)
+  const autoPlayRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Auto-advance functionality
+  useEffect(() => {
+    if (!isAutoPlay) return
+
+    autoPlayRef.current = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % processSteps.length)
+    }, 5000) // Change slide every 5 seconds
+
+    return () => {
+      if (autoPlayRef.current) {
+        clearInterval(autoPlayRef.current)
+      }
+    }
+  }, [isAutoPlay])
+
+  const handlePrev = () => {
+    setIsAutoPlay(false)
+    setCurrentIndex((prev) => (prev - 1 + processSteps.length) % processSteps.length)
+  }
+
+  const handleNext = () => {
+    setIsAutoPlay(false)
+    setCurrentIndex((prev) => (prev + 1) % processSteps.length)
+  }
+
+  const goToSlide = (index: number) => {
+    setIsAutoPlay(false)
+    setCurrentIndex(index)
+  }
+
+  const currentStep = processSteps[currentIndex]
+  const Icon = currentStep.icon
+
   return (
     <section className="py-20 bg-white">
       <Container>
@@ -124,86 +163,118 @@ export function HowItWorksSection() {
           </motion.div>
         </div>
 
-        {/* Process Steps */}
+        {/* Horizontal Ticker/Carousel */}
         <div className="relative max-w-5xl mx-auto">
-          {/* Connecting Line */}
-          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-gray-200 via-gray-300 to-gray-200 hidden lg:block" />
-
-          {/* Steps */}
-          <div className="space-y-12">
-            {processSteps.map((step, index) => {
-              const Icon = step.icon
-              const isEven = index % 2 === 0
-
-              return (
-                <motion.div
-                  key={step.number}
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true, margin: "-150px" }}
-                  transition={{
-                    duration: 0.3,
-                    delay: index * 0.05,
-                    ease: [0.22, 1, 0.36, 1]
-                  }}
-                  className="relative"
-                >
-                  <div className="flex flex-col lg:flex-row items-start gap-6">
-                    {/* Step Number Icon */}
-                    <div className="relative z-10 flex-shrink-0">
+          {/* Slide Container */}
+          <div className="relative overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentIndex}
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="w-full"
+              >
+                {/* Step Card */}
+                <div className="bg-white rounded-2xl border border-gray-200 p-8 lg:p-10 shadow-lg hover:shadow-xl transition-shadow">
+                  {/* Icon and Number */}
+                  <div className="flex items-start justify-between mb-6">
+                    <div className="flex items-center gap-4">
                       <div
-                        className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg"
-                        style={{ backgroundColor: step.color }}
+                        className="w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0"
+                        style={{ backgroundColor: currentStep.color }}
                       >
-                        <Icon className="w-8 h-8 text-white" />
+                        <Icon className="w-10 h-10 text-white" />
                       </div>
-                      {/* Step Number Badge */}
-                      <div className="absolute -top-2 -right-2 w-8 h-8 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center text-sm font-bold text-gray-900 shadow-sm">
-                        {step.number}
-                      </div>
-                    </div>
-
-                    {/* Content Card */}
-                    <div className="flex-1">
-                      <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
-                        {/* Title & Description */}
-                        <div className="mb-4">
-                          <h3 className="text-xl font-medium text-gray-900 mb-2">
-                            {step.title}
-                          </h3>
-                          <p className="text-gray-600">
-                            {step.description}
-                          </p>
+                      <div>
+                        <div className="text-5xl font-light text-gray-200 leading-none">
+                          {currentStep.number}
                         </div>
-
-                        {/* Details List */}
-                        <ul className="space-y-2">
-                          {step.details.map((detail, i) => (
-                            <li
-                              key={i}
-                              className="flex items-start gap-3 text-sm text-gray-700"
-                            >
-                              <div
-                                className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0"
-                                style={{ backgroundColor: step.color }}
-                              />
-                              <span>{detail}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      {/* Arrow Connector (not on last step) */}
-                      {index < processSteps.length - 1 && (
-                        <div className="flex justify-center my-4 lg:hidden">
-                          <ArrowRight className="w-6 h-6 text-gray-400 rotate-90" />
+                        <div className="text-xs text-gray-500 uppercase tracking-wider mt-1">
+                          Step {currentStep.number}
                         </div>
-                      )}
+                      </div>
                     </div>
                   </div>
-                </motion.div>
-              )
-            })}
+
+                  {/* Title & Description */}
+                  <div className="mb-6">
+                    <h3 className="text-3xl font-medium text-gray-900 mb-2">
+                      {currentStep.title}
+                    </h3>
+                    <p className="text-lg text-gray-600">
+                      {currentStep.description}
+                    </p>
+                  </div>
+
+                  {/* Details List */}
+                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {currentStep.details.map((detail, i) => (
+                      <li
+                        key={i}
+                        className="flex items-start gap-3"
+                      >
+                        <div
+                          className="w-2 h-2 rounded-full mt-2 flex-shrink-0"
+                          style={{ backgroundColor: currentStep.color }}
+                        />
+                        <span className="text-gray-700">{detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Navigation Controls */}
+          <div className="flex items-center justify-between mt-8">
+            {/* Previous Button */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handlePrev}
+              className="p-2 lg:p-3 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 transition-colors"
+              aria-label="Previous step"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </motion.button>
+
+            {/* Dot Indicators */}
+            <div className="flex items-center gap-2">
+              {processSteps.map((_, index) => (
+                <motion.button
+                  key={index}
+                  onClick={() => goToSlide(index)}
+                  className={`rounded-full transition-all ${
+                    index === currentIndex
+                      ? "bg-blue-500 w-3 h-3"
+                      : "bg-gray-300 hover:bg-gray-400 w-2 h-2"
+                  }`}
+                  whileHover={{ scale: 1.2 }}
+                  whileTap={{ scale: 0.9 }}
+                  aria-label={`Go to step ${index + 1}`}
+                  aria-current={index === currentIndex}
+                />
+              ))}
+            </div>
+
+            {/* Next Button */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleNext}
+              className="p-2 lg:p-3 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 transition-colors"
+              aria-label="Next step"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </motion.button>
+          </div>
+
+          {/* Progress Counter */}
+          <div className="text-center mt-6 text-sm text-gray-500">
+            Step {currentIndex + 1} of {processSteps.length}
           </div>
         </div>
 
@@ -212,7 +283,7 @@ export function HowItWorksSection() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.6 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
           className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto"
         >
           <div className="text-center p-6 bg-gray-50 rounded-xl border border-gray-200">

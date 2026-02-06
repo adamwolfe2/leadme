@@ -151,13 +151,13 @@ export default function BlogPost() {
             </p>
 
             <p>
-              <a href="/visitor-identification" className="text-blue-600 hover:underline">Visitor identification</a> technology makes this possible. By combining IP-based tracking, reverse lookup
-              databases, behavioral signals, and data enrichment, modern platforms like <a href="/" className="text-blue-600 hover:underline">Cursive</a> can identify up to 70% of your
-              B2B website traffic in real-time and use <a href="/intent-audiences" className="text-blue-600 hover:underline">intent data</a> to prioritize the hottest prospects.
+              <Link href="/visitor-identification" className="text-blue-600 hover:underline">Visitor identification</Link> technology makes this possible. By combining IP-based tracking, reverse lookup
+              databases, behavioral signals, and data enrichment, modern platforms like <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> can identify up to 70% of your
+              B2B website traffic in real-time and use <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent data</Link> to prioritize the hottest prospects.
             </p>
 
             <p>
-              This technical guide breaks down exactly how <a href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</a> works, the different methods
+              This technical guide breaks down exactly how <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link> works, the different methods
               available, their accuracy rates, and how to implement them while staying privacy-compliant.
             </p>
 
@@ -306,9 +306,9 @@ export default function BlogPost() {
 
             <ul>
               <li><strong>B2B companies</strong> targeting mid-market and enterprise accounts</li>
-              <li><strong><a href="/visitor-identification" className="text-blue-600 hover:underline">Anonymous visitor identification</a></strong> at the company level</li>
+              <li><strong><Link href="/visitor-identification" className="text-blue-600 hover:underline">Anonymous visitor identification</Link></strong> at the company level</li>
               <li><strong>Privacy-compliant tracking</strong> without personal data collection</li>
-              <li><strong>Top-of-funnel intelligence</strong> for sales prioritization using <a href="/intent-audiences" className="text-blue-600 hover:underline">intent data</a></li>
+              <li><strong>Top-of-funnel intelligence</strong> for sales prioritization using <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent data</Link></li>
             </ul>
 
             <h3>Limitations</h3>
@@ -321,9 +321,9 @@ export default function BlogPost() {
             </ul>
 
             <p>
-              <strong>Pro Tip:</strong> For B2B <a href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</a>, IP-based tracking should be your primary
+              <strong>Pro Tip:</strong> For B2B <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link>, IP-based tracking should be your primary
               method. It's privacy-compliant, works without cookies, and provides company-level data that's
-              immediately actionable for sales teams. Use our <a href="/audience-builder" className="text-blue-600 hover:underline">audience builder</a> to segment and target these visitors.
+              immediately actionable for sales teams. Use our <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link> to segment and target these visitors.
             </p>
 
             <h2>Method 2: Reverse IP Lookup</h2>
@@ -524,9 +524,9 @@ export default function BlogPost() {
             <div className="not-prose bg-gradient-to-br from-green-600 to-green-700 rounded-xl p-8 my-12 text-white text-center">
               <h3 className="text-3xl font-bold mb-4">The Hybrid Approach</h3>
               <p className="text-lg mb-6 opacity-90">
-                The most effective <a href="/visitor-identification" className="text-white underline hover:no-underline">visitor identification</a> combines ALL four methods. Start with IP-based
+                The most effective <Link href="/visitor-identification" className="text-white underline hover:no-underline">visitor identification</Link> combines ALL four methods. Start with IP-based
                 identification for anonymous visitors, enrich with behavioral signals, convert high-intent
-                visitors to first-party data collection, and use cookies to maintain session context. Then amplify your reach with <a href="/direct-mail" className="text-white underline hover:no-underline">direct mail</a>.
+                visitors to first-party data collection, and use cookies to maintain session context. Then amplify your reach with <Link href="/direct-mail" className="text-white underline hover:no-underline">direct mail</Link>.
               </p>
               <Link href="/visitor-identification">
                 <Button
@@ -658,7 +658,7 @@ export default function BlogPost() {
             <h3>Integration Options</h3>
 
             <p>
-              Most modern <a href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</a> platforms offer multiple <a href="/integrations" className="text-blue-600 hover:underline">integration</a> approaches:
+              Most modern <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link> platforms offer multiple <Link href="/integrations" className="text-blue-600 hover:underline">integration</Link> approaches:
             </p>
 
             <ul>
@@ -670,7 +670,7 @@ export default function BlogPost() {
             </ul>
 
             <p>
-              <a href="/" className="text-blue-600 hover:underline">Cursive</a> offers seamless integrations with all major platforms. Check our <a href="/integrations" className="text-blue-600 hover:underline">integrations page</a> for the complete list.
+              <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> offers seamless integrations with all major platforms. Check our <Link href="/integrations" className="text-blue-600 hover:underline">integrations page</Link> for the complete list.
             </p>
 
             <h2>Accuracy Benchmarks and Expectations</h2>
@@ -710,9 +710,9 @@ export default function BlogPost() {
             </ul>
 
             <p>
-              <strong>Pro Tip:</strong> Test your <a href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</a> accuracy by having team members from
+              <strong>Pro Tip:</strong> Test your <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link> accuracy by having team members from
               different companies and locations visit your site. Track how many are correctly identified and
-              what data is returned. This gives you a real-world baseline. Then use our <a href="/audience-builder" className="text-blue-600 hover:underline">audience builder</a> to create segments based on this data.
+              what data is returned. This gives you a real-world baseline. Then use our <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link> to create segments based on this data.
             </p>
 
             <h2>Frequently Asked Questions</h2>
@@ -813,9 +813,9 @@ export default function BlogPost() {
             </ul>
 
             <p>
-              The companies winning with <a href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</a> aren't using one method—they're orchestrating
+              The companies winning with <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link> aren't using one method—they're orchestrating
               all of them together to maximize identification rates while maintaining visitor trust and regulatory
-              compliance. They also layer on <a href="/intent-audiences" className="text-blue-600 hover:underline">intent data</a> to prioritize the hottest leads and follow up with personalized <a href="/direct-mail" className="text-blue-600 hover:underline">direct mail</a> campaigns.
+              compliance. They also layer on <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent data</Link> to prioritize the hottest leads and follow up with personalized <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link> campaigns.
             </p>
 
 

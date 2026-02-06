@@ -45,6 +45,7 @@ export function ViewProvider({ children }: { children: React.ReactNode }) {
         setViewState(stored)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Sync with URL changes

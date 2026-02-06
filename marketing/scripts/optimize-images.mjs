@@ -25,8 +25,8 @@
  *   node scripts/optimize-images.js public/image.png --sizes 640,1280,1920
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -79,15 +79,14 @@ for (let i = 1; i < args.length; i += 2) {
 }
 
 // Check if sharp is installed
+let sharp;
 try {
-  require.resolve('sharp');
-} catch (e) {
+  sharp = (await import('sharp')).default;
+} catch (_e) {
   console.error('Error: sharp package is not installed.');
   console.error('Install it with: npm install --save-dev sharp');
   process.exit(1);
 }
-
-const sharp = require('sharp');
 
 async function optimizeImage(inputPath, options) {
   // Validate input file exists

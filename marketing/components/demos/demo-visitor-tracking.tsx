@@ -35,13 +35,14 @@ export function DemoVisitorTracking() {
       id: `initial-${i}`,
       enrichmentStep: 4, // Fully enriched
     }))
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setVisitors(initialVisitors)
 
     const interval = setInterval(() => {
       const randomVisitor = visitorPool[Math.floor(Math.random() * visitorPool.length)]
       const newVisitor: Visitor = {
         ...randomVisitor,
-        id: `visitor-${Date.now()}`,
+        id: `visitor-${Math.random()}`,
         enrichmentStep: 0,
       }
 

@@ -121,7 +121,8 @@ export function DemoAudienceBuilder() {
     }
 
     const newFilter: Filter = {
-      id: `${category}-${Date.now()}`,
+      // eslint-disable-next-line react-hooks/purity
+      id: `${category}-${Math.random()}`,
       category,
       value,
       impact: impacts[category] || 0.5,

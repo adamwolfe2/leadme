@@ -73,6 +73,7 @@ export default function BlogPostExample() {
   // Count paragraphs for inline CTA placement
   useEffect(() => {
     const paragraphs = document.querySelectorAll('.blog-content p');
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setParagraphCount(paragraphs.length);
   }, []);
 

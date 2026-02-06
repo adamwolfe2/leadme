@@ -1,7 +1,7 @@
 "use client"
 
 import { motion, AnimatePresence } from "framer-motion"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Code, Users, Target, Send, Check, Eye, Mail, MessageSquare, ArrowRight, TrendingUp, BarChart3 } from "lucide-react"
 import Image from "next/image"
 
@@ -17,6 +17,14 @@ function TrackingPixelDemo() {
   const [showCode, setShowCode] = useState(false)
   const [installing, setInstalling] = useState(false)
   const [installed, setInstalled] = useState(false)
+
+  // Generate random positions once using useState initializer
+  const [randomPositions] = useState(() =>
+    [...Array(8)].map(() => ({
+      x: Math.random() * 800,
+      y: Math.random() * 400,
+    }))
+  )
 
   useEffect(() => {
     const timer1 = setTimeout(() => setShowCode(true), 300)
@@ -101,15 +109,15 @@ function TrackingPixelDemo() {
       {/* Floating Visitor Icons */}
       {installed && (
         <div className="absolute top-0 left-0 right-0 bottom-0 pointer-events-none">
-          {[...Array(8)].map((_, i) => (
+          {randomPositions.map((pos, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, scale: 0 }}
               animate={{
                 opacity: [0, 1, 0],
                 scale: [0, 1, 0],
-                x: Math.random() * 800,
-                y: Math.random() * 400,
+                x: pos.x,
+                y: pos.y,
               }}
               transition={{
                 delay: i * 0.2,
@@ -133,14 +141,14 @@ function VisitorIdentificationDemo() {
   const [activeConnections, setActiveConnections] = useState<number[]>([])
   const [showMetrics, setShowMetrics] = useState(false)
 
-  const integrations = [
+  const integrations = useMemo(() => [
     { id: 1, name: "Salesforce", color: "#007AFF", icon: "●" },
     { id: 2, name: "HubSpot", color: "#007AFF", icon: "●" },
     { id: 3, name: "LinkedIn", color: "#007AFF", icon: "◆" },
     { id: 4, name: "Google", color: "#007AFF", icon: "●" },
     { id: 5, name: "Facebook", color: "#007AFF", icon: "●" },
     { id: 6, name: "Slack", color: "#007AFF", icon: "●" },
-  ]
+  ], [])
 
   useEffect(() => {
     const timer1 = setInterval(() => {
@@ -156,7 +164,7 @@ function VisitorIdentificationDemo() {
       clearInterval(timer1)
       clearTimeout(timer2)
     }
-  }, [])
+  }, [integrations.length])
 
   return (
     <div className="relative w-full h-[500px] bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-xl p-12">
@@ -475,12 +483,12 @@ function CampaignDemo() {
   const [activeChannels, setActiveChannels] = useState<number[]>([])
   const [showMetrics, setShowMetrics] = useState<{ [key: number]: boolean }>({})
 
-  const channels = [
+  const channels = useMemo(() => [
     { id: 0, label: "Email", icon: "✉", metric: "42% open rate" },
     { id: 1, label: "LinkedIn", icon: "◆", metric: "18% reply rate" },
     { id: 2, label: "Direct Mail", icon: "■", metric: "8% response" },
     { id: 3, label: "SMS", icon: "●", metric: "65% read rate" },
-  ]
+  ], [])
 
   useEffect(() => {
     const timer1 = setInterval(() => {
@@ -502,7 +510,7 @@ function CampaignDemo() {
       clearInterval(timer1)
       clearInterval(timer2)
     }
-  }, [activeChannels])
+  }, [activeChannels, channels.length])
 
   return (
     <div className="relative w-full h-[500px] bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-xl p-12">

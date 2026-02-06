@@ -11,7 +11,7 @@
  *   npm run postbuild (automatically runs after build)
  */
 
-const https = require('https')
+import https from 'https'
 
 const INDEXNOW_KEY = process.env.INDEXNOW_KEY || '7c33bde0a15b132aa38f5bea1dd15077'
 const BASE_URL = 'https://www.meetcursive.com'
@@ -176,7 +176,7 @@ function getAllUrls() {
  * Submit URLs to IndexNow
  */
 function submitToIndexNow(urls) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const payload = JSON.stringify({
       host: 'www.meetcursive.com',
       key: INDEXNOW_KEY,
