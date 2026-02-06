@@ -142,6 +142,14 @@ function renderTemplate(template: string, data: Record<string, any>): { html: st
 
 export async function POST(request: NextRequest) {
   try {
+    // Auth check - prevent unauthenticated email sending
+    const { createClient } = await import('@/lib/supabase/server')
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     // Parse and validate request
     const body = await request.json()
     const validated = emailSchema.parse(body)

@@ -38,7 +38,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
 
   // If not logged in, redirect to sign up first
   if (!user) {
-    redirect(`/sign-up?redirect=/services/checkout?tier=${tierSlug}`)
+    redirect(`/signup?redirect=/services/checkout?tier=${tierSlug}`)
   }
 
   // Get user's workspace
