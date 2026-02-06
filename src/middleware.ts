@@ -3,6 +3,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/middleware'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { validateRequiredEnvVars } from '@/lib/env-validation'
 import { logger } from '@/lib/monitoring/logger'
 
@@ -179,7 +180,9 @@ export async function middleware(req: NextRequest) {
 
       if (!userRecord?.workspace_id) {
         // Check if user is a platform admin (admins may not have a workspace)
-        const { data: adminRecord } = await supabase
+        // Use admin client to bypass RLS on platform_admins table
+        const adminSupabase = createAdminClient()
+        const { data: adminRecord } = await adminSupabase
           .from('platform_admins')
           .select('id')
           .eq('email', user.email)
