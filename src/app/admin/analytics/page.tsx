@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
 interface AnalyticsData {
   overview: {
@@ -29,6 +30,33 @@ export default function AdminAnalyticsPage() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [dateRange, setDateRange] = useState('30d')
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [authChecked, setAuthChecked] = useState(false)
+
+  const supabase = createClient()
+
+  // Admin role check - prevent non-admins from accessing
+  useEffect(() => {
+    const checkAdmin = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        window.location.href = '/login'
+        return
+      }
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role')
+        .eq('auth_user_id', user.id)
+        .single()
+      if (!userData || (userData.role !== 'admin' && userData.role !== 'super_admin')) {
+        window.location.href = '/dashboard'
+        return
+      }
+      setIsAdmin(true)
+      setAuthChecked(true)
+    }
+    checkAdmin()
+  }, [])
 
   const fetchAnalytics = useCallback(async () => {
     try {
@@ -65,6 +93,13 @@ export default function AdminAnalyticsPage() {
         {isPositive ? '+' : ''}{change.toFixed(1)}%
       </span>
     )
+  }
+
+  if (!authChecked) {
+    return <div className="flex items-center justify-center min-h-screen"><p>Checking access...</p></div>
+  }
+  if (!isAdmin) {
+    return null
   }
 
   if (loading) {

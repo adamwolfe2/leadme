@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
         workspace_id: user.workspace_id,
         ...validationResult.data,
       })
-      .select()
+      .select('id, workspace_id, name, color, description, created_at')
       .single()
 
     if (error) {

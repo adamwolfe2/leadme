@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
         raw_payload: data,
         processed: false,
       })
-      .select()
+      .select('id')
       .single()
 
     if (insertError) {

@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
         format,
         generation_status: 'completed',
       })
-      .select()
+      .select('id, brand_workspace_id, icp_id, offer_id, image_url, prompt, style_preset, format, generation_status, created_at')
       .single()
 
     if (saveError) {

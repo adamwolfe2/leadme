@@ -42,13 +42,11 @@ export function initSentry() {
 
     // Configure integrations
     integrations: [
-      new Sentry.BrowserTracing({
-        // Track navigation and API calls
-        tracingOrigins: ['localhost', /^\//],
+      Sentry.browserTracingIntegration({
         // Don't track these endpoints
-        tracePropagationTargets: [/^\/api\//],
+        tracePropagationTargets: ['localhost', /^\/api\//],
       }),
-      new Sentry.Replay({
+      Sentry.replayIntegration({
         // Mask sensitive data
         maskAllText: isProduction,
         blockAllMedia: isProduction,
@@ -157,13 +155,13 @@ export function addBreadcrumb(message: string, category: string, data?: Record<s
 }
 
 /**
- * Start a performance transaction
+ * Start a performance span
  */
 export function startTransaction(name: string, operation: string) {
-  return Sentry.startTransaction({
+  return Sentry.startSpan({
     name,
     op: operation,
-  })
+  }, () => {})
 }
 
 /**

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { useToast } from '@/lib/hooks/use-toast'
@@ -44,8 +44,40 @@ export default function AdminLeadsPage() {
   const [rejectReason, setRejectReason] = useState('')
   const [rejectCode, setRejectCode] = useState<string>('invalid_data')
   const [actionLoading, setActionLoading] = useState<string | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [authChecked, setAuthChecked] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
+
+  // Admin role check - prevent non-admins from accessing
+  useEffect(() => {
+    const checkAdmin = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        window.location.href = '/login'
+        return
+      }
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role')
+        .eq('auth_user_id', user.id)
+        .single()
+      if (!userData || (userData.role !== 'admin' && userData.role !== 'super_admin')) {
+        window.location.href = '/dashboard'
+        return
+      }
+      setIsAdmin(true)
+      setAuthChecked(true)
+    }
+    checkAdmin()
+  }, [])
+
+  if (!authChecked) {
+    return <div className="flex items-center justify-center min-h-screen"><p>Checking access...</p></div>
+  }
+  if (!isAdmin) {
+    return null
+  }
 
   // Fetch leads
   const { data: leads, isLoading, refetch } = useQuery({

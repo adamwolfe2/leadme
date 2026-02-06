@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
         // Timeline
         timeline: data.timeline,
       })
-      .select()
+      .select('id, workspace_id, status, company_name, contact_name, contact_email, target_industry, campaign_goal, timeline, created_at')
       .single()
 
     if (error) {

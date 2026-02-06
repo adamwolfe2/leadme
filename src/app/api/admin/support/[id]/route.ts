@@ -55,7 +55,7 @@ export async function PATCH(
       .from('support_messages')
       .update(updateData)
       .eq('id', params.id)
-      .select()
+      .select('id, name, email, subject, message, status, priority, source, admin_notes, responded_at, responded_by, created_at, updated_at')
       .single()
 
     if (error) {

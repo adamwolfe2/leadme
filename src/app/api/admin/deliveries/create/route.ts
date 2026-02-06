@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
         status: 'delivered', // Mark as delivered immediately
         delivered_at: new Date().toISOString(),
       })
-      .select()
+      .select('id')
       .single()
 
     if (deliveryError || !delivery) {

@@ -2,11 +2,19 @@
 // GET /api/partner/connect/verify?partner_id=xxx
 
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getStripeClient } from '@/lib/stripe/client'
 
 export async function GET(request: NextRequest) {
   try {
+    // Verify the user is authenticated
+    const supabaseAuth = await createClient()
+    const { data: { user } } = await supabaseAuth.auth.getUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const stripe = getStripeClient()
     const partnerId = request.nextUrl.searchParams.get('partner_id')
 

@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
         status: 'pending',
         requested_at: new Date().toISOString(),
       })
-      .select()
+      .select('id, partner_id, amount, status, requested_at, created_at')
       .single()
 
     if (insertError) {

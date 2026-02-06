@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
         ip_address,
         user_agent,
       })
-      .select()
+      .select('id')
       .single()
 
     if (error) {

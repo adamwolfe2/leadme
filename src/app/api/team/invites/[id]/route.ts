@@ -36,7 +36,7 @@ export async function DELETE(
       .eq('id', id)
       .eq('workspace_id', user.workspace_id)
       .eq('status', 'pending')
-      .select()
+      .select('id')
       .single()
 
     if (error) {

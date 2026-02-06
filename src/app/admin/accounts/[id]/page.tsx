@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
@@ -63,6 +63,8 @@ export default function AdminWorkspaceDetailPage() {
   const queryClient = useQueryClient()
   const supabase = createClient()
 
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [authChecked, setAuthChecked] = useState(false)
   const [activeTab, setActiveTab] = useState<'overview' | 'tier' | 'users' | 'usage' | 'logs'>('overview')
   const [tierModalOpen, setTierModalOpen] = useState(false)
   const [overrideModalOpen, setOverrideModalOpen] = useState(false)
@@ -70,6 +72,29 @@ export default function AdminWorkspaceDetailPage() {
   const [dailyOverride, setDailyOverride] = useState<string>('')
   const [monthlyOverride, setMonthlyOverride] = useState<string>('')
   const [tierNotes, setTierNotes] = useState('')
+
+  // Admin role check - prevent non-admins from accessing
+  useEffect(() => {
+    const checkAdmin = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        window.location.href = '/login'
+        return
+      }
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role')
+        .eq('auth_user_id', user.id)
+        .single()
+      if (!userData || (userData.role !== 'admin' && userData.role !== 'super_admin')) {
+        window.location.href = '/dashboard'
+        return
+      }
+      setIsAdmin(true)
+      setAuthChecked(true)
+    }
+    checkAdmin()
+  }, [])
 
   // Fetch workspace details
   const { data: workspace, isLoading } = useQuery({
@@ -235,6 +260,13 @@ export default function AdminWorkspaceDetailPage() {
       router.push('/dashboard')
     },
   })
+
+  if (!authChecked) {
+    return <div className="flex items-center justify-center min-h-screen"><p>Checking access...</p></div>
+  }
+  if (!isAdmin) {
+    return null
+  }
 
   if (isLoading) {
     return (

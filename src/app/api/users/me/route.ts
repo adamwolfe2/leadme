@@ -137,7 +137,7 @@ export async function PATCH(request: NextRequest) {
       .from('users')
       .update(updates)
       .eq('id', user.id)
-      .select()
+      .select('id, email, full_name, workspace_id, role, plan, daily_credit_limit, daily_credits_used, daily_credits_reset_at, referral_code, referred_by, created_at, subscription_status, subscription_period_end, cancel_at_period_end, notification_preferences')
       .single()
 
     if (error) {

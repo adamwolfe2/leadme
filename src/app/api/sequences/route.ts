@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
         trigger_config,
         created_by: user.id,
       })
-      .select()
+      .select('id, workspace_id, name, description, trigger_type, trigger_config, status, created_by, created_at')
       .single()
 
     if (sequenceError) {

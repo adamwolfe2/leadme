@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
         },
         { onConflict: 'workspace_id' }
       )
-      .select()
+      .select('id, workspace_id, product_tier_id, billing_cycle, subscription_status, daily_lead_limit_override, monthly_lead_limit_override, feature_overrides, internal_notes')
       .single()
 
     if (upsertError) throw upsertError
@@ -189,7 +189,7 @@ export async function PATCH(request: NextRequest) {
       .from('workspace_tiers')
       .update(updates)
       .eq('workspace_id', workspaceId)
-      .select()
+      .select('id, workspace_id, product_tier_id, billing_cycle, subscription_status, daily_lead_limit_override, monthly_lead_limit_override, feature_overrides, internal_notes')
       .single()
 
     if (updateError) throw updateError

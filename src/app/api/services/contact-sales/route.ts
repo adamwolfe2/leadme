@@ -71,7 +71,7 @@ ${validated.message}
         ip_address,
         user_agent,
       })
-      .select()
+      .select('id')
       .single()
 
     if (error) {

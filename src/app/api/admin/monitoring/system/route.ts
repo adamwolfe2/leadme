@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireAdmin } from '@/lib/auth/admin'
+import { getCurrentUser } from '@/lib/auth/helpers'
 
 export async function GET(req: NextRequest) {
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    await requireAdmin()
+
     const supabase = createAdminClient()
 
     // Calculate metrics from the last 24 hours

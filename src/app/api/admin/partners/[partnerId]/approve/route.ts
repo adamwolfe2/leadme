@@ -37,7 +37,7 @@ export async function POST(
     })
     .eq('id', partnerId)
     .eq('status', 'pending')
-    .select()
+    .select('id, email, contact_name, company_name, api_key, status')
     .single()
 
   if (error || !partner) {

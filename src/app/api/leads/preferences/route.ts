@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
         max_cost_per_lead: max_cost_per_lead ? parseFloat(max_cost_per_lead) : null,
         monthly_budget: monthly_budget ? parseFloat(monthly_budget) : null,
       })
-      .select()
+      .select('id, workspace_id, name, description, target_industries, target_regions, target_company_sizes, target_intent_signals, max_leads_per_day, max_cost_per_lead, monthly_budget, created_at, updated_at')
       .single()
 
     if (error) {

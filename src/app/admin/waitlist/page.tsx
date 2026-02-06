@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { WaitlistRepository, type WaitlistSignup } from '@/lib/repositories/waitlist.repository'
 import { useToast } from '@/lib/hooks/use-toast'
 import { Download, Mail, Calendar, Building, Linkedin, MapPin } from 'lucide-react'
@@ -13,7 +14,33 @@ export default function AdminWaitlistPage() {
     converted: 0,
     industries: {} as Record<string, number>
   })
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [authChecked, setAuthChecked] = useState(false)
   const toast = useToast()
+  const supabase = createClient()
+
+  // Admin role check - prevent non-admins from accessing
+  useEffect(() => {
+    const checkAdmin = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        window.location.href = '/login'
+        return
+      }
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role')
+        .eq('auth_user_id', user.id)
+        .single()
+      if (!userData || (userData.role !== 'admin' && userData.role !== 'super_admin')) {
+        window.location.href = '/dashboard'
+        return
+      }
+      setIsAdmin(true)
+      setAuthChecked(true)
+    }
+    checkAdmin()
+  }, [])
 
   useEffect(() => {
     fetchSignups()
@@ -70,6 +97,13 @@ export default function AdminWaitlistPage() {
     a.click()
 
     toast.success('Waitlist exported to CSV')
+  }
+
+  if (!authChecked) {
+    return <div className="flex items-center justify-center min-h-screen"><p>Checking access...</p></div>
+  }
+  if (!isAdmin) {
+    return null
   }
 
   if (loading) {

@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       .eq('auth_user_id', user.id)
       .single()
 
-    if (!userData || userData.role !== 'admin') {
+    if (!userData || (userData.role !== 'admin' && userData.role !== 'super_admin')) {
       return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 })
     }
 

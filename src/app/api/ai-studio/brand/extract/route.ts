@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
         url,
         extraction_status: 'processing',
       })
-      .select()
+      .select('id, name')
       .single()
 
     if (workspaceError) {
