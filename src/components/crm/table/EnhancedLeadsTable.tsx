@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Checkbox } from '@/components/ui/checkbox'
 import { ImportLeadsDialog } from '@/components/crm/dialogs/ImportLeadsDialog'
 import { CreateLeadDialog } from '@/components/crm/dialogs/CreateLeadDialog'
 import { EditLeadDialog } from '@/components/crm/dialogs/EditLeadDialog'
@@ -58,22 +59,28 @@ import { formatDistanceToNow } from 'date-fns'
 import type { LeadTableRow } from '@/types/crm.types'
 import { cn } from '@/lib/utils'
 
+export interface EnhancedLeadsTableHandle {
+  clearSelection: () => void
+}
+
 interface EnhancedLeadsTableProps {
   data: LeadTableRow[]
   onRowClick?: (lead: LeadTableRow) => void
   onCreateClick?: () => void
+  onSelectionChange?: (selectedIds: string[]) => void
   isLoading?: boolean
 }
 
 const STATUS_OPTIONS = ['new', 'contacted', 'qualified', 'lost', 'converted']
 const PAGE_SIZE_OPTIONS = [10, 20, 30, 50]
 
-export function EnhancedLeadsTable({
+export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, EnhancedLeadsTableProps>(function EnhancedLeadsTable({
   data,
   onRowClick,
   onCreateClick,
+  onSelectionChange,
   isLoading = false,
-}: EnhancedLeadsTableProps) {
+}, ref) {
   const [searchQuery, setSearchQuery] = React.useState('')
   const [statusFilter, setStatusFilter] = React.useState<string>('all')
   const [sourceFilter, setSourceFilter] = React.useState<string>('all')
@@ -83,6 +90,12 @@ export function EnhancedLeadsTable({
   const [createDialogOpen, setCreateDialogOpen] = React.useState(false)
   const [editDialogOpen, setEditDialogOpen] = React.useState(false)
   const [editingLead, setEditingLead] = React.useState<LeadTableRow | null>(null)
+  const [selectedLeadIds, setSelectedLeadIds] = React.useState<Set<string>>(new Set())
+
+  // Expose clearSelection to parent via ref
+  React.useImperativeHandle(ref, () => ({
+    clearSelection: () => setSelectedLeadIds(new Set()),
+  }), [])
 
   const hasActiveFilters = statusFilter !== 'all' || sourceFilter !== 'all'
 
@@ -128,6 +141,56 @@ export function EnhancedLeadsTable({
     setStatusFilter('all')
     setSourceFilter('all')
   }
+
+  // --- Selection logic ---
+  const pageLeadIds = React.useMemo(() => paginatedLeads.map((l) => l.id), [paginatedLeads])
+
+  const allPageSelected = pageLeadIds.length > 0 && pageLeadIds.every((id) => selectedLeadIds.has(id))
+  const somePageSelected = pageLeadIds.some((id) => selectedLeadIds.has(id))
+
+  const toggleSelectAll = React.useCallback(() => {
+    setSelectedLeadIds((prev) => {
+      const next = new Set(prev)
+      if (allPageSelected) {
+        // Deselect all on this page
+        for (const id of pageLeadIds) {
+          next.delete(id)
+        }
+      } else {
+        // Select all on this page
+        for (const id of pageLeadIds) {
+          next.add(id)
+        }
+      }
+      return next
+    })
+  }, [allPageSelected, pageLeadIds])
+
+  const toggleSelectOne = React.useCallback((leadId: string) => {
+    setSelectedLeadIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(leadId)) {
+        next.delete(leadId)
+      } else {
+        next.add(leadId)
+      }
+      return next
+    })
+  }, [])
+
+  const clearSelection = React.useCallback(() => {
+    setSelectedLeadIds(new Set())
+  }, [])
+
+  // Notify parent of selection changes
+  React.useEffect(() => {
+    onSelectionChange?.(Array.from(selectedLeadIds))
+  }, [selectedLeadIds, onSelectionChange])
+
+  // Clear selection when filters/search change
+  React.useEffect(() => {
+    setSelectedLeadIds(new Set())
+  }, [searchQuery, statusFilter, sourceFilter])
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -304,6 +367,15 @@ export function EnhancedLeadsTable({
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-50/80 hover:bg-gray-50/80 border-gray-100">
+              <TableHead className="w-[40px] px-3">
+                <Checkbox
+                  checked={allPageSelected}
+                  indeterminate={somePageSelected && !allPageSelected}
+                  onChange={toggleSelectAll}
+                  aria-label="Select all leads on this page"
+                  className="cursor-pointer"
+                />
+              </TableHead>
               <TableHead className="w-[40px] font-semibold text-gray-700 text-xs">#</TableHead>
               <TableHead className="min-w-[180px] font-semibold text-gray-700 text-xs">
                 Name
@@ -329,13 +401,13 @@ export function EnhancedLeadsTable({
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={8} className="h-32 text-center text-gray-500 text-sm">
+                <TableCell colSpan={9} className="h-32 text-center text-gray-500 text-sm">
                   Loading leads...
                 </TableCell>
               </TableRow>
             ) : paginatedLeads.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="h-32 text-center text-gray-500 text-sm">
+                <TableCell colSpan={9} className="h-32 text-center text-gray-500 text-sm">
                   No leads found matching your filters.
                 </TableCell>
               </TableRow>
@@ -344,12 +416,25 @@ export function EnhancedLeadsTable({
                 const fullName = [lead.first_name, lead.last_name].filter(Boolean).join(' ') || 'Unknown'
                 const initials = getInitials(lead.first_name, lead.last_name)
 
+                const isSelected = selectedLeadIds.has(lead.id)
+
                 return (
                   <TableRow
                     key={lead.id}
                     onClick={() => onRowClick?.(lead)}
-                    className="cursor-pointer hover:bg-blue-50/50 transition-colors border-gray-100"
+                    className={cn(
+                      'cursor-pointer hover:bg-blue-50/50 transition-colors border-gray-100',
+                      isSelected && 'bg-blue-50/70'
+                    )}
                   >
+                    <TableCell className="px-3" onClick={(e) => e.stopPropagation()}>
+                      <Checkbox
+                        checked={isSelected}
+                        onChange={() => toggleSelectOne(lead.id)}
+                        aria-label={`Select ${fullName}`}
+                        className="cursor-pointer"
+                      />
+                    </TableCell>
                     <TableCell className="font-medium text-xs text-gray-600">
                       {(currentPage - 1) * pageSize + index + 1}
                     </TableCell>
@@ -453,6 +538,24 @@ export function EnhancedLeadsTable({
           </TableBody>
         </Table>
       </div>
+
+      {/* Floating Selection Bar */}
+      {selectedLeadIds.size > 0 && (
+        <div className="flex items-center gap-3 px-4 sm:px-6 py-2.5 border-t border-blue-100 bg-blue-50/80">
+          <span className="text-xs font-semibold text-blue-700">
+            {selectedLeadIds.size} lead{selectedLeadIds.size !== 1 ? 's' : ''} selected
+          </span>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-100"
+            onClick={clearSelection}
+          >
+            <X className="size-3.5 mr-1" />
+            Clear
+          </Button>
+        </div>
+      )}
 
       {/* Pagination */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-3 sm:px-6 py-3 border-t border-gray-100 bg-gray-50/50">
@@ -578,4 +681,4 @@ export function EnhancedLeadsTable({
       />
     </div>
   )
-}
+})

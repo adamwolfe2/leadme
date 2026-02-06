@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
-import { EnhancedLeadsTable } from '@/components/crm/table/EnhancedLeadsTable'
+import { EnhancedLeadsTable, type EnhancedLeadsTableHandle } from '@/components/crm/table/EnhancedLeadsTable'
+import { IntegrationExportBar } from '@/components/crm/export/IntegrationExportBar'
 import { RecordDrawer } from '@/components/crm/drawer/RecordDrawer'
 import { Button } from '@/components/ui/button'
 import { formatDistanceToNow } from 'date-fns'
@@ -20,9 +21,20 @@ export function LeadsPageClient({ initialData, currentPage, perPage, totalCount 
   const [leads] = useState<LeadTableRow[]>(initialData)
   const [selectedLead, setSelectedLead] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([])
+  const tableRef = useRef<EnhancedLeadsTableHandle>(null)
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+
+  const handleSelectionChange = useCallback((ids: string[]) => {
+    setSelectedLeadIds(ids)
+  }, [])
+
+  const handleClearSelection = useCallback(() => {
+    setSelectedLeadIds([])
+    tableRef.current?.clearSelection()
+  }, [])
 
   const totalPages = Math.max(1, Math.ceil(totalCount / perPage))
 
@@ -46,8 +58,19 @@ export function LeadsPageClient({ initialData, currentPage, perPage, totalCount 
     <>
       <div className="flex h-full flex-col p-4 md:p-6 lg:p-8">
         <div className="mx-auto w-full max-w-[1600px]">
+          {/* Integration Export Bar */}
+          <IntegrationExportBar
+            selectedLeadIds={selectedLeadIds}
+            onClearSelection={handleClearSelection}
+          />
+
           {/* Enhanced square-ui inspired table */}
-          <EnhancedLeadsTable data={leads} onRowClick={handleRowClick} />
+          <EnhancedLeadsTable
+            ref={tableRef}
+            data={leads}
+            onRowClick={handleRowClick}
+            onSelectionChange={handleSelectionChange}
+          />
 
           {/* Server-side pagination across all leads */}
           {totalPages > 1 && (
