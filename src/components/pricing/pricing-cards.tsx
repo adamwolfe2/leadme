@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { getSubscriptionLink } from '@/lib/stripe/payment-links'
 
 interface SubscriptionPlan {
   id: string
@@ -48,7 +49,17 @@ export function PricingCards({ plans, currentPlan }: PricingCardsProps) {
         : plan.stripe_price_id_yearly
 
       if (!priceId) {
-        throw new Error('Price ID not configured for this plan')
+        // Fallback: use Stripe Payment Link if price ID isn't configured
+        const planKey = plan.name as 'starter' | 'pro' | 'enterprise'
+        const cycle = billingCycle === 'yearly' ? 'annual' : 'monthly'
+        try {
+          const paymentUrl = getSubscriptionLink(planKey, cycle)
+          window.open(paymentUrl, '_blank', 'noopener,noreferrer')
+        } catch {
+          throw new Error('Price ID not configured for this plan')
+        }
+        setLoadingPlanId(null)
+        return
       }
 
       const response = await fetch('/api/billing/checkout', {
