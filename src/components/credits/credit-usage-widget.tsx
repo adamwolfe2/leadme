@@ -5,6 +5,7 @@
 
 import { useEffect, useState } from 'react'
 import { Activity, TrendingUp, AlertCircle } from 'lucide-react'
+import { getSubscriptionLink, getCreditLink } from '@/lib/stripe/payment-links'
 
 interface CreditStatus {
   credits: {
@@ -163,13 +164,19 @@ export function CreditUsageWidget() {
 
       {/* Upgrade CTA for free users */}
       {credits.plan === 'free' && isLowCredits && (
-        <div className="mt-4 pt-4 border-t border-zinc-200">
+        <div className="mt-4 pt-4 border-t border-zinc-200 space-y-2">
           <a
-            href="/pricing"
+            href={getSubscriptionLink('pro', 'monthly')}
             className="block w-full text-center px-4 py-2 bg-zinc-900 text-white text-[13px] font-medium rounded-lg hover:bg-zinc-800 transition-colors"
           >
             Upgrade to Pro
           </a>
+          <button
+            onClick={() => window.open(getCreditLink('starter'), '_blank', 'noopener,noreferrer')}
+            className="block w-full text-center px-4 py-2 border border-zinc-200 text-zinc-700 text-[13px] font-medium rounded-lg hover:bg-zinc-50 transition-colors"
+          >
+            Buy More Credits
+          </button>
         </div>
       )}
     </div>

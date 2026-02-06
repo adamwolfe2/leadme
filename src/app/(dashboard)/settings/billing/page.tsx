@@ -10,6 +10,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton, SkeletonCard } from '@/components/ui/skeleton'
+import {
+  getServiceLink,
+  getCreditLink,
+  PAYMENT_LINKS,
+} from '@/lib/stripe/payment-links'
 
 // Integration logos for the Pro plan card
 const INTEGRATION_LOGOS = {
@@ -504,6 +509,116 @@ export default function BillingSettingsPage() {
         </Card>
       )}
 
+      {/* Buy Credits Section */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Buy Credits</CardTitle>
+            <Badge variant="outline" className="text-xs">One-time purchase</Badge>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-6">
+            Purchase additional credits for lead discovery and marketplace purchases. Credits never expire.
+          </p>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Lead Purchase */}
+            <button
+              onClick={() => window.open(getCreditLink('leadPurchase'), '_blank', 'noopener,noreferrer')}
+              className="group border border-border rounded-lg p-4 hover:border-primary/50 hover:shadow-md transition-all text-left"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <svg className="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <svg className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors text-sm">
+                {PAYMENT_LINKS.credits.leadPurchase.name}
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                Individual lead credits
+              </p>
+            </button>
+
+            {/* Starter Credits */}
+            <button
+              onClick={() => window.open(getCreditLink('starter'), '_blank', 'noopener,noreferrer')}
+              className="group border border-border rounded-lg p-4 hover:border-primary/50 hover:shadow-md transition-all text-left"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className="p-2 rounded-lg bg-emerald-500/10">
+                  <svg className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <svg className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors text-sm">
+                {PAYMENT_LINKS.credits.starter.name}
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                Small credit pack to get started
+              </p>
+            </button>
+
+            {/* Professional Credits */}
+            <button
+              onClick={() => window.open(getCreditLink('professional'), '_blank', 'noopener,noreferrer')}
+              className="group border border-primary/30 rounded-lg p-4 hover:border-primary/50 hover:shadow-md transition-all text-left relative"
+            >
+              <Badge variant="default" className="absolute -top-2.5 right-3 text-[10px]">Popular</Badge>
+              <div className="flex items-start justify-between mb-3">
+                <div className="p-2 rounded-lg bg-blue-500/10">
+                  <svg className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <svg className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors text-sm">
+                {PAYMENT_LINKS.credits.professional.name}
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                Best value for growing teams
+              </p>
+            </button>
+
+            {/* Enterprise Credits */}
+            <button
+              onClick={() => window.open(getCreditLink('enterprise'), '_blank', 'noopener,noreferrer')}
+              className="group border border-border rounded-lg p-4 hover:border-primary/50 hover:shadow-md transition-all text-left"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className="p-2 rounded-lg bg-purple-500/10">
+                  <svg className="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </div>
+                <svg className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors text-sm">
+                {PAYMENT_LINKS.credits.enterprise.name}
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                Volume credits for large teams
+              </p>
+            </button>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Service Tiers Section */}
       <Card className="mt-6">
         <CardHeader>
@@ -524,8 +639,8 @@ export default function BillingSettingsPage() {
 
           <div className="grid gap-4 sm:grid-cols-3">
             {/* Cursive Data */}
-            <Link
-              href="/services/cursive-data"
+            <a
+              href={getServiceLink('data')}
               className="group border border-border rounded-lg p-4 hover:border-primary/50 hover:shadow-md transition-all"
             >
               <div className="flex items-start justify-between mb-3">
@@ -548,11 +663,11 @@ export default function BillingSettingsPage() {
                 <span className="text-lg font-bold text-foreground">$1k-3k</span>
                 <span className="text-xs text-muted-foreground">/mo</span>
               </div>
-            </Link>
+            </a>
 
             {/* Cursive Outbound */}
-            <Link
-              href="/services/cursive-outbound"
+            <a
+              href={getServiceLink('outbound')}
               className="group border border-border rounded-lg p-4 hover:border-primary/50 hover:shadow-md transition-all"
             >
               <div className="flex items-start justify-between mb-3">
@@ -576,11 +691,11 @@ export default function BillingSettingsPage() {
                 <span className="text-xs text-muted-foreground">/mo</span>
               </div>
               <p className="text-xs text-muted-foreground mt-1">+ $2.5k setup</p>
-            </Link>
+            </a>
 
             {/* Cursive Pipeline */}
-            <Link
-              href="/services/cursive-pipeline"
+            <a
+              href={getServiceLink('pipeline')}
               className="group border border-border rounded-lg p-4 hover:border-primary/50 hover:shadow-md transition-all"
             >
               <div className="flex items-start justify-between mb-3">
@@ -604,7 +719,7 @@ export default function BillingSettingsPage() {
                 <span className="text-xs text-muted-foreground">/mo</span>
               </div>
               <p className="text-xs text-muted-foreground mt-1">+ $5k setup</p>
-            </Link>
+            </a>
           </div>
 
           <div className="mt-6 pt-4 border-t border-border">
