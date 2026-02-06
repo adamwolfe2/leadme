@@ -1,12 +1,9 @@
 "use client"
 
-import { metadata } from "./metadata"
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import { ArrowRight, Sparkles, Search, ShoppingCart, Mail, Target, BarChart3, Zap } from "lucide-react"
-
-export { metadata }
 
 export default function PlatformPage() {
   return (
