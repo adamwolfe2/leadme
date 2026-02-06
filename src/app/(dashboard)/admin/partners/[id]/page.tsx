@@ -6,8 +6,9 @@ import { PartnerDetailClient } from './components/PartnerDetailClient'
 export default async function AdminPartnerDetailPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
   const supabase = await createClient()
 
   // Verify admin
@@ -19,40 +20,40 @@ export default async function AdminPartnerDetailPage({
   const { data: admin } = await supabase
     .from('platform_admins')
     .select('id')
-    .eq('email', user.email)
+    .eq('email', user.email as string)
     .eq('is_active', true)
-    .single()
+    .single() as { data: any; error: any }
 
   if (!admin) redirect('/dashboard')
 
   // Get partner details
   const repo = new PartnerRepository()
-  const partner = await repo.findById(params.id)
+  const partner = await repo.findById(id)
 
   if (!partner) {
     redirect('/admin/partners')
   }
 
   // Get upload batches
-  const { batches, total: uploadCount } = await repo.getUploadBatches(params.id, {
+  const { batches, total: uploadCount } = await repo.getUploadBatches(id, {
     limit: 20,
   })
 
   // Get earnings
-  const { earnings, total: earningsCount } = await repo.getEarningsHistory(params.id, {
+  const { earnings, total: earningsCount } = await repo.getEarningsHistory(id, {
     limit: 50,
   })
 
   // Get payouts
-  const { payouts } = await repo.getPayouts(params.id, {
+  const { payouts } = await repo.getPayouts(id, {
     limit: 20,
   })
 
   // Get referred partners count
-  const { data: referredPartners, count: referredCount } = await supabase
+  const { data: referredPartners, count: referredCount } = await (supabase
     .from('partners')
     .select('*', { count: 'exact' })
-    .eq('referred_by_partner_id', params.id)
+    .eq('referred_by_partner_id', id) as any) as { data: any[] | null; count: number | null }
 
   return (
     <PartnerDetailClient

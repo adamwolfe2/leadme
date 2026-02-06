@@ -5,9 +5,9 @@ import { supportsDirectCheckout, VENTURE_STUDIO_CALENDAR_URL } from '@/lib/strip
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
 
 interface CheckoutPageProps {
-  searchParams: {
+  searchParams: Promise<{
     tier?: string
-  }
+  }>
 }
 
 /**
@@ -20,7 +20,7 @@ interface CheckoutPageProps {
  * - /services/checkout?tier=cursive-venture-studio
  */
 export default async function CheckoutPage({ searchParams }: CheckoutPageProps) {
-  const tierSlug = searchParams.tier
+  const { tier: tierSlug } = await searchParams
 
   if (!tierSlug) {
     redirect('/')

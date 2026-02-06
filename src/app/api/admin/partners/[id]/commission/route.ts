@@ -12,9 +12,10 @@ const commissionSchema = z.object({
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const supabase = await createClient()
 
     // Verify admin
@@ -43,14 +44,14 @@ export async function PATCH(
 
     // Get current partner
     const repo = new PartnerRepository()
-    const currentPartner = await repo.findById(params.id)
+    const currentPartner = await repo.findById(id)
 
     if (!currentPartner) {
       return NextResponse.json({ error: 'Partner not found' }, { status: 404 })
     }
 
     // Update commission rate
-    const partner = await repo.update(params.id, {
+    const partner = await repo.update(id, {
       payoutRate: validated.payoutRate,
     })
 
@@ -59,7 +60,7 @@ export async function PATCH(
       user_id: user.id,
       action: 'partner.commission_updated',
       resource_type: 'partner',
-      resource_id: params.id,
+      resource_id: id,
       metadata: {
         old_rate: currentPartner.payout_rate,
         new_rate: validated.payoutRate,

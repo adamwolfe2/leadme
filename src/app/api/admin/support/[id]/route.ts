@@ -5,7 +5,7 @@ import { isAdmin } from '@/lib/auth/roles'
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check admin authentication
@@ -21,6 +21,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }
 
+    const { id } = await params
     const body = await request.json()
     const { status, admin_notes } = body
 
@@ -54,7 +55,7 @@ export async function PATCH(
     const { data, error } = await adminSupabase
       .from('support_messages')
       .update(updateData)
-      .eq('id', params.id)
+      .eq('id', id)
       .select('id, name, email, subject, message, status, priority, source, admin_notes, responded_at, responded_by, created_at, updated_at')
       .single()
 

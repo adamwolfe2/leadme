@@ -20,9 +20,10 @@ const rejectSchema = z.object({
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const supabase = await createClient()
 
     // Verify admin
@@ -67,7 +68,7 @@ export async function POST(
         )
       `
       )
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
 
     if (fetchError || !lead) {
@@ -84,7 +85,7 @@ export async function POST(
         verified_at: new Date().toISOString(),
         verified_by: user.id,
       })
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single()
 
@@ -101,7 +102,7 @@ export async function POST(
       user_id: user.id,
       action: 'lead.rejected',
       resource_type: 'lead',
-      resource_id: params.id,
+      resource_id: id,
       metadata: {
         partner_id: lead.partner_id,
         reason: validated.reason,

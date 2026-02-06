@@ -7,9 +7,10 @@ import { PartnerRepository } from '@/lib/repositories/partner.repository'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const supabase = await createClient()
 
     // Verify admin
@@ -34,7 +35,7 @@ export async function POST(
 
     // Update partner status
     const repo = new PartnerRepository()
-    const partner = await repo.update(params.id, {
+    const partner = await repo.update(id, {
       status: 'active',
       isActive: true,
       suspensionReason: '',
@@ -45,7 +46,7 @@ export async function POST(
       user_id: user.id,
       action: 'partner.activated',
       resource_type: 'partner',
-      resource_id: params.id,
+      resource_id: id,
       metadata: {
         activated_by: user.email,
       },

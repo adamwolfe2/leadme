@@ -12,9 +12,10 @@ const suspendSchema = z.object({
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const supabase = await createClient()
 
     // Verify admin
@@ -43,7 +44,7 @@ export async function POST(
 
     // Update partner status
     const repo = new PartnerRepository()
-    const partner = await repo.update(params.id, {
+    const partner = await repo.update(id, {
       status: 'suspended',
       isActive: false,
       suspensionReason: validated.reason,
@@ -54,7 +55,7 @@ export async function POST(
       user_id: user.id,
       action: 'partner.suspended',
       resource_type: 'partner',
-      resource_id: params.id,
+      resource_id: id,
       metadata: {
         reason: validated.reason,
         suspended_by: user.email,

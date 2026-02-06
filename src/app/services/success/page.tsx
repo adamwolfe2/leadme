@@ -5,13 +5,14 @@ import { redirect } from 'next/navigation'
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
 
 interface SuccessPageProps {
-  searchParams: {
+  searchParams: Promise<{
     tier?: string
     session_id?: string
-  }
+  }>
 }
 
 export default async function SuccessPage({ searchParams }: SuccessPageProps) {
+  const resolvedSearchParams = await searchParams
   const supabase = await createClient()
 
   // Get current user
@@ -35,7 +36,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
   // Get active subscription
   const subscription = await serviceTierRepository.getWorkspaceActiveSubscription(userData.workspace_id)
 
-  const tierSlug = searchParams.tier || subscription?.service_tiers?.slug
+  const tierSlug = resolvedSearchParams.tier || subscription?.service_tiers?.slug
   let tierName = 'Cursive Service'
 
   if (tierSlug) {

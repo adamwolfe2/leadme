@@ -13,7 +13,7 @@ import { retryFailedOperation } from '@/lib/monitoring/failed-operations'
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
@@ -38,7 +38,7 @@ export async function POST(
       return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 })
     }
 
-    const { id } = params
+    const { id } = await params
 
     // Retry the operation
     const result = await retryFailedOperation(id)

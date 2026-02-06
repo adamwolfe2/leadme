@@ -10,7 +10,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getCurrentUser()
@@ -18,7 +18,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const campaignId = params.id
+    const { id: campaignId } = await params
     const supabase = await createClient()
 
     // Fetch campaign with workspace ownership check

@@ -27,7 +27,7 @@ const updateLeadSchema = z.object({
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getCurrentUser()
@@ -35,6 +35,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
     const body = await req.json()
     const validated = updateLeadSchema.parse(body)
 
@@ -42,7 +43,7 @@ export async function PATCH(
     const { data, error } = await supabase
       .from('leads')
       .update(validated)
-      .eq('id', params.id)
+      .eq('id', id)
       .eq('workspace_id', user.workspace_id)
       .select()
       .single()
@@ -67,7 +68,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getCurrentUser()
@@ -75,11 +76,12 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
     const supabase = await createClient()
     const { error } = await supabase
       .from('leads')
       .delete()
-      .eq('id', params.id)
+      .eq('id', id)
       .eq('workspace_id', user.workspace_id)
 
     if (error) throw error

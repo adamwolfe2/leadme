@@ -6,9 +6,10 @@ import { createClient } from '@/lib/supabase/server'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const supabase = await createClient()
 
     // Verify admin
@@ -35,7 +36,7 @@ export async function POST(
     const { data: lead, error: fetchError } = await supabase
       .from('leads')
       .select('id, partner_id, verification_status_admin')
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
 
     if (fetchError || !lead) {
@@ -50,7 +51,7 @@ export async function POST(
         verified_at: new Date().toISOString(),
         verified_by: user.id,
       })
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single()
 
@@ -67,7 +68,7 @@ export async function POST(
       user_id: user.id,
       action: 'lead.approved',
       resource_type: 'lead',
-      resource_id: params.id,
+      resource_id: id,
       metadata: {
         partner_id: lead.partner_id,
         approved_by: user.email,
