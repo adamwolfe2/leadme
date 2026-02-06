@@ -44,7 +44,7 @@ export default function ServicesPage() {
         "offers": {
           "@type": "Offer",
           "priceCurrency": "USD",
-          "price": "3000",
+          "price": "2500",
           "availability": "https://schema.org/InStock"
         }
       },
@@ -265,9 +265,9 @@ export default function ServicesPage() {
 
                 <div className="bg-white rounded-xl p-6 mb-8 border border-gray-200">
                   <div className="text-3xl font-light text-[#007AFF] mb-2">
-                    $2,500 setup + $3,000-$5,000/mo
+                    $2,500/mo
                   </div>
-                  <p className="text-gray-600">Based on volume and team size</p>
+                  <p className="text-gray-600">No setup fees. Cancel anytime.</p>
                 </div>
 
                 <Button size="lg" href="https://pay.meetcursive.com/b/8x27sLaTPcNL7p38Hp8g002" target="_blank">
@@ -313,9 +313,9 @@ export default function ServicesPage() {
 
                 <div className="bg-white rounded-xl p-6 mb-8 border border-gray-200">
                   <div className="text-3xl font-light text-[#007AFF] mb-2">
-                    $5,000 setup + $5,000-$10,000/mo
+                    $5,000/mo
                   </div>
-                  <p className="text-gray-600">Based on team size & volume</p>
+                  <p className="text-gray-600">No setup fees. Cancel anytime.</p>
                 </div>
 
                 <Button size="lg" href="https://pay.meetcursive.com/b/bJe7sLge9bJHgZD2j18g001" target="_blank">
@@ -573,7 +573,7 @@ export default function ServicesPage() {
               "Weekly strategy calls",
               "Includes 500 leads/month (or use your own lists)"
             ]} />
-            <p className="text-gray-400 mt-3">Pricing: $2,500 setup + $3,000-$5,000/month</p>
+            <p className="text-gray-400 mt-3">Pricing: $2,500/month. No setup fees.</p>
           </div>
 
           <div>
@@ -591,7 +591,7 @@ export default function ServicesPage() {
               "Dedicated success manager",
               "Custom reporting and attribution"
             ]} />
-            <p className="text-gray-400 mt-3">Pricing: $5,000 setup + $5,000-$10,000/month</p>
+            <p className="text-gray-400 mt-3">Pricing: $5,000/month. No setup fees.</p>
           </div>
         </div>
       </MachineSection>
@@ -687,6 +687,6 @@ const comparisonRows = [
   { feature: "API Access", data: "—", outbound: "—", pipeline: "Yes" },
   { feature: "People Search", data: "—", outbound: "—", pipeline: "Unlimited" },
   { feature: "Dedicated Manager", data: "Yes", outbound: "Yes", pipeline: "Yes" },
-  { feature: "Setup Fee", data: "—", outbound: "$2,500", pipeline: "$5,000" },
-  { feature: "Monthly Price", data: "$1k-$3k", outbound: "$3k-$5k", pipeline: "$5k-$10k" },
+  { feature: "Setup Fee", data: "—", outbound: "—", pipeline: "—" },
+  { feature: "Monthly Price", data: "$1k-$3k", outbound: "$2,500", pipeline: "$5,000" },
 ]

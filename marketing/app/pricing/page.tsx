@@ -47,10 +47,10 @@ export default function PricingPage() {
         "offers": {
           "@type": "Offer",
           "priceCurrency": "USD",
-          "price": "2400",
+          "price": "2000",
           "priceSpecification": {
             "@type": "UnitPriceSpecification",
-            "price": "2400",
+            "price": "2000",
             "priceCurrency": "USD",
             "unitText": "MONTH"
           },
@@ -266,7 +266,6 @@ export default function PricingPage() {
                     $5,000<span className="text-lg text-gray-600">/mo</span>
                   </div>
                 )}
-                <p className="text-sm text-gray-500 mt-2">$5,000 one-time setup</p>
               </div>
 
               <div className="mb-6">
@@ -344,19 +343,18 @@ export default function PricingPage() {
                 {billingCycle === 'annual' ? (
                   <>
                     <div className="text-4xl font-light mb-1">
-                      $2,400<span className="text-lg opacity-90">/mo</span>
+                      $2,000<span className="text-lg opacity-90">/mo</span>
                     </div>
-                    <div className="text-sm opacity-75 line-through mb-1">$3,000/mo</div>
+                    <div className="text-sm opacity-75 line-through mb-1">$2,500/mo</div>
                     <div className="inline-block bg-white/20 text-white text-xs px-2 py-1 rounded">
-                      Save $7,200/year
+                      Save $6,000/year
                     </div>
                   </>
                 ) : (
                   <div className="text-4xl font-light mb-2">
-                    $3,000<span className="text-lg opacity-90">/mo</span>
+                    $2,500<span className="text-lg opacity-90">/mo</span>
                   </div>
                 )}
-                <p className="text-sm opacity-90 mt-2">$2,500 one-time setup</p>
               </div>
 
               <div className="mb-6 text-white">
@@ -908,7 +906,7 @@ export default function PricingPage() {
       <div className="mb-12 pb-6 border-b border-gray-200">
         <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE PRICING</h1>
         <p className="text-gray-700 leading-relaxed">
-          Transparent pricing for B2B lead generation. Three tiers: Cursive Data ($1,000-$3,000/mo), Cursive Outbound ($3,000-$5,000/mo + setup), Cursive Pipeline ($5,000-$10,000/mo + setup).
+          Transparent pricing for B2B lead generation. Three tiers: Cursive Data ($1,000-$3,000/mo), Cursive Outbound ($2,500/mo), Cursive Pipeline ($5,000/mo). No setup fees.
         </p>
       </div>
 
@@ -933,7 +931,7 @@ export default function PricingPage() {
           </div>
 
           <div>
-            <p className="text-white mb-2">Cursive Outbound - $3,000-$5,000/month + $2,500 setup:</p>
+            <p className="text-white mb-2">Cursive Outbound - $2,500/month:</p>
             <p className="text-gray-400 mb-3">
               Done-for-you email campaigns with AI personalization, infrastructure setup, and campaign optimization.
             </p>
@@ -950,7 +948,7 @@ export default function PricingPage() {
           </div>
 
           <div>
-            <p className="text-white mb-2">Cursive Pipeline - $5,000-$10,000/month + $5,000 setup:</p>
+            <p className="text-white mb-2">Cursive Pipeline - $5,000/month:</p>
             <p className="text-gray-400 mb-3">
               Full-stack AI SDR solution with multi-channel campaigns, unlimited lead enrichment, and dedicated success manager.
             </p>
@@ -993,7 +991,7 @@ export default function PricingPage() {
         </p>
         <MachineList items={[
           "Cursive Data: $800/mo (annual) vs $1,000/mo (monthly)",
-          "Cursive Outbound: $2,400/mo (annual) vs $3,000/mo (monthly)",
+          "Cursive Outbound: $2,000/mo (annual) vs $2,500/mo (monthly)",
           "Cursive Pipeline: $4,000/mo (annual) vs $5,000/mo (monthly)",
           "Lock in rate for 12 months (no price increases)",
           "Prorated refund if you cancel mid-year"
@@ -1062,7 +1060,7 @@ const faqs = [
   },
   {
     question: "What's included in the setup fee?",
-    answer: "For Outbound ($2,500): email domain setup, inbox configuration, deliverability optimization, campaign strategy, copy review, and AI training on your brand voice. For Pipeline ($5,000): everything in Outbound plus API integration, AI SDR agent configuration, multi-channel workflow design, and dedicated onboarding. Setup fees are one-time—never recurring.",
+    answer: "There are no setup fees for any Cursive plan. Everything is included in your monthly subscription: email domain setup, inbox configuration, deliverability optimization, campaign strategy, copy review, AI training on your brand voice, API integration, and dedicated onboarding. We believe in transparent, all-inclusive pricing with no surprise costs.",
   },
   {
     question: "What kind of companies use Cursive?",
@@ -1074,7 +1072,7 @@ const faqs = [
   },
   {
     question: "What's your money-back guarantee?",
-    answer: "Outbound plan includes a 30-day money-back guarantee. If you're not satisfied with the quality of leads or campaign performance in the first 30 days, we'll refund your monthly fee (setup fees are non-refundable due to the work invested). We stand behind our results.",
+    answer: "Outbound plan includes a 30-day money-back guarantee. If you're not satisfied with the quality of leads or campaign performance in the first 30 days, we'll refund your monthly fee. We stand behind our results.",
   },
   {
     question: "How do you handle pricing for annual plans?",
