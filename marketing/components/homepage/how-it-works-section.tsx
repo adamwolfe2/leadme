@@ -162,19 +162,12 @@ export function HowItWorksSection() {
                 className="w-full"
               >
                 {/* Step Card */}
-                <div className="bg-white rounded-2xl border border-gray-200 p-8 lg:p-10 shadow-lg hover:shadow-xl transition-shadow">
-                  {/* Step Number */}
-                  <div className="mb-6">
-                    <div className="text-5xl font-light text-gray-200 leading-none">
-                      {currentStep.number}
-                    </div>
-                    <div className="text-xs text-gray-500 uppercase tracking-wider mt-1">
+                <div className="bg-white rounded-2xl border border-gray-200 p-6 lg:p-8 shadow-lg hover:shadow-xl transition-shadow">
+                  {/* Title & Description */}
+                  <div className="mb-4">
+                    <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">
                       Step {currentStep.number}
                     </div>
-                  </div>
-
-                  {/* Title & Description */}
-                  <div className="mb-6">
                     <h3 className="text-3xl font-medium text-gray-900 mb-2">
                       {currentStep.title}
                     </h3>
@@ -184,7 +177,7 @@ export function HowItWorksSection() {
                   </div>
 
                   {/* Details List */}
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {currentStep.details.map((detail, i) => (
                       <li
                         key={i}
