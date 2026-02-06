@@ -2,6 +2,7 @@
 // Database access layer for leads with multi-tenant isolation
 
 import { createClient } from '@/lib/supabase/server'
+import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 import type { Lead, LeadInsert, LeadUpdate } from '@/types'
 import type { LeadWithRelations, LeadStatus } from '@/types/crm.types'
 
@@ -68,8 +69,9 @@ export class LeadRepository {
 
     if (filters.search) {
       // Search in company name or domain
+      const term = sanitizeSearchTerm(filters.search)
       query = query.or(
-        `company_data->>name.ilike.%${filters.search}%,company_data->>domain.ilike.%${filters.search}%`
+        `company_data->>name.ilike.%${term}%,company_data->>domain.ilike.%${term}%`
       )
     }
 

@@ -440,19 +440,22 @@ export class DataShopperRepository {
         .from('lead_emails')
         .select('*')
         .eq('lead_id', leadId)
+        .eq('workspace_id', this.workspaceId)
         .order('rank_order', { ascending: true }),
       supabase
         .from('lead_phones')
         .select('*')
         .eq('lead_id', leadId)
+        .eq('workspace_id', this.workspaceId)
         .order('rank_order', { ascending: true }),
       supabase
         .from('lead_companies')
         .select('*')
         .eq('lead_id', leadId)
+        .eq('workspace_id', this.workspaceId)
         .order('is_primary', { ascending: false }),
-      supabase.from('lead_vehicles').select('*').eq('lead_id', leadId),
-      supabase.from('lead_interests').select('*').eq('lead_id', leadId),
+      supabase.from('lead_vehicles').select('*').eq('lead_id', leadId).eq('workspace_id', this.workspaceId),
+      supabase.from('lead_interests').select('*').eq('lead_id', leadId).eq('workspace_id', this.workspaceId),
     ])
 
     if (lead.error) {

@@ -2,6 +2,7 @@
 // Repository pattern for CRM lead data access
 
 import { createClient } from '@/lib/supabase/server'
+import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 import type { LeadFilters, LeadTableRow, LeadUpdatePayload } from '@/types/crm.types'
 
 export class CRMLeadRepository {
@@ -74,12 +75,12 @@ export class CRMLeadRepository {
 
     // Full-text search
     if (filters.search) {
-      const searchTerm = filters.search.trim()
+      const term = sanitizeSearchTerm(filters.search)
       query = query.or(
-        `first_name.ilike.%${searchTerm}%,` +
-          `last_name.ilike.%${searchTerm}%,` +
-          `email.ilike.%${searchTerm}%,` +
-          `company_name.ilike.%${searchTerm}%`
+        `first_name.ilike.%${term}%,` +
+          `last_name.ilike.%${term}%,` +
+          `email.ilike.%${term}%,` +
+          `company_name.ilike.%${term}%`
       )
     }
 

@@ -3,6 +3,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 import type {
   Partner,
   PartnerUploadBatch,
@@ -12,13 +13,13 @@ import type {
 } from '@/types/database.types'
 
 export class PartnerRepository {
-  private adminClient = createAdminClient()
 
   /**
    * Find partner by ID
    */
   async findById(partnerId: string): Promise<Partner | null> {
-    const { data, error } = await this.adminClient
+    const adminClient = createAdminClient()
+    const { data, error } = await adminClient
       .from('partners')
       .select('*')
       .eq('id', partnerId)
@@ -32,7 +33,8 @@ export class PartnerRepository {
    * Find partner by API key
    */
   async findByApiKey(apiKey: string): Promise<Partner | null> {
-    const { data, error } = await this.adminClient
+    const adminClient = createAdminClient()
+    const { data, error } = await adminClient
       .from('partners')
       .select('*')
       .eq('api_key', apiKey)
@@ -46,7 +48,8 @@ export class PartnerRepository {
    * Find partner by email
    */
   async findByEmail(email: string): Promise<Partner | null> {
-    const { data, error } = await this.adminClient
+    const adminClient = createAdminClient()
+    const { data, error } = await adminClient
       .from('partners')
       .select('*')
       .eq('email', email)
@@ -60,7 +63,8 @@ export class PartnerRepository {
    * Find partner by referral code
    */
   async findByReferralCode(code: string): Promise<Partner | null> {
-    const { data, error } = await this.adminClient
+    const adminClient = createAdminClient()
+    const { data, error } = await adminClient
       .from('partners')
       .select('*')
       .eq('referral_code', code)
@@ -83,7 +87,8 @@ export class PartnerRepository {
     orderBy?: 'created_at' | 'total_leads_uploaded' | 'partner_score' | 'total_earnings'
     orderDirection?: 'asc' | 'desc'
   }): Promise<{ partners: Partner[]; total: number }> {
-    let query = this.adminClient.from('partners').select('*', { count: 'exact' })
+    const adminClient = createAdminClient()
+    let query = adminClient.from('partners').select('*', { count: 'exact' })
 
     if (options.status) {
       query = query.eq('status', options.status)
@@ -98,7 +103,8 @@ export class PartnerRepository {
     }
 
     if (options.search) {
-      query = query.or(`name.ilike.%${options.search}%,email.ilike.%${options.search}%,company_name.ilike.%${options.search}%`)
+      const term = sanitizeSearchTerm(options.search)
+      query = query.or(`name.ilike.%${term}%,email.ilike.%${term}%,company_name.ilike.%${term}%`)
     }
 
     // Ordering
@@ -137,7 +143,8 @@ export class PartnerRepository {
     const referralCode = this.generateReferralCode()
     const apiKey = this.generateApiKey()
 
-    const { data, error } = await this.adminClient
+    const adminClient = createAdminClient()
+    const { data, error } = await adminClient
       .from('partners')
       .insert({
         name: params.name,
@@ -195,7 +202,8 @@ export class PartnerRepository {
       updateData.suspension_reason = updates.suspensionReason
     }
 
-    const { data, error } = await this.adminClient
+    const adminClient = createAdminClient()
+    const { data, error } = await adminClient
       .from('partners')
       .update(updateData)
       .eq('id', partnerId)
@@ -237,7 +245,8 @@ export class PartnerRepository {
     if (stats.dataCompletenessRate !== undefined) updateData.data_completeness_rate = stats.dataCompletenessRate
     if (stats.partnerScore !== undefined) updateData.partner_score = stats.partnerScore
 
-    const { error } = await this.adminClient
+    const adminClient = createAdminClient()
+    const { error } = await adminClient
       .from('partners')
       .update(updateData)
       .eq('id', partnerId)
@@ -249,7 +258,8 @@ export class PartnerRepository {
    * Increment partner lead count
    */
   async incrementLeadCount(partnerId: string, count: number = 1): Promise<void> {
-    const { error } = await this.adminClient.rpc('increment', {
+    const adminClient = createAdminClient()
+    const { error } = await adminClient.rpc('increment', {
       table_name: 'partners',
       row_id: partnerId,
       column_name: 'total_leads_uploaded',
@@ -260,7 +270,7 @@ export class PartnerRepository {
     if (error) {
       const partner = await this.findById(partnerId)
       if (partner) {
-        await this.adminClient
+        await adminClient
           .from('partners')
           .update({
             total_leads_uploaded: partner.total_leads_uploaded + count,
@@ -283,7 +293,8 @@ export class PartnerRepository {
       offset?: number
     } = {}
   ): Promise<{ batches: PartnerUploadBatch[]; total: number }> {
-    let query = this.adminClient
+    const adminClient = createAdminClient()
+    let query = adminClient
       .from('partner_upload_batches')
       .select('*', { count: 'exact' })
       .eq('partner_id', partnerId)
@@ -324,7 +335,8 @@ export class PartnerRepository {
     industryCategoryId?: string
     defaultSicCodes?: string[]
   }): Promise<PartnerUploadBatch> {
-    const { data, error } = await this.adminClient
+    const adminClient = createAdminClient()
+    const { data, error } = await adminClient
       .from('partner_upload_batches')
       .insert({
         partner_id: params.partnerId,
@@ -393,7 +405,8 @@ export class PartnerRepository {
     if (updates.startedAt !== undefined) updateData.started_at = updates.startedAt.toISOString()
     if (updates.completedAt !== undefined) updateData.completed_at = updates.completedAt.toISOString()
 
-    const { data, error } = await this.adminClient
+    const adminClient = createAdminClient()
+    const { data, error } = await adminClient
       .from('partner_upload_batches')
       .update(updateData)
       .eq('id', batchId)
@@ -424,7 +437,8 @@ export class PartnerRepository {
     }>
     total: number
   }> {
-    let query = this.adminClient
+    const adminClient = createAdminClient()
+    let query = adminClient
       .from('partner_earnings')
       .select('*', { count: 'exact' })
       .eq('partner_id', partnerId)
@@ -472,7 +486,8 @@ export class PartnerRepository {
     }>
     total: number
   }> {
-    let query = this.adminClient
+    const adminClient = createAdminClient()
+    let query = adminClient
       .from('payout_requests')
       .select('*', { count: 'exact' })
       .eq('partner_id', partnerId)
@@ -514,7 +529,8 @@ export class PartnerRepository {
     previousTier?: PartnerTier
     changeReason?: string
   }): Promise<void> {
-    const { error } = await this.adminClient.from('partner_score_history').insert({
+    const adminClient = createAdminClient()
+    const { error } = await adminClient.from('partner_score_history').insert({
       partner_id: params.partnerId,
       score: params.score,
       previous_score: params.previousScore,
@@ -534,7 +550,8 @@ export class PartnerRepository {
    * Get partner analytics (dashboard metrics)
    */
   async getPartnerAnalytics(partnerId: string) {
-    const { data, error } = await this.adminClient
+    const adminClient = createAdminClient()
+    const { data, error } = await adminClient
       .from('partner_analytics')
       .select('*')
       .eq('partner_id', partnerId)
@@ -552,7 +569,8 @@ export class PartnerRepository {
    * Get partner credit balance
    */
   async getPartnerCredits(partnerId: string) {
-    const { data, error } = await this.adminClient
+    const adminClient = createAdminClient()
+    const { data, error } = await adminClient
       .from('partner_credits')
       .select('*')
       .eq('partner_id', partnerId)
@@ -584,7 +602,8 @@ export class PartnerRepository {
     limit: number = 50,
     offset: number = 0
   ) {
-    const { data, error, count } = await this.adminClient
+    const adminClient = createAdminClient()
+    const { data, error, count } = await adminClient
       .from('leads')
       .select(
         `

@@ -4,6 +4,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
+import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 import type {
   Contact,
   ContactInsert,
@@ -49,8 +50,9 @@ export class ContactRepository {
     }
 
     if (filters?.search) {
+      const term = sanitizeSearchTerm(filters.search)
       query = query.or(
-        `full_name.ilike.%${filters.search}%,email.ilike.%${filters.search}%,title.ilike.%${filters.search}%`
+        `full_name.ilike.%${term}%,email.ilike.%${term}%,title.ilike.%${term}%`
       )
     }
 

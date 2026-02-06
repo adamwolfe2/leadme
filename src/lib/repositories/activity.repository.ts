@@ -4,6 +4,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
+import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 import type { Activity, ActivityInsert, ActivityUpdate, SortConfig, PaginatedResult } from '@/types/crm.types'
 
 export interface ActivityFilters {
@@ -64,7 +65,8 @@ export class ActivityRepository {
     }
 
     if (filters?.search) {
-      query = query.or(`subject.ilike.%${filters.search}%,body.ilike.%${filters.search}%`)
+      const term = sanitizeSearchTerm(filters.search)
+      query = query.or(`subject.ilike.%${term}%,body.ilike.%${term}%`)
     }
 
     // Apply sorting

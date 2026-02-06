@@ -1,13 +1,24 @@
 'use server'
 
 import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { checkRateLimit } from '@/lib/utils/rate-limit'
 
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
 })
+
+async function getClientIpFromHeaders(): Promise<string> {
+  const headersList = await headers()
+  return (
+    headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    headersList.get('x-real-ip') ||
+    'unknown'
+  )
+}
 
 function sanitizeRedirectPath(path: string): string {
   // Only allow relative paths starting with /
@@ -22,6 +33,17 @@ function sanitizeRedirectPath(path: string): string {
 }
 
 export async function loginAction(formData: FormData) {
+  // Rate limit: 10 login attempts per minute per IP
+  const clientIp = await getClientIpFromHeaders()
+  const rateLimitResult = checkRateLimit(clientIp, 'auth-login', {
+    limit: 10,
+    windowSecs: 60,
+  })
+  if (!rateLimitResult.success) {
+    const retryAfter = Math.ceil((rateLimitResult.resetAt - Date.now()) / 1000)
+    return { error: `Too many login attempts. Please try again in ${retryAfter} seconds.` }
+  }
+
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const redirectTo = sanitizeRedirectPath(formData.get('redirect') as string || '/dashboard')
@@ -50,6 +72,17 @@ export async function loginAction(formData: FormData) {
 }
 
 export async function googleLoginAction(redirectTo: string = '/dashboard') {
+  // Rate limit: 10 Google login attempts per minute per IP
+  const clientIp = await getClientIpFromHeaders()
+  const rateLimitResult = checkRateLimit(clientIp, 'auth-google-login', {
+    limit: 10,
+    windowSecs: 60,
+  })
+  if (!rateLimitResult.success) {
+    const retryAfter = Math.ceil((rateLimitResult.resetAt - Date.now()) / 1000)
+    return { error: `Too many login attempts. Please try again in ${retryAfter} seconds.` }
+  }
+
   redirectTo = sanitizeRedirectPath(redirectTo)
   const supabase = await createClient()
 

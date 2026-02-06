@@ -41,6 +41,20 @@ export const RATE_LIMITS = {
     message: 'Too many referral requests. Please wait.',
   },
 
+  // Auth login - strict to prevent brute force
+  'auth-login': {
+    windowMs: 60 * 1000, // 1 minute
+    maxRequests: 10, // 10 login attempts per minute per IP
+    message: 'Too many login attempts. Please wait before trying again.',
+  },
+
+  // Auth password change - very strict
+  'auth-change-password': {
+    windowMs: 60 * 1000, // 1 minute
+    maxRequests: 5, // 5 password change attempts per minute
+    message: 'Too many password change attempts. Please wait before trying again.',
+  },
+
   // Default fallback
   'default': {
     windowMs: 60 * 1000, // 1 minute

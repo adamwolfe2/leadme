@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { z } from 'zod'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 
 // Request validation schema
 const changePasswordSchema = z.object({
@@ -23,6 +24,16 @@ const changePasswordSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit: 5 password change attempts per minute per IP
+    const rateLimitResult = await withRateLimit(
+      req,
+      'auth-change-password',
+      getRequestIdentifier(req)
+    )
+    if (rateLimitResult) {
+      return rateLimitResult
+    }
+
     const cookieStore = await cookies()
 
     const supabase = createServerClient(

@@ -47,7 +47,7 @@ export const loginSchema = z.object({
 export const signupSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
   email: emailSchema,
-  password: simplePasswordSchema,
+  password: passwordSchema,
 })
 
 /**
@@ -62,7 +62,7 @@ export const forgotPasswordSchema = z.object({
  */
 export const resetPasswordSchema = z
   .object({
-    password: simplePasswordSchema,
+    password: passwordSchema,
     confirmPassword: z.string().min(1, 'Please confirm your password'),
   })
   .refine((data) => data.password === data.confirmPassword, {

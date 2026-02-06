@@ -16,7 +16,6 @@ import type {
 } from '@/types/database.types'
 
 export class MarketplaceRepository {
-  private adminClient = createAdminClient()
 
   /**
    * Browse marketplace leads with filters
@@ -190,7 +189,8 @@ export class MarketplaceRepository {
    * Get full lead details (after purchase)
    */
   async getFullLead(leadId: string): Promise<MarketplaceLead | null> {
-    const { data, error } = await this.adminClient
+    const adminClient = createAdminClient()
+    const { data, error } = await adminClient
       .from('leads')
       .select('*')
       .eq('id', leadId)
@@ -204,7 +204,8 @@ export class MarketplaceRepository {
    * Get multiple leads by IDs
    */
   async getLeadsByIds(leadIds: string[]): Promise<MarketplaceLead[]> {
-    const { data, error } = await this.adminClient
+    const adminClient = createAdminClient()
+    const { data, error } = await adminClient
       .from('leads')
       .select('*')
       .in('id', leadIds)
@@ -228,7 +229,8 @@ export class MarketplaceRepository {
     stripeCheckoutSessionId?: string
     filtersUsed?: MarketplaceFilters
   }): Promise<MarketplacePurchase> {
-    const { data, error } = await this.adminClient
+    const adminClient = createAdminClient()
+    const { data, error } = await adminClient
       .from('marketplace_purchases')
       .insert({
         buyer_workspace_id: params.buyerWorkspaceId,
@@ -284,7 +286,8 @@ export class MarketplaceRepository {
       commission_payable_at: item.partnerId ? commissionPayableAt.toISOString() : null,
     }))
 
-    const { data, error } = await this.adminClient
+    const adminClient = createAdminClient()
+    const { data, error } = await adminClient
       .from('marketplace_purchase_items')
       .insert(insertData)
       .select()
@@ -303,7 +306,8 @@ export class MarketplaceRepository {
     const downloadExpiresAt = new Date()
     downloadExpiresAt.setDate(downloadExpiresAt.getDate() + 90) // 90 day download window
 
-    const { data, error } = await this.adminClient
+    const adminClient = createAdminClient()
+    const { data, error } = await adminClient
       .from('marketplace_purchases')
       .update({
         status: 'completed',
@@ -323,9 +327,10 @@ export class MarketplaceRepository {
    * Mark leads as sold
    */
   async markLeadsSold(leadIds: string[]): Promise<void> {
+    const adminClient = createAdminClient()
     // Update each lead's sold count
     for (const leadId of leadIds) {
-      await this.adminClient.rpc('mark_lead_sold', { p_lead_id: leadId })
+      await adminClient.rpc('mark_lead_sold', { p_lead_id: leadId })
     }
   }
 
@@ -427,7 +432,8 @@ export class MarketplaceRepository {
     const leadIds = items.map((i) => i.lead_id)
 
     // Use admin client to get full lead details
-    const { data: leads, error } = await this.adminClient
+    const adminClient = createAdminClient()
+    const { data: leads, error } = await adminClient
       .from('leads')
       .select('*')
       .in('id', leadIds)
@@ -480,7 +486,8 @@ export class MarketplaceRepository {
     amount: number,
     source: 'purchase' | 'referral' = 'purchase'
   ): Promise<number> {
-    const { data, error } = await this.adminClient.rpc('add_workspace_credits', {
+    const adminClient = createAdminClient()
+    const { data, error } = await adminClient.rpc('add_workspace_credits', {
       p_workspace_id: workspaceId,
       p_amount: amount,
       p_source: source,
@@ -494,7 +501,8 @@ export class MarketplaceRepository {
    * Deduct credits from workspace
    */
   async deductCredits(workspaceId: string, amount: number): Promise<number> {
-    const { data, error } = await this.adminClient.rpc('deduct_workspace_credits', {
+    const adminClient = createAdminClient()
+    const { data, error } = await adminClient.rpc('deduct_workspace_credits', {
       p_workspace_id: workspaceId,
       p_amount: amount,
     })
@@ -516,7 +524,8 @@ export class MarketplaceRepository {
     stripePaymentIntentId?: string
     stripeCheckoutSessionId?: string
   }): Promise<CreditPurchase> {
-    const { data, error } = await this.adminClient
+    const adminClient = createAdminClient()
+    const { data, error } = await adminClient
       .from('credit_purchases')
       .insert({
         workspace_id: params.workspaceId,
@@ -540,7 +549,8 @@ export class MarketplaceRepository {
    * Complete credit purchase
    */
   async completeCreditPurchase(purchaseId: string): Promise<CreditPurchase> {
-    const { data, error } = await this.adminClient
+    const adminClient = createAdminClient()
+    const { data, error } = await adminClient
       .from('credit_purchases')
       .update({
         status: 'completed',
@@ -639,14 +649,16 @@ export class MarketplaceRepository {
     avgIntentScore: number
     totalSoldLast30Days: number
   }> {
+    const adminClient = createAdminClient()
+
     // Total leads count
-    const { count: totalLeads } = await this.adminClient
+    const { count: totalLeads } = await adminClient
       .from('leads')
       .select('*', { count: 'exact', head: true })
       .eq('is_marketplace_listed', true)
 
     // By industry (simplified - would need more complex query for full breakdown)
-    const { data: industryData } = await this.adminClient
+    const { data: industryData } = await adminClient
       .from('leads')
       .select('company_industry')
       .eq('is_marketplace_listed', true)
@@ -658,7 +670,7 @@ export class MarketplaceRepository {
     })
 
     // Average price and intent score
-    const { data: avgData } = await this.adminClient
+    const { data: avgData } = await adminClient
       .from('leads')
       .select('marketplace_price, intent_score_calculated')
       .eq('is_marketplace_listed', true)
@@ -677,7 +689,7 @@ export class MarketplaceRepository {
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-    const { count: totalSoldLast30Days } = await this.adminClient
+    const { count: totalSoldLast30Days } = await adminClient
       .from('marketplace_purchase_items')
       .select('*', { count: 'exact', head: true })
       .gte('created_at', thirtyDaysAgo.toISOString())

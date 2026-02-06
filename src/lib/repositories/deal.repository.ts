@@ -4,6 +4,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
+import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 import type {
   Deal,
   DealInsert,
@@ -65,7 +66,8 @@ export class DealRepository {
     }
 
     if (filters?.search) {
-      query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`)
+      const term = sanitizeSearchTerm(filters.search)
+      query = query.or(`name.ilike.%${term}%,description.ilike.%${term}%`)
     }
 
     // Apply sorting
