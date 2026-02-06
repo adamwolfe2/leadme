@@ -1,19 +1,39 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { EnhancedLeadsTable } from '@/components/crm/table/EnhancedLeadsTable'
 import { RecordDrawer } from '@/components/crm/drawer/RecordDrawer'
+import { Button } from '@/components/ui/button'
 import { formatDistanceToNow } from 'date-fns'
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
 import type { LeadTableRow } from '@/types/crm.types'
 
 interface LeadsPageClientProps {
   initialData: LeadTableRow[]
+  currentPage: number
+  perPage: number
+  totalCount: number
 }
 
-export function LeadsPageClient({ initialData }: LeadsPageClientProps) {
+export function LeadsPageClient({ initialData, currentPage, perPage, totalCount }: LeadsPageClientProps) {
   const [leads] = useState<LeadTableRow[]>(initialData)
   const [selectedLead, setSelectedLead] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  const totalPages = Math.max(1, Math.ceil(totalCount / perPage))
+
+  const navigateToPage = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('page', String(page))
+    if (!params.has('per_page')) {
+      params.set('per_page', String(perPage))
+    }
+    router.push(`${pathname}?${params.toString()}`)
+  }
 
   const handleRowClick = (lead: LeadTableRow) => {
     setSelectedLead(lead.id)
@@ -28,6 +48,61 @@ export function LeadsPageClient({ initialData }: LeadsPageClientProps) {
         <div className="mx-auto w-full max-w-[1600px]">
           {/* Enhanced square-ui inspired table */}
           <EnhancedLeadsTable data={leads} onRowClick={handleRowClick} />
+
+          {/* Server-side pagination across all leads */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-4 py-3 mt-4 rounded-lg border border-gray-200 bg-white">
+              <div className="text-sm text-gray-600">
+                Page <span className="font-medium text-gray-900">{currentPage}</span> of{' '}
+                <span className="font-medium text-gray-900">{totalPages}</span>
+                <span className="ml-2 text-gray-400">
+                  ({totalCount} total leads)
+                </span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="size-8 border-gray-200"
+                  onClick={() => navigateToPage(1)}
+                  disabled={currentPage <= 1}
+                  aria-label="Go to first page"
+                >
+                  <ChevronsLeft className="size-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="size-8 border-gray-200"
+                  onClick={() => navigateToPage(currentPage - 1)}
+                  disabled={currentPage <= 1}
+                  aria-label="Go to previous page"
+                >
+                  <ChevronLeft className="size-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="size-8 border-gray-200"
+                  onClick={() => navigateToPage(currentPage + 1)}
+                  disabled={currentPage >= totalPages}
+                  aria-label="Go to next page"
+                >
+                  <ChevronRight className="size-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="size-8 border-gray-200"
+                  onClick={() => navigateToPage(totalPages)}
+                  disabled={currentPage >= totalPages}
+                  aria-label="Go to last page"
+                >
+                  <ChevronsRight className="size-4" />
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
