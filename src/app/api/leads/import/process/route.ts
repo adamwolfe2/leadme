@@ -9,6 +9,26 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { leadDataProcessor, type ProcessedLead } from '@/lib/services/lead-data-processor.service'
 import { geocodingService } from '@/lib/services/geocoding.service'
+import { z } from 'zod'
+
+const importProcessSchema = z.object({
+  rows: z.array(z.record(z.string())).min(1, 'At least one row is required'),
+  options: z.object({
+    autoCorrect: z.boolean().optional(),
+    validateEmail: z.boolean().optional(),
+    normalizePhone: z.boolean().optional(),
+    normalizeAddress: z.boolean().optional(),
+    geocode: z.boolean().optional(),
+    skipDuplicates: z.boolean().optional(),
+    source: z.string().max(100).optional(),
+  }).optional(),
+  fieldMappings: z.array(z.object({
+    sourceHeader: z.string(),
+    targetField: z.string().nullable(),
+    confidence: z.number().min(0).max(1),
+    matchType: z.string(),
+  })).optional(),
+})
 
 // ============================================
 // POST /api/leads/import/process
@@ -37,40 +57,18 @@ export async function POST(req: NextRequest) {
 
     const workspaceId = userData.workspace_id
 
-    // Parse request body
+    // Parse and validate request body
     const body = await req.json()
-    const { rows, options, fieldMappings } = body as {
-      rows: Array<Record<string, string>>
-      options?: {
-        autoCorrect?: boolean
-        validateEmail?: boolean
-        normalizePhone?: boolean
-        normalizeAddress?: boolean
-        geocode?: boolean
-        skipDuplicates?: boolean
-        source?: string
-      }
-      fieldMappings?: Array<{
-        sourceHeader: string
-        targetField: string | null
-        confidence: number
-        matchType: string
-      }>
-    }
+    const parsed = importProcessSchema.safeParse(body)
 
-    if (!rows || !Array.isArray(rows)) {
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Invalid request: rows must be an array' },
+        { error: 'Invalid request body', details: parsed.error.flatten().fieldErrors },
         { status: 400 }
       )
     }
 
-    if (rows.length === 0) {
-      return NextResponse.json(
-        { error: 'No data rows provided' },
-        { status: 400 }
-      )
-    }
+    const { rows, options, fieldMappings } = parsed.data
 
     // Process the data
     const result = await leadDataProcessor.processCSV(rows, {

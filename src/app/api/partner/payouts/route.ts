@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     // Validate partner
     const { data: partner, error: partnerError } = await supabase
       .from('partners')
-      .select('*')
+      .select('id, name, total_earnings, pending_balance, available_balance, payout_threshold, stripe_account_id, stripe_onboarding_complete')
       .eq('api_key', apiKey)
       .eq('is_active', true)
       .single()
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     // Get payout history
     const { data: payoutHistory } = await supabase
       .from('payout_requests')
-      .select('*')
+      .select('id, amount, status, requested_at, processed_at, notes')
       .eq('partner_id', partner.id)
       .order('requested_at', { ascending: false })
       .limit(50)

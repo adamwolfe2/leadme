@@ -22,7 +22,7 @@ export async function GET() {
     const adminSupabase = createAdminClient()
     const { data, error } = await adminSupabase
       .from('support_messages')
-      .select('*')
+      .select('id, user_id, workspace_id, subject, message, status, priority, category, created_at, updated_at')
       .order('created_at', { ascending: false })
 
     if (error) {

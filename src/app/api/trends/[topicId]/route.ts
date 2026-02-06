@@ -23,7 +23,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     const { data: topic, error: topicError } = await supabase
       .from('global_topics')
-      .select('*')
+      .select('id, name, slug, category, description')
       .eq('id', topicId)
       .single()
 
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     // Fetch trend history (last 12 weeks)
     const { data: trends, error: trendsError } = await supabase
       .from('trends')
-      .select('*')
+      .select('id, topic_id, week_start, score, volume, sentiment, sources')
       .eq('topic_id', topicId)
       .order('week_start', { ascending: false })
       .limit(12)

@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     // Fetch lead data
     const { data: lead, error: leadError } = await supabase
       .from('leads')
-      .select('*')
+      .select('id, company_data, contact_data')
       .eq('id', lead_id)
       .eq('workspace_id', user.workspace_id)
       .single()

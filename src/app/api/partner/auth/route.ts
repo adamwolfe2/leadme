@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     // Validate API key and get partner
     const { data: partner, error } = await supabase
       .from('partners')
-      .select('*')
+      .select('id, name, payout_rate, total_leads_uploaded, total_earnings')
       .eq('api_key', api_key)
       .eq('is_active', true)
       .single()

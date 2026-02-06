@@ -6,20 +6,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
+import { z } from 'zod'
+
+const trackSchema = z.object({
+  event: z.string().min(1).max(200),
+  properties: z.record(z.unknown()).optional(),
+})
 
 export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     const body = await request.json()
 
-    const { event, properties } = body
+    const parsed = trackSchema.safeParse(body)
 
-    if (!event) {
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Event name is required' },
+        { error: 'Invalid tracking payload', details: parsed.error.flatten().fieldErrors },
         { status: 400 }
       )
     }
+
+    const { event, properties } = parsed.data
 
     const supabase = await createClient()
 

@@ -110,10 +110,10 @@ export async function POST(
       throw new Error('Buyer not found')
     }
 
-    // Get the full lead data
+    // Get the lead data needed for existence check
     const { data: leadData } = await supabase
       .from('leads')
-      .select('*')
+      .select('id')
       .eq('id', leadId)
       .single()
 

@@ -18,7 +18,7 @@ export async function GET() {
 
     const { data: tiers, error } = await supabase
       .from('product_tiers')
-      .select('*')
+      .select('id, name, slug, description, price_monthly, price_yearly, features, limits, display_order, is_active')
       .eq('is_active', true)
       .order('display_order', { ascending: true })
 
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     // Get current tier for audit log
     const { data: currentTier } = await supabase
       .from('workspace_tiers')
-      .select('*, product_tiers(name, slug)')
+      .select('id, workspace_id, product_tier_id, billing_cycle, subscription_status, daily_lead_limit_override, monthly_lead_limit_override, feature_overrides, internal_notes, product_tiers(name, slug)')
       .eq('workspace_id', workspaceId)
       .single()
 
@@ -151,7 +151,7 @@ export async function PATCH(request: NextRequest) {
     // Get current tier info
     const { data: currentTier } = await supabase
       .from('workspace_tiers')
-      .select('*')
+      .select('id, workspace_id, product_tier_id, billing_cycle, subscription_status, daily_lead_limit_override, monthly_lead_limit_override, feature_overrides, internal_notes')
       .eq('workspace_id', workspaceId)
       .single()
 

@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
     const adminClient = createAdminClient()
     const { data: leads, error: leadsError } = await adminClient
       .from('leads')
-      .select('*')
+      .select('id, marketplace_price, partner_id, created_at, intent_score_calculated, freshness_score')
       .in('id', validated.leadIds)
       .eq('marketplace_status', 'available') // Only available leads
       .is('sold_at', null) // Not already sold

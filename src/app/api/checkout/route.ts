@@ -116,7 +116,7 @@ export async function POST(req: NextRequest) {
     // Get lead details - ensure user has access to this lead
     const { data: lead, error: leadError } = await supabase
       .from('leads')
-      .select('*')
+      .select('id, workspace_id, company_name, company_industry, company_location')
       .eq('id', leadId)
       .single()
 

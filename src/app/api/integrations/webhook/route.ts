@@ -298,7 +298,7 @@ export async function PUT(req: NextRequest) {
 
       return NextResponse.json({
         success: false,
-        message: `Failed to connect: ${fetchError.message}`,
+        message: 'Failed to connect to webhook endpoint',
       })
     }
   } catch (error: any) {

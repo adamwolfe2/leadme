@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     // Fetch customer profiles for the workspace
     const { data: profiles, error } = await supabase
       .from('customer_profiles')
-      .select('*')
+      .select('id, brand_workspace_id, name, email, phone, demographics, preferences, purchase_history, engagement_score, tags, created_at, updated_at')
       .eq('brand_workspace_id', workspaceId)
       .order('created_at', { ascending: false })
 

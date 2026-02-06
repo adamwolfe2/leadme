@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     // Fetch offers for the workspace
     const { data: offers, error } = await supabase
       .from('offers')
-      .select('*')
+      .select('id, brand_workspace_id, title, description, offer_type, discount_value, discount_type, start_date, end_date, status, redemption_limit, redemptions_count, created_at, updated_at')
       .eq('brand_workspace_id', workspaceId)
       .eq('status', 'active')
       .order('created_at', { ascending: false })

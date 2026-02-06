@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     // Get preferences
     const { data: preferences, error } = await supabase
       .from('lead_preferences')
-      .select('*')
+      .select('id, workspace_id, name, description, target_industries, target_regions, target_company_sizes, target_intent_signals, max_leads_per_day, max_cost_per_lead, monthly_budget, created_at, updated_at')
       .eq('workspace_id', user.workspace_id)
       .order('created_at', { ascending: false })
 

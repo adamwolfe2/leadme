@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     // Validate partner
     const { data: partner, error: partnerError } = await supabase
       .from('partners')
-      .select('*')
+      .select('id, stripe_account_id, stripe_onboarding_complete, available_balance, payout_threshold')
       .eq('api_key', apiKey)
       .eq('is_active', true)
       .single()
