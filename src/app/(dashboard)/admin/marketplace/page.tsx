@@ -16,9 +16,9 @@ export default async function AdminMarketplacePage() {
   const { data: admin } = await supabase
     .from('platform_admins')
     .select('id')
-    .eq('email', user.email)
+    .eq('email', user.email as string)
     .eq('is_active', true)
-    .single()
+    .single() as { data: any; error: any }
 
   if (!admin) redirect('/dashboard')
 
@@ -40,25 +40,25 @@ export default async function AdminMarketplacePage() {
     supabase
       .from('marketplace_purchases')
       .select('*', { count: 'exact', head: true })
-      .eq('status', 'completed'),
-    supabase.from('marketplace_purchases').select('total_price').eq('status', 'completed'),
+      .eq('status', 'completed') as any,
+    supabase.from('marketplace_purchases').select('total_price').eq('status', 'completed') as any,
     supabase
       .from('partners')
       .select('*', { count: 'exact', head: true })
-      .eq('status', 'active'),
+      .eq('status', 'active') as any,
     supabase
       .from('partners')
       .select('*', { count: 'exact', head: true })
-      .eq('status', 'pending'),
+      .eq('status', 'pending') as any,
     supabase
       .from('marketplace_purchases')
       .select('*, users(email)')
       .eq('status', 'completed')
       .order('created_at', { ascending: false })
-      .limit(10),
-  ])
+      .limit(10) as any,
+  ]) as any[]
 
-  const totalRevenue = revenueData?.reduce((sum, p) => sum + (p.total_price || 0), 0) || 0
+  const totalRevenue = revenueData?.reduce((sum: number, p: any) => sum + (p.total_price || 0), 0) || 0
 
   return (
     <div className="container space-y-8 py-8">

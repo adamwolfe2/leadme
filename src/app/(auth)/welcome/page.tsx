@@ -52,7 +52,7 @@ export default function WelcomePage() {
         .from('users')
         .select('workspace_id, role')
         .eq('auth_user_id', session.user.id)
-        .single()
+        .single() as { data: any; error: any }
 
       if (user?.workspace_id) {
         // User is already set up, send to dashboard
@@ -93,7 +93,7 @@ export default function WelcomePage() {
           .from('workspaces')
           .select('id')
           .eq('slug', slug)
-          .single()
+          .single() as { data: any; error: any }
 
         if (existing) {
           throw new Error('Business name is taken. Please try another.')
@@ -110,9 +110,9 @@ export default function WelcomePage() {
             allowed_industries: [industry],
             allowed_regions: ['US'],
             onboarding_status: 'completed',
-          })
+          } as any)
           .select()
-          .single()
+          .single() as { data: any; error: any }
 
         if (workspaceError) throw workspaceError
 
@@ -129,7 +129,7 @@ export default function WelcomePage() {
             daily_credit_limit: 3,
             active_subscription: false,
             partner_approved: false,
-          })
+          } as any)
 
         if (userError) {
           // Rollback workspace
@@ -153,9 +153,9 @@ export default function WelcomePage() {
             slug,
             subdomain: slug,
             onboarding_status: 'completed',
-          })
+          } as any)
           .select()
-          .single()
+          .single() as { data: any; error: any }
 
         if (workspaceError) throw workspaceError
 
@@ -171,7 +171,7 @@ export default function WelcomePage() {
             plan: 'free',
             partner_approved: false,
             active_subscription: true, // Partners don't need subscription
-          })
+          } as any)
 
         if (userError) {
           // Rollback workspace

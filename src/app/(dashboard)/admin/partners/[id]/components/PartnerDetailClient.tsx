@@ -208,13 +208,13 @@ export function PartnerDetailClient({
           <Badge variant="outline" className={config.color}>
             {config.label}
           </Badge>
-          {partner.status === 'active' && (
+          {(partner.status as string) === 'active' && (
             <Button variant="destructive" onClick={() => setIsSuspendDialogOpen(true)}>
               <Ban className="h-4 w-4 mr-2" />
               Suspend Partner
             </Button>
           )}
-          {(partner.status === 'suspended' || partner.status === 'pending') && (
+          {((partner.status as string) === 'suspended' || (partner.status as string) === 'pending') && (
             <Button variant="default" onClick={() => setIsActivateDialogOpen(true)}>
               <PlayCircle className="h-4 w-4 mr-2" />
               Activate Partner

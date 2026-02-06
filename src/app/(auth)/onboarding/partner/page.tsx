@@ -40,9 +40,9 @@ export default function PartnerOnboardingPage() {
           subdomain: partnerWorkspaceSlug,
           industry_vertical: 'Partner',
           onboarding_status: 'completed',
-        })
+        } as any)
         .select()
-        .single()
+        .single() as { data: any; error: any }
 
       if (workspaceError || !workspace) {
         throw workspaceError || new Error('Failed to create workspace')
@@ -58,7 +58,7 @@ export default function PartnerOnboardingPage() {
         plan: 'free',
         partner_approved: true, // Auto-approved for immediate upload access
         active_subscription: false,
-      })
+      } as any)
 
       if (userError) {
         // Rollback workspace creation
