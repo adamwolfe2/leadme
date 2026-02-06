@@ -6,13 +6,15 @@ import { Eye } from 'lucide-react';
 
 const FULL_CODE = `<!-- Cursive Tracking Pixel -->
 <script>
-  (function() {
-    var script = document.createElement('script');
-    script.src = 'https://cdn.cursive.io/pixel.js';
-    script.async = true;
-    script.dataset.projectId = 'proj_abc123xyz';
-    document.head.appendChild(script);
-  })();
+  !function(key) {
+    if (window.cursive) return;
+    window.cursive = { loaded: true };
+    var s = document.createElement("script");
+    s.async = true;
+    s.src = "https://cdn.meetcursive.com/t/"
+      + key + "/" + key + ".js";
+    document.head.appendChild(s);
+  }("YOUR_PROJECT_ID");
 </script>`;
 
 export default function InstallPixelDemo() {

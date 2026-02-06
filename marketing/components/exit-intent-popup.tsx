@@ -6,7 +6,8 @@ import { X, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { trackLeadCaptured, trackFormSubmission } from "@/lib/analytics"
 
-const STORAGE_KEY = "cursive_exit_intent_shown"
+const STORAGE_KEY = "cursive_exit_intent_count"
+const MAX_SHOWS_PER_SESSION = 2
 const SHOW_DELAY = 1000 // Wait 1 second before enabling exit intent
 
 export function ExitIntentPopup() {
@@ -19,10 +20,10 @@ export function ExitIntentPopup() {
   const [error, setError] = useState("")
 
   useEffect(() => {
-    // Check if popup has already been shown this session
+    // Check if popup has reached max shows this session
     if (typeof window !== "undefined") {
-      const hasShown = sessionStorage.getItem(STORAGE_KEY)
-      if (hasShown) {
+      const showCount = parseInt(sessionStorage.getItem(STORAGE_KEY) || "0", 10)
+      if (showCount >= MAX_SHOWS_PER_SESSION) {
         return
       }
     }
@@ -39,8 +40,12 @@ export function ExitIntentPopup() {
     (e: MouseEvent) => {
       // Only trigger if cursor is leaving from the top
       if (e.clientY <= 0 && isEnabled && !isVisible) {
+        const currentCount = parseInt(sessionStorage.getItem(STORAGE_KEY) || "0", 10)
+        if (currentCount >= MAX_SHOWS_PER_SESSION) return
         setIsVisible(true)
-        sessionStorage.setItem(STORAGE_KEY, "true")
+        sessionStorage.setItem(STORAGE_KEY, String(currentCount + 1))
+        // Disable until popup is closed to prevent re-triggers
+        setIsEnabled(false)
       }
     },
     [isEnabled, isVisible]
@@ -69,6 +74,11 @@ export function ExitIntentPopup() {
 
   const handleClose = () => {
     setIsVisible(false)
+    // Re-enable exit intent if under the limit
+    const currentCount = parseInt(sessionStorage.getItem(STORAGE_KEY) || "0", 10)
+    if (currentCount < MAX_SHOWS_PER_SESSION) {
+      setTimeout(() => setIsEnabled(true), SHOW_DELAY)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
