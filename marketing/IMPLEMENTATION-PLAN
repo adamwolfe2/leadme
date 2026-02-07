@@ -1,0 +1,4183 @@
+CLAUDE-CODE-IMPLEMENTATION-PLAN.md
+PROJECT: Cursive Website - Complete SEO/AEO Optimization
+SITE: https://meetcursive.com
+FRAMEWORK: Next.js (App Router)
+HOSTING: Vercel
+GOAL: Fix critical rendering issues, expand content, achieve page 1 rankings for target keywords
+
+CRITICAL CONTEXT FOR CLAUDE
+Current Site State
+28 pages with metadata currently exist
+18 blog posts including 5 competitor comparisons
+Structured data exists but renders client-side only (BROKEN)
+Site Health Score: 45/100 (CRITICAL)
+Content Score: 33/100 (MAJOR GAP)
+AEO Score: 36/100 (AI visibility blocked)
+470 issues affecting 376 pages
+24 critical issues, 92 high-priority issues
+The Core Technical Problem
+The site uses client-side rendering which means:
+
+Content loads AFTER JavaScript executes
+Search engines see empty pages (0 words detected on 25 pages)
+Internal links don't appear in HTML source
+Structured data doesn't render for crawlers
+Result: Google can't index the site properly
+What Success Looks Like
+All content renders in initial HTML (before JavaScript)
+Internal links visible in page source (curl test passes)
+Structured data in <head> before any client code
+Every page has 800+ words of server-rendered content
+Breadcrumbs on every page with BreadcrumbList schema
+Comprehensive internal linking (5-10 links per page minimum)
+TESTING & VERIFICATION COMMANDS
+Before marking any task complete, run these tests:
+
+Test 1: Server-Side Rendering Check
+curl -s https://meetcursive.com/[page-url] | grep -o "<h1[^>]*>.*</h1>"
+
+Expected: Should return the H1 tag with content
+Failure: Returns nothing or empty tag
+
+Test 2: Internal Links Check
+curl -s https://meetcursive.com/[page-url] | grep -c "<a href="
+
+Expected: Should return 10+ (navigation + contextual links)
+Failure: Returns 0-5
+
+Test 3: Structured Data Check
+curl -s https://meetcursive.com/[page-url] | grep "application/ld+json"
+
+Expected: Should return script tags with JSON-LD
+Failure: Returns nothing
+
+Test 4: Word Count Check
+curl -s https://meetcursive.com/[page-url] | html2text | wc -w
+
+Expected: 800+ words for main pages, 2,500+ for educational content
+Failure: Less than 500 words
+
+Test 5: Meta Tags Check
+curl -s https://meetcursive.com/[page-url] | grep -E "<meta (name|property)="
+
+Expected: Returns title, description, OG tags, Twitter cards
+Failure: Missing any meta tags
+
+PHASE 1: CRITICAL TECHNICAL FIXES (DO FIRST)
+Priority: BLOCKING ALL SEO PROGRESS - MUST BE FIXED BEFORE ANY CONTENT WORK
+TASK 1.1: Convert All Pages to Server-Side Rendering
+Objective: Ensure all content, links, and text appear in initial HTML before JavaScript executes
+
+Files to Modify:
+
+app/page.tsx (homepage)
+app/platform/page.tsx
+app/visitor-identification/page.tsx
+app/audience-builder/page.tsx
+app/intent-audiences/page.tsx
+app/direct-mail/page.tsx
+app/pricing/page.tsx
+app/about/page.tsx
+app/contact/page.tsx
+app/data-access/page.tsx
+app/free-audit/page.tsx
+app/popup-test/page.tsx
+app/blog/[slug]/page.tsx (all blog posts)
+app/industries/[slug]/page.tsx (all industry pages)
+
+Current Problem Pattern (BROKEN):
+
+// This is what's currently happening - DON'T DO THIS
+export default function Page() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    // Data loads client-side only
+    fetchData().then(result => {
+      setData(result);
+      setLoading(false);
+    });
+  }, []);
+  
+  if (loading) return <div>Loading...</div>;
+  
+  return <div>{data?.content}</div>; // Empty on first render
+}
+
+Fixed Pattern (CORRECT):
+
+// This is what we need - ALL PAGES MUST FOLLOW THIS PATTERN
+export default async function Page() {
+  // Fetch data server-side BEFORE rendering
+  const data = await fetchData();
+  
+  return (
+    <div>
+      {/* Content renders in initial HTML */}
+      <h1>{data.title}</h1>
+      <p>{data.description}</p>
+      {/* All text, links, and content must be here */}
+    </div>
+  );
+}
+
+Specific Instructions for Each Page Type:
+
+Homepage (app/page.tsx)
+export default async function HomePage() {
+  // If you need any dynamic data, fetch it here server-side
+  // const data = await fetch('...').then(r => r.json());
+  
+  return (
+    <>
+      {/* Hero section - must render immediately */}
+      <section className="hero">
+        <h1>Turn Anonymous Visitors Into Sales Opportunities</h1>
+        <p>
+          Cursive identifies 70% of your website visitors, enriches them with 
+          verified contact data, and automates personalized outreach across 
+          email, LinkedIn, SMS, and direct mail.
+        </p>
+        <div className="cta-buttons">
+          <Link href="/free-audit">Get Your Free AI Audit</Link>
+          <Link href="/platform">See How It Works</Link>
+        </div>
+      </section>
+      
+      {/* Features section */}
+      <section className="features">
+        <h2>Everything You Need to Convert Visitors Into Customers</h2>
+        
+        <div className="feature-grid">
+          <div className="feature">
+            <h3>Identify Anonymous Visitors</h3>
+            <p>
+              Reveal the identity of 70% of website visitors with names, 
+              emails, phone numbers, and job titles—without requiring forms.
+            </p>
+            <Link href="/visitor-identification">Learn More →</Link>
+          </div>
+          
+          <div className="feature">
+            <h3>AI-Powered Outreach</h3>
+            <p>
+              Our AI SDR writes personalized emails, LinkedIn messages, and 
+              SMS campaigns that sound human and convert at 3-5x industry average.
+            </p>
+            <Link href="/platform">Learn More →</Link>
+          </div>
+          
+          <div className="feature">
+            <h3>Intent Data Signals</h3>
+            <p>
+              Know exactly when prospects are researching solutions like yours 
+              across the web, not just on your site.
+            </p>
+            <Link href="/intent-audiences">Learn More →</Link>
+          </div>
+          
+          <div className="feature">
+            <h3>Multi-Channel Automation</h3>
+            <p>
+              Reach prospects where they are: email, LinkedIn, SMS, phone, 
+              and even direct mail—all from one platform.
+            </p>
+            <Link href="/platform">Learn More →</Link>
+          </div>
+        </div>
+      </section>
+      
+      {/* Social proof section */}
+      <section className="social-proof">
+        <h2>Trusted by B2B Companies to Generate Pipeline</h2>
+        {/* Add customer logos, testimonials */}
+      </section>
+      
+      {/* How it works section */}
+      <section className="how-it-works">
+        <h2>How Cursive Works</h2>
+        <ol>
+          <li>
+            <strong>Install Tracking Pixel:</strong> Add one line of code to 
+            your website (takes 2 minutes).
+          </li>
+          <li>
+            <strong>Visitors Get Identified:</strong> As people browse your 
+            site, Cursive reveals their identity in real-time.
+          </li>
+          <li>
+            <strong>Data Gets Enriched:</strong> We append verified contact 
+            information, job titles, company data, and intent signals.
+          </li>
+          <li>
+            <strong>AI Personalizes Outreach:</strong> Our AI SDR writes 
+            custom messages based on pages viewed and visitor behavior.
+          </li>
+          <li>
+            <strong>Multi-Channel Campaigns Launch:</strong> Prospects receive 
+            personalized outreach across email, LinkedIn, SMS, and direct mail.
+          </li>
+          <li>
+            <strong>You Close Deals:</strong> Warm leads flow into your CRM 
+            ready for sales conversations.
+          </li>
+        </ol>
+        <Link href="/platform">See Full Platform Tour →</Link>
+      </section>
+      
+      {/* Use cases section */}
+      <section className="use-cases">
+        <h2>Built for Your Industry</h2>
+        <div className="industry-grid">
+          <Link href="/industries/b2b-software">
+            <h3>B2B Software</h3>
+            <p>Convert free trial users and demo visitors into paying customers</p>
+          </Link>
+          <Link href="/industries/agencies">
+            <h3>Agencies</h3>
+            <p>Identify prospects researching agency services</p>
+          </Link>
+          <Link href="/industries/ecommerce">
+            <h3>Ecommerce</h3>
+            <p>Re-engage cart abandoners with personalized offers</p>
+          </Link>
+          <Link href="/industries/financial-services">
+            <h3>Financial Services</h3>
+            <p>Reach qualified prospects researching financial products</p>
+          </Link>
+        </div>
+      </section>
+      
+      {/* Comparison section */}
+      <section className="comparison">
+        <h2>Why Companies Switch to Cursive</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Cursive</th>
+              <th>Clearbit</th>
+              <th>Warmly</th>
+              <th>Leadfeeder</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Match Rate</td>
+              <td>70%</td>
+              <td>Shut down</td>
+              <td>40-50%</td>
+              <td>30-40%</td>
+            </tr>
+            <tr>
+              <td>AI SDR Included</td>
+              <td>✓</td>
+              <td>✗</td>
+              <td>✗</td>
+              <td>✗</td>
+            </tr>
+            <tr>
+              <td>Direct Mail</td>
+              <td>✓</td>
+              <td>✗</td>
+              <td>✗</td>
+              <td>✗</td>
+            </tr>
+            <tr>
+              <td>Starting Price</td>
+              <td>$1,000/mo</td>
+              <td>N/A</td>
+              <td>$700/mo</td>
+              <td>$139/mo</td>
+            </tr>
+          </tbody>
+        </table>
+        <Link href="/blog/clearbit-reveal-alternative">Compare All Alternatives →</Link>
+      </section>
+      
+      {/* Final CTA */}
+      <section className="final-cta">
+        <h2>See Which Companies Are Visiting Your Site Right Now</h2>
+        <p>
+          Get a free AI audit showing exactly which companies visited your 
+          website in the last 30 days—with names, emails, and phone numbers.
+        </p>
+        <Link href="/free-audit">Get Your Free AI Audit</Link>
+      </section>
+      
+      {/* FAQ Section with Schema */}
+      <section className="faq">
+        <h2>Frequently Asked Questions</h2>
+        {/* Add 8-10 FAQs with schema markup (see Task 1.3) */}
+      </section>
+    </>
+  );
+}
+
+Product Pages Pattern
+Apply this pattern to:
+
+/platform
+/visitor-identification
+/audience-builder
+/intent-audiences
+/direct-mail
+export default async function ProductPage() {
+  return (
+    <>
+      {/* Hero */}
+      <section className="hero">
+        <h1>[Feature Name]: [Benefit]</h1>
+        <p className="text-xl">
+          [2-3 sentence description of what this feature does and why it matters]
+        </p>
+        <div className="cta-buttons">
+          <Link href="/free-audit">Get Free Audit</Link>
+          <Link href="/pricing">See Pricing</Link>
+        </div>
+      </section>
+      
+      {/* Problem section */}
+      <section className="problem">
+        <h2>The Problem</h2>
+        <p>[Describe the pain point this feature solves]</p>
+        <ul>
+          <li>[Specific problem 1]</li>
+          <li>[Specific problem 2]</li>
+          <li>[Specific problem 3]</li>
+        </ul>
+      </section>
+      
+      {/* Solution section */}
+      <section className="solution">
+        <h2>How [Feature] Solves This</h2>
+        <p>[Describe the solution]</p>
+        {/* Add visual/screenshot if available */}
+      </section>
+      
+      {/* How it works */}
+      <section className="how-it-works">
+        <h2>How It Works</h2>
+        <ol>
+          <li><strong>Step 1:</strong> [Description]</li>
+          <li><strong>Step 2:</strong> [Description]</li>
+          <li><strong>Step 3:</strong> [Description]</li>
+          <li><strong>Step 4:</strong> [Description]</li>
+        </ol>
+      </section>
+      
+      {/* Features/Benefits */}
+      <section className="features">
+        <h2>Key Features</h2>
+        <div className="feature-grid">
+          <div>
+            <h3>[Feature 1]</h3>
+            <p>[Description]</p>
+          </div>
+          {/* 5-8 features */}
+        </div>
+      </section>
+      
+      {/* Use cases */}
+      <section className="use-cases">
+        <h2>Use Cases</h2>
+        <div className="use-case-grid">
+          <div>
+            <h3>[Use Case 1]</h3>
+            <p>[Description of how this feature applies]</p>
+          </div>
+          {/* 3-5 use cases */}
+        </div>
+      </section>
+      
+      {/* Integration callout */}
+      <section className="integrations">
+        <h2>Works With Your Existing Stack</h2>
+        <p>
+          Cursive integrates with <Link href="/integrations/salesforce">Salesforce</Link>, 
+          <Link href="/integrations/hubspot">HubSpot</Link>, 
+          <Link href="/integrations/slack">Slack</Link>, and 
+          <Link href="/integrations">200+ other tools</Link>.
+        </p>
+      </section>
+      
+      {/* Related features */}
+      <section className="related">
+        <h2>Related Features</h2>
+        <div className="related-grid">
+          <Link href="/[related-feature-1]">
+            <h3>[Feature Name]</h3>
+            <p>[One-line description]</p>
+          </Link>
+          {/* 2-3 related features */}
+        </div>
+      </section>
+      
+      {/* FAQ */}
+      <section className="faq">
+        <h2>Frequently Asked Questions</h2>
+        {/* 5-8 FAQs specific to this feature */}
+      </section>
+      
+      {/* Final CTA */}
+      <section className="cta">
+        <h2>Ready to Get Started?</h2>
+        <Link href="/free-audit">Get Your Free AI Audit</Link>
+      </section>
+    </>
+  );
+}
+
+Blog Post Pages (app/blog/[slug]/page.tsx)
+// This must use generateMetadata for dynamic posts
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  // Fetch post data server-side
+  const post = await getPostBySlug(params.slug);
+  
+  if (!post) {
+    return {
+      title: 'Post Not Found',
+    };
+  }
+  
+  return {
+    title: `${post.title} | Cursive Blog`,
+    description: post.excerpt || post.description,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt || post.description,
+      type: 'article',
+      publishedTime: post.publishedAt,
+      authors: ['Cursive Team'],
+      images: post.image ? [{ url: post.image }] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.excerpt || post.description,
+      images: post.image ? [post.image] : [],
+    },
+  };
+}
+
+export default async function BlogPost({ params }: { params: { slug: string } }) {
+  const post = await getPostBySlug(params.slug);
+  
+  if (!post) {
+    return <div>Post not found</div>;
+  }
+  
+  return (
+    <>
+      {/* Breadcrumbs */}
+      <Breadcrumbs items={[
+        { name: 'Home', href: '/' },
+        { name: 'Blog', href: '/blog' },
+        { name: post.title, href: `/blog/${params.slug}` }
+      ]} />
+      
+      {/* Article Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            headline: post.title,
+            description: post.excerpt || post.description,
+            image: post.image,
+            datePublished: post.publishedAt,
+            dateModified: post.updatedAt || post.publishedAt,
+            author: {
+              '@type': 'Organization',
+              name: 'Cursive',
+              url: 'https://meetcursive.com',
+            },
+            publisher: {
+              '@type': 'Organization',
+              name: 'Cursive',
+              url: 'https://meetcursive.com',
+            },
+          }),
+        }}
+      />
+      
+      {/* Article content */}
+      <article>
+        <header>
+          <h1>{post.title}</h1>
+          <p className="text-gray-600">
+            Published {new Date(post.publishedAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </p>
+        </header>
+        
+        <div className="prose">
+          {/* Render post content - must be server-side */}
+          {post.content}
+        </div>
+        
+        {/* Related posts */}
+        <section className="related-posts">
+          <h2>Related Articles</h2>
+          {/* Show 3-4 related posts with links */}
+        </section>
+        
+        {/* CTA */}
+        <section className="cta">
+          <h2>Ready to Identify Your Website Visitors?</h2>
+          <Link href="/free-audit">Get Your Free AI Audit</Link>
+        </section>
+      </article>
+    </>
+  );
+}
+
+Verification for Task 1.1:
+After converting each page, run:
+
+curl -s https://meetcursive.com/[page-url] | grep -o "<h1[^>]*>.*</h1>"
+
+Should return the H1 with full text content.
+
+Mark complete when: All 28+ pages pass the curl test showing content in initial HTML.
+
+TASK 1.2: Fix Internal Linking Architecture
+Objective: Add server-rendered internal links to every page so crawlers can discover the entire site
+
+Current Problem:
+
+"No internal links detected" on 25 pages
+Navigation may render client-side only
+No contextual links within page content
+Solution: Add comprehensive internal linking
+
+Step 1: Fix Navigation Component
+File: app/components/Navigation.tsx (or wherever nav lives)
+
+// Navigation MUST render server-side with real <a> tags
+export function Navigation() {
+  return (
+    <nav className="main-navigation">
+      {/* Primary navigation */}
+      <div className="nav-primary">
+        <Link href="/">Home</Link>
+        <Link href="/platform">Platform</Link>
+        <Link href="/pricing">Pricing</Link>
+        <Link href="/blog">Blog</Link>
+        <Link href="/industries">Industries</Link>
+      </div>
+      
+      {/* Features dropdown/section */}
+      <div className="nav-features">
+        <span>Features</span>
+        <div className="dropdown">
+          <Link href="/visitor-identification">Visitor Identification</Link>
+          <Link href="/audience-builder">Audience Builder</Link>
+          <Link href="/intent-audiences">Intent Data</Link>
+          <Link href="/direct-mail">Direct Mail</Link>
+          <Link href="/integrations">Integrations</Link>
+        </div>
+      </div>
+      
+      {/* Resources */}
+      <div className="nav-resources">
+        <span>Resources</span>
+        <div className="dropdown">
+          <Link href="/blog">Blog</Link>
+          <Link href="/about">About</Link>
+          <Link href="/contact">Contact</Link>
+          <Link href="/data-access">Data Access</Link>
+        </div>
+      </div>
+      
+      {/* CTA */}
+      <div className="nav-cta">
+        <Link href="/free-audit">Get Free Audit</Link>
+      </div>
+    </nav>
+  );
+}
+
+CRITICAL: Verify navigation renders in HTML source:
+
+curl -s https://meetcursive.com | grep -c '<a href='
+
+Should return 10+ links.
+
+Step 2: Add Footer with Comprehensive Links
+File: app/components/Footer.tsx
+
+export function Footer() {
+  return (
+    <footer className="site-footer">
+      <div className="footer-grid">
+        {/* Product column */}
+        <div className="footer-column">
+          <h3>Product</h3>
+          <ul>
+            <li><Link href="/platform">Platform Overview</Link></li>
+            <li><Link href="/visitor-identification">Visitor Identification</Link></li>
+            <li><Link href="/audience-builder">Audience Builder</Link></li>
+            <li><Link href="/intent-audiences">Intent Data</Link></li>
+            <li><Link href="/direct-mail">Direct Mail</Link></li>
+            <li><Link href="/integrations">Integrations</Link></li>
+            <li><Link href="/pricing">Pricing</Link></li>
+          </ul>
+        </div>
+        
+        {/* Industries column */}
+        <div className="footer-column">
+          <h3>Industries</h3>
+          <ul>
+            <li><Link href="/industries/b2b-software">B2B Software</Link></li>
+            <li><Link href="/industries/agencies">Agencies</Link></li>
+            <li><Link href="/industries/ecommerce">Ecommerce</Link></li>
+            <li><Link href="/industries/financial-services">Financial Services</Link></li>
+            <li><Link href="/industries/healthcare">Healthcare</Link></li>
+            <li><Link href="/industries/manufacturing">Manufacturing</Link></li>
+            <li><Link href="/industries/professional-services">Professional Services</Link></li>
+            <li><Link href="/industries/real-estate">Real Estate</Link></li>
+            <li><Link href="/industries/technology">Technology</Link></li>
+          </ul>
+        </div>
+        
+        {/* Resources column */}
+        <div className="footer-column">
+          <h3>Resources</h3>
+          <ul>
+            <li><Link href="/blog">Blog</Link></li>
+            <li><Link href="/what-is-website-visitor-identification">What is Visitor Identification?</Link></li>
+            <li><Link href="/what-is-b2b-intent-data">What is Intent Data?</Link></li>
+            <li><Link href="/what-is-ai-sdr">What is an AI SDR?</Link></li>
+            <li><Link href="/blog/clearbit-reveal-alternative">Clearbit Alternatives</Link></li>
+            <li><Link href="/blog/warmly-vs-cursive">Warmly vs Cursive</Link></li>
+          </ul>
+        </div>
+        
+        {/* Comparisons column */}
+        <div className="footer-column">
+          <h3>Comparisons</h3>
+          <ul>
+            <li><Link href="/blog/clearbit-reveal-alternative">Clearbit Alternatives</Link></li>
+            <li><Link href="/blog/warmly-vs-cursive">Warmly vs Cursive</Link></li>
+            <li><Link href="/blog/apollo-vs-cursive">Apollo vs Cursive</Link></li>
+            <li><Link href="/blog/zoominfo-vs-cursive">ZoomInfo vs Cursive</Link></li>
+            <li><Link href="/blog/6sense-vs-cursive">6sense vs Cursive</Link></li>
+          </ul>
+        </div>
+        
+        {/* Company column */}
+        <div className="footer-column">
+          <h3>Company</h3>
+          <ul>
+            <li><Link href="/about">About</Link></li>
+            <li><Link href="/contact">Contact</Link></li>
+            <li><Link href="/data-access">Data Access</Link></li>
+            <li><Link href="/free-audit">Free AI Audit</Link></li>
+          </ul>
+        </div>
+      </div>
+      
+      {/* Bottom bar */}
+      <div className="footer-bottom">
+        <p>&copy; 2026 Cursive. All rights reserved.</p>
+        <div className="footer-legal">
+          <Link href="/privacy">Privacy Policy</Link>
+          <Link href="/terms">Terms of Service</Link>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+Step 3: Add Contextual Internal Links to Every Page
+Rules for contextual linking:
+
+Minimum 5-10 contextual links per page
+Link to related features, blog posts, industry pages
+Use descriptive anchor text (not "click here")
+Link naturally within sentences/paragraphs
+Example for /visitor-identification page:
+
+<section>
+  <h2>How Website Visitor Identification Works</h2>
+  <p>
+    When someone visits your website, Cursive's tracking pixel captures 
+    behavioral signals and matches them against our database of 250M+ 
+    business profiles. Unlike traditional <Link href="/blog/clearbit-reveal-alternative">
+    visitor identification tools like Clearbit</Link>, which only identify 
+    30-40% of visitors at the company level, Cursive reveals 70% of visitors 
+    with person-level data including names, emails, and phone numbers.
+  </p>
+  
+  <p>
+    Once identified, visitors flow into your <Link href="/audience-builder">
+    audience builder</Link> where you can segment by industry, company size, 
+    job title, or behavior. You can then enrich these audiences with 
+    <Link href="/intent-audiences">B2B intent data</Link> to know exactly 
+    when they're researching solutions like yours across the web.
+  </p>
+  
+  <p>
+    From there, our <Link href="/platform">AI-powered platform</Link> 
+    automatically crafts personalized outreach campaigns across email, 
+    LinkedIn, SMS, and even <Link href="/direct-mail">direct mail</Link>. 
+    This multi-channel approach converts at 3-5x higher rates than 
+    single-channel outreach.
+  </p>
+  
+  <p>
+    Companies in <Link href="/industries/b2b-software">B2B software</Link>, 
+    <Link href="/industries/agencies">agencies</Link>, and 
+    <Link href="/industries/financial-services">financial services</Link> 
+    use Cursive to identify high-intent visitors and convert them into 
+    pipeline. See how we compare to <Link href="/blog/warmly-vs-cursive">
+    Warmly</Link>, <Link href="/blog/apollo-vs-cursive">Apollo</Link>, 
+    and <Link href="/blog/zoominfo-vs-cursive">ZoomInfo</Link>.
+  </p>
+</section>
+
+Apply this pattern to every page:
+
+Homepage: Link to all product pages, top blog posts, industry pages
+Product pages: Link to related features, blog posts, comparisons, industries
+Blog posts: Link to product pages, related posts, industry pages
+Industry pages: Link to relevant features, case studies, blog posts
+Verification for Task 1.2:
+
+curl -s https://meetcursive.com/[page-url] | grep -c '<a href='
+
+Should return 15+ links per page (nav + footer + contextual).
+
+Mark complete when: Every page has 15+ internal links visible in HTML source.
+
+TASK 1.3: Fix Structured Data Rendering
+Objective: Move all Schema.org markup to server-side rendering so search engines can see it
+
+Current Problem:
+
+Structured data renders client-side only
+Search engines don't see schema markup
+No rich snippets, no knowledge graph, no AI citations
+Solution: Add server-rendered JSON-LD schema to every page
+
+Step 1: Create Schema Components
+File: app/components/schema/SchemaMarkup.tsx
+
+// Organization Schema (add to EVERY page)
+export function OrganizationSchema() {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Cursive',
+    url: 'https://meetcursive.com',
+    logo: 'https://meetcursive.com/logo.png',
+    description: 'Cursive is a full-stack B2B lead generation platform that identifies anonymous website visitors, enriches them with verified contact data, and automates personalized outreach across email, LinkedIn, SMS, and direct mail.',
+    foundingDate: '2024',
+    address: {
+      '@type': 'PostalAddress',
+      addressCountry: 'US',
+    },
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'Sales',
+      email: 'hello@meetcursive.com',
+    },
+    sameAs: [
+      'https://twitter.com/cursive',
+      'https://linkedin.com/company/cursive',
+    ],
+  };
+  
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+// SoftwareApplication Schema (for product pages)
+export function SoftwareApplicationSchema() {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Cursive',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    offers: {
+      '@type': 'Offer',
+      price: '1000',
+      priceCurrency: 'USD',
+      priceSpecification: {
+        '@type': 'UnitPriceSpecification',
+        price: '1000',
+        priceCurrency: 'USD',
+        billingPeriod: 'P1M', // per month
+      },
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.8',
+      reviewCount: '127',
+      bestRating: '5',
+      worstRating: '1',
+    },
+    description: 'Cursive identifies anonymous website visitors and automates personalized outreach to convert them into customers.',
+  };
+  
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+// Article Schema (for blog posts)
+interface ArticleSchemaProps {
+  title: string;
+  description: string;
+  publishedAt: string;
+  updatedAt?: string;
+  image?: string;
+  author?: string;
+}
+
+export function ArticleSchema({ 
+  title, 
+  description, 
+  publishedAt, 
+  updatedAt,
+  image,
+  author = 'Cursive Team'
+}: ArticleSchemaProps) {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title,
+    description: description,
+    image: image || 'https://meetcursive.com/og-image.png',
+    datePublished: publishedAt,
+    dateModified: updatedAt || publishedAt,
+    author: {
+      '@type': 'Organization',
+      name: author,
+      url: 'https://meetcursive.com',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Cursive',
+      url: 'https://meetcursive.com',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://meetcursive.com/logo.png',
+      },
+    },
+  };
+  
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+// FAQPage Schema
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+interface FAQSchemaProps {
+  faqs: FAQItem[];
+}
+
+export function FAQSchema({ faqs }: FAQSchemaProps) {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map(faq => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  };
+  
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+// BreadcrumbList Schema
+interface BreadcrumbItem {
+  name: string;
+  href: string;
+}
+
+interface BreadcrumbSchemaProps {
+  items: BreadcrumbItem[];
+}
+
+export function BreadcrumbSchema({ items }: BreadcrumbSchemaProps) {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: `https://meetcursive.com${item.href}`,
+    })),
+  };
+  
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+// Product Schema (for feature pages)
+interface ProductSchemaProps {
+  name: string;
+  description: string;
+  price?: string;
+}
+
+export function ProductSchema({ name, description, price = '1000' }: ProductSchemaProps) {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: name,
+    description: description,
+    brand: {
+      '@type': 'Brand',
+      name: 'Cursive',
+    },
+    offers: {
+      '@type': 'Offer',
+      price: price,
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+      url: 'https://meetcursive.com/pricing',
+    },
+  };
+  
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+Step 2: Add Schema to Every Page
+Homepage (app/page.tsx):
+
+export default async function HomePage() {
+  const faqs = [
+    {
+      question: 'What is website visitor identification?',
+      answer: 'Website visitor identification is a B2B marketing technology that reveals the identity of anonymous website visitors by matching their IP address, device fingerprint, and behavioral signals against databases of business and consumer profiles.'
+    },
+    {
+      question: 'How accurate is Cursive visitor identification?',
+      answer: 'Cursive identifies 70% of website visitors with person-level data (name, email, phone, job title). This is significantly higher than industry average of 30-40% company-level identification.'
+    },
+    {
+      question: 'How much does Cursive cost?',
+      answer: 'Cursive starts at $1,000/month and includes visitor identification, AI-powered outreach, intent data, audience building, and multi-channel automation. Custom enterprise plans are available.'
+    },
+    {
+      question: 'What integrations does Cursive support?',
+      answer: 'Cursive integrates with Salesforce, HubSpot, Slack, Gmail, Google Calendar, Zoom, LinkedIn, Apollo, Instantly, and 200+ other tools via native integrations and Zapier.'
+    },
+    {
+      question: 'Is Cursive GDPR compliant?',
+      answer: 'Yes, Cursive is fully GDPR and CCPA compliant. We only collect and process data in accordance with applicable privacy laws and provide opt-out mechanisms for end users.'
+    },
+    {
+      question: 'How long does it take to implement Cursive?',
+      answer: 'Implementation takes 2-5 minutes. Simply add our tracking pixel to your website, connect your CRM, and start identifying visitors immediately.'
+    },
+    {
+      question: 'What makes Cursive different from Clearbit or Warmly?',
+      answer: 'Cursive offers 70% match rates (vs 30-40% for competitors), includes AI-powered outreach automation, supports multi-channel campaigns (email, LinkedIn, SMS, direct mail), and provides intent data—all in one platform.'
+    },
+    {
+      question: 'Can I try Cursive for free?',
+      answer: 'Yes, we offer a free AI audit that shows you exactly which companies visited your website in the last 30 days, complete with contact information. No credit card required.'
+    },
+  ];
+  
+  return (
+    <>
+      {/* Add ALL schema types */}
+      <OrganizationSchema />
+      <SoftwareApplicationSchema />
+      <FAQSchema faqs={faqs} />
+      
+      {/* Rest of page content */}
+      {/* ... */}
+      
+      {/* Render FAQs visually too */}
+      <section className="faq">
+        <h2>Frequently Asked Questions</h2>
+        {faqs.map((faq, index) => (
+          <div key={index} className="faq-item">
+            <h3>{faq.question}</h3>
+            <p>{faq.answer}</p>
+          </div>
+        ))}
+      </section>
+    </>
+  );
+}
+
+Product Pages (e.g., app/visitor-identification/page.tsx):
+
+export default async function VisitorIdentificationPage() {
+  const faqs = [
+    {
+      question: 'How does website visitor identification work?',
+      answer: 'Cursive captures behavioral signals when someone visits your site, then matches their IP address and device fingerprint against our database of 250M+ business profiles to reveal their identity in real-time.'
+    },
+    {
+      question: 'What data do I get about each visitor?',
+      answer: 'You receive name, email address, phone number, job title, company name, company size, industry, location, LinkedIn profile, and pages viewed on your site.'
+    },
+    {
+      question: 'Do visitors need to fill out a form?',
+      answer: 'No, Cursive identifies visitors without requiring any form fills. We reveal 70% of anonymous visitors automatically.'
+    },
+    {
+      question: 'Is this legal and compliant?',
+      answer: 'Yes, Cursive is fully GDPR and CCPA compliant. We use publicly available business data and provide opt-out mechanisms.'
+    },
+    {
+      question: 'How is this different from reverse IP lookup?',
+      answer: 'Traditional reverse IP lookup only identifies 30-40% of visitors at the company level. Cursive identifies 70% of visitors at the person level with full contact information.'
+    },
+  ];
+  
+  const breadcrumbs = [
+    { name: 'Home', href: '/' },
+    { name: 'Visitor Identification', href: '/visitor-identification' },
+  ];
+  
+  return (
+    <>
+      {/* Schema markup */}
+      <OrganizationSchema />
+      <ProductSchema 
+        name="Cursive Visitor Identification"
+        description="Identify 70% of anonymous website visitors with names, emails, phone numbers, and job titles—without requiring form fills."
+      />
+      <BreadcrumbSchema items={breadcrumbs} />
+      <FAQSchema faqs={faqs} />
+      
+      {/* Page content */}
+      {/* ... */}
+    </>
+  );
+}
+
+Blog Posts (app/blog/[slug]/page.tsx):
+
+export default async function BlogPost({ params }: { params: { slug: string } }) {
+  const post = await getPostBySlug(params.slug);
+  
+  const breadcrumbs = [
+    { name: 'Home', href: '/' },
+    { name: 'Blog', href: '/blog' },
+    { name: post.title, href: `/blog/${params.slug}` },
+  ];
+  
+  return (
+    <>
+      {/* Schema markup */}
+      <OrganizationSchema />
+      <ArticleSchema 
+        title={post.title}
+        description={post.excerpt}
+        publishedAt={post.publishedAt}
+        updatedAt={post.updatedAt}
+        image={post.image}
+      />
+      <BreadcrumbSchema items={breadcrumbs} />
+      
+      {/* If post has FAQs, add FAQSchema too */}
+      {post.faqs && <FAQSchema faqs={post.faqs} />}
+      
+      {/* Article content */}
+      {/* ... */}
+    </>
+  );
+}
+
+Verification for Task 1.3:
+
+curl -s https://meetcursive.com/[page-url] | grep -c 'application/ld+json'
+
+Should return 2-4 schema blocks per page.
+
+Mark complete when: Every page has appropriate schema markup in HTML source.
+
+TASK 1.4: Create robots.txt
+Objective: Add robots.txt to guide crawlers and allow AI bots
+
+File: public/robots.txt
+
+# Cursive Robots.txt
+# Generated: 2026
+
+# Allow all crawlers by default
+User-agent: *
+Allow: /
+
+# Block test/admin pages
+Disallow: /popup-test
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /test/
+
+# Block case studies until real content exists
+Disallow: /case-studies
+
+# AI Crawlers - Explicitly Allow
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Omgilibot
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+# Traditional Search Engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# Crawl-delay for aggressive bots
+User-agent: *
+Crawl-delay: 1
+
+# Sitemaps
+Sitemap: https://meetcursive.com/sitemap.xml
+Sitemap: https://meetcursive.com/sitemap-blog.xml
+Sitemap: https://meetcursive.com/sitemap-industries.xml
+
+Verification for Task 1.4:
+
+curl -s https://meetcursive.com/robots.txt
+
+Should return the file contents.
+
+Mark complete when: robots.txt is accessible and contains all AI crawler directives.
+
+TASK 1.5: Fix Canonical URL Redirects
+Objective: Ensure all domain variants redirect to canonical https://meetcursive.com
+
+Current Problem:
+
+www vs non-www variants both resolve
+Wastes crawl budget
+Dilutes authority
+Solution: Add redirects in Next.js config
+
+File: next.config.js (or next.config.mjs)
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // ... existing config
+  
+  async redirects() {
+    return [
+      // Redirect www to non-www
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'www.meetcursive.com',
+          },
+        ],
+        destination: 'https://meetcursive.com/:path*',
+        permanent: true, // 301 redirect
+      },
+      // Redirect HTTP to HTTPS (if not handled by Vercel)
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'header',
+            key: 'x-forwarded-proto',
+            value: 'http',
+          },
+        ],
+        destination: 'https://meetcursive.com/:path*',
+        permanent: true,
+      },
+    ];
+  },
+  
+  // ... rest of config
+};
+
+module.exports = nextConfig;
+
+Verification for Task 1.5:
+
+# Test www redirect
+curl -I https://www.meetcursive.com
+
+# Should return:
+# HTTP/1.1 301 Moved Permanently
+# Location: https://meetcursive.com/
+
+# Test HTTP redirect
+curl -I http://meetcursive.com
+
+# Should return:
+# HTTP/1.1 301 Moved Permanently
+# Location: https://meetcursive.com/
+
+Mark complete when: All domain variants redirect to https://meetcursive.com with 301 status.
+
+TASK 1.6: Create Breadcrumb Component
+Objective: Add breadcrumb navigation to every page with BreadcrumbList schema
+
+File: app/components/Breadcrumbs.tsx
+
+import Link from 'next/link';
+import { BreadcrumbSchema } from './schema/SchemaMarkup';
+
+interface BreadcrumbItem {
+  name: string;
+  href: string;
+}
+
+interface BreadcrumbsProps {
+  items: BreadcrumbItem[];
+}
+
+export function Breadcrumbs({ items }: BreadcrumbsProps) {
+  return (
+    <>
+      {/* Schema markup */}
+      <BreadcrumbSchema items={items} />
+      
+      {/* Visual breadcrumbs */}
+      <nav aria-label="Breadcrumb" className="breadcrumbs">
+        <ol className="flex items-center space-x-2 text-sm text-gray-600">
+          {items.map((item, index) => (
+            <li key={index} className="flex items-center">
+              {index > 0 && <span className="mx-2">/</span>}
+              {index === items.length - 1 ? (
+                <span className="text-gray-900 font-medium">{item.name}</span>
+              ) : (
+                <Link href={item.href} className="hover:text-gray-900">
+                  {item.name}
+                </Link>
+              )}
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </>
+  );
+}
+
+Add breadcrumbs to every page:
+
+Homepage: No breadcrumbs needed
+
+Product pages:
+
+<Breadcrumbs items={[
+  { name: 'Home', href: '/' },
+  { name: 'Visitor Identification', href: '/visitor-identification' }
+]} />
+
+Blog posts:
+
+<Breadcrumbs items={[
+  { name: 'Home', href: '/' },
+  { name: 'Blog', href: '/blog' },
+  { name: post.title, href: `/blog/${post.slug}` }
+]} />
+
+Industry pages:
+
+<Breadcrumbs items={[
+  { name: 'Home', href: '/' },
+  { name: 'Industries', href: '/industries' },
+  { name: industry.name, href: `/industries/${industry.slug}` }
+]} />
+
+Verification for Task 1.6:
+
+curl -s https://meetcursive.com/blog/clearbit-reveal-alternative | grep 'BreadcrumbList'
+
+Should return BreadcrumbList schema.
+
+Mark complete when: All pages (except homepage) have breadcrumbs with schema.
+
+TASK 1.7: Expand Thin Content Pages
+Objective: Add substantial content to pages with <500 words
+
+Pages to fix:
+
+1. Contact Page (app/contact/page.tsx)
+Current state: Likely just a form
+Target: 800+ words
+
+export const metadata = {
+  title: 'Contact Cursive | Book Your Free AI Audit',
+  description: 'Get in touch with Cursive. Book a free AI audit to see which companies are visiting your site right now. Response within 24 hours.',
+};
+
+export default function ContactPage() {
+  const faqs = [
+    {
+      question: 'How quickly will I get a response?',
+      answer: 'We respond to all inquiries within 24 hours during business days. For urgent requests, email hello@meetcursive.com directly.'
+    },
+    {
+      question: 'What is included in the free AI audit?',
+      answer: 'The free audit includes a list of companies that visited your website in the last 30 days, contact information for decision-makers at those companies, pages they viewed, and a personalized outreach strategy.'
+    },
+    {
+      question: 'Do I need a credit card for the free audit?',
+      answer: 'No credit card required. The free audit is completely free with no strings attached.'
+    },
+    {
+      question: 'Can I schedule a demo?',
+      answer: 'Yes, you can book a live demo directly through this page or by emailing hello@meetcursive.com.'
+    },
+    {
+      question: 'Do you offer custom enterprise plans?',
+      answer: 'Yes, we offer custom enterprise plans for companies with unique requirements. Contact us to discuss your needs.'
+    },
+  ];
+  
+  const breadcrumbs = [
+    { name: 'Home', href: '/' },
+    { name: 'Contact', href: '/contact' },
+  ];
+  
+  return (
+    <>
+      <OrganizationSchema />
+      <BreadcrumbSchema items={breadcrumbs} />
+      <FAQSchema faqs={faqs} />
+      
+      <Breadcrumbs items={breadcrumbs} />
+      
+      <div className="contact-page">
+        <section className="hero">
+          <h1>Contact Cursive</h1>
+          <p className="text-xl">
+            Get in touch with our team to learn how Cursive can help you 
+            identify anonymous website visitors and convert them into customers.
+          </p>
+        </section>
+        
+        <section className="free-audit">
+          <h2>Get Your Free AI Audit</h2>
+          <p>
+            We'll analyze your website traffic and show you exactly which 
+            companies are researching your product right now—with names, 
+            emails, and phone numbers.
+          </p>
+          
+          <h3>What You'll Get:</h3>
+          <ul>
+            <li>
+              <strong>Company Identification:</strong> List of companies that 
+              visited your site in the last 30 days, including company name, 
+              size, industry, and location.
+            </li>
+            <li>
+              <strong>Contact Information:</strong> Names, email addresses, 
+              phone numbers, and LinkedIn profiles for decision-makers at 
+              those companies.
+            </li>
+            <li>
+              <strong>Behavioral Insights:</strong> Pages they viewed, time 
+              spent on site, and content they engaged with most.
+            </li>
+            <li>
+              <strong>Intent Signals:</strong> Indicators of buying intent 
+              based on pages visited and actions taken.
+            </li>
+            <li>
+              <strong>Personalized Strategy:</strong> Custom outreach strategy 
+              tailored to your business and target audience.
+            </li>
+          </ul>
+          
+          <p>
+            This audit typically reveals 50-200 companies (depending on your 
+            traffic) that you didn't know were researching your product. Most 
+            companies convert 2-5% of these into qualified opportunities within 
+            the first 30 days.
+          </p>
+          
+          <Link href="/free-audit" className="cta-button">
+            Get Your Free AI Audit
+          </Link>
+        </section>
+        
+        <section className="contact-methods">
+          <h2>Other Ways to Reach Us</h2>
+          
+          <div className="contact-grid">
+            <div className="contact-method">
+              <h3>Email</h3>
+              <p>hello@meetcursive.com</p>
+              <p className="text-sm text-gray-600">
+                Response time: Within 24 hours
+              </p>
+            </div>
+            
+            <div className="contact-method">
+              <h3>Schedule a Demo</h3>
+              <p>Book a 30-minute live demo to see Cursive in action</p>
+              <Link href="/free-audit">Book Demo</Link>
+            </div>
+            
+            <div className="contact-method">
+              <h3>Sales Inquiries</h3>
+              <p>
+                For enterprise plans or custom requirements, email 
+                hello@meetcursive.com with "Enterprise" in the subject line.
+              </p>
+            </div>
+            
+            <div className="contact-method">
+              <h3>Support</h3>
+              <p>
+                Existing customers can access support at 
+                hello@meetcursive.com or through the in-app chat.
+              </p>
+            </div>
+          </div>
+        </section>
+        
+        <section className="office-info">
+          <h2>Company Information</h2>
+          <p>
+            Cursive operates as a remote-first company with team members 
+            across the United States. We serve B2B companies globally, with 
+            primary markets in North America, Europe, and Australia.
+          </p>
+          
+          <h3>Business Hours</h3>
+          <p>Monday - Friday: 9:00 AM - 6:00 PM EST</p>
+          <p>
+            We respond to all inquiries within 24 hours during business days. 
+            For urgent requests, please indicate "Urgent" in your email subject.
+          </p>
+        </section>
+        
+        <section className="who-we-help">
+          <h2>Who We Help</h2>
+          <p>
+            Cursive is built for B2B companies that want to convert more 
+            website visitors into customers. Our platform is particularly 
+            effective for:
+          </p>
+          
+          <ul>
+            <li>
+              <Link href="/industries/b2b-software">B2B SaaS companies</Link> 
+              with 1,000+ monthly website visitors
+            </li>
+            <li>
+              <Link href="/industries/agencies">Marketing and sales agencies</Link> 
+              managing lead generation for clients
+            </li>
+            <li>
+              <Link href="/industries/financial-services">Financial services firms</Link> 
+              looking to identify high-intent prospects
+            </li>
+            <li>
+              <Link href="/industries/professional-services">Professional services</Link> 
+              firms targeting enterprise accounts
+            </li>
+            <li>
+              <Link href="/industries/manufacturing">Manufacturers</Link> 
+              with long sales cycles and high-value deals
+            </li>
+          </ul>
+          
+          <p>
+            If you're getting website traffic but struggling to convert 
+            visitors into leads, Cursive can help. Our platform identifies 
+            70% of anonymous visitors and automates personalized outreach 
+            to convert them into pipeline.
+          </p>
+        </section>
+        
+        <section className="faq">
+          <h2>Frequently Asked Questions</h2>
+          {faqs.map((faq, index) => (
+            <div key={index} className="faq-item">
+              <h3>{faq.question}</h3>
+              <p>{faq.answer}</p>
+            </div>
+          ))}
+          
+          <p>
+            Have more questions? Check out our <Link href="/blog">blog</Link> 
+            for in-depth guides on <Link href="/what-is-website-visitor-identification">
+            website visitor identification</Link>, <Link href="/what-is-b2b-intent-data">
+            B2B intent data</Link>, and <Link href="/what-is-ai-sdr">AI SDR automation</Link>.
+          </p>
+        </section>
+        
+        <section className="contact-form">
+          <h2>Send Us a Message</h2>
+          {/* Contact form component */}
+          <ContactForm />
+        </section>
+      </div>
+    </>
+  );
+}
+
+2. Data Access Page (app/data-access/page.tsx)
+Target: 500+ words explaining data sources
+
+export const metadata = {
+  title: 'Data Access & Sources | Cursive Visitor Identification',
+  description: 'Learn how Cursive accesses and processes visitor identification data. Transparent data sourcing, GDPR compliance, and privacy practices.',
+};
+
+export default function DataAccessPage() {
+  const breadcrumbs = [
+    { name: 'Home', href: '/' },
+    { name: 'Data Access', href: '/data-access' },
+  ];
+  
+  return (
+    <>
+      <OrganizationSchema />
+      <BreadcrumbSchema items={breadcrumbs} />
+      
+      <Breadcrumbs items={breadcrumbs} />
+      
+      <div className="data-access-page">
+        <h1>Data Access & Sources</h1>
+        
+        <section>
+          <h2>How Cursive Accesses Visitor Data</h2>
+          <p>
+            Cursive uses a combination of proprietary technology and licensed 
+            data sources to identify website visitors and enrich their profiles 
+            with contact information. Our approach is fully compliant with 
+            GDPR, CCPA, and other privacy regulations.
+          </p>
+        </section>
+        
+        <section>
+          <h2>Data Sources</h2>
+          
+          <h3>1. First-Party Behavioral Data</h3>
+          <p>
+            When you install the Cursive tracking pixel on your website, we 
+            collect first-party behavioral data including:
+          </p>
+          <ul>
+            <li>Pages visited and time spent on each page</li>
+            <li>Content interactions (downloads, video views, form submissions)</li>
+            <li>Referral source and campaign parameters</li>
+            <li>Device type, browser, and operating system</li>
+            <li>Geographic location (city/region level)</li>
+          </ul>
+          
+          <h3>2. IP Address Matching</h3>
+          <p>
+            We match visitor IP addresses against databases of known business 
+            IP ranges to identify company-level information. This includes:
+          </p>
+          <ul>
+            <li>Company name and domain</li>
+            <li>Company size and industry</li>
+            <li>Company location and headquarters</li>
+            <li>Technographic data (technologies used)</li>
+          </ul>
+          
+          <h3>3. Device Fingerprinting</h3>
+          <p>
+            Our advanced fingerprinting technology creates unique identifiers 
+            based on device characteristics, browser settings, and behavioral 
+            patterns. This allows us to:
+          </p>
+          <ul>
+            <li>Identify returning visitors across sessions</li>
+            <li>Match visitors to known profiles in our database</li>
+            <li>Improve identification accuracy over time</li>
+          </ul>
+          
+          <h3>4. Licensed B2B Data</h3>
+          <p>
+            We license contact data from reputable B2B data providers to 
+            enrich identified visitors with:
+          </p>
+          <ul>
+            <li>Personal and work email addresses</li>
+            <li>Direct phone numbers and mobile numbers</li>
+            <li>Job titles and seniority levels</li>
+            <li>LinkedIn profiles and social media</li>
+            <li>Company hierarchies and reporting structures</li>
+          </ul>
+          
+          <h3>5. Intent Data Signals</h3>
+          <p>
+            Through partnerships with intent data providers, we access signals 
+            indicating when prospects are actively researching solutions:
+          </p>
+          <ul>
+            <li>Content consumption across the web</li>
+            <li>Search behavior and keyword research</li>
+            <li>Competitor website visits</li>
+            <li>Review site activity</li>
+          </ul>
+        </section>
+        
+        <section>
+          <h2>Data Processing & Enrichment</h2>
+          <p>
+            When a visitor lands on your website, Cursive processes their data 
+            through multiple stages:
+          </p>
+          
+          <ol>
+            <li>
+              <strong>Initial Capture:</strong> Tracking pixel collects 
+              behavioral data and device signals
+            </li>
+            <li>
+              <strong>Identity Resolution:</strong> Our algorithms match 
+              signals against 250M+ business profiles
+            </li>
+            <li>
+              <strong>Data Enrichment:</strong> Identified visitors get 
+              enriched with contact information and firmographic data
+            </li>
+            <li>
+              <strong>Intent Scoring:</strong> Behavioral signals are analyzed 
+              to determine buying intent
+            </li>
+            <li>
+              <strong>Real-Time Delivery:</strong> Enriched profiles appear 
+              in your dashboard within seconds
+            </li>
+          </ol>
+        </section>
+        
+        <section>
+          <h2>Privacy & Compliance</h2>
+          
+          <h3>GDPR Compliance</h3>
+          <p>
+            Cursive is fully GDPR compliant. We only process data with valid 
+            legal bases (legitimate interest for B2B marketing) and provide:
+          </p>
+          <ul>
+            <li>Transparent data processing notices</li>
+            <li>Right to access and deletion requests</li>
+            <li>Data processing agreements (DPAs) for customers</li>
+            <li>Regular data protection impact assessments</li>
+          </ul>
+          
+          <h3>CCPA Compliance</h3>
+          <p>
+            We comply with California Consumer Privacy Act requirements by:
+          </p>
+          <ul>
+            <li>Disclosing data collection and usage practices</li>
+            <li>Honoring opt-out requests</li>
+            <li>Not selling personal information</li>
+            <li>Providing data access and deletion rights</li>
+          </ul>
+          
+          <h3>Opt-Out Mechanisms</h3>
+          <p>
+            Individuals can opt out of Cursive visitor identification through:
+          </p>
+          <ul>
+            <li>Browser Do Not Track settings</li>
+            <li>Our privacy center opt-out form</li>
+            <li>Direct email requests to privacy@meetcursive.com</li>
+          </ul>
+        </section>
+        
+        <section>
+          <h2>Data Accuracy & Quality</h2>
+          <p>
+            We maintain high data quality through:
+          </p>
+          <ul>
+            <li>
+              <strong>Regular Updates:</strong> Contact data is refreshed 
+              monthly to ensure accuracy
+            </li>
+            <li>
+              <strong>Validation:</strong> Email addresses and phone numbers 
+              are validated before delivery
+            </li>
+            <li>
+              <strong>Feedback Loops:</strong> Customer feedback helps us 
+              improve identification accuracy
+            </li>
+            <li>
+              <strong>Machine Learning:</strong> Our algorithms continuously 
+              learn to improve match rates
+            </li>
+          </ul>
+          
+          <p>
+            Current accuracy metrics:
+          </p>
+          <ul>
+            <li>70% visitor identification rate (person-level)</li>
+            <li>95%+ email deliverability</li>
+            <li>90%+ phone number accuracy</li>
+            <li>85%+ job title accuracy</li>
+          </ul>
+        </section>
+        
+        <section>
+          <h2>Data Security</h2>
+          <p>
+            Cursive employs enterprise-grade security measures:
+          </p>
+          <ul>
+            <li>SOC 2 Type II certified infrastructure</li>
+            <li>256-bit encryption for data at rest and in transit</li>
+            <li>Regular security audits and penetration testing</li>
+            <li>Role-based access controls</li>
+            <li>Automated backup and disaster recovery</li>
+          </ul>
+        </section>
+        
+        <section>
+          <h2>Questions About Data Access?</h2>
+          <p>
+            For questions about how Cursive accesses and processes data, 
+            contact our privacy team at privacy@meetcursive.com or reach out 
+            through our <Link href="/contact">contact page</Link>.
+          </p>
+          
+          <p>
+            Learn more about visitor identification in our guide: 
+            <Link href="/what-is-website-visitor-identification">
+            What is Website Visitor Identification?</Link>
+          </p>
+        </section>
+      </div>
+    </>
+  );
+}
+
+3. Remove Case Studies Page
+File: app/case-studies/page.tsx
+
+Action: Delete this file entirely (no real case studies exist yet)
+
+Update robots.txt:
+
+# Block case studies until real content exists
+Disallow: /case-studies
+
+Mark complete when: Contact page has 800+ words, Data Access page has 500+ words, case studies page is removed.
+
+PHASE 1 COMPLETION CHECKLIST
+Before moving to Phase 2, verify:
+
+ All pages render content in initial HTML (curl test passes)
+ Every page has 15+ internal links in HTML source
+ All pages have appropriate schema markup in <head>
+ robots.txt is live and accessible
+ Canonical redirects work (www → non-www)
+ Breadcrumbs appear on all pages except homepage
+ Contact page has 800+ words
+ Data Access page has 500+ words
+ Case studies page is removed
+Run full site verification:
+
+# Test 5 random pages
+for page in "/" "/platform" "/visitor-identification" "/blog/clearbit-reveal-alternative" "/pricing"; do
+  echo "Testing $page"
+  curl -s https://meetcursive.com$page | grep -c "<a href=" 
+  curl -s https://meetcursive.com$page | grep -c "application/ld+json"
+done
+
+All pages should return 15+ links and 2+ schema blocks.
+
+PHASE 2: EDUCATIONAL CONTENT CREATION
+Priority: FILL THE MASSIVE CONTENT GAP
+Goal: Create 7 comprehensive "What is X" pages optimized for AI citations
+
+TASK 2.1: Create "What is Website Visitor Identification" Page
+File: app/what-is-website-visitor-identification/page.tsx
+
+Target: 3,000+ words, optimized for AI citations
+
+Metadata:
+
+export const metadata = {
+  title: 'What is Website Visitor Identification? Complete Guide (2026)',
+  description: 'Website visitor identification reveals the identity of anonymous website visitors by matching IP addresses and behavioral signals against business databases. Learn how it works, accuracy rates, and implementation.',
+  openGraph: {
+    title: 'What is Website Visitor Identification? Complete Guide (2026)',
+    description: 'Learn how website visitor identification works, accuracy rates, legal compliance, and implementation best practices.',
+    type: 'article',
+  },
+};
+
+Content Structure:
+
+export default function WhatIsVisitorIdentificationPage() {
+  const faqs = [
+    {
+      question: 'What is website visitor identification?',
+      answer: 'Website visitor identification is a B2B marketing technology that reveals the identity of anonymous website visitors by matching their IP address, device fingerprint, and behavioral signals against databases of business and consumer profiles.'
+    },
+    {
+      question: 'How accurate is website visitor identification?',
+      answer: 'Advanced visitor identification platforms like Cursive achieve 60-70% match rates at the person level. Traditional reverse IP lookup tools only identify 30-40% of visitors at the company level.'
+    },
+    {
+      question: 'Is website visitor identification legal?',
+      answer: 'Yes, when implemented correctly. Visitor identification is legal under GDPR and CCPA when used for legitimate business interests in B2B contexts. Platforms must provide opt-out mechanisms and transparent privacy policies.'
+    },
+    {
+      question: 'How much does visitor identification cost?',
+      answer: 'Visitor identification platforms range from $139/month (basic company-level identification) to $1,000-5,000/month (person-level identification with enrichment and automation). Enterprise plans can exceed $10,000/month.'
+    },
+    {
+      question: 'What data do I get from visitor identification?',
+      answer: 'Basic tools provide company name and industry. Advanced platforms provide personal names, email addresses, phone numbers, job titles, LinkedIn profiles, company size, and behavioral data like pages viewed and time on site.'
+    },
+    {
+      question: 'Do visitors need to fill out a form?',
+      answer: 'No, visitor identification works without requiring form fills. It identifies visitors passively as they browse your website.'
+    },
+    {
+      question: 'How is this different from Google Analytics?',
+      answer: 'Google Analytics shows aggregate traffic data but doesn\'t reveal individual visitor identities. Visitor identification shows you exactly who visited (name, email, company) and what they did on your site.'
+    },
+    {
+      question: 'Can I identify B2C consumers?',
+      answer: 'Most visitor identification platforms focus on B2B and can only identify business visitors. Identifying individual consumers requires consent and is heavily regulated under privacy laws.'
+    },
+  ];
+  
+  const breadcrumbs = [
+    { name: 'Home', href: '/' },
+    { name: 'What is Website Visitor Identification', href: '/what-is-website-visitor-identification' },
+  ];
+  
+  return (
+    <>
+      {/* Schema */}
+      <OrganizationSchema />
+      <ArticleSchema 
+        title="What is Website Visitor Identification? Complete Guide (2026)"
+        description="Learn how website visitor identification works, accuracy rates, legal compliance, and implementation best practices."
+        publishedAt="2026-01-15"
+      />
+      <BreadcrumbSchema items={breadcrumbs} />
+      <FAQSchema faqs={faqs} />
+      
+      <Breadcrumbs items={breadcrumbs} />
+      
+      <article className="educational-content">
+        {/* Hero section with concise definition (40-70 words) */}
+        <section className="hero">
+          <h1>What is Website Visitor Identification?</h1>
+          <p className="text-xl font-medium leading-relaxed">
+            Website visitor identification is a B2B marketing technology that 
+            reveals the identity of anonymous website visitors by matching 
+            their IP address, device fingerprint, and behavioral signals 
+            against databases of business and consumer profiles. It enables 
+            companies to identify 50-70% of site visitors without requiring 
+            form fills, providing names, emails, job titles, and company 
+            information in real-time.
+          </p>
+        </section>
+        
+        {/* Table of Contents */}
+        <nav className="toc">
+          <h2>Table of Contents</h2>
+          <ul>
+            <li><a href="#how-it-works">How Website Visitor Identification Works</a></li>
+            <li><a href="#methods">Identification Methods</a></li>
+            <li><a href="#accuracy">Accuracy & Match Rates</a></li>
+            <li><a href="#data">What Data You Get</a></li>
+            <li><a href="#use-cases">Use Cases</a></li>
+            <li><a href="#legal">Legal & Compliance</a></li>
+            <li><a href="#implementation">Implementation Guide</a></li>
+            <li><a href="#comparison">Platform Comparison</a></li>
+            <li><a href="#faq">FAQ</a></li>
+          </ul>
+        </nav>
+        
+        {/* Main content sections */}
+        <section id="how-it-works">
+          <h2>How Website Visitor Identification Works</h2>
+          <p>
+            When someone visits your website, a visitor identification platform 
+            captures behavioral signals and technical data, then matches these 
+            signals against databases of known business and consumer profiles 
+            to reveal the visitor's identity.
+          </p>
+          
+          <h3>The Process Step-by-Step:</h3>
+          <ol>
+            <li>
+              <strong>Tracking Pixel Fires:</strong> When a visitor lands on 
+              your website, a lightweight JavaScript tracking pixel loads and 
+              begins collecting data. This pixel is typically 5-10 KB and 
+              loads asynchronously to avoid impacting page speed.
+            </li>
+            <li>
+              <strong>Data Collection:</strong> The pixel captures:
+              <ul>
+                <li>IP address (both IPv4 and IPv6)</li>
+                <li>Device characteristics (screen resolution, OS, browser)</li>
+                <li>Behavioral signals (pages viewed, time on site, interactions)</li>
+                <li>Referral source (how they found your site)</li>
+                <li>Geographic location (city/region level)</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Digital Fingerprint Created:</strong> The platform 
+              creates a unique digital fingerprint by combining IP address, 
+              device characteristics, browser settings, and behavioral patterns. 
+              This fingerprint helps identify returning visitors across sessions.
+            </li>
+            <li>
+              <strong>Database Matching:</strong> The fingerprint is matched 
+              against databases containing:
+              <ul>
+                <li>250M+ business professional profiles</li>
+                <li>100M+ company records</li>
+                <li>Known IP ranges for businesses</li>
+                <li>Historical visitor patterns</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Identity Resolution:</strong> Machine learning algorithms 
+              analyze matches and assign confidence scores. High-confidence 
+              matches (85%+) are surfaced immediately.
+            </li>
+            <li>
+              <strong>Data Enrichment:</strong> Once identified, the visitor's 
+              profile is enriched with additional data from B2B databases:
+              <ul>
+                <li>Personal and work email addresses</li>
+                <li>Direct phone numbers</li>
+                <li>Job title and seniority</li>
+                <li>LinkedIn profile</li>
+                <li>Company information</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Real-Time Delivery:</strong> The enriched profile appears 
+              in your dashboard within 1-5 seconds of the visitor landing on 
+              your site.
+            </li>
+          </ol>
+        </section>
+        
+        <section id="methods">
+          <h2>Visitor Identification Methods</h2>
+          <p>
+            Different platforms use different identification methods, each with 
+            varying accuracy rates and data quality:
+          </p>
+          
+          <h3>1. Reverse IP Lookup (Traditional Method)</h3>
+          <p>
+            The oldest and most basic method matches visitor IP addresses 
+            against known business IP ranges.
+          </p>
+          <ul>
+            <li><strong>Match Rate:</strong> 30-40% (company-level only)</li>
+            <li><strong>Data Quality:</strong> Company name, industry, size</li>
+            <li><strong>Pros:</strong> Simple, reliable for large companies</li>
+            <li><strong>Cons:</strong> No person-level data, misses remote workers</li>
+          </ul>
+          <p>
+            <strong>Tools using this method:</strong> Leadfeeder, Albacross, 
+            Visitor Queue
+          </p>
+          
+          <h3>2. Advanced Device Fingerprinting</h3>
+          <p>
+            Modern platforms combine IP matching with device fingerprinting 
+            and behavioral analysis to achieve person-level identification.
+          </p>
+          <ul>
+            <li><strong>Match Rate:</strong> 60-70% (person-level)</li>
+            <li><strong>Data Quality:</strong> Name, email, phone, job title</li>
+            <li><strong>Pros:</strong> Person-level data, works for remote workers</li>
+            <li><strong>Cons:</strong> More complex, higher cost</li>
+          </ul>
+          <p>
+            <strong>Tools using this method:</strong> Cursive, Warmly, RB2B
+          </p>
+          
+          <h3>3. Cookie-Based Tracking</h3>
+          <p>
+            Uses first-party cookies to track returning visitors across sessions.
+          </p>
+          <ul>
+            <li><strong>Match Rate:</strong> Varies (only returning visitors)</li>
+            <li><strong>Data Quality:</strong> Depends on initial identification</li>
+            <li><strong>Pros:</strong> Tracks behavior over time</li>
+            <li><strong>Cons:</strong> Doesn't identify first-time visitors</li>
+          </ul>
+          
+          <h3>4. Form-Based Identification</h3>
+          <p>
+            Traditional method requiring visitors to fill out forms.
+          </p>
+          <ul>
+            <li><strong>Match Rate:</strong> 2-5% (only form submitters)</li>
+            <li><strong>Data Quality:</strong> Self-reported (high quality)</li>
+            <li><strong>Pros:</strong> 100% accurate, explicit consent</li>
+            <li><strong>Cons:</strong> Misses 95-98% of visitors</li>
+          </ul>
+          
+          {/* Comparison table for AI citations */}
+          <h3>Method Comparison Table</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Match Rate</th>
+                <th>Data Level</th>
+                <th>Speed</th>
+                <th>Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Reverse IP Lookup</td>
+                <td>30-40%</td>
+                <td>Company-level</td>
+                <td>Real-time</td>
+                <td>$</td>
+              </tr>
+              <tr>
+                <td>Advanced Fingerprinting</td>
+                <td>60-70%</td>
+                <td>Person-level</td>
+                <td>Real-time</td>
+                <td>$$$</td>
+              </tr>
+              <tr>
+                <td>Cookie Tracking</td>
+                <td>Varies</td>
+                <td>Person-level</td>
+                <td>Real-time</td>
+                <td>$$</td>
+              </tr>
+              <tr>
+                <td>Form Submissions</td>
+                <td>2-5%</td>
+                <td>Self-reported</td>
+                <td>Immediate</td>
+                <td>Free</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        
+        <section id="accuracy">
+          <h2>Accuracy & Match Rates</h2>
+          <p>
+            Understanding accuracy is critical when evaluating visitor 
+            identification platforms.
+          </p>
+          
+          <h3>Industry Benchmarks (2026)</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Platform Type</th>
+                <th>Match Rate</th>
+                <th>Accuracy</th>
+                <th>Data Level</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Basic IP Lookup</td>
+                <td>30-40%</td>
+                <td>85-90%</td>
+                <td>Company-level</td>
+              </tr>
+              <tr>
+                <td>Advanced Platforms</td>
+                <td>60-70%</td>
+                <td>80-85%</td>
+                <td>Person-level</td>
+              </tr>
+              <tr>
+                <td>Enterprise Solutions</td>
+                <td>70-80%</td>
+                <td>90-95%</td>
+                <td>Person-level + intent</td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <h3>What Affects Match Rates?</h3>
+          <ul>
+            <li>
+              <strong>Traffic Source:</strong> Corporate office visitors 
+              (80%+ match rate) vs. remote workers (50-60% match rate)
+            </li>
+            <li>
+              <strong>Geography:</strong> US/UK traffic (70%+ match rate) vs. 
+              developing markets (40-50% match rate)
+            </li>
+            <li>
+              <strong>Company Size:</strong> Enterprise companies (85%+ match rate) 
+              vs. SMBs (60% match rate)
+            </li>
+            <li>
+              <strong>VPN Usage:</strong> VPN users are harder to identify 
+              (30-40% match rate)
+            </li>
+            <li>
+              <strong>Mobile vs. Desktop:</strong> Desktop traffic (70% match rate) 
+              vs. mobile (50% match rate)
+            </li>
+          </ul>
+          
+          <h3>Improving Match Rates</h3>
+          <p>You can improve identification accuracy by:</p>
+          <ol>
+            <li>Installing tracking on all pages (not just homepage)</li>
+            <li>Tracking visitors across multiple sessions</li>
+            <li>Combining visitor ID with form data</li>
+            <li>Using intent data signals</li>
+            <li>Implementing progressive profiling</li>
+          </ol>
+        </section>
+        
+        <section id="data">
+          <h2>What Data Do You Get?</h2>
+          <p>
+            The data you receive depends on the platform and identification 
+            method:
+          </p>
+          
+          <h3>Company-Level Data (Basic Platforms)</h3>
+          <ul>
+            <li>Company name</li>
+            <li>Company website</li>
+            <li>Industry/sector</li>
+            <li>Company size (employee count)</li>
+            <li>Annual revenue</li>
+            <li>Company location/headquarters</li>
+            <li>Technologies used (technographics)</li>
+          </ul>
+          
+          <h3>Person-Level Data (Advanced Platforms)</h3>
+          <ul>
+            <li>Full name (first and last)</li>
+            <li>Personal email address</li>
+            <li>Work email address</li>
+            <li>Direct phone number</li>
+            <li>Mobile phone number</li>
+            <li>Job title</li>
+            <li>Seniority level</li>
+            <li>Department</li>
+            <li>LinkedIn profile URL</li>
+            <li>Twitter/social profiles</li>
+          </ul>
+          
+          <h3>Behavioral Data (All Platforms)</h3>
+          <ul>
+            <li>Pages viewed</li>
+            <li>Time spent on site</li>
+            <li>Content downloaded</li>
+            <li>Videos watched</li>
+            <li>Forms submitted</li>
+            <li>Referral source</li>
+            <li>Campaign parameters</li>
+            <li>Device type</li>
+            <li>Geographic location</li>
+          </ul>
+          
+          <h3>Intent Signals (Premium Platforms)</h3>
+          <ul>
+            <li>Topics researched across the web</li>
+            <li>Competitor websites visited</li>
+            <li>Review sites checked</li>
+            <li>Search keywords used</li>
+            <li>Content consumption patterns</li>
+            <li>Buying stage indicators</li>
+          </ul>
+        </section>
+        
+        <section id="use-cases">
+          <h2>Use Cases for Website Visitor Identification</h2>
+          
+          <h3>1. B2B Lead Generation</h3>
+          <p>
+            Identify high-intent prospects researching your product and reach 
+            out before they contact competitors.
+          </p>
+          <ul>
+            <li>
+              <strong>Example:</strong> SaaS company identifies 150 visitors/month 
+              from target accounts, converts 12% into demos = 18 demos/month
+            </li>
+            <li>
+              <strong>ROI:</strong> At $5,000 ACV and 25% close rate, generates 
+              $22,500 MRR from previously anonymous traffic
+            </li>
+          </ul>
+          
+          <h3>2. Account-Based Marketing (ABM)</h3>
+          <p>
+            Track engagement from target accounts and trigger personalized 
+            campaigns when they visit your site.
+          </p>
+          <ul>
+            <li>Know when target accounts are researching solutions</li>
+            <li>See which stakeholders are engaged</li>
+            <li>Coordinate sales and marketing outreach</li>
+          </ul>
+          
+          <h3>3. Sales Intelligence</h3>
+          <p>
+            Give sales reps real-time alerts when prospects visit your website.
+          </p>
+          <ul>
+            <li>
+              <Link href="/integrations/slack">Slack notifications</Link> when 
+              hot leads visit pricing page
+            </li>
+            <li>Context for sales calls (pages viewed, content consumed)</li>
+            <li>Warm outreach based on demonstrated interest</li>
+          </ul>
+          
+          <h3>4. Retargeting & Remarketing</h3>
+          <p>
+            Build custom audiences for ad platforms based on website behavior.
+          </p>
+          <ul>
+            <li>Email campaigns to visitors who viewed specific pages</li>
+            <li>LinkedIn ads to decision-makers from target accounts</li>
+            <li>Direct mail to high-intent prospects</li>
+          </ul>
+          
+          <h3>5. Content Personalization</h3>
+          <p>
+            Customize website content based on visitor company and industry.
+          </p>
+          <ul>
+            <li>Show industry-specific case studies</li>
+            <li>Display relevant product features</li>
+            <li>Personalize CTAs and offers</li>
+          </ul>
+          
+          <h3>6. Pipeline Attribution</h3>
+          <p>
+            Track which marketing channels drive website visitors that convert 
+            to customers.
+          </p>
+          <ul>
+            <li>See full visitor journey before conversion</li>
+            <li>Attribute revenue to marketing touchpoints</li>
+            <li>Optimize spend based on visitor quality</li>
+          </ul>
+        </section>
+        
+        <section id="legal">
+          <h2>Legal & Compliance Considerations</h2>
+          
+          <h3>GDPR Compliance (Europe)</h3>
+          <p>
+            Under GDPR, visitor identification is legal when:
+          </p>
+          <ul>
+            <li>
+              <strong>Legitimate Interest:</strong> B2B marketing to business 
+              contacts is considered legitimate interest
+            </li>
+            <li>
+              <strong>Transparency:</strong> Privacy policy discloses data 
+              collection practices
+            </li>
+            <li>
+              <strong>Opt-Out:</strong> Visitors can opt out of identification
+            </li>
+            <li>
+              <strong>Data Minimization:</strong> Only collect necessary data
+            </li>
+          </ul>
+          
+          <h3>CCPA Compliance (California)</h3>
+          <p>
+            CCPA requires:
+          </p>
+          <ul>
+            <li>Disclosure of data collection in privacy policy</li>
+            <li>"Do Not Sell My Personal Information" link</li>
+            <li>Honor opt-out requests within 15 days</li>
+            <li>Provide data access upon request</li>
+          </ul>
+          
+          <h3>Best Practices for Compliance</h3>
+          <ol>
+            <li>
+              <strong>Update Privacy Policy:</strong> Clearly disclose visitor 
+              identification and data sources
+            </li>
+            <li>
+              <strong>Cookie Banner:</strong> Inform visitors about tracking 
+              (though not legally required for B2B in most jurisdictions)
+            </li>
+            <li>
+              <strong>Opt-Out Form:</strong> Provide easy way for individuals 
+              to opt out
+            </li>
+            <li>
+              <strong>Data Processing Agreement:</strong> Sign DPA with your 
+              visitor identification vendor
+            </li>
+            <li>
+              <strong>Regular Audits:</strong> Review data practices quarterly
+            </li>
+          </ol>
+          
+          <h3>B2B vs. B2C Considerations</h3>
+          <p>
+            Visitor identification is primarily designed for B2B contexts:
+          </p>
+          <ul>
+            <li>
+              <strong>B2B:</strong> Generally legal under "legitimate interest" 
+              for business development
+            </li>
+            <li>
+              <strong>B2C:</strong> Requires explicit consent in most jurisdictions, 
+              making it impractical
+            </li>
+          </ul>
+        </section>
+        
+        <section id="implementation">
+          <h2>Implementation Guide</h2>
+          
+          <h3>Step 1: Choose a Platform</h3>
+          <p>
+            Evaluate platforms based on:
+          </p>
+          <ul>
+            <li>Match rate (60%+ recommended)</li>
+            <li>Data level (person vs. company)</li>
+            <li>Integrations with your CRM</li>
+            <li>Pricing and contract terms</li>
+            <li>Support and training</li>
+          </ul>
+          
+          <h3>Step 2: Install Tracking Pixel</h3>
+          <p>
+            Most platforms provide a JavaScript snippet to add to your website:
+          </p>
+          <pre><code>{`<script>
+  (function(w,d,s,l,i){
+    w[l]=w[l]||[];
+    w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
+    var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
+    j.async=true;
+    j.src='https://platform.example.com/pixel.js?id='+i+dl;
+    f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','YOUR-ID');
+</script>`}</code></pre>
+          
+          <h3>Step 3: Connect Integrations</h3>
+          <p>
+            Connect your CRM and marketing tools:
+          </p>
+          <ul>
+            <li>
+              <Link href="/integrations/salesforce">Salesforce</Link> - 
+              Sync identified visitors to leads/contacts
+            </li>
+            <li>
+              <Link href="/integrations/hubspot">HubSpot</Link> - 
+              Create contacts and trigger workflows
+            </li>
+            <li>
+              <Link href="/integrations/slack">Slack</Link> - 
+              Get real-time notifications
+            </li>
+          </ul>
+          
+          <h3>Step 4: Set Up Workflows</h3>
+          <p>
+            Configure automated actions:
+          </p>
+          <ul>
+            <li>Email campaigns to high-intent visitors</li>
+            <li>Slack alerts for target accounts</li>
+            <li>CRM task creation for sales follow-up</li>
+            <li>Retargeting audiences for ad platforms</li>
+          </ul>
+          
+          <h3>Step 5: Train Your Team</h3>
+          <p>
+            Ensure sales and marketing teams know how to:
+          </p>
+          <ul>
+            <li>Access visitor data in the platform</li>
+            <li>Interpret behavioral signals</li>
+            <li>Prioritize outreach based on intent</li>
+            <li>Personalize messaging using visitor context</li>
+          </ul>
+          
+          <h3>Step 6: Measure & Optimize</h3>
+          <p>
+            Track key metrics:
+          </p>
+          <ul>
+            <li>Identification rate (% of visitors identified)</li>
+            <li>Data accuracy (email deliverability, phone accuracy)</li>
+            <li>Conversion rate (visitors to leads to customers)</li>
+            <li>ROI (revenue attributed to identified visitors)</li>
+          </ul>
+        </section>
+        
+        <section id="comparison">
+          <h2>Platform Comparison</h2>
+          <p>
+            Compare leading website visitor identification platforms:
+          </p>
+          
+          <table>
+            <thead>
+              <tr>
+                <th>Platform</th>
+                <th>Match Rate</th>
+                <th>Data Level</th>
+                <th>Starting Price</th>
+                <th>Best For</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><Link href="/platform">Cursive</Link></td>
+                <td>70%</td>
+                <td>Person-level</td>
+                <td>$1,000/mo</td>
+                <td>Full-stack lead generation</td>
+              </tr>
+              <tr>
+                <td><Link href="/blog/warmly-vs-cursive">Warmly</Link></td>
+                <td>40-50%</td>
+                <td>Person-level</td>
+                <td>$700/mo</td>
+                <td>Sales intelligence</td>
+              </tr>
+              <tr>
+                <td><Link href="/blog/clearbit-reveal-alternative">Clearbit</Link></td>
+                <td>N/A (shut down)</td>
+                <td>Company-level</td>
+                <td>N/A</td>
+                <td>N/A</td>
+              </tr>
+              <tr>
+                <td>Leadfeeder</td>
+                <td>30-40%</td>
+                <td>Company-level</td>
+                <td>$139/mo</td>
+                <td>Basic company identification</td>
+              </tr>
+              <tr>
+                <td>RB2B</td>
+                <td>50-60%</td>
+                <td>Person-level</td>
+                <td>$500/mo</td>
+                <td>Affordable person-level ID</td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <p>
+            See detailed comparisons:
+          </p>
+          <ul>
+            <li><Link href="/blog/clearbit-reveal-alternative">Best Clearbit Alternatives</Link></li>
+            <li><Link href="/blog/warmly-vs-cursive">Warmly vs Cursive</Link></li>
+            <li><Link href="/blog/apollo-vs-cursive">Apollo vs Cursive</Link></li>
+          </ul>
+        </section>
+        
+        <section id="faq" className="faq">
+          <h2>Frequently Asked Questions</h2>
+          {faqs.map((faq, index) => (
+            <div key={index} className="faq-item">
+              <h3>{faq.question}</h3>
+              <p>{faq.answer}</p>
+            </div>
+          ))}
+        </section>
+        
+        <section className="related-content">
+          <h2>Related Resources</h2>
+          <ul>
+            <li><Link href="/what-is-b2b-intent-data">What is B2B Intent Data?</Link></li>
+            <li><Link href="/what-is-ai-sdr">What is an AI SDR?</Link></li>
+            <li><Link href="/visitor-identification">Cursive Visitor Identification</Link></li>
+            <li><Link href="/blog">More Guides & Tutorials</Link></li>
+          </ul>
+        </section>
+        
+        <section className="cta">
+          <h2>Ready to Identify Your Website Visitors?</h2>
+          <p>
+            Get a free AI audit showing exactly which companies visited your 
+            website in the last 30 days—with names, emails, and phone numbers.
+          </p>
+          <Link href="/free-audit" className="cta-button">
+            Get Your Free AI Audit
+          </Link>
+        </section>
+      </article>
+    </>
+  );
+}
+
+Verification for Task 2.1:
+
+curl -s https://meetcursive.com/what-is-website-visitor-identification | html2text | wc -w
+
+Should return 3,000+ words.
+
+Mark complete when: Page is live with 3,000+ words, all schema, and internal links.
+
+TASK 2.2-2.7: Create Remaining "What is X" Pages
+Follow the same pattern as Task 2.1 for these pages:
+
+/what-is-b2b-intent-data (3,000+ words)
+/what-is-ai-sdr (3,000+ words)
+/what-is-lead-enrichment (2,500+ words)
+/what-is-direct-mail-automation (2,500+ words)
+/what-is-visitor-deanonymization (2,500+ words)
+/what-is-account-based-marketing (3,000+ words)
+Content Structure Template for All:
+
+Hero with 40-70 word definition
+Table of contents
+"How it works" section with step-by-step
+Methods/approaches comparison table
+Accuracy/benchmarks with data tables
+Use cases (3-5 examples)
+Legal/compliance section
+Implementation guide
+Platform comparison table
+FAQ section (8-10 questions) with FAQPage schema
+Related resources
+CTA
+Each page must have:
+
+OrganizationSchema
+ArticleSchema
+BreadcrumbSchema
+FAQSchema
+5-10 internal links to product pages
+3-5 internal links to related educational content
+2-3 internal links to comparison blog posts
+Data tables (for AI citations)
+Specific statistics and benchmarks
+Mark complete when: All 7 "What is X" pages are live with 2,500-3,000+ words each.
+
+PHASE 3: COMPETITOR COMPARISON CONTENT
+Priority: CAPTURE HIGH-INTENT COMPARISON TRAFFIC
+Goal: Create 12 comprehensive competitor comparison blog posts
+
+TASK 3.1: Create "RB2B Alternative" Post
+File: app/blog/rb2b-alternative/page.tsx
+
+Target: 3,500+ words
+
+Metadata:
+
+export const metadata = {
+  title: 'Best RB2B Alternatives: 7 Website Visitor ID Tools Compared (2026)',
+  description: 'Looking for RB2B alternatives? Compare the top website visitor identification platforms including Cursive, Warmly, and Leadfeeder. See pricing, match rates, and features.',
+  openGraph: {
+    title: 'Best RB2B Alternatives: 7 Tools Compared (2026)',
+    description: 'Compare RB2B alternatives with detailed pricing, match rates, and feature breakdowns.',
+    type: 'article',
+  },
+};
+
+Content Structure:
+
+export default function RB2BAlternativePage() {
+  const faqs = [
+    {
+      question: 'What is the best RB2B alternative?',
+      answer: 'Cursive is the best RB2B alternative for companies that want higher match rates (70% vs 50-60%), AI-powered outreach automation, and multi-channel campaigns. Cursive starts at $1,000/month and includes visitor identification, AI SDR, intent data, and direct mail automation.'
+    },
+    {
+      question: 'Why look for RB2B alternatives?',
+      answer: 'Companies look for RB2B alternatives due to: lower match rates (50-60% vs 70% with Cursive), limited outreach automation, no multi-channel support, and lack of intent data signals. Many also want more comprehensive platforms that handle the full lead generation workflow.'
+    },
+    {
+      question: 'How much does RB2B cost?',
+      answer: 'RB2B starts at $500/month for basic visitor identification. However, you need to add separate tools for email outreach, LinkedIn automation, and CRM enrichment, which can push total costs to $1,500-2,000/month.'
+    },
+    {
+      question: 'What is the difference between RB2B and Cursive?',
+      answer: 'Cursive offers 70% match rates vs RB2B 50-60%, includes AI-powered outreach automation, supports multi-channel campaigns (email, LinkedIn, SMS, direct mail), provides intent data signals, and handles the full lead generation workflow in one platform.'
+    },
+    {
+      question: 'Can I use RB2B for free?',
+      answer: 'RB2B offers a limited free tier with basic company-level identification. For person-level data with emails and phone numbers, you need a paid plan starting at $500/month.'
+    },
+  ];
+  
+  const breadcrumbs = [
+    { name: 'Home', href: '/' },
+    { name: 'Blog', href: '/blog' },
+    { name: 'RB2B Alternatives', href: '/blog/rb2b-alternative' },
+  ];
+  
+  return (
+    <>
+      {/* Schema */}
+      <OrganizationSchema />
+      <ArticleSchema 
+        title="Best RB2B Alternatives: 7 Website Visitor ID Tools Compared (2026)"
+        description="Compare the top RB2B alternatives including Cursive, Warmly, and Leadfeeder. See pricing, match rates, and features."
+        publishedAt="2026-01-20"
+      />
+      <BreadcrumbSchema items={breadcrumbs} />
+      <FAQSchema faqs={faqs} />
+      
+      <Breadcrumbs items={breadcrumbs} />
+      
+      <article className="comparison-post">
+        <header>
+          <h1>Best RB2B Alternatives: 7 Website Visitor ID Tools Compared (2026)</h1>
+          <p className="text-xl">
+            RB2B is a popular website visitor identification tool, but it's 
+            not the only option. If you're looking for higher match rates, 
+            AI-powered outreach, or multi-channel automation, these 7 RB2B 
+            alternatives might be a better fit.
+          </p>
+        </header>
+        
+        {/* Quick comparison table */}
+        <section className="quick-comparison">
+          <h2>Quick Comparison Table</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Tool</th>
+                <th>Best For</th>
+                <th>Match Rate</th>
+                <th>Starting Price</th>
+                <th>Key Feature</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Cursive</strong></td>
+                <td>Full-stack outbound</td>
+                <td>70%</td>
+                <td>$1,000/mo</td>
+                <td>Visitor ID + AI SDR + Direct Mail</td>
+              </tr>
+              <tr>
+                <td>RB2B</td>
+                <td>Affordable person-level ID</td>
+                <td>50-60%</td>
+                <td>$500/mo</td>
+                <td>Person-level identification</td>
+              </tr>
+              <tr>
+                <td>Warmly</td>
+                <td>Sales intelligence</td>
+                <td>40-50%</td>
+                <td>$700/mo</td>
+                <td>Real-time sales alerts</td>
+              </tr>
+              <tr>
+                <td>Leadfeeder</td>
+                <td>Basic company ID</td>
+                <td>30-40%</td>
+                <td>$139/mo</td>
+                <td>Company-level tracking</td>
+              </tr>
+              <tr>
+                <td>Clearbit</td>
+                <td>N/A (shut down)</td>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td>N/A</td>
+              </tr>
+              <tr>
+                <td>VisitorQueue</td>
+                <td>Budget option</td>
+                <td>25-35%</td>
+                <td>$49/mo</td>
+                <td>Low-cost company ID</td>
+              </tr>
+              <tr>
+                <td>Albacross</td>
+                <td>Enterprise ABM</td>
+                <td>35-45%</td>
+                <td>Custom</td>
+                <td>ABM platform integration</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        
+        {/* Why look for alternatives */}
+        <section>
+          <h2>Why Look for RB2B Alternatives?</h2>
+          <p>
+            RB2B is a solid visitor identification tool, but it has limitations 
+            that drive companies to seek alternatives:
+          </p>
+          
+          <h3>1. Lower Match Rates</h3>
+          <p>
+            RB2B identifies 50-60% of visitors at the person level. While this 
+            is better than basic IP lookup tools (30-40%), it's lower than 
+            advanced platforms like <Link href="/platform">Cursive (70%)</Link>.
+          </p>
+          <p>
+            <strong>Impact:</strong> If you get 10,000 monthly visitors, RB2B 
+            identifies 5,000-6,000. Cursive identifies 7,000, giving you 1,000-2,000 
+            more leads per month.
+          </p>
+          
+          <h3>2. Limited Outreach Automation</h3>
+          <p>
+            RB2B focuses on identification but doesn't include built-in outreach 
+            automation. You need to:
+          </p>
+          <ul>
+            <li>Export data to separate email tools (Instantly, Smartlead)</li>
+            <li>Use different tools for LinkedIn automation</li>
+            <li>Manually coordinate multi-channel campaigns</li>
+          </ul>
+          <p>
+            <strong>Alternative:</strong> <Link href="/platform">Cursive includes 
+            AI-powered outreach</Link> across email, LinkedIn, SMS, and direct 
+            mail in one platform.
+          </p>
+          
+          <h3>3. No Intent Data</h3>
+          <p>
+            RB2B shows you who visited your site, but not what they're researching 
+            across the rest of the web. This means you miss signals like:
+          </p>
+          <ul>
+            <li>Competitor website visits</li>
+            <li>Review site activity</li>
+            <li>Industry content consumption</li>
+            <li>Search behavior</li>
+          </ul>
+          <p>
+            <strong>Alternative:</strong> <Link href="/intent-audiences">Cursive 
+            includes B2B intent data</Link> to know exactly when prospects are 
+            in-market.
+          </p>
+          
+          <h3>4. Single-Channel Focus</h3>
+          <p>
+            RB2B helps you identify visitors, but you're on your own for:
+          </p>
+          <ul>
+            <li>Email outreach</li>
+            <li>LinkedIn messaging</li>
+            <li>SMS campaigns</li>
+            <li>Direct mail</li>
+          </ul>
+          <p>
+            <strong>Impact:</strong> Multi-channel outreach converts 3-5x better 
+            than email-only campaigns, but requires juggling 4-5 separate tools.
+          </p>
+          
+          <h3>5. Pricing for Full Stack</h3>
+          <p>
+            RB2B starts at $500/month, but to match Cursive's capabilities you need:
+          </p>
+          <ul>
+            <li>RB2B: $500/month (visitor identification)</li>
+            <li>Instantly: $297/month (email outreach)</li>
+            <li>Expandi: $99/month (LinkedIn automation)</li>
+            <li>Clay: $349/month (data enrichment)</li>
+            <li><strong>Total: $1,245/month for 4 tools</strong></li>
+          </ul>
+          <p>
+            <strong>Alternative:</strong> Cursive includes all of this in one 
+            platform for $1,000/month.
+          </p>
+        </section>
+        
+        {/* Top alternatives */}
+        <section>
+          <h2>Top 7 RB2B Alternatives</h2>
+          
+          <h3>1. Cursive (Best Overall)</h3>
+          <p>
+            <Link href="/platform">Cursive</Link> is a full-stack B2B lead 
+            generation platform that identifies 70% of website visitors and 
+            automates personalized outreach across email, LinkedIn, SMS, and 
+            direct mail.
+          </p>
+          
+          <h4>Key Features:</h4>
+          <ul>
+            <li>
+              <strong>70% Match Rate:</strong> Highest person-level identification 
+              in the industry
+            </li>
+            <li>
+              <strong>AI-Powered Outreach:</strong> Our <Link href="/what-is-ai-sdr">
+              AI SDR</Link> writes personalized emails, LinkedIn messages, and 
+              SMS campaigns
+            </li>
+            <li>
+              <strong>Multi-Channel Automation:</strong> Reach prospects via 
+              email, LinkedIn, SMS, and <Link href="/direct-mail">direct mail</Link>
+            </li>
+            <li>
+              <strong>Intent Data:</strong> Know when prospects are researching 
+              solutions across the web
+            </li>
+            <li>
+              <strong>Audience Builder:</strong> Segment visitors by behavior, 
+              company, and intent signals
+            </li>
+            <li>
+              <strong>CRM Integration:</strong> Native integrations with 
+              <Link href="/integrations/salesforce">Salesforce</Link>, 
+              <Link href="/integrations/hubspot">HubSpot</Link>, and 200+ tools
+            </li>
+          </ul>
+          
+          <h4>Pricing:</h4>
+          <ul>
+            <li>Starter: $1,000/month</li>
+            <li>Growth: $2,500/month</li>
+            <li>Enterprise: Custom pricing</li>
+          </ul>
+          
+          <h4>Best For:</h4>
+          <p>
+            B2B companies that want the highest match rates and need a complete 
+            lead generation platform—not just visitor identification.
+          </p>
+          
+          <h4>Pros:</h4>
+          <ul>
+            <li>Highest match rates (70% vs RB2B 50-60%)</li>
+            <li>All-in-one platform (no tool juggling)</li>
+            <li>AI-powered outreach included</li>
+            <li>Multi-channel campaigns</li>
+            <li>Intent data signals</li>
+          </ul>
+          
+          <h4>Cons:</h4>
+          <ul>
+            <li>Higher starting price than RB2B</li>
+            <li>More features = steeper learning curve</li>
+          </ul>
+          
+          <Link href="/free-audit" className="cta-button">
+            Try Cursive Free
+          </Link>
+          
+          {/* Continue with alternatives 2-7 following same pattern */}
+          
+          <h3>2. Warmly</h3>
+          {/* Full review */}
+          
+          <h3>3. Leadfeeder</h3>
+          {/* Full review */}
+          
+          <h3>4. Clearbit (Shut Down)</h3>
+          {/* Mention shutdown, link to alternatives post */}
+          
+          <h3>5. VisitorQueue</h3>
+          {/* Full review */}
+          
+          <h3>6. Albacross</h3>
+          {/* Full review */}
+          
+          <h3>7. Koala</h3>
+          {/* Full review */}
+        </section>
+        
+        {/* Feature comparison matrix */}
+        <section>
+          <h2>Feature Comparison Matrix</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Cursive</th>
+                <th>RB2B</th>
+                <th>Warmly</th>
+                <th>Leadfeeder</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Match Rate</td>
+                <td>70%</td>
+                <td>50-60%</td>
+                <td>40-50%</td>
+                <td>30-40%</td>
+              </tr>
+              <tr>
+                <td>Person-Level Data</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td>✗</td>
+              </tr>
+              <tr>
+                <td>AI-Powered Outreach</td>
+                <td>✓</td>
+                <td>✗</td>
+                <td>✗</td>
+                <td>✗</td>
+              </tr>
+              <tr>
+                <td>Multi-Channel Campaigns</td>
+                <td>✓</td>
+                <td>✗</td>
+                <td>✗</td>
+                <td>✗</td>
+              </tr>
+              <tr>
+                <td>Intent Data</td>
+                <td>✓</td>
+                <td>✗</td>
+                <td>✗</td>
+                <td>✗</td>
+              </tr>
+              <tr>
+                <td>Direct Mail</td>
+                <td>✓</td>
+                <td>✗</td>
+                <td>✗</td>
+                <td>✗</td>
+              </tr>
+              <tr>
+                <td>CRM Integration</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td>✓</td>
+              </tr>
+              <tr>
+                <td>Starting Price</td>
+                <td>$1,000/mo</td>
+                <td>$500/mo</td>
+                <td>$700/mo</td>
+                <td>$139/mo</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        
+        {/* Pricing comparison */}
+        <section>
+          <h2>Pricing Comparison</h2>
+          {/* Detailed pricing breakdown */}
+        </section>
+        
+        {/* Migration guide */}
+        <section>
+          <h2>How to Switch from RB2B to Cursive</h2>
+          <ol>
+            <li>
+              <strong>Sign up for Cursive:</strong> <Link href="/free-audit">
+              Get your free AI audit</Link> to see what Cursive can identify
+            </li>
+            <li>
+              <strong>Install tracking pixel:</strong> Add Cursive pixel to 
+              your website (takes 2 minutes)
+            </li>
+            <li>
+              <strong>Run both in parallel:</strong> Keep RB2B running while 
+              you test Cursive for 7-14 days
+            </li>
+            <li>
+              <strong>Compare results:</strong> Check match rates, data quality, 
+              and ease of use
+            </li>
+            <li>
+              <strong>Migrate workflows:</strong> Set up outreach campaigns in 
+              Cursive
+            </li>
+            <li>
+              <strong>Cancel RB2B:</strong> Once you're satisfied with Cursive, 
+              cancel your RB2B subscription
+            </li>
+          </ol>
+        </section>
+        
+        {/* FAQ */}
+        <section className="faq">
+          <h2>Frequently Asked Questions</h2>
+          {faqs.map((faq, index) => (
+            <div key={index} className="faq-item">
+              <h3>{faq.question}</h3>
+              <p>{faq.answer}</p>
+            </div>
+          ))}
+        </section>
+        
+        {/* Related posts */}
+        <section>
+          <h2>Related Comparisons</h2>
+          <ul>
+            <li><Link href="/blog/clearbit-reveal-alternative">Best Clearbit Alternatives</Link></li>
+            <li><Link href="/blog/warmly-vs-cursive">Warmly vs Cursive</Link></li>
+            <li><Link href="/blog/cursive-vs-rb2b">Cursive vs RB2B</Link></li>
+            <li><Link href="/what-is-website-visitor-identification">What is Website Visitor Identification?</Link></li>
+          </ul>
+        </section>
+        
+        {/* Final CTA */}
+        <section className="cta">
+          <h2>Ready to Try the Best RB2B Alternative?</h2>
+          <p>
+            Get a free AI audit showing exactly which companies visited your 
+            website in the last 30 days—with 70% match rates and person-level data.
+          </p>
+          <Link href="/free-audit" className="cta-button">
+            Get Your Free AI Audit
+          </Link>
+        </section>
+      </article>
+    </>
+  );
+}
+
+Mark complete when: RB2B alternatives post is live with 3,500+ words and all schema.
+
+TASK 3.2-3.12: Create Remaining Competitor Comparison Posts
+Follow the same pattern as Task 3.1 for these posts:
+
+/blog/leadfeeder-alternative - Leadfeeder Alternatives: 8 Better Visitor Tracking Tools
+/blog/demandbase-alternative - Demandbase Alternatives: Affordable ABM Platforms for 2026
+/blog/instantly-alternative - Instantly Alternatives: Cold Email + Visitor ID Combined
+/blog/smartlead-alternative - Smartlead Alternatives: Email Outreach with Visitor Tracking
+/blog/clay-alternative - Clay Alternatives: Easier Data Enrichment + Outbound Tools
+/blog/cursive-vs-rb2b - Cursive vs RB2B: Which Visitor ID Tool is Better?
+/blog/cursive-vs-leadfeeder - Cursive vs Leadfeeder: Person-Level vs Company-Level ID
+/blog/cursive-vs-clearbit - Cursive vs Clearbit: The Best Clearbit Replacement
+/blog/cursive-vs-instantly - Cursive vs Instantly: Visitor ID + Email Outreach
+/blog/cursive-vs-demandbase - Cursive vs Demandbase: Affordable ABM Alternative
+/blog/cursive-vs-apollo - Cursive vs Apollo: Visitor ID vs Prospecting Database (EXPAND EXISTING)
+Each post must have:
+
+3,000-3,500 words
+Quick comparison table at top
+"Why look for alternatives" section
+5-7 alternative tools reviewed
+Feature comparison matrix
+Pricing comparison
+Migration guide
+FAQ section (5-8 questions) with FAQPage schema
+Related posts section
+Final CTA
+All schema markup (Organization, Article, Breadcrumb, FAQ)
+10+ internal links
+Mark complete when: All 12 competitor comparison posts are live with 3,000-3,500 words each.
+
+PHASE 4: PROGRAMMATIC SEO - INTEGRATION PAGES
+Priority: SCALE TO 200+ INDEXED PAGES
+Goal: Create programmatic integration pages for all major tools
+
+TASK 4.1: Create Integrations Database
+File: lib/integrations.ts
+
+export interface Integration {
+  slug: string;
+  name: string;
+  category: 'CRM' | 'Email' | 'Sales' | 'Marketing' | 'Productivity' | 'Communication' | 'Analytics' | 'Other';
+  description: string;
+  logo?: string;
+  popular?: boolean;
+  featured?: boolean;
+  useCases?: string[];
+  setupSteps?: string[];
+}
+
+export const integrations: Integration[] = [
+  // CRM
+  {
+    slug: 'salesforce',
+    name: 'Salesforce',
+    category: 'CRM',
+    description: 'Sync identified visitors to Salesforce leads and contacts automatically',
+    logo: '/integrations/salesforce.svg',
+    popular: true,
+    featured: true,
+    useCases: [
+      'Create leads from identified visitors',
+      'Update contact records with behavioral data',
+      'Trigger workflows based on website visits',
+      'Score leads based on pages viewed',
+    ],
+    setupSteps: [
+      'Connect Salesforce account in Cursive settings',
+      'Map Cursive fields to Salesforce fields',
+      'Configure sync rules (create lead, update contact, etc.)',
+      'Test integration with sample visitor',
+    ],
+  },
+  {
+    slug: 'hubspot',
+    name: 'HubSpot',
+    category: 'CRM',
+    description: 'Enrich HubSpot contacts with visitor identification data',
+    logo: '/integrations/hubspot.svg',
+    popular: true,
+    featured: true,
+  },
+  {
+    slug: 'pipedrive',
+    name: 'Pipedrive',
+    category: 'CRM',
+    description: 'Create Pipedrive deals from website visitors automatically',
+    logo: '/integrations/pipedrive.svg',
+  },
+  
+  // Email
+  {
+    slug: 'gmail',
+    name: 'Gmail',
+    category: 'Email',
+    description: 'Send emails to identified visitors directly from Gmail',
+    logo: '/integrations/gmail.svg',
+    popular: true,
+  },
+  {
+    slug: 'instantly',
+    name: 'Instantly',
+    category: 'Email',
+    description: 'Add identified visitors to Instantly cold email campaigns',
+    logo: '/integrations/instantly.svg',
+  },
+  {
+    slug: 'smartlead',
+    name: 'Smartlead',
+    category: 'Email',
+    description: 'Sync visitor data to Smartlead for email outreach',
+    logo: '/integrations/smartlead.svg',
+  },
+  
+  // Communication
+  {
+    slug: 'slack',
+    name: 'Slack',
+    category: 'Communication',
+    description: 'Get real-time Slack notifications when high-intent visitors land on your site',
+    logo: '/integrations/slack.svg',
+    popular: true,
+    featured: true,
+  },
+  {
+    slug: 'microsoft-teams',
+    name: 'Microsoft Teams',
+    category: 'Communication',
+    description: 'Receive visitor alerts in Microsoft Teams channels',
+    logo: '/integrations/microsoft-teams.svg',
+  },
+  
+  // Sales
+  {
+    slug: 'apollo',
+    name: 'Apollo',
+    category: 'Sales',
+    description: 'Enrich Apollo contacts with website visitor data',
+    logo: '/integrations/apollo.svg',
+  },
+  {
+    slug: 'linkedin',
+    name: 'LinkedIn',
+    category: 'Sales',
+    description: 'Find identified visitors on LinkedIn and send connection requests',
+    logo: '/integrations/linkedin.svg',
+    popular: true,
+  },
+  
+  // Add 190+ more integrations
+  // ... (Zoom, Google Calendar, Calendly, Typeform, Webflow, WordPress, 
+  // Shopify, Klaviyo, Notion, Airtable, Asana, Linear, GitHub, etc.)
+];
+
+export function getIntegrationBySlug(slug: string): Integration | undefined {
+  return integrations.find(i => i.slug === slug);
+}
+
+export function getIntegrationsByCategory(category: string): Integration[] {
+  return integrations.filter(i => i.category === category);
+}
+
+export function getPopularIntegrations(): Integration[] {
+  return integrations.filter(i => i.popular);
+}
+
+export function getFeaturedIntegrations(): Integration[] {
+  return integrations.filter(i => i.featured);
+}
+
+Mark complete when: Integrations database has 200+ integrations with metadata.
+
+TASK 4.2: Create Dynamic Integration Page Template
+File: app/integrations/[tool]/page.tsx
+
+import { notFound } from 'next/navigation';
+import { getIntegrationBySlug, integrations } from '@/lib/integrations';
+import { OrganizationSchema, BreadcrumbSchema, FAQSchema } from '@/components/schema/SchemaMarkup';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
+import Link from 'next/link';
+
+// Generate static params for all integrations
+export async function generateStaticParams() {
+  return integrations.map(integration => ({
+    tool: integration.slug,
+  }));
+}
+
+// Generate metadata for each integration
+export async function generateMetadata({ params }: { params: { tool: string } }) {
+  const integration = getIntegrationBySlug(params.tool);
+  
+  if (!integration) {
+    return {
+      title: 'Integration Not Found',
+    };
+  }
+  
+  const capitalizedName = integration.name;
+  
+  return {
+    title: `Cursive + ${capitalizedName} Integration | Sync Visitor Data Automatically`,
+    description: `Connect Cursive visitor identification with ${capitalizedName}. ${integration.description}. Setup takes 2 minutes.`,
+    openGraph: {
+      title: `Cursive + ${capitalizedName} Integration`,
+      description: integration.description,
+      type: 'website',
+    },
+  };
+}
+
+export default function IntegrationPage({ params }: { params: { tool: string } }) {
+  const integration = getIntegrationBySlug(params.tool);
+  
+  if (!integration) {
+    notFound();
+  }
+  
+  const capitalizedName = integration.name;
+  
+  const faqs = [
+    {
+      question: `How do I connect Cursive to ${capitalizedName}?`,
+      answer: `Connect Cursive to ${capitalizedName} in Settings → Integrations. Click "${capitalizedName}" and follow the OAuth flow to authorize the connection. Setup takes 2 minutes.`
+    },
+    {
+      question: `What data syncs from Cursive to ${capitalizedName}?`,
+      answer: `Cursive syncs visitor name, email, phone, company, job title, pages viewed, time on site, and behavioral signals to ${capitalizedName}.`
+    },
+    {
+      question: `How often does the integration sync?`,
+      answer: `The Cursive + ${capitalizedName} integration syncs in real-time. Identified visitors appear in ${capitalizedName} within 1-5 seconds.`
+    },
+    {
+      question: `Can I trigger workflows in ${capitalizedName} based on visitor behavior?`,
+      answer: `Yes, you can trigger ${capitalizedName} workflows when visitors view specific pages, spend a certain amount of time, or match targeting criteria.`
+    },
+    {
+      question: `Is the integration included in my Cursive plan?`,
+      answer: `Yes, all integrations including ${capitalizedName} are included in every Cursive plan at no additional cost.`
+    },
+  ];
+  
+  const breadcrumbs = [
+    { name: 'Home', href: '/' },
+    { name: 'Integrations', href: '/integrations' },
+    { name: capitalizedName, href: `/integrations/${params.tool}` },
+  ];
+  
+  return (
+    <>
+      {/* Schema */}
+      <OrganizationSchema />
+      <BreadcrumbSchema items={breadcrumbs} />
+      <FAQSchema faqs={faqs} />
+      
+      <Breadcrumbs items={breadcrumbs} />
+      
+      <article className="integration-page">
+        <header className="hero">
+          <div className="flex items-center gap-4">
+            {integration.logo && (
+              <img 
+                src={integration.logo} 
+                alt={`${capitalizedName} logo`}
+                className="w-16 h-16"
+              />
+            )}
+            <h1>Cursive + {capitalizedName} Integration</h1>
+          </div>
+          <p className="text-xl">
+            {integration.description}
+          </p>
+        </header>
+        
+        <section>
+          <h2>How the Cursive + {capitalizedName} Integration Works</h2>
+          <p>
+            The Cursive + {capitalizedName} integration automatically syncs 
+            identified website visitors to {capitalizedName} in real-time, 
+            enabling you to take immediate action on high-intent leads.
+          </p>
+          
+          <ol>
+            <li>
+              <strong>Visitor lands on your website:</strong> Cursive's tracking 
+              pixel identifies the visitor and enriches their profile with 
+              contact data.
+            </li>
+            <li>
+              <strong>Data syncs to {capitalizedName}:</strong> Within 1-5 seconds, 
+              the visitor's information appears in {capitalizedName} as a new 
+              contact, lead, or updated record.
+            </li>
+            <li>
+              <strong>Workflows trigger automatically:</strong> Based on your 
+              rules, {capitalizedName} can send emails, create tasks, update 
+              deal stages, or notify your team.
+            </li>
+            <li>
+              <strong>Your team takes action:</strong> Sales reps receive 
+              notifications and can reach out while the visitor is still 
+              researching.
+            </li>
+          </ol>
+        </section>
+        
+        {integration.useCases && integration.useCases.length > 0 && (
+          <section>
+            <h2>Use Cases</h2>
+            <p>
+              Here's how companies use the Cursive + {capitalizedName} integration:
+            </p>
+            <ul>
+              {integration.useCases.map((useCase, index) => (
+                <li key={index}>{useCase}</li>
+              ))}
+            </ul>
+          </section>
+        )}
+        
+        {integration.setupSteps && integration.setupSteps.length > 0 && (
+          <section>
+            <h2>Setup Guide</h2>
+            <p>
+              Connect Cursive to {capitalizedName} in 4 easy steps:
+            </p>
+            <ol>
+              {integration.setupSteps.map((step, index) => (
+                <li key={index}>{step}</li>
+              ))}
+            </ol>
+          </section>
+        )}
+        
+        <section>
+          <h2>What Data Syncs?</h2>
+          <p>
+            When a visitor is identified, Cursive syncs the following data to 
+            {capitalizedName}:
+          </p>
+          
+          <h3>Contact Information</h3>
+          <ul>
+            <li>Full name (first and last)</li>
+            <li>Email address (personal and work)</li>
+            <li>Phone number (direct and mobile)</li>
+            <li>Job title</li>
+            <li>LinkedIn profile URL</li>
+          </ul>
+          
+          <h3>Company Information</h3>
+          <ul>
+            <li>Company name</li>
+            <li>Company website</li>
+            <li>Industry</li>
+            <li>Company size (employee count)</li>
+            <li>Annual revenue</li>
+            <li>Location</li>
+          </ul>
+          
+          <h3>Behavioral Data</h3>
+          <ul>
+            <li>Pages viewed</li>
+            <li>Time spent on site</li>
+            <li>Content downloaded</li>
+            <li>Videos watched</li>
+            <li>Referral source</li>
+            <li>Campaign parameters</li>
+          </ul>
+          
+          <h3>Intent Signals</h3>
+          <ul>
+            <li>Buying stage indicators</li>
+            <li>Product interest signals</li>
+            <li>Competitor research activity</li>
+            <li>Intent score (0-100)</li>
+          </ul>
+        </section>
+        
+        <section>
+          <h2>Sync Frequency</h2>
+          <p>
+            The Cursive + {capitalizedName} integration syncs in real-time:
+          </p>
+          <ul>
+            <li>
+              <strong>New visitors:</strong> Appear in {capitalizedName} within 
+              1-5 seconds of identification
+            </li>
+            <li>
+              <strong>Returning visitors:</strong> Existing records update 
+              immediately with new behavioral data
+            </li>
+            <li>
+              <strong>Bulk updates:</strong> Historical data can be synced 
+              retroactively
+            </li>
+          </ul>
+        </section>
+        
+        <section>
+          <h2>Workflow Examples</h2>
+          <p>
+            Automate your sales process with these workflow examples:
+          </p>
+          
+          <h3>Example 1: High-Intent Lead Alert</h3>
+          <ol>
+            <li>Visitor from target account views pricing page</li>
+            <li>Cursive identifies visitor and syncs to {capitalizedName}</li>
+            <li>{capitalizedName} creates high-priority task for account owner</li>
+            <li>Account owner receives Slack notification</li>
+            <li>Rep reaches out within 5 minutes while visitor is still researching</li>
+          </ol>
+          
+          <h3>Example 2: Automated Nurture Campaign</h3>
+          <ol>
+            <li>Visitor reads 3+ blog posts</li>
+            <li>Cursive identifies visitor and syncs to {capitalizedName}</li>
+            <li>{capitalizedName} adds contact to nurture email sequence</li>
+            <li>Contact receives personalized emails over 2 weeks</li>
+            <li>When contact revisits site, alert goes to sales</li>
+          </ol>
+          
+          <h3>Example 3: Deal Stage Progression</h3>
+          <ol>
+            <li>Existing {capitalizedName} contact visits pricing page</li>
+            <li>Cursive updates contact record with page view</li>
+            <li>{capitalizedName} automatically moves deal to "Evaluation" stage</li>
+            <li>Sales rep receives notification to follow up</li>
+            <li>Rep sends pricing proposal same day</li>
+          </ol>
+        </section>
+        
+        <section>
+          <h2>Sync Rules & Filters</h2>
+          <p>
+            Configure exactly how data flows from Cursive to {capitalizedName}:
+          </p>
+          
+          <h3>Create vs. Update Rules</h3>
+          <ul>
+            <li>
+              <strong>Create new records:</strong> Automatically create new 
+              contacts/leads for first-time visitors
+            </li>
+            <li>
+              <strong>Update existing records:</strong> Append behavioral data 
+              to existing {capitalizedName} contacts
+            </li>
+            <li>
+              <strong>Skip duplicates:</strong> Prevent duplicate records by 
+              matching on email address
+            </li>
+          </ul>
+          
+          <h3>Filtering Options</h3>
+          <ul>
+            <li>
+              <strong>By company size:</strong> Only sync visitors from companies 
+              with 50+ employees
+            </li>
+            <li>
+              <strong>By page viewed:</strong> Only sync visitors who viewed 
+              pricing or demo pages
+            </li>
+            <li>
+              <strong>By time on site:</strong> Only sync visitors who spent 
+              2+ minutes on site
+            </li>
+            <li>
+              <strong>By job title:</strong> Only sync decision-makers (Director+)
+            </li>
+          </ul>
+        </section>
+        
+        <section>
+          <h2>Pricing</h2>
+          <p>
+            The Cursive + {capitalizedName} integration is included in all 
+            Cursive plans at no additional cost:
+          </p>
+          <ul>
+            <li>
+              <strong>Starter ($1,000/month):</strong> Includes {capitalizedName} 
+              integration with unlimited syncs
+            </li>
+            <li>
+              <strong>Growth ($2,500/month):</strong> Includes advanced workflow 
+              automation
+            </li>
+            <li>
+              <strong>Enterprise (Custom):</strong> Includes dedicated integration 
+              support
+            </li>
+          </ul>
+          <p>
+            <Link href="/pricing">View full pricing →</Link>
+          </p>
+        </section>
+        
+        <section>
+          <h2>Related Integrations</h2>
+          <p>
+            Cursive also integrates with these tools in the {integration.category} 
+            category:
+          </p>
+          <ul>
+            {/* Show 3-5 related integrations from same category */}
+            <li><Link href="/integrations/salesforce">Salesforce</Link></li>
+            <li><Link href="/integrations/hubspot">HubSpot</Link></li>
+            <li><Link href="/integrations/pipedrive">Pipedrive</Link></li>
+          </ul>
+          <p>
+            <Link href="/integrations">View all 200+ integrations →</Link>
+          </p>
+        </section>
+        
+        <section className="faq">
+          <h2>Frequently Asked Questions</h2>
+          {faqs.map((faq, index) => (
+            <div key={index} className="faq-item">
+              <h3>{faq.question}</h3>
+              <p>{faq.answer}</p>
+            </div>
+          ))}
+        </section>
+        
+        <section className="cta">
+          <h2>Ready to Connect Cursive + {capitalizedName}?</h2>
+          <p>
+            Get started with a free AI audit. We'll show you exactly which 
+            companies are visiting your site right now.
+          </p>
+          <Link href="/free-audit" className="cta-button">
+            Get Your Free AI Audit
+          </Link>
+        </section>
+      </article>
+    </>
+  );
+}
+
+Mark complete when: Dynamic integration template is working and generates unique pages for each integration.
+
+TASK 4.3: Create Integrations Index Page
+File: app/integrations/page.tsx
+
+import { integrations, getIntegrationsByCategory, getPopularIntegrations } from '@/lib/integrations';
+import { OrganizationSchema } from '@/components/schema/SchemaMarkup';
+import Link from 'next/link';
+
+export const metadata = {
+  title: 'Cursive Integrations | Connect with 200+ Tools',
+  description: 'Cursive integrates with Salesforce, HubSpot, Slack, Gmail, and 200+ other tools. Sync visitor data automatically to your existing stack.',
+};
+
+export default function IntegrationsPage() {
+  const popularIntegrations = getPopularIntegrations();
+  const categories = ['CRM', 'Email', 'Sales', 'Marketing', 'Productivity', 'Communication', 'Analytics', 'Other'];
+  
+  return (
+    <>
+      <OrganizationSchema />
+      
+      <div className="integrations-page">
+        <header className="hero">
+          <h1>Cursive Integrations</h1>
+          <p className="text-xl">
+            Connect Cursive with 200+ tools you already use. Sync visitor data 
+            automatically to your CRM, send Slack alerts, trigger email campaigns, 
+            and more.
+          </p>
+        </header>
+        
+        <section className="popular-integrations">
+          <h2>Popular Integrations</h2>
+          <div className="integration-grid">
+            {popularIntegrations.map(integration => (
+              <Link 
+                key={integration.slug}
+                href={`/integrations/${integration.slug}`}
+                className="integration-card"
+              >
+                {integration.logo && (
+                  <img src={integration.logo} alt={`${integration.name} logo`} />
+                )}
+                <h3>{integration.name}</h3>
+                <p>{integration.description}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+        
+        {categories.map(category => {
+          const categoryIntegrations = getIntegrationsByCategory(category);
+          if (categoryIntegrations.length === 0) return null;
+          
+          return (
+            <section key={category} className="category-section">
+              <h2>{category} Integrations</h2>
+              <div className="integration-grid">
+                {categoryIntegrations.map(integration => (
+                  <Link 
+                    key={integration.slug}
+                    href={`/integrations/${integration.slug}`}
+                    className="integration-card"
+                  >
+                    {integration.logo && (
+                      <img src={integration.logo} alt={`${integration.name} logo`} />
+                    )}
+                    <h3>{integration.name}</h3>
+                    <p>{integration.description}</p>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          );
+        })}
+        
+        <section className="cta">
+          <h2>Don't See Your Tool?</h2>
+          <p>
+            We're constantly adding new integrations. If you don't see your tool, 
+            let us know and we'll prioritize it.
+          </p>
+          <Link href="/contact" className="cta-button">
+            Request an Integration
+          </Link>
+        </section>
+      </div>
+    </>
+  );
+}
+
+Mark complete when: Integrations index page displays all 200+ integrations organized by category.
+
+PHASE 5: TECHNICAL POLISH & llms.txt
+Priority: MAXIMIZE AI VISIBILITY
+TASK 5.1: Create llms.txt File
+Objective: Help AI crawlers understand site structure for better citations
+
+File: public/llms.txt
+
+# Cursive - B2B Lead Generation Platform
+https://meetcursive.com
+
+## About
+Cursive is a full-stack B2B lead generation platform that identifies anonymous website visitors, enriches them with verified contact data, and automates personalized outreach across email, LinkedIn, SMS, and direct mail. We help B2B companies convert 70% of anonymous website traffic into qualified leads.
+
+## Core Features
+
+- Website Visitor Identification: /visitor-identification
+  Identify 70% of anonymous website visitors with names, emails, phone numbers, and job titles—without requiring form fills.
+
+- AI-Powered Outreach: /platform
+  Our AI SDR writes personalized emails, LinkedIn messages, and SMS campaigns that convert at 3-5x industry average.
+
+- Intent Data: /intent-audiences
+  Know exactly when prospects are researching solutions like yours across the web, not just on your site.
+
+- Audience Builder: /audience-builder
+  Segment identified visitors by company, industry, job title, behavior, and intent signals.
+
+- Direct Mail Automation: /direct-mail
+  Send personalized postcards and handwritten notes to high-intent prospects automatically.
+
+- CRM Integration: /integrations
+  Native integrations with Salesforce, HubSpot, and 200+ other tools.
+
+## Educational Content
+
+- What is Website Visitor Identification: /what-is-website-visitor-identification
+  Complete guide to website visitor identification technology, methods, accuracy rates, and implementation.
+
+- What is B2B Intent Data: /what-is-b2b-intent-data
+  Learn how B2B intent data works, data sources, accuracy, and use cases for sales and marketing.
+
+- What is an AI SDR: /what-is-ai-sdr
+  Comprehensive guide to AI Sales Development Representatives, capabilities, and ROI.
+
+- What is Lead Enrichment: /what-is-lead-enrichment
+  How lead enrichment works, data sources, accuracy rates, and implementation best practices.
+
+- What is Direct Mail Automation: /what-is-direct-mail-automation
+  Guide to automated direct mail for B2B, including triggered campaigns and ROI metrics.
+
+- What is Visitor Deanonymization: /what-is-visitor-deanonymization
+  Technical guide to visitor deanonymization methods, accuracy, and legal compliance.
+
+- What is Account-Based Marketing: /what-is-account-based-marketing
+  Complete ABM guide including strategy, tools, and measurement.
+
+## Competitor Comparisons
+
+- Clearbit Alternatives: /blog/clearbit-reveal-alternative
+  Best Clearbit alternatives after shutdown, including Cursive, Warmly, Leadfeeder, and RB2B.
+
+- RB2B Alternatives: /blog/rb2b-alternative
+  Top RB2B alternatives with pricing, match rates, and feature comparisons.
+
+- Leadfeeder Alternatives: /blog/leadfeeder-alternative
+  Best Leadfeeder alternatives for person-level visitor identification.
+
+- Demandbase Alternatives: /blog/demandbase-alternative
+  Affordable Demandbase alternatives for SMB and mid-market companies.
+
+- Instantly Alternatives: /blog/instantly-alternative
+  Cold email tools with built-in visitor identification.
+
+- Smartlead Alternatives: /blog/smartlead-alternative
+  Email outreach platforms with visitor tracking.
+
+- Clay Alternatives: /blog/clay-alternative
+  Easier data enrichment tools with outbound automation.
+
+- Warmly vs Cursive: /blog/warmly-vs-cursive
+  Head-to-head comparison of Warmly and Cursive visitor identification.
+
+- Apollo vs Cursive: /blog/apollo-vs-cursive
+  Visitor identification vs prospecting database comparison.
+
+- ZoomInfo vs Cursive: /blog/zoominfo-vs-cursive
+  Website visitor ID vs contact database comparison.
+
+- 6sense vs Cursive: /blog/6sense-vs-cursive
+  Affordable ABM alternative to 6sense.
+
+- Cursive vs RB2B: /blog/cursive-vs-rb2b
+  Detailed feature, pricing, and accuracy comparison.
+
+- Cursive vs Leadfeeder: /blog/cursive-vs-leadfeeder
+  Person-level vs company-level identification comparison.
+
+- Cursive vs Clearbit: /blog/cursive-vs-clearbit
+  Best Clearbit Reveal replacement.
+
+- Cursive vs Instantly: /blog/cursive-vs-instantly
+  Visitor ID + email outreach vs email-only tool.
+
+- Cursive vs Demandbase: /blog/cursive-vs-demandbase
+  SMB-friendly ABM alternative.
+
+## Industries
+
+- B2B Software: /industries/b2b-software
+  How SaaS companies use Cursive to convert free trial users and demo visitors.
+
+- Agencies: /industries/agencies
+  How marketing and sales agencies use Cursive for client lead generation.
+
+- Ecommerce: /industries/ecommerce
+  How ecommerce companies identify and re-engage cart abandoners.
+
+- Financial Services: /industries/financial-services
+  Compliant visitor identification for banks, insurance, and fintech.
+
+- Healthcare: /industries/healthcare
+  HIPAA-compliant visitor identification for healthcare providers.
+
+- Manufacturing: /industries/manufacturing
+  How manufacturers identify and nurture long-cycle B2B buyers.
+
+- Professional Services: /industries/professional-services
+  How consulting, legal, and accounting firms identify prospects.
+
+- Real Estate: /industries/real-estate
+  How commercial real estate firms identify property seekers.
+
+- Technology: /industries/technology
+  How tech companies identify enterprise buyers.
+
+## Integrations
+
+- Salesforce: /integrations/salesforce
+- HubSpot: /integrations/hubspot
+- Slack: /integrations/slack
+- Gmail: /integrations/gmail
+- LinkedIn: /integrations/linkedin
+- Apollo: /integrations/apollo
+- Instantly: /integrations/instantly
+- Zoom: /integrations/zoom
+- Google Calendar: /integrations/google-calendar
+- Calendly: /integrations/calendly
+- View all 200+ integrations: /integrations
+
+## Company
+
+- About: /about
+- Pricing: /pricing
+- Contact: /contact
+- Data Access: /data-access
+- Free AI Audit: /free-audit
+- Blog: /blog
+
+## Key Statistics
+
+- 70% visitor identification rate (person-level)
+- 250M+ business profiles in database
+- 95%+ email deliverability
+- 3-5x higher conversion vs single-channel outreach
+- 2-minute implementation time
+- Real-time identification (1-5 seconds)
+
+## Pricing
+
+- Starter: $1,000/month
+- Growth: $2,500/month
+- Enterprise: Custom pricing
+- Free AI Audit: No credit card required
+
+## Contact
+
+- Email: hello@meetcursive.com
+- Website: https://meetcursive.com
+- Free Audit: https://meetcursive.com/free-audit
+
+Verification for Task 5.1:
+
+curl -s https://meetcursive.com/llms.txt
+
+Should return the file contents.
+
+Mark complete when: llms.txt is accessible and comprehensive.
+
+TASK 5.2: Create XML Sitemap
+File: app/sitemap.ts
+
+import { MetadataRoute } from 'next';
+import { integrations } from '@/lib/integrations';
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = 'https://meetcursive.com';
+  
+  // Static pages
+  const staticPages = [
+    '',
+    '/platform',
+    '/visitor-identification',
+    '/audience-builder',
+    '/intent-audiences',
+    '/direct-mail',
+    '/pricing',
+    '/about',
+    '/contact',
+    '/data-access',
+    '/free-audit',
+    '/blog',
+    '/industries',
+  ].map(route => ({
+    url: `${baseUrl}${route}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: route === '' ? 1 : 0.8,
+  }));
+  
+  // Educational pages
+  const educationalPages = [
+    '/what-is-website-visitor-identification',
+    '/what-is-b2b-intent-data',
+    '/what-is-ai-sdr',
+    '/what-is-lead-enrichment',
+    '/what-is-direct-mail-automation',
+    '/what-is-visitor-deanonymization',
+    '/what-is-account-based-marketing',
+  ].map(route => ({
+    url: `${baseUrl}${route}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.9,
+  }));
+  
+  // Blog posts (fetch from your blog data source)
+  const blogPosts = [
+    '/blog/clearbit-reveal-alternative',
+    '/blog/warmly-vs-cursive',
+    '/blog/apollo-vs-cursive',
+    '/blog/zoominfo-vs-cursive',
+    '/blog/6sense-vs-cursive',
+    '/blog/rb2b-alternative',
+    '/blog/leadfeeder-alternative',
+    '/blog/demandbase-alternative',
+    '/blog/instantly-alternative',
+    '/blog/smartlead-alternative',
+    '/blog/clay-alternative',
+    '/blog/cursive-vs-rb2b',
+    '/blog/cursive-vs-leadfeeder',
+    '/blog/cursive-vs-clearbit',
+    '/blog/cursive-vs-instantly',
+    '/blog/cursive-vs-demandbase',
+    // Add all other blog posts
+  ].map(route => ({
+    url: `${baseUrl}${route}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
+  
+  // Industry pages
+  const industryPages = [
+    '/industries/b2b-software',
+    '/industries/agencies',
+    '/industries/ecommerce',
+    '/industries/financial-services',
+    '/industries/healthcare',
+    '/industries/manufacturing',
+    '/industries/professional-services',
+    '/industries/real-estate',
+    '/industries/technology',
+  ].map(route => ({
+    url: `${baseUrl}${route}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
+  
+  // Integration pages (programmatic)
+  const integrationPages = integrations.map(integration => ({
+    url: `${baseUrl}/integrations/${integration.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: integration.popular ? 0.7 : 0.5,
+  }));
+  
+  return [
+    ...staticPages,
+    ...educationalPages,
+    ...blogPosts,
+    ...industryPages,
+    ...integrationPages,
+  ];
+}
+
+Verification for Task 5.2:
+
+curl -s https://meetcursive.com/sitemap.xml
+
+Should return XML sitemap with all pages.
+
+Mark complete when: Sitemap includes all pages and is accessible.
+
+FINAL VERIFICATION & DEPLOYMENT
+Pre-Deployment Checklist
+Run these commands to verify everything works:
+
+# 1. Build the site locally
+npm run build
+
+# 2. Check for build errors
+# Should complete without errors
+
+# 3. Test SSR rendering
+npm run start
+curl -s http://localhost:3000 | grep -o "<h1[^>]*>.*</h1>"
+# Should return H1 content
+
+# 4. Test internal links
+curl -s http://localhost:3000 | grep -c "<a href="
+# Should return 15+ links
+
+# 5. Test schema markup
+curl -s http://localhost:3000 | grep -c "application/ld+json"
+# Should return 2+ schema blocks
+
+# 6. Test robots.txt
+curl -s http://localhost:3000/robots.txt
+# Should return robots.txt content
+
+# 7. Test llms.txt
+curl -s http://localhost:3000/llms.txt
+# Should return llms.txt content
+
+# 8. Test sitemap
+curl -s http://localhost:3000/sitemap.xml
+# Should return XML sitemap
+
+# 9. Test word count on educational page
+curl -s http://localhost:3000/what-is-website-visitor-identification | html2text | wc -w
+# Should return 3,000+ words
+
+# 10. Test integration page
+curl -s http://localhost:3000/integrations/salesforce | grep -o "<h1[^>]*>.*</h1>"
+# Should return "Cursive + Salesforce Integration"
+
+Deployment Steps
+Commit all changes to Git:
+git add .
+git commit -m "Complete SEO/AEO optimization: SSR, content expansion, integrations"
+git push origin main
+
+Deploy to Vercel:
+Vercel will automatically deploy on push to main
+Monitor build logs for errors
+Verify deployment completes successfully
+Post-Deployment Verification:
+# Test live site
+curl -s https://meetcursive.com | grep -o "<h1[^>]*>.*</h1>"
+curl -s https://meetcursive.com/robots.txt
+curl -s https://meetcursive.com/llms.txt
+curl -s https://meetcursive.com/sitemap.xml
+
+Submit to Google Search Console:
+Go to Google Search Console
+Submit sitemap: https://meetcursive.com/sitemap.xml
+Request indexing for key pages:
+Homepage
+/what-is-website-visitor-identification
+/blog/clearbit-reveal-alternative
+/visitor-identification
+Monitor Indexation:
+Check site:meetcursive.com in Google daily
+Track index coverage in GSC
+Monitor for crawl errors
+SUCCESS METRICS
+Week 1 Targets:
+ All pages render content server-side
+ robots.txt live
+ llms.txt live
+ Canonical redirects working
+ Sitemap submitted to GSC
+ 0 critical site issues
+Week 2 Targets:
+ 7 "What is X" pages live
+ All pages have 800+ words
+ All pages have proper schema
+ All pages have 15+ internal links
+Week 3-4 Targets:
+ 12 competitor comparison posts live
+ 20 integration pages live
+ 50+ pages indexed in Google
+Month 2 Targets:
+ 200+ integration pages live
+ 100+ pages indexed
+ Average position <20 for "website visitor identification"
+ 100+ organic impressions per day
+Month 3 Targets:
+ 150+ pages indexed
+ Page 1 for "website visitor identification"
+ 1,000+ organic impressions per day
+ First AI citation in ChatGPT or Perplexity
+NOTES FOR CLAUDE
+All content must render server-side (no client-side only rendering)
+Every page needs minimum 800 words (educational pages 2,500-3,000+)
+Internal linking is CRITICAL - minimum 15 links per page
+Schema markup must be in <head> before any client code
+Test every change with curl commands
+Prioritize Phase 1 (critical fixes) before any content work
+Use the exact patterns shown in templates - don't deviate
+When in doubt, reference existing working pages as examples
+Mark each task complete only after verification passes
+END OF IMPLEMENTATION PLAN
+
+This document contains everything needed to transform Cursive from 45/100 site health to 90/100+ with comprehensive content, proper technical SEO, and programmatic scale. Follow phases sequentially, verify each task, and track progress against success metrics.
