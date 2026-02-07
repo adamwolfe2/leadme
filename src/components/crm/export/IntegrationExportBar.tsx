@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { ExportButton, PLATFORM_CONFIGS, type ExportPlatform, type ConnectionStatus } from './ExportButton'
 import { cn } from '@/lib/utils'
 import { Download, X } from 'lucide-react'
@@ -21,15 +22,12 @@ type ExportState = Record<ExportPlatform, {
   exportSuccess: boolean
 }>
 
-// ============================================================================
-// Connection status (placeholder -- replace with real API check)
-// ============================================================================
-
-const PLATFORM_CONNECTIONS: Record<ExportPlatform, ConnectionStatus> = {
-  hubspot: 'not_connected',
-  salesforce: 'not_connected',
-  'google-sheets': 'not_connected',
-  csv: 'connected', // CSV is always available
+interface ConnectionResponseItem {
+  provider: string
+  connected: boolean
+  status: string
+  lastSyncAt: string | null
+  connectedAt: string | null
 }
 
 // ============================================================================
@@ -47,6 +45,37 @@ export function IntegrationExportBar({
     'google-sheets': { isExporting: false, exportSuccess: false },
     csv: { isExporting: false, exportSuccess: false },
   })
+
+  // Fetch real connection status from the bulk connections endpoint
+  const { data: connections } = useQuery({
+    queryKey: ['crm', 'connections', 'status'],
+    queryFn: async () => {
+      const res = await fetch('/api/crm/connections')
+      if (!res.ok) {
+        return [] as ConnectionResponseItem[]
+      }
+      const json = await res.json()
+      return (json.data?.connections ?? []) as ConnectionResponseItem[]
+    },
+    staleTime: 30000, // Cache for 30s
+  })
+
+  // Map API response to the format needed by ExportButton
+  const platformConnections = React.useMemo<Record<ExportPlatform, ConnectionStatus>>(() => {
+    const connectionMap = new Map<string, boolean>()
+    if (connections) {
+      for (const conn of connections) {
+        connectionMap.set(conn.provider, conn.connected)
+      }
+    }
+
+    return {
+      hubspot: connectionMap.get('hubspot') ? 'connected' : 'not_connected',
+      salesforce: connectionMap.get('salesforce') ? 'connected' : 'not_connected',
+      'google-sheets': connectionMap.get('google_sheets') ? 'connected' : 'not_connected',
+      csv: 'connected', // CSV is always available
+    }
+  }, [connections])
 
   const selectedCount = selectedLeadIds.length
 
@@ -170,7 +199,7 @@ export function IntegrationExportBar({
             key={platform}
             platform={platform}
             selectedCount={selectedCount}
-            connectionStatus={PLATFORM_CONNECTIONS[platform]}
+            connectionStatus={platformConnections[platform]}
             onExport={handleExport}
             isExporting={exportState[platform].isExporting}
             exportSuccess={exportState[platform].exportSuccess}

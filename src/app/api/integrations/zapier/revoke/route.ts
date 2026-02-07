@@ -60,8 +60,6 @@ export async function POST(request: NextRequest) {
       severity: 'info',
     })
 
-    console.log('[Zapier] Webhook revoked for user:', user.id)
-
     // 5. Return success
     return NextResponse.json({
       success: true,

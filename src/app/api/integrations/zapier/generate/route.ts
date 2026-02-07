@@ -99,8 +99,6 @@ export async function POST(request: NextRequest) {
       severity: 'info',
     })
 
-    console.log('[Zapier] Webhook generated for user:', user.id)
-
     // 7. Return the webhook URL
     return NextResponse.json({
       success: true,

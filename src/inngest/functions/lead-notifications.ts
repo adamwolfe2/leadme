@@ -40,7 +40,7 @@ export const sendLeadNotifications = inngest.createFunction(
         .single()
 
       if (error) {
-        console.log(
+        console.error(
           `[Lead Notifications] Lead not found (${lead_id}), skipping notifications: ${error.message}`
         )
         return null

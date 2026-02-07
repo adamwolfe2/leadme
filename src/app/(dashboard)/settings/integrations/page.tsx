@@ -189,10 +189,32 @@ function CrmSetupModal({
   )
 }
 
+// Webhook event types supported by the platform
+const WEBHOOK_EVENTS = [
+  { key: 'lead.created', label: 'Lead Created', description: 'When a new lead is identified' },
+  { key: 'lead.updated', label: 'Lead Updated', description: 'When lead data changes' },
+  { key: 'lead.exported', label: 'Lead Exported', description: 'When a lead is exported to a CRM' },
+  { key: 'lead.scored', label: 'Lead Scored', description: 'When intent score changes' },
+] as const
+
+// Webhook settings response type
+interface WebhookSettings {
+  webhook_url: string | null
+  webhook_secret: string | null
+  webhook_enabled: boolean
+  webhook_events: string[]
+}
+
 export default function IntegrationsPage() {
   const toast = useToast()
   const queryClient = useQueryClient()
   const [customWebhookUrl, setCustomWebhookUrl] = useState('')
+  const [webhookEnabled, setWebhookEnabled] = useState(false)
+  const [webhookEvents, setWebhookEvents] = useState<string[]>(['lead.created'])
+  const [showSecret, setShowSecret] = useState(false)
+  const [revealedSecret, setRevealedSecret] = useState<string | null>(null)
+  const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null)
+  const [webhookSettingsLoaded, setWebhookSettingsLoaded] = useState(false)
   const [setupModalPlatform, setSetupModalPlatform] = useState<typeof CRM_PLATFORMS[number] | null>(null)
 
   // Fetch current user
@@ -296,6 +318,151 @@ export default function IntegrationsPage() {
     },
   })
 
+  // Fetch webhook settings
+  const { data: webhookData } = useQuery<WebhookSettings>({
+    queryKey: ['webhook', 'settings'],
+    queryFn: async () => {
+      const response = await fetch('/api/integrations/webhook')
+      if (!response.ok) throw new Error('Failed to fetch webhook settings')
+      return response.json()
+    },
+    enabled: !!user,
+  })
+
+  // Sync webhook settings into local state when data loads
+  if (webhookData && !webhookSettingsLoaded) {
+    setCustomWebhookUrl(webhookData.webhook_url || '')
+    setWebhookEnabled(webhookData.webhook_enabled)
+    setWebhookEvents(webhookData.webhook_events || ['lead.created'])
+    setWebhookSettingsLoaded(true)
+  }
+
+  // Update webhook settings mutation (POST)
+  const updateWebhookMutation = useMutation({
+    mutationFn: async (payload: {
+      webhook_url?: string | null
+      webhook_enabled?: boolean
+      webhook_events?: string[]
+    }) => {
+      const response = await fetch('/api/integrations/webhook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to update webhook settings')
+      }
+      return response.json()
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['webhook', 'settings'] })
+      queryClient.invalidateQueries({ queryKey: ['user', 'me'] })
+      // If a new secret was generated, reveal it
+      if (data.webhook_secret && data.webhook_secret !== '••••••••') {
+        setRevealedSecret(data.webhook_secret)
+        setShowSecret(true)
+      }
+      toast.success('Webhook settings saved successfully!')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to update webhook settings')
+    },
+  })
+
+  // Test webhook mutation (PUT)
+  const testWebhookMutation = useMutation({
+    mutationFn: async (url: string) => {
+      const response = await fetch('/api/integrations/webhook', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      })
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to test webhook')
+      }
+      return response.json()
+    },
+    onSuccess: (data) => {
+      setTestResult({ success: data.success, message: data.message })
+    },
+    onError: (error: Error) => {
+      setTestResult({ success: false, message: error.message || 'Failed to test webhook' })
+    },
+  })
+
+  // Regenerate webhook secret mutation (DELETE)
+  const regenerateSecretMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/integrations/webhook', {
+        method: 'DELETE',
+      })
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to regenerate secret')
+      }
+      return response.json()
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['webhook', 'settings'] })
+      if (data.webhook_secret) {
+        setRevealedSecret(data.webhook_secret)
+        setShowSecret(true)
+      }
+      toast.success('Webhook secret regenerated. Save it now!')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to regenerate secret')
+    },
+  })
+
+  const handleSaveWebhookSettings = () => {
+    if (customWebhookUrl) {
+      try {
+        new URL(customWebhookUrl)
+      } catch {
+        toast.error('Please enter a valid URL')
+        return
+      }
+    }
+
+    updateWebhookMutation.mutate({
+      webhook_url: customWebhookUrl || null,
+      webhook_enabled: webhookEnabled,
+      webhook_events: webhookEvents,
+    })
+  }
+
+  const handleTestWebhook = () => {
+    const url = customWebhookUrl || webhookData?.webhook_url
+    if (!url) {
+      toast.error('Please enter a webhook URL first')
+      return
+    }
+    try {
+      new URL(url)
+      setTestResult(null)
+      testWebhookMutation.mutate(url)
+    } catch {
+      toast.error('Please enter a valid URL')
+    }
+  }
+
+  const handleRegenerateSecret = () => {
+    if (confirm('Are you sure you want to regenerate your webhook secret? The old secret will stop working immediately. You must update your webhook consumer with the new secret.')) {
+      regenerateSecretMutation.mutate()
+    }
+  }
+
+  const handleToggleEvent = (eventKey: string) => {
+    setWebhookEvents((prev) =>
+      prev.includes(eventKey)
+        ? prev.filter((e) => e !== eventKey)
+        : [...prev, eventKey]
+    )
+  }
+
   const handleSaveCustomWebhook = () => {
     if (!customWebhookUrl) {
       toast.error('Please enter a webhook URL')
@@ -381,14 +548,45 @@ export default function IntegrationsPage() {
               integrations and internal tools.
             </p>
           </div>
-          {!isPro && (
-            <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-primary/10 text-primary ml-4">
-              Pro
-            </span>
-          )}
+          <div className="flex items-center gap-3 ml-4">
+            {!isPro && (
+              <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-primary/10 text-primary">
+                Pro
+              </span>
+            )}
+          </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-6">
+          {/* Enable/Disable Toggle */}
+          <div className="flex items-center justify-between">
+            <div>
+              <label className="text-sm font-medium text-zinc-700">
+                Webhook Delivery
+              </label>
+              <p className="text-xs text-zinc-500 mt-0.5">
+                {webhookEnabled ? 'Webhooks are active and delivering events' : 'Webhooks are paused'}
+              </p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={webhookEnabled}
+              disabled={!isPro}
+              onClick={() => setWebhookEnabled(!webhookEnabled)}
+              className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+                webhookEnabled ? 'bg-primary' : 'bg-zinc-200'
+              }`}
+            >
+              <span
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                  webhookEnabled ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* Webhook URL */}
           <div>
             <label className="block text-sm font-medium text-zinc-700 mb-2">
               Webhook URL
@@ -397,25 +595,179 @@ export default function IntegrationsPage() {
               type="url"
               placeholder="https://your-domain.com/webhook"
               className="block w-full rounded-lg border-zinc-300 shadow-sm focus:border-primary focus:ring-primary disabled:bg-zinc-50 disabled:cursor-not-allowed"
-              value={customWebhookUrl || user?.custom_webhook_url || ''}
+              value={customWebhookUrl}
               onChange={(e) => setCustomWebhookUrl(e.target.value)}
               disabled={!isPro}
             />
             <p className="mt-1 text-xs text-zinc-500">
-              Receives POST requests with JSON lead data
+              Receives POST requests with JSON lead data, signed with your HMAC secret
             </p>
           </div>
 
-          <button
-            onClick={handleSaveCustomWebhook}
-            disabled={!isPro || saveCustomWebhookMutation.isPending}
-            className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
-          >
-            {saveCustomWebhookMutation.isPending ? 'Saving...' : 'Save Webhook'}
-          </button>
+          {/* Webhook Secret */}
+          {isPro && (webhookData?.webhook_secret || revealedSecret) && (
+            <div>
+              <label className="block text-sm font-medium text-zinc-700 mb-2">
+                Signing Secret
+              </label>
+              <div className="flex gap-3">
+                <div className="relative flex-1">
+                  <input
+                    type={showSecret && revealedSecret ? 'text' : 'password'}
+                    value={revealedSecret || webhookData?.webhook_secret || ''}
+                    readOnly
+                    className="block w-full rounded-lg border-zinc-300 bg-zinc-50 shadow-sm text-sm font-mono pr-16"
+                  />
+                  {revealedSecret && (
+                    <button
+                      type="button"
+                      onClick={() => setShowSecret(!showSecret)}
+                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-zinc-500 hover:text-zinc-700 font-medium"
+                    >
+                      {showSecret ? 'Hide' : 'Show'}
+                    </button>
+                  )}
+                </div>
+                <button
+                  onClick={() => {
+                    if (revealedSecret) {
+                      navigator.clipboard.writeText(revealedSecret)
+                      toast.success('Secret copied to clipboard!')
+                    } else {
+                      toast.error('Secret is masked. Regenerate to see the full value.')
+                    }
+                  }}
+                  className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
+                >
+                  Copy
+                </button>
+                <button
+                  onClick={handleRegenerateSecret}
+                  disabled={regenerateSecretMutation.isPending}
+                  className="rounded-lg border border-red-200 bg-white px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                >
+                  {regenerateSecretMutation.isPending ? 'Regenerating...' : 'Regenerate'}
+                </button>
+              </div>
+              <p className="mt-1 text-xs text-zinc-500">
+                Used to verify webhook signatures. Sent in the <code className="text-xs bg-zinc-100 px-1 py-0.5 rounded">X-Cursive-Signature</code> header.
+              </p>
+              {revealedSecret && (
+                <div className="mt-2 rounded-lg bg-amber-50 border border-amber-200 p-2.5">
+                  <p className="text-xs text-amber-800 font-medium">
+                    Save this secret now. It will be masked once you leave this page.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Event Selection */}
+          <div>
+            <label className="block text-sm font-medium text-zinc-700 mb-2">
+              Webhook Events
+            </label>
+            <p className="text-xs text-zinc-500 mb-3">
+              Select which events trigger webhook delivery.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {WEBHOOK_EVENTS.map((event) => {
+                const isChecked = webhookEvents.includes(event.key)
+                return (
+                  <label
+                    key={event.key}
+                    className={`flex items-start gap-3 rounded-lg border p-3 cursor-pointer transition-colors ${
+                      isChecked
+                        ? 'border-primary/30 bg-primary/5'
+                        : 'border-zinc-200 bg-white hover:border-zinc-300'
+                    } ${!isPro ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() => handleToggleEvent(event.key)}
+                      disabled={!isPro}
+                      className="mt-0.5 h-4 w-4 rounded border-zinc-300 text-primary focus:ring-primary disabled:cursor-not-allowed"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <span className="block text-sm font-medium text-zinc-900">
+                        {event.label}
+                      </span>
+                      <span className="block text-xs text-zinc-500 mt-0.5">
+                        {event.description}
+                      </span>
+                      <code className="text-xs text-zinc-400 font-mono mt-1 block">
+                        {event.key}
+                      </code>
+                    </div>
+                  </label>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <button
+              onClick={handleSaveWebhookSettings}
+              disabled={!isPro || updateWebhookMutation.isPending}
+              className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+            >
+              {updateWebhookMutation.isPending ? 'Saving...' : 'Save Settings'}
+            </button>
+
+            <button
+              onClick={handleTestWebhook}
+              disabled={!isPro || testWebhookMutation.isPending || !customWebhookUrl}
+              className="rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {testWebhookMutation.isPending ? (
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  Testing...
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  Send Test
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Test Result Feedback */}
+          {testResult && (
+            <div
+              className={`rounded-lg border p-3 ${
+                testResult.success
+                  ? 'border-green-200 bg-green-50'
+                  : 'border-red-200 bg-red-50'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                {testResult.success ? (
+                  <svg className="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : (
+                  <svg className="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                )}
+                <p className={`text-sm font-medium ${testResult.success ? 'text-green-800' : 'text-red-800'}`}>
+                  {testResult.message}
+                </p>
+              </div>
+            </div>
+          )}
 
           {!isPro && (
-            <p className="text-sm text-zinc-500 mt-2">
+            <p className="text-sm text-zinc-500">
               <Link
                 href="/settings/billing"
                 className="text-primary hover:text-primary/90 font-medium"
@@ -427,9 +779,10 @@ export default function IntegrationsPage() {
           )}
         </div>
 
-        {user?.custom_webhook_url && isPro && (
+        {/* Webhook Payload Example */}
+        {(customWebhookUrl || webhookData?.webhook_url) && isPro && (
           <div className="mt-6 pt-6 border-t border-zinc-200">
-            <h3 className="text-sm font-medium text-zinc-900 mb-3">Webhook Payload</h3>
+            <h3 className="text-sm font-medium text-zinc-900 mb-3">Example Payload</h3>
             <pre className="text-xs bg-zinc-900 text-zinc-100 p-4 rounded-lg overflow-x-auto">
               {JSON.stringify(
                 {
@@ -454,6 +807,15 @@ export default function IntegrationsPage() {
                 2
               )}
             </pre>
+            <div className="mt-3 rounded-lg bg-zinc-50 border border-zinc-200 p-3">
+              <h4 className="text-xs font-semibold text-zinc-700 mb-1">Signature Verification</h4>
+              <p className="text-xs text-zinc-500">
+                Each request includes an <code className="bg-zinc-100 px-1 py-0.5 rounded">X-Cursive-Signature</code> header
+                in the format <code className="bg-zinc-100 px-1 py-0.5 rounded">t=timestamp,v1=signature</code>.
+                Compute <code className="bg-zinc-100 px-1 py-0.5 rounded">HMAC-SHA256(secret, &quot;timestamp.body&quot;)</code> and
+                compare with the <code className="bg-zinc-100 px-1 py-0.5 rounded">v1</code> value to verify authenticity.
+              </p>
+            </div>
           </div>
         )}
       </div>
