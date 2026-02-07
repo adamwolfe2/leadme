@@ -59,6 +59,8 @@ export interface Database {
           subscription_plan_id: string | null
           subscription_start_date: string | null
           subscription_end_date: string | null
+          slack_webhook_url: string | null
+          zapier_webhook_url: string | null
           created_at: string
           updated_at: string
         }
@@ -79,6 +81,8 @@ export interface Database {
           subscription_plan_id?: string | null
           subscription_start_date?: string | null
           subscription_end_date?: string | null
+          slack_webhook_url?: string | null
+          zapier_webhook_url?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -99,6 +103,8 @@ export interface Database {
           subscription_plan_id?: string | null
           subscription_start_date?: string | null
           subscription_end_date?: string | null
+          slack_webhook_url?: string | null
+          zapier_webhook_url?: string | null
           created_at?: string
           updated_at?: string
         }
