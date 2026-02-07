@@ -1,9 +1,9 @@
 import { generateMetadata } from '@/lib/seo/metadata'
 
 export const metadata = generateMetadata({
-  title: 'eCommerce Marketing Solutions',
-  description: 'Turn anonymous visitors into customers. Identify shoppers, build high-intent audiences, and activate across channels with verified consumer data.',
-  keywords: ['ecommerce marketing', 'online store visitor tracking', 'ecommerce retargeting', 'cart abandonment', 'ecommerce lead generation'],
+  title: 'eCommerce & DTC Lead Generation & Visitor Identification',
+  description: 'Identify anonymous online shoppers browsing your products. Turn cart abandoners and window shoppers into customers with AI-powered retargeting and personalized outreach across email, SMS, and direct mail.',
+  keywords: ['ecommerce lead generation', 'DTC visitor identification', 'online store visitor tracking', 'cart abandonment recovery', 'ecommerce retargeting', 'shopper identification', 'ecommerce customer acquisition'],
   canonical: 'https://meetcursive.com/industries/ecommerce',
 })
 

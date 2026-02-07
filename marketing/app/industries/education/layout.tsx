@@ -1,9 +1,9 @@
 import { generateMetadata } from '@/lib/seo/metadata'
 
 export const metadata = generateMetadata({
-  title: 'Education Marketing Solutions',
-  description: 'Student recruitment and enrollment marketing for colleges, universities, and online education providers. Reach prospective students with intent-based targeting.',
-  keywords: ['education marketing', 'student recruitment', 'enrollment marketing', 'higher education marketing', 'college marketing'],
+  title: 'Education Lead Generation & Visitor Identification',
+  description: 'Identify prospective students browsing your program pages. Turn anonymous website visitors into enrolled students with AI-powered outreach for colleges, universities, and online education providers.',
+  keywords: ['education lead generation', 'student recruitment leads', 'enrollment marketing', 'higher education visitor identification', 'college website visitor tracking', 'online education lead gen', 'university prospecting'],
   canonical: 'https://meetcursive.com/industries/education',
 })
 

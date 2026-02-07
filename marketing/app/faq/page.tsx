@@ -7,6 +7,7 @@ import { ArrowRight, HelpCircle, Search } from "lucide-react"
 import { useState } from "react"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
+import { FAQSchema } from "@/components/schema/SchemaMarkup"
 
 export default function FAQPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
@@ -22,6 +23,9 @@ export default function FAQPage() {
 
   return (
     <>
+      {/* FAQ Schema for Google Rich Snippets */}
+      <FAQSchema items={faqs.map(({ question, answer }) => ({ question, answer }))} />
+
       {/* Human View */}
       <HumanView>
         <main className="overflow-hidden">
