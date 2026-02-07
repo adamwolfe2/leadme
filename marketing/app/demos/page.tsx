@@ -44,7 +44,7 @@ export default function DemosPage() {
 
             <div className="flex items-center justify-center gap-4">
               <Link
-                href="https://cal.com/adamwolfe/cursive-ai-audit"
+                href="https://cal.com/cursive/30min"
                 target="_blank"
                 className="px-6 py-3 bg-[#007AFF] text-white rounded-lg font-medium hover:bg-[#0066DD] transition-colors"
               >

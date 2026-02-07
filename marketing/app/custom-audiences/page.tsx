@@ -625,7 +625,7 @@ export default function CustomAudiencesPage() {
               },
               {
                 label: "Book a Call",
-                href: "https://cal.com/adamwolfe/cursive-ai-audit",
+                href: "https://cal.com/cursive/30min",
                 description: "Discuss custom requirements with our team"
               }
             ]} />

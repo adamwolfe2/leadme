@@ -205,7 +205,7 @@ export function Header() {
               <Button size="sm" variant="outline" href="https://leads.meetcursive.com/signup?source=header" target="_blank">
                 Try Free Leads
               </Button>
-              <Button size="sm" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
+              <Button size="sm" href="https://cal.com/cursive/30min" target="_blank">
                 Book a Call
               </Button>
             </div>
@@ -309,7 +309,7 @@ export function Header() {
                 </Button>
                 <Button
                   className="w-full"
-                  href="https://cal.com/adamwolfe/cursive-ai-audit"
+                  href="https://cal.com/cursive/30min"
                   target="_blank"
                   onClick={() => setMobileMenuOpen(false)}
                 >

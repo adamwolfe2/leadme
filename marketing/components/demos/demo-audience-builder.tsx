@@ -145,12 +145,12 @@ export function DemoAudienceBuilder() {
   return (
     <div className="space-y-3">
       {/* Top Stats Row */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Audience Count */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-gradient-to-br from-blue-50 to-blue-50 rounded-xl p-6 text-center border border-gray-200 col-span-2"
+          className="bg-gradient-to-br from-blue-50 to-blue-50 rounded-xl p-6 text-center border border-gray-200 sm:col-span-2"
         >
           <div className="text-sm text-gray-600 mb-2">Total Audience Size</div>
           <motion.div
@@ -158,7 +158,7 @@ export function DemoAudienceBuilder() {
             initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.3 }}
-            className="text-5xl text-gray-900 font-light mb-2"
+            className="text-3xl sm:text-5xl text-gray-900 font-light mb-2"
           >
             {audienceCount.toLocaleString()}
           </motion.div>
@@ -187,7 +187,7 @@ export function DemoAudienceBuilder() {
             initial={{ scale: 1.3, color: "#10B981" }}
             animate={{ scale: 1, color: "#111827" }}
             transition={{ duration: 0.4 }}
-            className="text-4xl font-light mb-1"
+            className="text-2xl sm:text-4xl font-light mb-1"
           >
             {totalMatched}
           </motion.div>
@@ -201,7 +201,7 @@ export function DemoAudienceBuilder() {
       </div>
 
       {/* Live Contact Feed & Growth Chart */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Live Contact Feed */}
         <div className="bg-white rounded-xl p-4 border border-gray-200">
           <div className="flex items-center justify-between mb-3">
@@ -325,7 +325,7 @@ export function DemoAudienceBuilder() {
       </div>
 
       {/* Filter Options Grid */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {Object.entries(availableFilters).map(([category, options]) => (
           <motion.div
             key={category}
@@ -358,7 +358,7 @@ export function DemoAudienceBuilder() {
         animate={{ opacity: 1, y: 0 }}
         className="bg-white rounded-lg p-4 border border-gray-200"
       >
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <div className="text-sm text-gray-600 mb-1">Estimated Cost</div>
             <motion.div
@@ -366,7 +366,7 @@ export function DemoAudienceBuilder() {
               initial={{ scale: 1.1, color: "#10B981" }}
               animate={{ scale: 1, color: "#111827" }}
               transition={{ duration: 0.3 }}
-              className="text-2xl text-gray-900 font-light"
+              className="text-xl sm:text-2xl text-gray-900 font-light"
             >
               ${estimatedCost.toLocaleString()}
             </motion.div>

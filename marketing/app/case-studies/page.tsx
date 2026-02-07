@@ -27,7 +27,7 @@ export default function CaseStudiesPage() {
             </p>
             <Button
               size="lg"
-              href="https://cal.com/adamwolfe/cursive-ai-audit"
+              href="https://cal.com/cursive/30min"
               className="bg-[#007AFF] hover:bg-[#0066DD]"
             >
               Get Results Like These

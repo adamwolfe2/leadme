@@ -100,31 +100,31 @@ export function DemoAttributionFlow() {
   return (
     <div className="space-y-3">
       {/* Summary Stats */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-lg p-4 border border-gray-200 text-center"
+          className="bg-white rounded-lg p-3 sm:p-4 border border-gray-200 text-center"
         >
-          <div className="text-2xl text-gray-900 font-light mb-1">{totalVisitors}</div>
+          <div className="text-lg sm:text-2xl text-gray-900 font-light mb-1">{totalVisitors}</div>
           <div className="text-xs text-gray-600">Total Touchpoints</div>
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-lg p-4 border border-gray-200 text-center"
+          className="bg-white rounded-lg p-3 sm:p-4 border border-gray-200 text-center"
         >
-          <div className="text-2xl text-green-600 font-light mb-1">{totalConverted}</div>
+          <div className="text-lg sm:text-2xl text-green-600 font-light mb-1">{totalConverted}</div>
           <div className="text-xs text-gray-600">Conversions</div>
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-lg p-4 border border-gray-200 text-center"
+          className="bg-white rounded-lg p-3 sm:p-4 border border-gray-200 text-center"
         >
-          <div className="text-2xl text-[#007AFF] font-light mb-1">{conversionRate}%</div>
+          <div className="text-lg sm:text-2xl text-[#007AFF] font-light mb-1">{conversionRate}%</div>
           <div className="text-xs text-gray-600">Conversion Rate</div>
         </motion.div>
       </div>
@@ -134,14 +134,13 @@ export function DemoAttributionFlow() {
         ref={containerRef}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-8 border border-gray-200 relative overflow-hidden"
-        style={{ minHeight: "700px" }}
+        className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-4 sm:p-8 border border-gray-200 relative overflow-hidden min-h-[500px] sm:min-h-[700px]"
       >
         <div className="flex flex-col items-center h-full gap-8">
           {/* Traffic Sources - TOP ROW */}
           <div className="w-full">
             <div className="text-xs text-gray-600 mb-4 font-medium text-center">TRAFFIC SOURCES</div>
-            <div className="flex justify-center items-center gap-4">
+            <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4">
               {trafficSources.map((source, index) => (
                 <motion.div
                   key={source.id}
@@ -154,18 +153,18 @@ export function DemoAttributionFlow() {
                 >
                   <motion.div
                     whileHover={{ scale: 1.08, y: -5 }}
-                    className="bg-white rounded-lg p-4 border-2 border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all cursor-pointer w-32"
+                    className="bg-white rounded-lg p-2 sm:p-4 border-2 border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all cursor-pointer w-24 sm:w-32"
                     style={{
                       borderTopWidth: "4px",
                       borderTopColor: source.color,
                     }}
                   >
-                    <div className="flex flex-col items-center gap-2">
-                      <svg className="w-6 h-6" style={{ color: source.color }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="flex flex-col items-center gap-1 sm:gap-2">
+                      <svg className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: source.color }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={source.icon} />
                       </svg>
-                      <span className="text-xs font-medium text-gray-900 text-center">{source.name}</span>
-                      <div className="text-sm font-semibold" style={{ color: source.color }}>
+                      <span className="text-[10px] sm:text-xs font-medium text-gray-900 text-center">{source.name}</span>
+                      <div className="text-xs sm:text-sm font-semibold" style={{ color: source.color }}>
                         {source.visitors}
                       </div>
                     </div>
@@ -193,7 +192,7 @@ export function DemoAttributionFlow() {
               transition={{ delay: 0.5 }}
               className="relative"
             >
-              <div className="w-64 h-80 relative">
+              <div className="w-48 h-60 sm:w-64 sm:h-80 relative">
                 {/* Vertical Funnel shape */}
                 <svg viewBox="0 0 200 300" className="w-full h-full">
                   <defs>
@@ -238,17 +237,17 @@ export function DemoAttributionFlow() {
 
                 {/* Funnel labels */}
                 <div className="absolute top-10 left-0 right-0 text-center">
-                  <div className="text-2xl font-light text-gray-900">{totalVisitors}</div>
+                  <div className="text-lg sm:text-2xl font-light text-gray-900">{totalVisitors}</div>
                   <div className="text-xs text-gray-600 font-medium">LEADS</div>
                 </div>
                 <div className="absolute top-1/2 left-0 right-0 text-center -translate-y-1/2">
-                  <div className="text-lg font-light text-[#007AFF]">
+                  <div className="text-sm sm:text-lg font-light text-[#007AFF]">
                     {Math.round(totalVisitors * 0.6)}
                   </div>
                   <div className="text-xs text-gray-600 font-medium">QUALIFIED</div>
                 </div>
                 <div className="absolute bottom-10 left-0 right-0 text-center">
-                  <div className="text-2xl font-light text-green-600">{totalConverted}</div>
+                  <div className="text-lg sm:text-2xl font-light text-green-600">{totalConverted}</div>
                   <div className="text-xs text-gray-600 font-medium">CUSTOMERS</div>
                 </div>
               </div>
@@ -258,7 +257,7 @@ export function DemoAttributionFlow() {
           {/* Outcomes - BOTTOM ROW */}
           <div className="w-full">
             <div className="text-xs text-gray-600 mb-4 font-medium text-center">OUTCOMES</div>
-            <div className="flex justify-center items-center gap-4">
+            <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4">
               {outcomes.map((outcome, index) => (
                 <motion.div
                   key={outcome.id}
@@ -268,7 +267,7 @@ export function DemoAttributionFlow() {
                 >
                   <motion.div
                     whileHover={{ scale: 1.08, y: 5 }}
-                    className="bg-white rounded-lg p-4 border-2 border-gray-200 hover:shadow-lg transition-all cursor-pointer w-32"
+                    className="bg-white rounded-lg p-2 sm:p-4 border-2 border-gray-200 hover:shadow-lg transition-all cursor-pointer w-24 sm:w-32"
                     style={{
                       borderBottomWidth: "4px",
                       borderBottomColor: outcome.color,
@@ -297,8 +296,8 @@ export function DemoAttributionFlow() {
             const outcomeIndex = getOutcomeIndex(particle.outcomeId)
 
             // Calculate positions based on index
-            const sourceXPercent = 20 + (sourceIndex * 15) // Spread across top
-            const outcomeXPercent = 20 + (outcomeIndex * 15) // Spread across bottom
+            const sourceXPercent = 10 + (sourceIndex * 20) // Spread across top (10%-90%)
+            const outcomeXPercent = 15 + (outcomeIndex * 23) // Spread across bottom (15%-84%)
 
             return (
               <motion.div

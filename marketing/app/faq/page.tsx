@@ -227,7 +227,7 @@ export default function FAQPage() {
           <div>
             <p className="text-white mb-2">How does website visitor tracking work?</p>
             <p className="text-gray-400">
-              We install a JavaScript pixel that identifies companies visiting your site via IP address, matches them to our database, extracts decision-maker contact info, tracks pages visited, and scores intent. Pricing: $750/mo + $0.50 per identified visitor.
+              We install a JavaScript pixel that identifies companies visiting your site via IP address, matches them to our database, extracts decision-maker contact info, tracks pages visited, and scores intent. Visitor tracking is included with all Cursive service plans at flat monthly pricing.
             </p>
           </div>
           <div>
@@ -268,7 +268,7 @@ export default function FAQPage() {
         <MachineList items={[
           {
             label: "Book a Call",
-            href: "https://cal.com/adamwolfe/cursive-ai-audit",
+            href: "https://cal.com/cursive/30min",
             description: "Schedule 15-minute call to ask questions"
           },
           {
@@ -500,7 +500,7 @@ Perfect for agencies reselling lead gen services or enterprises wanting branded 
 
 You get a list of identified visitors with contact info, ready for outreach.
 
-Pricing: $750/mo + $0.50 per identified visitor`,
+Visitor tracking is included with all Cursive service plans. No per-visitor fees. Plans start at $1,000/month.`,
   },
   {
     category: "technical",

@@ -359,7 +359,7 @@ The system follows Cursive's brand guidelines from `/.agents/product-marketing-c
 
 ### CTAs
 
-Primary: "Book a Demo" → https://cal.com/adamwolfe/cursive-ai-audit
+Primary: "Book a Demo" → https://cal.com/cursive/30min
 
 Variations:
 - "See Cursive in Action"

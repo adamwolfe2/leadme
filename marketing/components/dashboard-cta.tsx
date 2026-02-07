@@ -18,7 +18,7 @@ export function DashboardCTA({
   subheadline,
   description,
   ctaText = "Book Your Free AI Audit Now",
-  ctaUrl = "https://cal.com/adamwolfe/cursive-ai-audit",
+  ctaUrl = "https://cal.com/cursive/30min",
 }: DashboardCTAProps) {
   return (
     <section className="relative py-32 bg-white overflow-hidden">

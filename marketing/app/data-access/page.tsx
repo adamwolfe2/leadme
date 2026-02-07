@@ -74,7 +74,7 @@ export default function DataAccessPage() {
               <span className="block font-cursive text-6xl lg:text-8xl text-gray-900 mt-2">On Demand</span>
             </h1>
             <p className="text-lg text-gray-600 mb-8">220M+ Consumer Profiles • 140M+ Business Profiles • 30,000+ Intent Categories</p>
-            <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit">Get Started</Button>
+            <Button size="lg" href="https://cal.com/cursive/30min">Get Started</Button>
           </motion.div>
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto mt-16">
             {[
@@ -363,7 +363,7 @@ export default function DataAccessPage() {
         <MachineList items={[
           {
             label: "Schedule Demo",
-            href: "https://cal.com/adamwolfe/cursive-ai-audit",
+            href: "https://cal.com/cursive/30min",
             description: "Discuss your data access needs"
           },
           {
@@ -410,7 +410,7 @@ export default function DataAccessPage() {
         <MachineList items={[
           {
             label: "Get Started",
-            href: "https://cal.com/adamwolfe/cursive-ai-audit",
+            href: "https://cal.com/cursive/30min",
             description: "Schedule a consultation"
           },
           {

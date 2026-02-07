@@ -215,7 +215,7 @@ export default function MarketplacePage() {
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className={`bg-white rounded-2xl p-8 border transition-all duration-300 hover:shadow-lg relative ${
+                    className={`bg-white rounded-2xl p-8 border transition-all duration-300 hover:shadow-lg relative h-full flex flex-col ${
                       pkg.popular
                         ? "border-[#007AFF] shadow-xl transform lg:scale-105 z-10"
                         : "border-gray-200 hover:border-[#007AFF]"
@@ -228,16 +228,20 @@ export default function MarketplacePage() {
                         </div>
                       </div>
                     )}
-                    <div className="text-xs font-medium text-gray-500 mb-2 uppercase">{pkg.tier}</div>
-                    <h3 className="text-2xl font-light text-gray-900 mb-1">{pkg.credits} Credits</h3>
-                    <div className="text-4xl font-light text-[#007AFF] mb-1">${pkg.price}</div>
-                    <div className="text-sm text-gray-500 mb-6">${pkg.perCredit}/credit</div>
+                    <div className="flex-grow">
+                      <div className="text-xs font-medium text-gray-500 mb-2 uppercase">{pkg.tier}</div>
+                      <h3 className="text-2xl font-light text-gray-900 mb-1">{pkg.credits} Credits</h3>
+                      <div className="text-4xl font-light text-[#007AFF] mb-1">${pkg.price}</div>
+                      <div className="text-sm text-gray-500 mb-2">${pkg.perCredit}/credit</div>
 
-                    {pkg.savings && (
-                      <div className="inline-block bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded mb-6">
-                        Save {pkg.savings}
+                      <div className="h-7 mb-4">
+                        {pkg.savings ? (
+                          <div className="inline-block bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">
+                            Save {pkg.savings}
+                          </div>
+                        ) : null}
                       </div>
-                    )}
+                    </div>
 
                     <Button
                       className="w-full"
@@ -543,7 +547,7 @@ export default function MarketplacePage() {
               },
               {
                 label: "Book a Strategy Call",
-                href: "https://cal.com/adamwolfe/cursive-ai-audit",
+                href: "https://cal.com/cursive/30min",
                 description: "Talk to our team about your lead generation needs"
               }
             ]} />

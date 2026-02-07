@@ -82,7 +82,7 @@ export default function IntegrationsPage() {
             <p className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto">
               Connect Cursive to 50+ tools or use our API and webhooks for custom integrations.
             </p>
-            <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit">View Integrations</Button>
+            <Button size="lg" href="https://cal.com/cursive/30min">View Integrations</Button>
           </motion.div>
         </Container>
       </section>

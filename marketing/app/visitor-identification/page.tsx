@@ -41,13 +41,13 @@ export default function VisitorIdentificationPage() {
                 Stop Losing 98% of Your Website Visitors
               </h1>
               <p className="text-xl text-gray-600 mb-6 max-w-3xl mx-auto leading-relaxed">
-                Most B2B companies never know who visits their site. Cursive identifies up to 70% of your anonymous traffic and turns them into qualified leads—automatically.
+                Most B2B companies never know who visits their site. Cursive identifies up to 70% of your anonymous traffic—then helps you actually reach them through automated outreach, filtered audience building, and access to 360M+ verified contacts.
               </p>
               <p className="text-lg text-gray-500 mb-8 max-w-2xl mx-auto">
-                See which companies viewed your pricing page this week. Reach out while they're still interested. Convert anonymous clicks into closed deals.
+                See who visited your pricing page, automatically enrich their profiles, trigger personalized outreach, and build lookalike audiences from our database of hundreds of millions of verified B2B and B2C leads.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit">
+                <Button size="lg" href="https://cal.com/cursive/30min">
                   See Who's Visiting Your Site
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -410,7 +410,7 @@ export default function VisitorIdentificationPage() {
                 },
                 {
                   question: "How much does visitor identification cost?",
-                  answer: "Pricing varies based on your website traffic volume and activation needs. Book a demo to get a custom quote for your specific use case."
+                  answer: "All Cursive plans include visitor identification at flat monthly pricing -- no per-visitor or per-lead fees. Plans start at $1,000/month for Cursive Data. Visit our pricing page for full details."
                 }
               ].map((faq, i) => (
                 <motion.div
@@ -529,18 +529,18 @@ export default function VisitorIdentificationPage() {
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
               <div className="bg-white rounded-2xl p-8 border border-gray-200">
                 <div className="text-sm font-medium text-[#007AFF] mb-2">OPTION 1</div>
-                <h3 className="text-2xl font-light text-gray-900 mb-3">Pixel Setup Service</h3>
-                <p className="text-gray-600 mb-4">We install and configure everything for you. Done in 48 hours.</p>
-                <div className="text-2xl font-light text-[#007AFF] mb-6">$750/mo + $0.50/visitor</div>
-                <Button className="w-full" href="/pixel">
-                  Learn About Pixel Setup
+                <h3 className="text-2xl font-light text-gray-900 mb-3">Done-For-You Setup</h3>
+                <p className="text-gray-600 mb-4">We install your pixel, configure your CRM integration, and set up automated outreach to identified visitors. Done in 48 hours.</p>
+                <div className="text-2xl font-light text-[#007AFF] mb-6">Starting at $1,000/mo</div>
+                <Button className="w-full" href="/pricing">
+                  View Plans
                 </Button>
               </div>
 
               <div className="bg-white rounded-2xl p-8 border border-gray-200">
                 <div className="text-sm font-medium text-[#007AFF] mb-2">OPTION 2</div>
-                <h3 className="text-2xl font-light text-gray-900 mb-3">Browse Pre-Identified Leads</h3>
-                <p className="text-gray-600 mb-4">Access our marketplace of already-identified contacts. Buy with credits.</p>
+                <h3 className="text-2xl font-light text-gray-900 mb-3">Self-Serve Marketplace</h3>
+                <p className="text-gray-600 mb-4">Browse our database of 360M+ verified B2B and B2C leads. Filter by industry, title, intent, and more. Buy with credits.</p>
                 <div className="text-2xl font-light text-[#007AFF] mb-6">From $0.60/lead</div>
                 <Button className="w-full" href="/marketplace">
                   Browse Marketplace
@@ -572,7 +572,7 @@ export default function VisitorIdentificationPage() {
 
               <Button
                 size="lg"
-                href="https://cal.com/adamwolfe/cursive-ai-audit"
+                href="https://cal.com/cursive/30min"
                 target="_blank"
                 className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-10 py-5 mb-4"
               >
@@ -719,7 +719,7 @@ export default function VisitorIdentificationPage() {
         {/* Pricing */}
         <MachineSection title="Pricing">
           <p className="text-gray-700 mb-4">
-            Visitor Identification starts at $750/month + $0.50 per identified visitor. Includes pixel installation, CRM integration setup, and ongoing support.
+            Visitor Identification is included with all Cursive service plans starting at $1,000/month. Flat monthly pricing with no per-visitor fees. Includes pixel installation, CRM integration setup, and ongoing support.
           </p>
           <MachineList items={[
             {
@@ -748,7 +748,7 @@ export default function VisitorIdentificationPage() {
           <MachineList items={[
             {
               label: "Book a Demo",
-              href: "https://cal.com/adamwolfe/cursive-ai-audit",
+              href: "https://cal.com/cursive/30min",
               description: "See visitor identification in action with a personalized walkthrough"
             },
             {

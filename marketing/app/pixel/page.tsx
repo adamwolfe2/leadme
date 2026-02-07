@@ -7,19 +7,10 @@ import {
   ArrowRight, Phone, Eye, Settings, Building2, Users, FileText,
   TrendingUp, Zap, CheckCircle2, ArrowRightLeft, BarChart3, Clock
 } from "lucide-react"
-import { useState } from "react"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 
 export default function PixelPage() {
-  const [monthlyVisitors, setMonthlyVisitors] = useState(5000)
-
-  // Calculate ROI
-  const identificationRate = 0.7
-  const identifiedContacts = Math.round(monthlyVisitors * identificationRate)
-  const perVisitorCost = 0.5
-  const baseCost = 750
-  const totalCost = baseCost + (identifiedContacts * perVisitorCost)
 
   // Product Schema for SEO
   const productSchema = {
@@ -37,10 +28,10 @@ export default function PixelPage() {
         "offers": {
           "@type": "Offer",
           "priceCurrency": "USD",
-          "price": "750",
+          "price": "1000",
           "priceSpecification": {
             "@type": "UnitPriceSpecification",
-            "price": "750",
+            "price": "1000",
             "priceCurrency": "USD",
             "unitText": "MONTH"
           },
@@ -63,7 +54,7 @@ export default function PixelPage() {
             "name": "How much does the Cursive Pixel cost?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "The Cursive Pixel costs $750/month base fee plus $0.50 per identified visitor. For example, if you get 5,000 monthly visitors and we identify 70% (3,500 contacts), your total cost would be $750 + $1,750 = $2,500/month."
+              "text": "The Cursive Pixel is included with all Cursive service plans starting at $1,000/month. Flat monthly pricing with no per-visitor or per-lead fees. Your cost is predictable regardless of how much traffic your site gets."
             }
           },
           {
@@ -109,15 +100,15 @@ export default function PixelPage() {
                   Done-for-you pixel setup that identifies anonymous visitors and turns them into qualified leads. We handle everything -- you just start getting leads.
                 </p>
                 <p className="text-lg text-gray-500 mb-8 max-w-2xl mx-auto">
-                  $750/mo base + $0.50 per identified visitor. Setup done in 48 hours.
+                  Included with all service plans. Flat monthly pricing, no per-visitor fees. Setup done in 48 hours.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                  <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
+                  <Button size="lg" href="https://cal.com/cursive/30min" target="_blank">
                     Book Pixel Setup Call
                     <ArrowRight className="w-5 h-5" />
                   </Button>
                   <Button size="lg" variant="outline" href="#roi-calculator">
-                    Calculate Your ROI
+                    See Pricing
                   </Button>
                 </div>
                 <div className="mt-8 flex items-center justify-center gap-8 text-sm text-gray-600">
@@ -158,12 +149,13 @@ export default function PixelPage() {
               >
                 <div className="text-center mb-8">
                   <div className="text-sm text-[#007AFF] font-medium mb-3">CURSIVE PIXEL</div>
+                  <div className="text-lg text-gray-600 mt-2 mb-1">Starting at</div>
                   <div className="flex items-baseline justify-center gap-2">
-                    <span className="text-5xl font-light text-[#007AFF]">$750</span>
-                    <span className="text-xl text-gray-500">/mo base</span>
+                    <span className="text-5xl font-light text-[#007AFF]">$1,000</span>
+                    <span className="text-xl text-gray-500">/mo</span>
                   </div>
                   <div className="text-lg text-gray-600 mt-2">
-                    + $0.50 per identified visitor
+                    Flat pricing. No per-visitor fees.
                   </div>
                 </div>
 
@@ -180,7 +172,7 @@ export default function PixelPage() {
                 </div>
 
                 <div className="mt-8 text-center">
-                  <Button size="lg" className="w-full" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
+                  <Button size="lg" className="w-full" href="https://cal.com/cursive/30min" target="_blank">
                     Book Pixel Setup Call
                     <ArrowRight className="w-5 h-5" />
                   </Button>
@@ -313,19 +305,19 @@ export default function PixelPage() {
             </Container>
           </section>
 
-          {/* ROI Calculator */}
+          {/* ROI / Value Section */}
           <section id="roi-calculator" className="py-24 bg-white">
             <Container>
               <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-12">
                   <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                    Calculate Your
+                    Predictable Costs,
                     <span className="block font-cursive text-5xl lg:text-6xl text-gray-900 mt-2">
-                      Monthly Cost
+                      Unlimited Upside
                     </span>
                   </h2>
                   <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                    See exactly what the pixel will cost based on your website traffic.
+                    Flat monthly pricing means your cost stays the same no matter how much traffic you get.
                   </p>
                 </div>
 
@@ -335,59 +327,39 @@ export default function PixelPage() {
                   viewport={{ once: true }}
                   className="bg-white rounded-2xl p-8 shadow-xl border border-gray-200"
                 >
-                  <div className="mb-8">
-                    <label className="block text-sm font-medium text-gray-700 mb-3">
-                      How many monthly website visitors do you get?
-                    </label>
-                    <input
-                      type="range"
-                      min="1000"
-                      max="50000"
-                      step="500"
-                      value={monthlyVisitors}
-                      onChange={(e) => setMonthlyVisitors(parseInt(e.target.value))}
-                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#007AFF]"
-                    />
-                    <div className="flex justify-between mt-2">
-                      <span className="text-sm text-gray-500">1,000</span>
-                      <span className="text-xl font-light text-[#007AFF]">{monthlyVisitors.toLocaleString()} visitors/mo</span>
-                      <span className="text-sm text-gray-500">50,000</span>
-                    </div>
-                  </div>
-
                   <div className="grid md:grid-cols-3 gap-6 mb-8">
                     <div className="p-6 bg-[#F7F9FB] rounded-xl text-center">
-                      <div className="text-sm text-gray-600 mb-2">Identified Contacts</div>
+                      <div className="text-sm text-gray-600 mb-2">Flat Monthly Price</div>
                       <div className="text-3xl font-light text-gray-900 mb-1">
-                        {identifiedContacts.toLocaleString()}
+                        $1,000
                       </div>
-                      <div className="text-xs text-gray-500">at 70% identification rate</div>
+                      <div className="text-xs text-gray-500">starting with Cursive Data</div>
                     </div>
 
                     <div className="p-6 bg-[#F7F9FB] rounded-xl text-center">
-                      <div className="text-sm text-gray-600 mb-2">Per-Contact Cost</div>
+                      <div className="text-sm text-gray-600 mb-2">Per-Visitor Fees</div>
                       <div className="text-3xl font-light text-gray-900 mb-1">
-                        $0.50
+                        $0
                       </div>
-                      <div className="text-xs text-gray-500">per identified visitor</div>
+                      <div className="text-xs text-gray-500">no usage-based charges</div>
                     </div>
 
                     <div className="p-6 bg-[#007AFF]/5 rounded-xl text-center border-2 border-[#007AFF]">
-                      <div className="text-sm text-[#007AFF] font-medium mb-2">Total Monthly Cost</div>
+                      <div className="text-sm text-[#007AFF] font-medium mb-2">Identification Rate</div>
                       <div className="text-3xl font-light text-gray-900 mb-1">
-                        ${totalCost.toLocaleString()}
+                        70%
                       </div>
-                      <div className="text-xs text-gray-500">$750 base + ${(identifiedContacts * perVisitorCost).toLocaleString()} usage</div>
+                      <div className="text-xs text-gray-500">of anonymous visitors identified</div>
                     </div>
                   </div>
 
                   <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200">
-                    <div className="text-sm text-blue-700 font-medium mb-1">Cost Per Lead</div>
+                    <div className="text-sm text-blue-700 font-medium mb-1">Traditional Lead Gen Cost</div>
                     <div className="text-4xl font-light text-blue-900 mb-2">
-                      ${(totalCost / identifiedContacts).toFixed(2)}
+                      $50 - $100+
                     </div>
                     <div className="text-sm text-blue-700">
-                      vs. $50-$100+ per lead with traditional lead gen
+                      per lead. With Cursive, your pixel identifies thousands of visitors at a flat monthly rate.
                     </div>
                   </div>
                 </motion.div>
@@ -427,7 +399,7 @@ export default function PixelPage() {
                       "Page-level intent data (what they viewed)",
                       "Return visitor detection",
                       "Done-for-you setup and management",
-                      "$750/mo + $0.50 per identified visitor",
+                      "Included with all plans -- starting at $1,000/mo",
                     ].map((item, i) => (
                       <div key={i} className="flex items-start gap-2">
                         <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
@@ -435,7 +407,7 @@ export default function PixelPage() {
                       </div>
                     ))}
                   </div>
-                  <Button className="w-full" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
+                  <Button className="w-full" href="https://cal.com/cursive/30min" target="_blank">
                     Book Pixel Setup
                     <ArrowRight className="w-4 h-4" />
                   </Button>
@@ -506,7 +478,7 @@ export default function PixelPage() {
                   Book a 15-minute setup call. We'll install the pixel on your website within 48 hours and you'll start getting leads immediately.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-                  <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
+                  <Button size="lg" href="https://cal.com/cursive/30min" target="_blank">
                     Book Pixel Setup Call
                     <ArrowRight className="w-5 h-5" />
                   </Button>
@@ -535,7 +507,7 @@ export default function PixelPage() {
             subheadline="Website Visitors"
             description="Book a setup call and we'll install the Cursive Pixel on your website within 48 hours. Start identifying anonymous visitors and converting them into leads."
             ctaText="Book Pixel Setup Call"
-            ctaUrl="https://cal.com/adamwolfe/cursive-ai-audit"
+            ctaUrl="https://cal.com/cursive/30min"
           />
         </main>
       </HumanView>
@@ -547,7 +519,7 @@ export default function PixelPage() {
           <div className="mb-12 pb-6 border-b border-gray-200">
             <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE PIXEL - WEBSITE VISITOR IDENTIFICATION</h1>
             <p className="text-gray-700 leading-relaxed">
-              Done-for-you website visitor tracking pixel. Identifies anonymous visitors and provides company names, decision-maker contacts, pages viewed, and intent scores. $750/month base fee plus $0.50 per identified visitor. Setup completed in 48 hours.
+              Done-for-you website visitor tracking pixel. Identifies anonymous visitors and provides company names, decision-maker contacts, pages viewed, and intent scores. Included with all Cursive service plans starting at $1,000/month. Flat pricing with no per-visitor fees. Setup completed in 48 hours.
             </p>
           </div>
 
@@ -557,10 +529,10 @@ export default function PixelPage() {
               Simple, transparent pricing with no hidden fees:
             </p>
             <MachineList items={[
-              "Base fee: $750/month",
-              "Per-visitor cost: $0.50 per identified visitor",
-              "Example: 5,000 monthly visitors, 70% identification rate = 3,500 contacts",
-              "Example total: $750 + ($0.50 x 3,500) = $2,500/month",
+              "Included with all Cursive service plans starting at $1,000/month (Cursive Data tier)",
+              "Flat monthly pricing -- no per-visitor or per-lead fees",
+              "Your cost stays the same regardless of website traffic volume",
+              "70% average identification rate on anonymous visitors",
               "No setup fees. No long-term contracts. Cancel anytime."
             ]} />
           </MachineSection>
@@ -595,11 +567,11 @@ export default function PixelPage() {
               For a website with 5,000 monthly visitors:
             </p>
             <MachineList items={[
-              "Identified contacts: 3,500 (at 70% identification rate)",
-              "Monthly cost: $2,500 ($750 base + $1,750 usage)",
-              "Cost per lead: $0.71",
+              "Identified contacts: ~3,500 (at 70% identification rate)",
+              "Monthly cost: flat rate starting at $1,000/month -- same price regardless of traffic",
+              "No per-visitor or per-lead charges",
               "Compared to traditional lead gen: $50-$100+ per lead",
-              "Potential savings: 95%+ reduction in cost per lead"
+              "Predictable budget with unlimited identification upside"
             ]} />
           </MachineSection>
 
@@ -629,7 +601,7 @@ export default function PixelPage() {
             <MachineList items={[
               {
                 label: "Book Pixel Setup Call",
-                href: "https://cal.com/adamwolfe/cursive-ai-audit",
+                href: "https://cal.com/cursive/30min",
                 description: "15-minute call to scope installation. Pixel installed within 48 hours."
               },
               {

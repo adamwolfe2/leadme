@@ -57,7 +57,7 @@ export function HumanHomePage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-3">
               <Button
                 size="lg"
-                href="https://cal.com/adamwolfe/cursive-ai-audit"
+                href="https://cal.com/cursive/30min"
                 target="_blank"
                 className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-8 py-4"
               >

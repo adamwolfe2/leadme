@@ -45,7 +45,7 @@ export default function PlatformPage() {
                 Try the Platform
                 <ArrowRight className="w-5 h-5" />
               </Button>
-              <Button size="lg" variant="outline" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
+              <Button size="lg" variant="outline" href="https://cal.com/cursive/30min" target="_blank">
                 Book a Demo
               </Button>
             </div>
@@ -479,7 +479,7 @@ export default function PlatformPage() {
                 </div>
               </div>
 
-              <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
+              <Button size="lg" href="https://cal.com/cursive/30min" target="_blank">
                 Schedule a Demo
                 <ArrowRight className="w-5 h-5" />
               </Button>
@@ -536,12 +536,12 @@ export default function PlatformPage() {
 
               <div className="bg-white rounded-xl p-6 mb-8 border border-gray-200">
                 <div className="text-2xl font-light text-[#007AFF] mb-2">
-                  $750/mo + $0.50/visitor
+                  Included
                 </div>
                 <p className="text-gray-600 text-sm">Includes pixel installation and setup</p>
               </div>
 
-              <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
+              <Button size="lg" href="https://cal.com/cursive/30min" target="_blank">
                 Add Visitor Tracking
                 <ArrowRight className="w-5 h-5" />
               </Button>
@@ -699,7 +699,7 @@ export default function PlatformPage() {
           },
           {
             label: "Visitor Intelligence",
-            description: "Identify anonymous website visitors, export decision-maker contacts, and trigger behavior-based campaigns ($750/mo + $0.50/visitor)"
+            description: "Identify anonymous website visitors, export decision-maker contacts, and trigger behavior-based campaigns. Included with all Cursive service plans."
           }
         ]} />
       </MachineSection>
@@ -772,7 +772,7 @@ export default function PlatformPage() {
         ]} />
         <div className="mt-4 bg-gray-100 rounded-lg p-4">
           <p className="text-gray-900 mb-2">Pricing:</p>
-          <p className="text-gray-700">$750/mo + $0.50 per identified visitor (includes pixel installation and setup)</p>
+          <p className="text-gray-700">Included with all Cursive service plans. No per-visitor fees.</p>
         </div>
       </MachineSection>
 
@@ -786,7 +786,7 @@ export default function PlatformPage() {
           },
           {
             label: "Book a Demo",
-            href: "https://cal.com/adamwolfe/cursive-ai-audit",
+            href: "https://cal.com/cursive/30min",
             description: "See personalized walkthrough of Campaign Manager and Visitor Intelligence"
           },
           {

@@ -67,11 +67,19 @@ export function DemoAccountIntelligence() {
         animate={{ opacity: 1, y: 0 }}
         className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border border-gray-200"
       >
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start justify-between mb-4 gap-2 flex-wrap">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#007AFF] to-blue-600 flex items-center justify-center text-white text-xl font-bold">
-              {company.name[0]}
-            </div>
+            {company.name === "Salesforce" ? (
+              <div className="w-12 h-12 rounded-lg bg-[#00A1E0] flex items-center justify-center p-2">
+                <svg viewBox="0 0 50 34" fill="white" className="w-full h-full">
+                  <path d="M20.5 3c2-1.9 4.6-3 7.5-3 3.7 0 7 1.8 9 4.6 1.7-.8 3.5-1.2 5.4-1.2 7.1 0 12.6 5.7 12.6 12.6S49.5 28.6 42.4 28.6c-.9 0-1.8-.1-2.6-.3-1.8 2.6-4.7 4.2-8 4.2-1.5 0-3-.4-4.2-1-1.8 2.3-4.6 3.7-7.6 3.7-3.4 0-6.3-1.7-8-4.3-.8.2-1.7.3-2.5.3-5.3 0-9.5-5.2-9.5-11.4 0-4.6 2.8-8.5 6.8-10.2-.3-1-.5-2.2-.5-3.3C6.3 2.9 9.4 0 13.2 0c3.1 0 5.7 1.2 7.3 3z"/>
+                </svg>
+              </div>
+            ) : (
+              <div className="w-12 h-12 rounded-lg bg-[#FF7A59] flex items-center justify-center text-white text-xl font-bold">
+                H
+              </div>
+            )}
             <div>
               <h4 className="text-xl text-gray-900 font-medium">{company.name}</h4>
               <div className="text-sm text-gray-600">B2B SaaS Company</div>
@@ -87,7 +95,7 @@ export function DemoAccountIntelligence() {
           </motion.div>
         </div>
 
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           {[
             { label: "Employees", value: company.size },
             { label: "Growth", value: `↑${company.growth}%` },
@@ -265,7 +273,7 @@ export function DemoAccountIntelligence() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="flex gap-3"
+        className="flex flex-col sm:flex-row gap-3"
       >
         <motion.button
           whileHover={{ scale: 1.05 }}

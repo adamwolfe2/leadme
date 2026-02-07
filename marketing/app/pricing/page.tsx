@@ -13,7 +13,6 @@ import { Breadcrumbs } from "@/components/Breadcrumbs"
 export default function PricingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual')
-  const [calculatorLeads, setCalculatorLeads] = useState(1000)
   const [activeTab, setActiveTab] = useState<'marketplace' | 'services'>('services')
 
   // Product Schema for SEO
@@ -100,13 +99,6 @@ export default function PricingPage() {
       }
     ]
   }
-
-  // ROI Calculator logic
-  const costPerLead = 50 // Traditional cost per qualified lead
-  const cursiveCostPerLead = 2 // Cursive cost per lead
-  const traditionalCost = calculatorLeads * costPerLead
-  const cursiveCost = calculatorLeads * cursiveCostPerLead
-  const monthlySavings = traditionalCost - cursiveCost
 
   // Credit packages
   const creditPackages = [
@@ -242,7 +234,7 @@ export default function PricingPage() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  className={`bg-white rounded-2xl p-6 border transition-all duration-300 hover:shadow-lg relative ${
+                  className={`bg-white rounded-2xl p-6 border transition-all duration-300 hover:shadow-lg relative h-full flex flex-col ${
                     pkg.popular
                       ? 'border-[#007AFF] shadow-xl'
                       : 'border-gray-200 hover:border-[#007AFF]'
@@ -264,18 +256,20 @@ export default function PricingPage() {
                     <div className="text-sm text-gray-500">credits</div>
                   </div>
 
-                  <div className="mb-4">
+                  <div className="mb-4 flex-grow">
                     <div className="text-3xl font-light text-[#007AFF]">
                       ${pkg.price.toLocaleString()}
                     </div>
                     <div className="text-sm text-gray-500 mt-1">
                       ${pkg.pricePerCredit.toFixed(2)} per credit
                     </div>
-                    {pkg.savings && (
-                      <div className="inline-block bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded mt-2">
-                        Save {pkg.savings}%
-                      </div>
-                    )}
+                    <div className="h-7 mt-2">
+                      {pkg.savings ? (
+                        <div className="inline-block bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">
+                          Save {pkg.savings}%
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
 
                   <Button
@@ -414,7 +408,7 @@ export default function PricingPage() {
                     </li>
                   </ul>
 
-                  <Button className="w-full" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
+                  <Button className="w-full" href="https://cal.com/cursive/30min" target="_blank">
                     Book a Demo
                     <ArrowRight className="w-4 h-4" />
                   </Button>
@@ -648,9 +642,9 @@ export default function PricingPage() {
               <Link href="/pixel" className="block">
                 <div className="bg-white rounded-xl p-6 text-center border border-gray-200 hover:border-[#007AFF] transition-all h-full">
                   <Zap className="w-10 h-10 text-[#007AFF] mx-auto mb-3" />
-                  <div className="text-2xl font-light text-[#007AFF] mb-2">$750/mo</div>
+                  <div className="text-2xl font-light text-[#007AFF] mb-2">Included</div>
                   <div className="text-sm font-medium text-gray-900 mb-2">Website Visitor Tracking</div>
-                  <div className="text-xs text-gray-600 mb-4">+ $0.50 per identified visitor</div>
+                  <div className="text-xs text-gray-600 mb-4">With all service plans</div>
                   <p className="text-xs text-gray-500">
                     Identify 70% of anonymous website visitors in real-time
                   </p>
@@ -698,68 +692,94 @@ export default function PricingPage() {
         </Container>
       </section>
 
-      {/* ROI Calculator Section */}
+      {/* Why Cursive Wins Section */}
       <section className="py-16 bg-gradient-to-br from-[#007AFF]/5 to-blue-50">
         <Container>
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-10">
               <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm mb-4">
                 <Calculator className="w-5 h-5 text-[#007AFF]" />
-                <span className="text-sm font-medium text-gray-900">ROI Calculator</span>
+                <span className="text-sm font-medium text-gray-900">Why Cursive Wins</span>
               </div>
               <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-3">
-                See Your Potential Monthly Savings
+                Flat Pricing. No Per-Lead Fees. No Surprises.
               </h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Most lead gen tools charge per lead or per visitor -- costs spiral as you grow.
+                Cursive's flat monthly plans mean predictable costs at any scale.
+              </p>
             </div>
 
             <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-200">
-              <div className="mb-8">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  How many qualified leads do you need per month?
-                </label>
-                <input
-                  type="range"
-                  min="100"
-                  max="5000"
-                  step="100"
-                  value={calculatorLeads}
-                  onChange={(e) => setCalculatorLeads(parseInt(e.target.value))}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#007AFF]"
-                />
-                <div className="flex justify-between mt-2">
-                  <span className="text-sm text-gray-500">100 leads</span>
-                  <span className="text-xl font-light text-[#007AFF]">{calculatorLeads} leads</span>
-                  <span className="text-sm text-gray-500">5,000 leads</span>
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6 mb-8">
+              <div className="grid md:grid-cols-2 gap-8">
+                {/* Traditional */}
                 <div className="p-6 bg-gray-50 rounded-xl">
-                  <div className="text-sm text-gray-600 mb-2">Traditional Lead Gen</div>
-                  <div className="text-3xl font-light text-gray-900 mb-1">
-                    ${traditionalCost.toLocaleString()}
-                    <span className="text-base text-gray-500">/mo</span>
+                  <div className="text-sm font-medium text-gray-500 mb-4 uppercase tracking-wide">Traditional Tools</div>
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-3">
+                      <svg className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                      <span className="text-gray-700 text-sm">$0.50-$5.00 per identified visitor</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <svg className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                      <span className="text-gray-700 text-sm">Costs increase as traffic grows</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <svg className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                      <span className="text-gray-700 text-sm">Identification only -- no outreach</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <svg className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                      <span className="text-gray-700 text-sm">Limited to your website traffic only</span>
+                    </div>
+                    <div className="pt-4 border-t border-gray-200">
+                      <div className="text-2xl font-light text-gray-900">$2,500-$10,000+<span className="text-base text-gray-500">/mo</span></div>
+                      <div className="text-xs text-gray-500 mt-1">for 5,000 visitors/mo</div>
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-500">at $50 per lead</div>
                 </div>
 
+                {/* Cursive */}
                 <div className="p-6 bg-[#007AFF]/5 rounded-xl border-2 border-[#007AFF]">
-                  <div className="text-sm text-[#007AFF] font-medium mb-2">With Cursive</div>
-                  <div className="text-3xl font-light text-gray-900 mb-1">
-                    ${cursiveCost.toLocaleString()}
-                    <span className="text-base text-gray-500">/mo</span>
+                  <div className="text-sm font-medium text-[#007AFF] mb-4 uppercase tracking-wide">With Cursive</div>
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-3">
+                      <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-gray-700 text-sm">Flat monthly pricing -- no per-visitor fees</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-gray-700 text-sm">Identify visitors AND reach out to them</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-gray-700 text-sm">Build filtered audiences from 360M+ verified leads</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-gray-700 text-sm">Done-for-you outbound campaigns included</span>
+                    </div>
+                    <div className="pt-4 border-t border-blue-200">
+                      <div className="text-2xl font-light text-gray-900">From $1,000<span className="text-base text-gray-500">/mo</span></div>
+                      <div className="text-xs text-[#007AFF] mt-1">Unlimited visitors. Flat rate.</div>
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-500">at $2 per lead</div>
-                </div>
-              </div>
-
-              <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200">
-                <div className="text-sm text-blue-700 font-medium mb-1">Your Monthly Savings</div>
-                <div className="text-4xl font-light text-blue-900 mb-2">
-                  ${monthlySavings.toLocaleString()}
-                </div>
-                <div className="text-sm text-blue-700">
-                  That's ${(monthlySavings * 12).toLocaleString()} saved per year
                 </div>
               </div>
             </div>
@@ -947,7 +967,7 @@ export default function PricingPage() {
               <div className="text-center">
                 <Button
                   size="lg"
-                  href="https://cal.com/adamwolfe/cursive-ai-audit"
+                  href="https://cal.com/cursive/30min"
                   target="_blank"
                 >
                   Contact Sales
@@ -1058,7 +1078,7 @@ export default function PricingPage() {
 
             <Button
               size="lg"
-              href="https://cal.com/adamwolfe/cursive-ai-audit"
+              href="https://cal.com/cursive/30min"
               target="_blank"
               className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-10 py-5 mb-4"
             >
@@ -1191,7 +1211,7 @@ export default function PricingPage() {
         <MachineList items={[
           {
             label: "Website Visitor Tracking",
-            description: "$750/mo + $0.50 per identified visitor. Learn more at /pixel"
+            description: "Included with all service plans. No per-visitor fees. Learn more at /pixel"
           },
           {
             label: "Visitor Retargeting",
@@ -1262,7 +1282,7 @@ export default function PricingPage() {
           },
           {
             label: "Book Free Audit",
-            href: "https://cal.com/adamwolfe/cursive-ai-audit",
+            href: "https://cal.com/cursive/30min",
             description: "15-minute call to review your lead gen and recommend the right plan"
           },
           {

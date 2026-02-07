@@ -261,7 +261,7 @@ export default function HomePage() {
               <MachineList items={[
                 {
                   label: "Book Your Free AI Audit",
-                  href: "https://cal.com/adamwolfe/cursive-ai-audit",
+                  href: "https://cal.com/cursive/30min",
                   description: "See Cursive identify your website visitors in real-time with a personalized walkthrough"
                 },
                 {
@@ -296,7 +296,7 @@ export default function HomePage() {
               },
               {
                 label: "Schedule Demo",
-                href: "https://cal.com/adamwolfe/cursive-ai-audit"
+                href: "https://cal.com/cursive/30min"
               },
               {
                 label: "LinkedIn",

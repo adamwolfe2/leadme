@@ -145,6 +145,136 @@ export default function AboutPage() {
         </Container>
       </section>
 
+      {/* Recursive Intelligence Philosophy */}
+      <section className="py-24 bg-white">
+        <Container>
+          <div className="max-w-5xl mx-auto">
+            <div className="grid lg:grid-cols-2 gap-12 items-start">
+              {/* Left: Philosophy Content */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="space-y-8"
+              >
+                {/* Definition block */}
+                <div className="border-l-4 border-[#007AFF] pl-6">
+                  <p className="text-sm tracking-widest text-gray-400 mb-1">re·cur·sive</p>
+                  <p className="text-gray-600 italic">/rəˈkərsiv/ — relating to or involving a process that calls itself, using its own output as its next input.</p>
+                </div>
+
+                <h2 className="text-4xl lg:text-5xl font-light text-gray-900">
+                  Our Philosophy
+                  <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+                    Recursive Intelligence
+                  </span>
+                </h2>
+
+                <div className="space-y-4 text-lg text-gray-700 leading-relaxed">
+                  <p>
+                    We&apos;re betting everything on a simple premise: <strong className="text-gray-900">the companies that learn from their own growth data will outrun the ones that don&apos;t.</strong>
+                  </p>
+                  <p>
+                    Most growth tools give you a static database and say &ldquo;go find leads.&rdquo; That&apos;s a library card. Cursive is different. We built a system that gets smarter every time you use it. Every visitor identified, every audience built, every campaign sent, every deal closed — it all feeds back into the system.
+                  </p>
+                  <p>
+                    The AI doesn&apos;t start from scratch each month. It picks up where last month left off. It remembers which subject lines converted, which industries responded, which signals predicted a deal. Then it compounds.
+                  </p>
+                </div>
+
+                {/* The Cycle That Compounds */}
+                <div>
+                  <h3 className="text-xl font-medium text-gray-900 mb-4">The Cycle That Compounds</h3>
+                  <div className="space-y-3">
+                    {[
+                      { step: "Identify", desc: "High-intent visitors & engagement signals" },
+                      { step: "Enrich", desc: "Turn signals into actionable data & lookalikes" },
+                      { step: "Reach", desc: "Multi-channel outreach informed by past wins" },
+                      { step: "Convert", desc: "Close deals with messaging that already worked" },
+                      { step: "Learn", desc: "Feed insights back into targeting" },
+                    ].map((item, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: -10 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.1 }}
+                        className="flex items-start gap-3"
+                      >
+                        <div className="w-6 h-6 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <span className="text-xs text-white font-bold">{i + 1}</span>
+                        </div>
+                        <div>
+                          <span className="font-semibold text-gray-900">{item.step}</span>
+                          <span className="text-gray-600"> — {item.desc}</span>
+                        </div>
+                      </motion.div>
+                    ))}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.6 }}
+                      className="flex items-center gap-3 pt-2"
+                    >
+                      <div className="w-6 h-6 bg-gray-900 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-xs text-white">↻</span>
+                      </div>
+                      <span className="text-gray-900 font-semibold italic">REPEAT SMARTER</span>
+                    </motion.div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Right: Contrast Grid */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="space-y-6"
+              >
+                {/* Most Businesses vs Cursive */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-gray-100 rounded-xl p-6">
+                    <h4 className="text-sm font-semibold text-gray-400 tracking-widest mb-4">MOST BUSINESSES</h4>
+                    <ul className="space-y-3 text-sm text-gray-600">
+                      <li>Buy a lead list</li>
+                      <li>Blast generic emails</li>
+                      <li>Wonder why nothing converts</li>
+                      <li>Buy another list</li>
+                      <li>Repeat (without learning)</li>
+                    </ul>
+                  </div>
+                  <div className="bg-gray-900 rounded-xl p-6">
+                    <h4 className="text-sm font-semibold text-[#007AFF] tracking-widest mb-4">CURSIVE BUSINESSES</h4>
+                    <ul className="space-y-3 text-sm text-gray-300">
+                      <li>Identify who&apos;s already interested</li>
+                      <li>Enrich with real-time context</li>
+                      <li>Reach through channels that work</li>
+                      <li>Convert with proven messaging</li>
+                      <li>Learn and compound every cycle</li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Quote */}
+                <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-6 text-white">
+                  <p className="text-lg font-light leading-relaxed">
+                    &ldquo;While your competitors treat every lead like the first lead they&apos;ve ever gotten, Cursive treats every lead like the thousandth. <em>Because it is.</em>&rdquo;
+                  </p>
+                  <p className="text-sm text-gray-400 mt-3">The result: your CAC drops, your LTV rises, your growth compounds instead of plateaus.</p>
+                </div>
+
+                {/* Caption */}
+                <p className="text-sm text-gray-500 text-center leading-relaxed italic">
+                  Each cycle through the Cursive system makes the next cycle more efficient. Your first month identifies patterns. Your third month exploits them. Your sixth month? You&apos;re targeting prospects your competitors can&apos;t even see.
+                </p>
+              </motion.div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
       {/* Values Section */}
       <section className="py-24 bg-[#F7F9FB]">
         <Container>
@@ -467,6 +597,31 @@ export default function AboutPage() {
         </p>
       </MachineSection>
 
+      {/* Recursive Intelligence Philosophy */}
+      <MachineSection title="Our Philosophy: Recursive Intelligence">
+        <p className="text-gray-700 mb-4">
+          Recursive (adjective): relating to or involving a process that calls itself, using its own output as its next input. Cursive is built on the premise that the companies that learn from their own growth data will outrun the ones that don't.
+        </p>
+        <p className="text-gray-700 mb-4">
+          Most growth tools give you a static database and say "go find leads." That's a library card. Cursive built a system that gets smarter every time you use it. Every visitor identified, every audience built, every campaign sent, every deal closed feeds back into the system. The AI doesn't start from scratch each month — it picks up where last month left off, remembering which subject lines converted, which industries responded, which signals predicted a deal. Then it compounds.
+        </p>
+        <p className="text-gray-700 mb-4">The Cursive recursive cycle:</p>
+        <MachineList items={[
+          "Identify — High-intent visitors and engagement signals",
+          "Enrich — Turn signals into actionable data and lookalikes",
+          "Reach — Multi-channel outreach informed by past wins",
+          "Convert — Close deals with messaging that already worked",
+          "Learn — Feed insights back into targeting",
+          "Repeat Smarter — Each cycle compounds on the last"
+        ]} />
+        <p className="text-gray-700 mt-4">
+          Each cycle through the Cursive system makes the next cycle more efficient. Your first month identifies patterns. Your third month exploits them. Your sixth month, you're targeting prospects your competitors can't even see.
+        </p>
+        <p className="text-gray-700 mt-4">
+          While most businesses buy a lead list, blast generic emails, wonder why nothing converts, and repeat without learning — Cursive businesses identify who's already interested, enrich with real-time context, reach through channels that work, convert with proven messaging, and learn and compound every cycle.
+        </p>
+      </MachineSection>
+
       {/* Core Values */}
       <MachineSection title="Core Values">
         <div className="space-y-4">
@@ -578,7 +733,7 @@ export default function AboutPage() {
         <MachineList items={[
           {
             label: "Schedule a Call",
-            href: "https://cal.com/adamwolfe/cursive-ai-audit",
+            href: "https://cal.com/cursive/30min",
             description: "Book a personalized demo to see how Cursive can transform your lead generation"
           },
           {
