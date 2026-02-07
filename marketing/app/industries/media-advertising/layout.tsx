@@ -1,9 +1,9 @@
 import { generateMetadata } from '@/lib/seo/metadata'
 
 export const metadata = generateMetadata({
-  title: 'Media & Advertising Marketing Solutions',
-  description: 'Audience data for publishers, media companies, and ad agencies. Build premium audiences, maximize ad inventory value, and prove attribution with verified data.',
-  keywords: ['media marketing', 'publisher data', 'advertising audience data', 'programmatic advertising', 'ad inventory optimization'],
+  title: 'Media & Advertising Lead Generation & Visitor Identification',
+  description: 'Identify advertisers and brands visiting your media properties. Turn anonymous website traffic into qualified sales leads for publishers, ad networks, and media companies with AI-powered outreach.',
+  keywords: ['media lead generation', 'advertising visitor identification', 'publisher lead gen', 'media sales prospecting', 'ad network visitor tracking', 'media company website tracking', 'advertising audience data'],
   canonical: 'https://meetcursive.com/industries/media-advertising',
 })
 

@@ -1,9 +1,9 @@
 import { generateMetadata } from '@/lib/seo/metadata'
 
 export const metadata = generateMetadata({
-  title: 'Retail Marketing Solutions',
-  description: 'Drive foot traffic and online sales with location-based targeting and consumer intent data. Identify shoppers, build audiences, and activate across channels.',
-  keywords: ['retail marketing', 'store traffic', 'retail customer acquisition', 'location based marketing', 'retail analytics'],
+  title: 'Retail Lead Generation & Visitor Identification',
+  description: 'Identify anonymous shoppers browsing your online store. Turn website visitors into in-store and online customers with AI-powered outreach, consumer intent data, and cross-channel activation.',
+  keywords: ['retail lead generation', 'retail visitor identification', 'online store visitor tracking', 'retail customer acquisition', 'shopper identification', 'retail website tracking', 'omnichannel retail marketing'],
   canonical: 'https://meetcursive.com/industries/retail',
 })
 

@@ -1,9 +1,9 @@
 import { generateMetadata } from '@/lib/seo/metadata'
 
 export const metadata = generateMetadata({
-  title: 'Home Services Marketing Solutions',
-  description: 'Lead generation for contractors, HVAC, plumbing, landscaping, and home improvement companies. Reach homeowners with verified intent data and automated outreach.',
-  keywords: ['home services marketing', 'contractor leads', 'HVAC leads', 'plumbing leads', 'homeowner targeting'],
+  title: 'Home Services Lead Generation & Visitor Identification',
+  description: 'Identify homeowners browsing your service pages. Generate qualified leads for HVAC, plumbing, roofing, landscaping, and home improvement companies with AI-powered outreach and verified contact data.',
+  keywords: ['home services lead generation', 'contractor visitor identification', 'HVAC leads', 'plumbing lead gen', 'roofing leads', 'homeowner identification', 'home improvement website tracking'],
   canonical: 'https://meetcursive.com/industries/home-services',
 })
 
