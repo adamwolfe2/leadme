@@ -125,7 +125,18 @@ export function SlackIntegration({ user, isPro }: SlackIntegrationProps) {
             ) : (
               <>
                 <button
-                  onClick={() => alert('Test notification sent to Slack!')}
+                  onClick={async () => {
+                    try {
+                      const res = await fetch('/api/integrations/slack/test', { method: 'POST' })
+                      if (res.ok) {
+                        alert('Test notification sent to Slack!')
+                      } else {
+                        alert('Failed to send test notification. Please reconnect Slack.')
+                      }
+                    } catch {
+                      alert('Failed to send test notification.')
+                    }
+                  }}
                   className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
                 >
                   Test Connection
