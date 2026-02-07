@@ -208,7 +208,7 @@ async function notifySlack(
       return false
     }
 
-    console.log(`${LOG_PREFIX} Slack notification sent for lead ${lead.lead_id}`)
+    console.error(`${LOG_PREFIX} Slack notification sent for lead ${lead.lead_id}`)
     return true
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error'
@@ -275,7 +275,7 @@ async function notifyZapier(
       return false
     }
 
-    console.log(`${LOG_PREFIX} Zapier notification sent for lead ${lead.lead_id}`)
+    console.error(`${LOG_PREFIX} Zapier notification sent for lead ${lead.lead_id}`)
     return true
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error'
@@ -321,7 +321,7 @@ export async function notifyNewLead(
     }
 
     if (!users || users.length === 0) {
-      console.log(`${LOG_PREFIX} No users found for workspace ${workspaceId}`)
+      console.error(`${LOG_PREFIX} No users found for workspace ${workspaceId}`)
       return result
     }
 
@@ -339,7 +339,7 @@ export async function notifyNewLead(
     }
 
     if (slackUrls.size === 0 && zapierUrls.size === 0) {
-      console.log(`${LOG_PREFIX} No webhooks configured for workspace ${workspaceId}`)
+      console.error(`${LOG_PREFIX} No webhooks configured for workspace ${workspaceId}`)
       return result
     }
 
@@ -370,7 +370,7 @@ export async function notifyNewLead(
 
     await Promise.allSettled(promises)
 
-    console.log(
+    console.error(
       `${LOG_PREFIX} Notification results for lead ${lead.lead_id}: ` +
         `Slack=${result.slack.count}/${slackUrls.size}, ` +
         `Zapier=${result.zapier.count}/${zapierUrls.size}`
