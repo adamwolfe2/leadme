@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 
+// Exactly 36 items = 3 rows of 12 on desktop
 const integrations = [
   { name: "Stripe", logo: "/integrations/stripe logo.png" },
   { name: "Mailchimp", logo: "/integrations/mailchimp logo.jpg" },
@@ -30,18 +31,15 @@ const integrations = [
   { name: "Airtable", logo: "/integrations/airtable-svgrepo-com.svg" },
   { name: "Apollo", logo: "/integrations/apollo.svg" },
   { name: "Asana", logo: "/integrations/asana.svg" },
-  { name: "Attentive", logo: "/integrations/attentive.webp" },
   { name: "Calendly", logo: "/integrations/calendly.svg" },
-  { name: "Firecrawl", logo: "/integrations/firecrawl-logo.webp" },
   { name: "Instantly", logo: "/integrations/instantly.webp" },
   { name: "Klaviyo", logo: "/integrations/klaviyo.svg" },
   { name: "OpenAI", logo: "/integrations/openai-svgrepo-com.svg" },
-  { name: "Sentry", logo: "/integrations/Sentry_idovIhtf_y_0.svg" },
-  { name: "Telegram", logo: "/integrations/telegram-communication-chat-interaction-network-connection-svgrepo-com.svg" },
   { name: "Typeform", logo: "/integrations/typeform.svg" },
   { name: "Webflow", logo: "/integrations/Webflow_id2IyfqSKv_0.svg" },
   { name: "WordPress", logo: "/integrations/icons8-wordpress.svg" },
   { name: "Zapier", logo: "/integrations/zapier.png" },
+  { name: "Telegram", logo: "/integrations/telegram-communication-chat-interaction-network-connection-svgrepo-com.svg" },
 ]
 
 interface IntegrationsShowcaseProps {
