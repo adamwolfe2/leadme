@@ -110,6 +110,104 @@ export const ghlCreateSubaccount = inngest.createFunction(
       }
     })
 
+    // Step 4: Send client their GHL credentials + onboarding form link
+    await step.run('send-credentials-email', async () => {
+      const { sendEmail } = await import('@/lib/email/resend-client')
+      const { createEmailTemplate } = await import('@/lib/email/resend-client')
+
+      const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
+      const GHL_LOGIN_URL = `https://app.gohighlevel.com/`
+      const onboardingFormUrl = `${APP_URL}/onboarding/dfy?workspace=${workspace_id}`
+
+      const html = createEmailTemplate({
+        preheader: 'Your CRM is ready — log in and complete setup',
+        title: 'Your CRM Account is Ready',
+        content: `
+          <h1 class="email-title">Welcome to Cursive, ${user_name.split(' ')[0]}!</h1>
+          <p class="email-text">Your dedicated CRM account has been created. Here's everything you need to get started:</p>
+
+          <div style="background: #f9fafb; border-radius: 8px; padding: 24px; margin: 24px 0;">
+            <p style="margin: 0 0 12px 0; font-weight: 600;">Your CRM Login</p>
+            <p style="margin: 0 0 8px 0;">Email: <strong>${user_email}</strong></p>
+            <p style="margin: 0 0 16px 0;">A password reset link has been sent to your email. Use it to set your password.</p>
+            <a href="${GHL_LOGIN_URL}" style="display: inline-block; padding: 10px 24px; background: #111827; color: white; border-radius: 6px; text-decoration: none; font-weight: 500;">
+              Log In to Your CRM
+            </a>
+          </div>
+
+          <div style="background: #eff6ff; border-radius: 8px; padding: 24px; margin: 24px 0; border-left: 4px solid #2563eb;">
+            <p style="margin: 0 0 8px 0; font-weight: 600; color: #1e40af;">Next Step: Complete Your Onboarding</p>
+            <p style="margin: 0 0 16px 0;">We need a few details about your business to set up your visitor tracking pixel and configure your campaigns.</p>
+            <a href="${onboardingFormUrl}" class="email-button" style="margin: 0;">
+              Complete Setup (2 min)
+            </a>
+          </div>
+
+          <div class="email-signature">
+            <p style="margin: 0;">— Adam, Founder @ Cursive</p>
+          </div>
+        `,
+      })
+
+      await sendEmail({
+        to: user_email,
+        subject: `Your Cursive CRM is ready, ${user_name.split(' ')[0]}`,
+        html,
+      })
+
+      safeLog(`[GHL Sub-Account] Sent credentials email to ${user_email}`)
+    })
+
+    // Step 5: Notify admin (Adam) that a new DFY client needs pixel setup
+    await step.run('notify-admin', async () => {
+      const { sendEmail } = await import('@/lib/email/resend-client')
+      const { sendSlackAlert } = await import('@/lib/monitoring/alerts')
+
+      // Email notification
+      await sendEmail({
+        to: 'adam@meetcursive.com',
+        subject: `[ACTION] New DFY client: ${company_name} — needs pixel setup`,
+        html: `
+          <div style="font-family: -apple-system, sans-serif; max-width: 600px;">
+            <h2>New DFY Client Onboarded</h2>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr><td style="padding: 8px 0; font-weight: bold;">Company:</td><td>${company_name}</td></tr>
+              <tr><td style="padding: 8px 0; font-weight: bold;">Email:</td><td>${user_email}</td></tr>
+              <tr><td style="padding: 8px 0; font-weight: bold;">Name:</td><td>${user_name}</td></tr>
+              <tr><td style="padding: 8px 0; font-weight: bold;">GHL Location:</td><td>${locationId}</td></tr>
+              <tr><td style="padding: 8px 0; font-weight: bold;">Workspace:</td><td>${workspace_id}</td></tr>
+            </table>
+            <h3>Manual Steps Needed:</h3>
+            <ol>
+              <li>Wait for client to complete onboarding form</li>
+              <li>Create pixel in DataShopper/AudienceLab for their website</li>
+              <li>Configure native GHL integration to route leads to location ${locationId}</li>
+              <li>Set up EmailBison campaign for their outreach</li>
+            </ol>
+          </div>
+        `,
+      })
+
+      // Slack notification
+      try {
+        await sendSlackAlert({
+          type: 'new_dfy_client',
+          severity: 'info',
+          message: `New DFY client: ${company_name} (${user_email}). GHL location: ${locationId}. Needs pixel setup.`,
+          metadata: {
+            company_name,
+            user_email,
+            locationId,
+            workspace_id,
+          },
+        })
+      } catch {
+        // Slack is optional
+      }
+
+      safeLog(`[GHL Sub-Account] Admin notified about new DFY client: ${company_name}`)
+    })
+
     return {
       success: true,
       locationId,

@@ -5,17 +5,26 @@ import { createClient } from '@/lib/supabase/server'
 const onboardingSchema = z.object({
   subscription_id: z.string().uuid(),
   onboarding_data: z.object({
+    // Business basics (required for pixel + campaign setup)
+    website_url: z.string().url('Please enter a valid website URL'),
+    company_name: z.string().min(1),
     industries: z.array(z.string()),
     company_size: z.string(),
     revenue_range: z.string(),
+    // Targeting (needed for campaign configuration)
     target_titles: z.string(),
     target_seniority: z.array(z.string()),
     geographic_focus: z.array(z.string()),
-    tech_stack: z.string().optional(),
+    // Outreach context
+    value_proposition: z.string().optional(),
     pain_points: z.string().optional(),
     use_case: z.string(),
     ideal_lead_profile: z.string(),
     exclusions: z.string().optional(),
+    // Technical
+    tech_stack: z.string().optional(),
+    current_crm: z.string().optional(),
+    monthly_lead_goal: z.number().optional(),
     additional_notes: z.string().optional(),
   })
 })
@@ -82,6 +91,26 @@ export async function POST(request: NextRequest) {
 
     if (updateError) {
       throw new Error(`Failed to save onboarding: ${updateError.message}`)
+    }
+
+    // Trigger post-onboarding automation (admin alert + next steps)
+    try {
+      const { inngest } = await import('@/inngest/client')
+      await inngest.send({
+        name: 'dfy/onboarding-completed',
+        data: {
+          workspace_id: userData.workspace_id,
+          subscription_id: validated.subscription_id,
+          user_email: user.email || '',
+          company_name: validated.onboarding_data.company_name,
+          website_url: validated.onboarding_data.website_url,
+          industries: validated.onboarding_data.industries,
+          onboarding_data: validated.onboarding_data,
+        },
+      })
+    } catch (inngestError) {
+      console.error('[Service Onboarding] Failed to trigger post-onboarding:', inngestError)
+      // Don't block - onboarding data is saved
     }
 
     return NextResponse.json({

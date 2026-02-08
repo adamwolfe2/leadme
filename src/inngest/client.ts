@@ -483,6 +483,19 @@ export type Events = {
       batch_id?: string
     }
   }
+
+  // DFY Onboarding Events
+  'dfy/onboarding-completed': {
+    data: {
+      workspace_id: string
+      subscription_id: string
+      user_email: string
+      company_name: string
+      website_url: string
+      industries: string[]
+      onboarding_data: Record<string, any>
+    }
+  }
 }
 
 // Lazy-load Inngest client to avoid build-time initialization

@@ -175,3 +175,6 @@ export { ghlDeliverLeads } from './ghl-deliver-leads'
 
 // GHL Client Sync (sync leads to client's own GHL via OAuth)
 export { ghlSyncContact, ghlBulkSync } from './ghl-sync-contact'
+
+// DFY Onboarding Sequence (post-onboarding form drip)
+export { dfyOnboardingSequence } from './dfy-onboarding-sequence'

@@ -145,5 +145,8 @@ export const { GET, POST, PUT } = serve({
     // GHL Client Sync (sync leads to client's own GHL via OAuth)
     functions.ghlSyncContact,
     functions.ghlBulkSync,
+
+    // DFY Onboarding Sequence
+    functions.dfyOnboardingSequence,
   ],
 })
