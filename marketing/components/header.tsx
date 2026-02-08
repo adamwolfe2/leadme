@@ -34,7 +34,7 @@ const navLinks: NavLink[] = [
       {
         href: "/pixel",
         label: "Visitor Pixel",
-        description: "See who's visiting your website ($750/mo)",
+        description: "See who's visiting your website",
         icon: Eye,
       },
       {
@@ -57,25 +57,25 @@ const navLinks: NavLink[] = [
       {
         href: "/services#data",
         label: "Cursive Data",
-        description: "Verified leads delivered monthly ($1k/mo)",
+        description: "Verified leads delivered monthly",
         icon: Database,
       },
       {
         href: "/services#outbound",
         label: "Cursive Outbound",
-        description: "Done-for-you email campaigns ($2.5k/mo)",
+        description: "Done-for-you email campaigns",
         icon: Mail,
       },
       {
         href: "/services#pipeline",
         label: "Cursive Pipeline",
-        description: "Full-stack AI SDR solution ($5k/mo)",
+        description: "Full-stack AI SDR solution",
         icon: Target,
       },
       {
         href: "/venture-studio",
         label: "Venture Studio",
-        description: "White-glove partnership ($25k+/mo)",
+        description: "White-glove partnership",
         icon: Building2,
       },
     ],

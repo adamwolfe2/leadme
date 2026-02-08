@@ -67,111 +67,31 @@ export default function WelcomePage() {
     setError(null)
 
     try {
-      const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession()
-
-      if (!session) {
-        throw new Error('Not authenticated')
-      }
-
       if (selectedRole === 'business') {
-        // Create business workspace
         if (!businessName || !industry) {
           throw new Error('Please fill in all fields')
         }
-
-        const slug = businessName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-
-        // Check slug availability
-        const { data: existing } = await supabase
-          .from('workspaces')
-          .select('id')
-          .eq('slug', slug)
-          .single() as { data: any; error: any }
-
-        if (existing) {
-          throw new Error('Business name is taken. Please try another.')
-        }
-
-        // Create workspace
-        const { data: workspace, error: workspaceError } = await supabase
-          .from('workspaces')
-          .insert({
-            name: businessName,
-            slug,
-            subdomain: slug,
-            industry_vertical: industry,
-            allowed_industries: [industry],
-            allowed_regions: ['US'],
-            onboarding_status: 'completed',
-          } as any)
-          .select()
-          .single() as { data: any; error: any }
-
-        if (workspaceError) throw workspaceError
-
-        // Create user profile
-        const { error: userError } = await supabase
-          .from('users')
-          .insert({
-            auth_user_id: session.user.id,
-            workspace_id: workspace.id,
-            email: session.user.email!,
-            full_name: session.user.user_metadata.full_name || session.user.user_metadata.name || null,
-            role: 'owner',
-            plan: 'free',
-            daily_credit_limit: 3,
-            active_subscription: false,
-            partner_approved: false,
-          } as any)
-
-        if (userError) {
-          // Rollback workspace
-          await supabase.from('workspaces').delete().eq('id', workspace.id)
-          throw userError
-        }
-
       } else if (selectedRole === 'partner') {
-        // Create partner workspace
         if (!companyName) {
           throw new Error('Please enter your company name')
         }
+      }
 
-        const slug = companyName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+      // Call API route (uses admin client server-side, bypasses RLS)
+      const payload = selectedRole === 'business'
+        ? { role: 'business', businessName, industry }
+        : { role: 'partner', companyName }
 
-        // Create workspace for partner
-        const { data: workspace, error: workspaceError } = await supabase
-          .from('workspaces')
-          .insert({
-            name: companyName,
-            slug,
-            subdomain: slug,
-            onboarding_status: 'completed',
-          } as any)
-          .select()
-          .single() as { data: any; error: any }
+      const res = await fetch('/api/onboarding/setup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
 
-        if (workspaceError) throw workspaceError
+      const data = await res.json()
 
-        // Create partner user
-        const { error: userError } = await supabase
-          .from('users')
-          .insert({
-            auth_user_id: session.user.id,
-            workspace_id: workspace.id,
-            email: session.user.email!,
-            full_name: session.user.user_metadata.full_name || session.user.user_metadata.name || null,
-            role: 'partner',
-            plan: 'free',
-            partner_approved: false,
-            active_subscription: true, // Partners don't need subscription
-          } as any)
-
-        if (userError) {
-          // Rollback workspace
-          await supabase.from('workspaces').delete().eq('id', workspace.id)
-          throw userError
-        }
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to create account')
       }
 
       // Grant free credits for all new signups
