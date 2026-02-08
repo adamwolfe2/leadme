@@ -77,27 +77,27 @@ export function HumanHomePage() {
           </motion.div>
 
           {/* Split Layout: Copy Left, Demo Right */}
-          <div className="lg:grid lg:grid-cols-12 lg:gap-10 items-start">
-            {/* Left Column: Copy + Feature Buttons */}
+          <div className="lg:flex lg:gap-12 xl:gap-16 items-start">
+            {/* Left Column: Copy */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="lg:col-span-5 text-center lg:text-left mb-10 lg:mb-0"
+              className="lg:w-[45%] xl:w-[42%] lg:flex-shrink-0 text-center lg:text-left mb-10 lg:mb-0"
             >
-              <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] xl:text-[3.5rem] font-light text-gray-900 mb-6 leading-[1.1]">
+              <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] xl:text-6xl font-light text-gray-900 mb-6 leading-[1.1]">
                 See Who&apos;s Visiting Your Site.
                 <span className="block text-gray-500 mt-2">
                   Reach Out Before They Leave.
                 </span>
               </h1>
 
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0">
+              <p className="text-lg text-gray-600 mb-6 leading-relaxed max-w-xl mx-auto lg:mx-0">
                 <span className="font-cursive text-gray-900 text-xl">Cursive</span> reveals anonymous website visitors, enriches them with verified contact data, and automates personalized outreach—so you never miss a warm lead.
               </p>
 
               {/* Stats */}
-              <div className="flex justify-center lg:justify-start gap-8 mb-8 py-5 border-y border-gray-100">
+              <div className="flex justify-center lg:justify-start gap-8 mb-6 py-4 border-y border-gray-100">
                 {[
                   { value: "70%", label: "Visitor ID Rate" },
                   { value: "220M+", label: "Consumer Profiles" },
@@ -111,7 +111,7 @@ export function HumanHomePage() {
               </div>
 
               {/* CTAs */}
-              <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4 mb-2">
+              <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3 mb-2">
                 <Button
                   size="lg"
                   href="https://cal.com/cursive/30min"
@@ -129,10 +129,10 @@ export function HumanHomePage() {
                   Get 100 Free Leads
                 </Button>
               </div>
-              <p className="text-sm text-gray-400 mb-10 lg:mb-8">No commitment required</p>
+              <p className="text-sm text-gray-400 mb-6">No commitment required</p>
 
-              {/* Desktop Feature Buttons (2-col sidebar) */}
-              <div className="hidden lg:grid grid-cols-2 gap-2">
+              {/* Desktop Feature Pills (ClickUp-style flex-wrap rows) */}
+              <div className="hidden lg:flex lg:flex-wrap gap-2">
                 {heroFeatures.map((feature) => {
                   const Icon = feature.icon
                   const isActive = activeFeature === feature.id
@@ -140,13 +140,13 @@ export function HumanHomePage() {
                     <button
                       key={feature.id}
                       onClick={() => setActiveFeature(feature.id)}
-                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-left transition-all ${
+                      className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] transition-all whitespace-nowrap ${
                         isActive
                           ? 'bg-gray-900 text-white font-medium shadow-sm'
                           : 'text-gray-600 hover:bg-gray-50 border border-gray-200'
                       }`}
                     >
-                      <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-400'}`} />
+                      <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-400'}`} />
                       {feature.label}
                     </button>
                   )
@@ -159,7 +159,7 @@ export function HumanHomePage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="lg:col-span-7"
+              className="lg:flex-1 lg:min-w-0"
             >
               {/* Mobile Feature Grid (ClickUp-style 4x3 icon grid) */}
               <div className="lg:hidden grid grid-cols-4 gap-px bg-gray-200 rounded-xl overflow-hidden mb-6">
