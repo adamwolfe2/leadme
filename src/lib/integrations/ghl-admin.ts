@@ -533,17 +533,19 @@ export async function createLocationUser(
 // SNAPSHOT CLEANUP - Remove Unwanted Assets from New Sub-Accounts
 // ============================================================================
 
-// Pipeline names from the snapshot that clients should NOT get
+// Pipelines that should NEVER appear in client sub-accounts.
+// These are Cursive-internal and could leak if the wrong snapshot is applied.
 const SNAPSHOT_PIPELINES_TO_REMOVE = [
-  'AI Audit',                       // Cursive's internal sales funnel
-  'Agency OS – Sales Pipeline',     // Cursive's internal sales pipeline
+  'AI Audit',                         // Cursive's internal audit funnel
+  'Agency OS – Sales Pipeline',       // Cursive's internal sales pipeline
   'Talent Acquisition Funnel (ROLE)', // Cursive's internal hiring
+  'Client Journey Funnel',            // Agency lifecycle tracker (not for clients)
+  'Client Onboarding',                // Cursive's fulfillment tracker (not for clients)
 ]
 
-// Pipeline names clients SHOULD keep
-// - Client Journey Funnel (lifecycle tracking)
-// - Client Onboarding (fulfillment tracking)
-// - Appointment Funnel (lead management)
+// Clients SHOULD only have:
+// - "Lead Pipeline" (New Lead → Contacted → Interested → Meeting Booked → Won → Lost)
+// - Any pipeline explicitly created for them
 
 // Custom field names that are junk/test data to remove
 const SNAPSHOT_JUNK_FIELD_NAMES = [

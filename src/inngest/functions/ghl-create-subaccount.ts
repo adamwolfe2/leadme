@@ -29,9 +29,11 @@ import {
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
-// The snapshot ID for Cursive's "AI Agency Growth Funnel"
-// This contains all 108 assets: calendars, custom fields, pipelines, etc.
-const AI_AGENCY_SNAPSHOT_ID = process.env.GHL_SNAPSHOT_ID || ''
+// Snapshot for new client sub-accounts.
+// Should be the MINIMAL "Cursive Client Lite" snapshot (lead pipeline + basic fields),
+// NOT the full "AI Agency Growth Funnel" ($2k agency snapshot with 108 assets).
+// Create the lite snapshot in GHL UI, then set GHL_CLIENT_SNAPSHOT_ID in Vercel.
+const CLIENT_SNAPSHOT_ID = process.env.GHL_CLIENT_SNAPSHOT_ID || process.env.GHL_SNAPSHOT_ID || ''
 
 export const ghlCreateSubaccount = inngest.createFunction(
   {
@@ -59,7 +61,7 @@ export const ghlCreateSubaccount = inngest.createFunction(
         name: company_name,
         email: user_email,
         phone: phone || undefined,
-        snapshotId: snapshot_id || AI_AGENCY_SNAPSHOT_ID || undefined,
+        snapshotId: snapshot_id || CLIENT_SNAPSHOT_ID || undefined,
       })
 
       if (!result.success || !result.locationId) {
@@ -196,10 +198,10 @@ export const ghlCreateSubaccount = inngest.createFunction(
           <div style="background: #f0fdf4; border-radius: 8px; padding: 24px; margin: 24px 0; border-left: 4px solid #22c55e;">
             <p style="margin: 0 0 8px 0; font-weight: 600; color: #15803d;">What's Already Set Up For You</p>
             <ul style="margin: 0; padding-left: 20px; color: #374151;">
-              <li>Client journey pipeline with lifecycle tracking</li>
-              <li>Onboarding pipeline for your fulfillment flow</li>
-              <li>Appointment funnel for lead management</li>
-              <li>Onboarding calendar (60 min) for your kickoff call</li>
+              <li>Lead pipeline to track visitors from your site</li>
+              <li>Custom fields for enriched contact data</li>
+              <li>Native integration ready for visitor identification</li>
+              <li>Discovery call calendar for booking meetings</li>
             </ul>
           </div>
 
