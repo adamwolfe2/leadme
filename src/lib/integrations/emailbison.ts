@@ -67,7 +67,7 @@ export interface EmailBisonLead {
   first_name?: string
   last_name?: string
   company_name?: string
-  custom_variables?: Record<string, string>
+  custom_variables?: Array<{ name: string; value: string }>
 }
 
 export interface EmailBisonSenderEmail {
@@ -234,14 +234,16 @@ export async function pauseCampaign(
 
 /**
  * Add a sequence step (email) to a campaign
+ * Endpoint: POST /api/campaigns/sequence-steps (campaign_id in body)
  */
 export async function addSequenceStep(
   campaignId: string,
   step: SequenceStep
 ): Promise<{ step_id: string }> {
-  return bisonFetch(`/api/campaigns/${campaignId}/sequences`, {
+  return bisonFetch('/api/campaigns/sequence-steps', {
     method: 'POST',
     body: JSON.stringify({
+      campaign_id: campaignId,
       subject: step.subject,
       body: step.body,
       wait_days: step.wait_days || 1,
@@ -264,9 +266,52 @@ export async function toggleSequenceVariant(
   })
 }
 
+/**
+ * Delete a sequence step
+ */
+export async function deleteSequenceStep(
+  stepId: string
+): Promise<void> {
+  await bisonFetch(`/api/campaigns/sequence-steps/${stepId}`, {
+    method: 'DELETE',
+  })
+}
+
+/**
+ * Send a test email for a sequence step
+ */
+export async function sendTestEmail(
+  stepId: string,
+  testEmail: string
+): Promise<void> {
+  await bisonFetch(`/api/campaigns/sequence-steps/${stepId}/send-test`, {
+    method: 'POST',
+    body: JSON.stringify({ email: testEmail }),
+  })
+}
+
 // ============================================================================
 // LEADS
 // ============================================================================
+
+/**
+ * List/search leads
+ */
+export async function listLeads(params?: {
+  search?: string
+  tag_ids?: string[]
+  page?: number
+}): Promise<{ leads: EmailBisonLead[]; total: number }> {
+  const searchParams = new URLSearchParams()
+  if (params?.search) searchParams.set('search', params.search)
+  if (params?.page) searchParams.set('page', params.page.toString())
+  if (params?.tag_ids) {
+    params.tag_ids.forEach((id, i) => searchParams.set(`filters[tag_ids][${i}]`, id))
+  }
+
+  const query = searchParams.toString()
+  return bisonFetch(`/api/leads${query ? `?${query}` : ''}`)
+}
 
 /**
  * Add leads to a campaign
@@ -347,12 +392,13 @@ export async function listSenderEmails(params?: {
 
 /**
  * Add sender emails to a campaign
+ * Endpoint: POST /api/campaigns/{id}/attach-sender-emails
  */
 export async function addSenderEmailsToCampaign(
   campaignId: string,
   senderEmailIds: string[]
 ): Promise<void> {
-  await bisonFetch(`/api/campaigns/${campaignId}/sender-emails`, {
+  await bisonFetch(`/api/campaigns/${campaignId}/attach-sender-emails`, {
     method: 'POST',
     body: JSON.stringify({ sender_email_ids: senderEmailIds }),
   })
@@ -360,13 +406,14 @@ export async function addSenderEmailsToCampaign(
 
 /**
  * Remove sender emails from a campaign
+ * Endpoint: POST /api/campaigns/{id}/remove-sender-emails
  */
 export async function removeSenderEmailsFromCampaign(
   campaignId: string,
   senderEmailIds: string[]
 ): Promise<void> {
-  await bisonFetch(`/api/campaigns/${campaignId}/sender-emails`, {
-    method: 'DELETE',
+  await bisonFetch(`/api/campaigns/${campaignId}/remove-sender-emails`, {
+    method: 'POST',
     body: JSON.stringify({ sender_email_ids: senderEmailIds }),
   })
 }
@@ -499,6 +546,71 @@ export function verifyWebhookSignature(
     Buffer.from(signature),
     Buffer.from(expected)
   )
+}
+
+// ============================================================================
+// REPLIES (Master Inbox)
+// ============================================================================
+
+export interface EmailBisonReply {
+  id: string
+  campaign_id: string
+  lead_email: string
+  subject: string
+  body: string
+  received_at: string
+  is_interested?: boolean
+}
+
+/**
+ * List replies (master inbox)
+ */
+export async function listReplies(): Promise<{ replies: EmailBisonReply[] }> {
+  return bisonFetch('/api/replies')
+}
+
+/**
+ * Get a single reply
+ */
+export async function getReply(
+  replyId: string
+): Promise<EmailBisonReply> {
+  return bisonFetch(`/api/replies/${replyId}`)
+}
+
+/**
+ * Reply to a reply (send response in same thread)
+ */
+export async function replyToReply(
+  replyId: string,
+  body: string
+): Promise<void> {
+  await bisonFetch(`/api/replies/${replyId}/reply`, {
+    method: 'POST',
+    body: JSON.stringify({ body }),
+  })
+}
+
+/**
+ * Mark a reply as interested
+ */
+export async function markReplyAsInterested(
+  replyId: string
+): Promise<void> {
+  await bisonFetch(`/api/replies/${replyId}/mark-as-interested`, {
+    method: 'PATCH',
+  })
+}
+
+/**
+ * Push interested reply to a follow-up campaign
+ */
+export async function pushToFollowupCampaign(
+  replyId: string
+): Promise<void> {
+  await bisonFetch(`/api/replies/${replyId}/followup-campaign/push`, {
+    method: 'POST',
+  })
 }
 
 // ============================================================================
