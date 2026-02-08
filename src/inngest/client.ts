@@ -427,6 +427,62 @@ export type Events = {
       volume: string
     }
   }
+
+  // AI Readiness Audit
+  'ai-audit/submitted': {
+    data: {
+      name: string
+      email: string
+      company_name?: string
+      phone?: string
+      company_size?: string
+      industry?: string
+      ai_maturity?: string
+      budget_range?: string
+      biggest_bottleneck?: string
+      using_ai?: string
+      audit_reason?: string
+      ideal_outcome?: string
+      website_url?: string
+      utm_source?: string
+      utm_medium?: string
+      utm_campaign?: string
+    }
+  }
+
+  // GHL Admin Events (Cursive's own GHL account)
+  'ghl-admin/onboard-customer': {
+    data: {
+      user_id: string
+      user_email: string
+      user_name: string
+      company_name?: string
+      phone?: string
+      workspace_id: string
+      purchase_type: 'credit_purchase' | 'lead_purchase' | 'subscription'
+      amount?: number
+    }
+  }
+  'ghl-admin/create-subaccount': {
+    data: {
+      user_id: string
+      user_email: string
+      user_name: string
+      company_name: string
+      phone?: string
+      workspace_id: string
+      plan_type: 'done_for_you'
+      snapshot_id?: string
+    }
+  }
+  'ghl-admin/deliver-leads': {
+    data: {
+      client_location_id: string
+      workspace_id: string
+      lead_ids: string[]
+      batch_id?: string
+    }
+  }
 }
 
 // Lazy-load Inngest client to avoid build-time initialization

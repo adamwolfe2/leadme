@@ -133,5 +133,17 @@ export const { GET, POST, PUT } = serve({
     functions.marketplaceUpsellCheck,
     functions.marketplaceOnboardingSequence,
     functions.handleCustomAudienceRequest,
+
+    // AI Audit Processing
+    functions.processAiAudit,
+
+    // GHL Admin (Cursive's own GHL account automation)
+    functions.ghlOnboardCustomer,
+    functions.ghlCreateSubaccount,
+    functions.ghlDeliverLeads,
+
+    // GHL Client Sync (sync leads to client's own GHL via OAuth)
+    functions.ghlSyncContact,
+    functions.ghlBulkSync,
   ],
 })

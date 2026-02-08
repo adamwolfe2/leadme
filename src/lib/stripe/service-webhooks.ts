@@ -130,9 +130,44 @@ export async function handleSubscriptionCreated(subscription: Stripe.Subscriptio
       // Don't throw - email failures shouldn't block webhook processing
     }
 
-    // FUTURE: Create initial delivery if applicable
-    // This will be implemented when we add automated delivery scheduling
-    // await scheduleInitialDelivery(workspaceId, serviceTierId)
+    // Trigger GHL sub-account creation for done-for-you tiers
+    if (tier.onboarding_required) {
+      try {
+        const { inngest } = await import('@/inngest/client')
+        const emailInfo = await getWorkspaceEmailInfo(workspaceId)
+
+        await inngest.send({
+          name: 'ghl-admin/onboard-customer',
+          data: {
+            user_id: subscription.metadata.user_id || '',
+            user_email: emailInfo.customerEmail,
+            user_name: emailInfo.customerName,
+            company_name: emailInfo.workspaceName,
+            workspace_id: workspaceId,
+            purchase_type: 'subscription',
+            amount: monthlyPrice,
+          },
+        })
+
+        // For tiers that include sub-account setup, create one
+        if (tier.features && (tier.features as Record<string, unknown>).ghl_subaccount) {
+          await inngest.send({
+            name: 'ghl-admin/create-subaccount',
+            data: {
+              user_id: subscription.metadata.user_id || '',
+              user_email: emailInfo.customerEmail,
+              user_name: emailInfo.customerName,
+              company_name: emailInfo.workspaceName,
+              workspace_id: workspaceId,
+              plan_type: 'done_for_you',
+            },
+          })
+        }
+      } catch (ghlError: any) {
+        console.error('[Webhook] Failed to trigger GHL onboarding:', ghlError)
+        // Don't throw - GHL setup failures shouldn't block subscription
+      }
+    }
 
   } catch (error: any) {
     console.error('[Webhook] Error handling subscription.created:', error)

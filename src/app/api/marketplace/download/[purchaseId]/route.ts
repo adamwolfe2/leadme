@@ -35,8 +35,9 @@ export async function GET(
       marketplace_purchase_items (
         lead_id,
         leads (
+          first_name, last_name, email, phone, job_title, linkedin_url,
           company_name, company_domain, company_industry, company_size,
-          company_location, contact_data, seniority_level,
+          city, state, country, seniority_level,
           intent_score_calculated, freshness_score, verification_status
         )
       )
@@ -77,22 +78,22 @@ export async function GET(
 
   const rows = purchase.marketplace_purchase_items.map((item: any) => {
     const lead = item.leads
-    const contact = lead.contact_data?.contacts?.[0] || {}
-    const location = lead.company_location || {}
+
+    const fullName = [lead.first_name, lead.last_name].filter(Boolean).join(' ')
 
     return [
       lead.company_name || '',
       lead.company_domain || '',
       lead.company_industry || '',
       lead.company_size || '',
-      location.city || '',
-      location.state || '',
-      location.country || 'US',
-      contact.full_name || '',
-      contact.email || '',
-      contact.phone || '',
-      contact.job_title || lead.seniority_level || '',
-      contact.linkedin_url || '',
+      lead.city || '',
+      lead.state || '',
+      lead.country || 'US',
+      fullName,
+      lead.email || '',
+      lead.phone || '',
+      lead.job_title || lead.seniority_level || '',
+      lead.linkedin_url || '',
       lead.intent_score_calculated || '',
       lead.freshness_score || '',
       lead.verification_status || '',

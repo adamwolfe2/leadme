@@ -164,3 +164,14 @@ export {
 export { marketplaceUpsellCheck } from './marketplace-upsell'
 export { marketplaceOnboardingSequence } from './marketplace-onboarding'
 export { handleCustomAudienceRequest } from './custom-audience-request'
+
+// AI Audit Processing
+export { processAiAudit } from './process-ai-audit'
+
+// GHL Admin (Cursive's own GHL account automation)
+export { ghlOnboardCustomer } from './ghl-onboard-customer'
+export { ghlCreateSubaccount } from './ghl-create-subaccount'
+export { ghlDeliverLeads } from './ghl-deliver-leads'
+
+// GHL Client Sync (sync leads to client's own GHL via OAuth)
+export { ghlSyncContact, ghlBulkSync } from './ghl-sync-contact'

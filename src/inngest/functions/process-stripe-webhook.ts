@@ -149,6 +149,30 @@ async function processCreditPurchase({
     }
   })
 
+  // Sync customer to Cursive's GHL (non-blocking)
+  await step.run('queue-ghl-onboard', async () => {
+    const adminClient = createAdminClient()
+    const { data: userData } = await adminClient
+      .from('users')
+      .select('email, full_name')
+      .eq('id', result.user_id)
+      .single()
+
+    if (userData?.email) {
+      await inngest.send({
+        name: 'ghl-admin/onboard-customer',
+        data: {
+          user_id,
+          user_email: userData.email,
+          user_name: userData.full_name || 'Customer',
+          workspace_id,
+          purchase_type: 'credit_purchase',
+          amount: (amountTotal || 0) / 100,
+        },
+      })
+    }
+  })
+
   return {
     success: true,
     creditPurchaseId: credit_purchase_id,
@@ -257,6 +281,30 @@ async function processLeadPurchase({
           totalLeads: parseInt(lead_count, 10),
           totalPrice: metadata.amount_total ? metadata.amount_total / 100 : 0,
           expiresAt: downloadExpiresAt.toISOString(),
+        },
+      })
+    }
+  })
+
+  // Sync customer to Cursive's GHL (non-blocking)
+  await step.run('queue-ghl-onboard-lead', async () => {
+    const adminClient = createAdminClient()
+    const { data: userData } = await adminClient
+      .from('users')
+      .select('email, full_name')
+      .eq('id', user_id)
+      .single()
+
+    if (userData?.email) {
+      await inngest.send({
+        name: 'ghl-admin/onboard-customer',
+        data: {
+          user_id,
+          user_email: userData.email,
+          user_name: userData.full_name || 'Customer',
+          workspace_id,
+          purchase_type: 'lead_purchase',
+          amount: metadata.amount_total ? metadata.amount_total / 100 : 0,
         },
       })
     }

@@ -19,7 +19,7 @@ function getResend(): Resend {
 
 // Email configuration
 export const EMAIL_CONFIG = {
-  from: 'Adam <send@meetcursive.com>',
+  from: process.env.EMAIL_FROM || 'Cursive <notifications@meetcursive.com>',
   replyTo: 'adam@meetcursive.com',
 
   // Brand colors
