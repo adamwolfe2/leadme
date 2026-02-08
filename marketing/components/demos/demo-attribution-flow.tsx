@@ -98,256 +98,149 @@ export function DemoAttributionFlow() {
   const getOutcomeIndex = (outcomeId: string) => outcomes.findIndex(o => o.id === outcomeId)
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {/* Summary Stats */}
-      <div className="grid grid-cols-3 gap-2 sm:gap-4">
+      <div className="grid grid-cols-3 gap-2">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-lg p-3 sm:p-4 border border-gray-200 text-center"
+          className="bg-white rounded-lg p-2 border border-gray-200 text-center"
         >
-          <div className="text-lg sm:text-2xl text-gray-900 font-light mb-1">{totalVisitors}</div>
-          <div className="text-xs text-gray-600">Total Touchpoints</div>
+          <div className="text-lg text-gray-900 font-light">{totalVisitors}</div>
+          <div className="text-[10px] text-gray-600">Touchpoints</div>
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-lg p-3 sm:p-4 border border-gray-200 text-center"
+          className="bg-white rounded-lg p-2 border border-gray-200 text-center"
         >
-          <div className="text-lg sm:text-2xl text-green-600 font-light mb-1">{totalConverted}</div>
-          <div className="text-xs text-gray-600">Conversions</div>
+          <div className="text-lg text-green-600 font-light">{totalConverted}</div>
+          <div className="text-[10px] text-gray-600">Conversions</div>
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-lg p-3 sm:p-4 border border-gray-200 text-center"
+          className="bg-white rounded-lg p-2 border border-gray-200 text-center"
         >
-          <div className="text-lg sm:text-2xl text-[#007AFF] font-light mb-1">{conversionRate}%</div>
-          <div className="text-xs text-gray-600">Conversion Rate</div>
+          <div className="text-lg text-[#007AFF] font-light">{conversionRate}%</div>
+          <div className="text-[10px] text-gray-600">Rate</div>
         </motion.div>
       </div>
 
-      {/* Vertical Flow Visualization */}
+      {/* Compact Flow Visualization */}
       <motion.div
         ref={containerRef}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-4 sm:p-8 border border-gray-200 relative overflow-hidden min-h-[500px] sm:min-h-[700px]"
+        className="bg-gradient-to-br from-gray-50 to-white rounded-lg p-3 border border-gray-200 relative overflow-hidden"
       >
-        <div className="flex flex-col items-center h-full gap-8">
-          {/* Traffic Sources - TOP ROW */}
+        <div className="flex flex-col items-center gap-3">
+          {/* Traffic Sources */}
           <div className="w-full">
-            <div className="text-xs text-gray-600 mb-4 font-medium text-center">TRAFFIC SOURCES</div>
-            <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4">
+            <div className="text-[10px] text-gray-500 mb-2 font-medium text-center">SOURCES</div>
+            <div className="flex justify-center items-center gap-1.5">
               {trafficSources.map((source, index) => (
                 <motion.div
                   key={source.id}
-                  initial={{ opacity: 0, y: -20 }}
+                  initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  transition={{ delay: index * 0.05 }}
                   onMouseEnter={() => setActiveSource(source.id)}
                   onMouseLeave={() => setActiveSource(null)}
-                  className="relative"
                 >
-                  <motion.div
-                    whileHover={{ scale: 1.08, y: -5 }}
-                    className="bg-white rounded-lg p-2 sm:p-4 border-2 border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all cursor-pointer w-24 sm:w-32"
-                    style={{
-                      borderTopWidth: "4px",
-                      borderTopColor: source.color,
-                    }}
+                  <div
+                    className="bg-white rounded-md p-1.5 border border-gray-200 cursor-pointer w-[72px]"
+                    style={{ borderTopWidth: "3px", borderTopColor: source.color }}
                   >
-                    <div className="flex flex-col items-center gap-1 sm:gap-2">
-                      <svg className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: source.color }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="flex flex-col items-center gap-0.5">
+                      <svg className="w-3.5 h-3.5" style={{ color: source.color }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={source.icon} />
                       </svg>
-                      <span className="text-[10px] sm:text-xs font-medium text-gray-900 text-center">{source.name}</span>
-                      <div className="text-xs sm:text-sm font-semibold" style={{ color: source.color }}>
-                        {source.visitors}
-                      </div>
+                      <span className="text-[8px] font-medium text-gray-700 text-center leading-tight">{source.name}</span>
+                      <div className="text-[10px] font-semibold" style={{ color: source.color }}>{source.visitors}</div>
                     </div>
-                  </motion.div>
-
-                  {/* Pulse effect when active */}
-                  {activeSource === source.id && (
-                    <motion.div
-                      className="absolute inset-0 rounded-lg"
-                      style={{ border: `2px solid ${source.color}` }}
-                      animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0, 0.5] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                    />
-                  )}
+                  </div>
                 </motion.div>
               ))}
             </div>
           </div>
 
-          {/* FUNNEL - MIDDLE SECTION */}
-          <div className="flex-shrink-0 relative">
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5 }}
-              className="relative"
-            >
-              <div className="w-48 h-60 sm:w-64 sm:h-80 relative">
-                {/* Vertical Funnel shape */}
-                <svg viewBox="0 0 200 300" className="w-full h-full">
-                  <defs>
-                    <linearGradient id="funnelGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#007AFF" stopOpacity="0.2" />
-                      <stop offset="50%" stopColor="#10B981" stopOpacity="0.3" />
-                      <stop offset="100%" stopColor="#10B981" stopOpacity="0.6" />
-                    </linearGradient>
-                    <filter id="glow">
-                      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                      <feMerge>
-                        <feMergeNode in="coloredBlur"/>
-                        <feMergeNode in="SourceGraphic"/>
-                      </feMerge>
-                    </filter>
-                  </defs>
-                  {/* Wide top (leads entrance) */}
-                  <path
-                    d="M 20 10 L 180 10 L 160 100 L 40 100 Z"
-                    fill="url(#funnelGradient)"
-                    stroke="#007AFF"
-                    strokeWidth="2"
-                    filter="url(#glow)"
-                  />
-                  {/* Middle section */}
-                  <path
-                    d="M 40 100 L 160 100 L 140 180 L 60 180 Z"
-                    fill="url(#funnelGradient)"
-                    stroke="#10B981"
-                    strokeWidth="2"
-                    filter="url(#glow)"
-                  />
-                  {/* Narrow bottom (conversions) */}
-                  <path
-                    d="M 60 180 L 140 180 L 120 270 L 80 270 Z"
-                    fill="url(#funnelGradient)"
-                    stroke="#10B981"
-                    strokeWidth="2.5"
-                    filter="url(#glow)"
-                  />
-                </svg>
-
-                {/* Funnel labels */}
-                <div className="absolute top-10 left-0 right-0 text-center">
-                  <div className="text-lg sm:text-2xl font-light text-gray-900">{totalVisitors}</div>
-                  <div className="text-xs text-gray-600 font-medium">LEADS</div>
-                </div>
-                <div className="absolute top-1/2 left-0 right-0 text-center -translate-y-1/2">
-                  <div className="text-sm sm:text-lg font-light text-[#007AFF]">
-                    {Math.round(totalVisitors * 0.6)}
-                  </div>
-                  <div className="text-xs text-gray-600 font-medium">QUALIFIED</div>
-                </div>
-                <div className="absolute bottom-10 left-0 right-0 text-center">
-                  <div className="text-lg sm:text-2xl font-light text-green-600">{totalConverted}</div>
-                  <div className="text-xs text-gray-600 font-medium">CUSTOMERS</div>
-                </div>
+          {/* Compact Funnel */}
+          <div className="flex-shrink-0">
+            <div className="w-32 h-24 relative">
+              <svg viewBox="0 0 200 150" className="w-full h-full">
+                <defs>
+                  <linearGradient id="funnelGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#007AFF" stopOpacity="0.2" />
+                    <stop offset="100%" stopColor="#10B981" stopOpacity="0.5" />
+                  </linearGradient>
+                </defs>
+                <path d="M 20 5 L 180 5 L 140 70 L 60 70 Z" fill="url(#funnelGradient)" stroke="#007AFF" strokeWidth="2" />
+                <path d="M 60 70 L 140 70 L 115 140 L 85 140 Z" fill="url(#funnelGradient)" stroke="#10B981" strokeWidth="2" />
+              </svg>
+              <div className="absolute top-1 left-0 right-0 text-center">
+                <div className="text-xs font-light text-gray-900">{totalVisitors} <span className="text-[8px] text-gray-500">leads</span></div>
               </div>
-            </motion.div>
+              <div className="absolute bottom-1 left-0 right-0 text-center">
+                <div className="text-xs font-light text-green-600">{totalConverted} <span className="text-[8px] text-gray-500">converted</span></div>
+              </div>
+            </div>
           </div>
 
-          {/* Outcomes - BOTTOM ROW */}
+          {/* Outcomes */}
           <div className="w-full">
-            <div className="text-xs text-gray-600 mb-4 font-medium text-center">OUTCOMES</div>
-            <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4">
+            <div className="text-[10px] text-gray-500 mb-2 font-medium text-center">OUTCOMES</div>
+            <div className="flex justify-center items-center gap-1.5">
               {outcomes.map((outcome, index) => (
                 <motion.div
                   key={outcome.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 + index * 0.1 }}
+                  transition={{ delay: 0.3 + index * 0.05 }}
                 >
-                  <motion.div
-                    whileHover={{ scale: 1.08, y: 5 }}
-                    className="bg-white rounded-lg p-2 sm:p-4 border-2 border-gray-200 hover:shadow-lg transition-all cursor-pointer w-24 sm:w-32"
-                    style={{
-                      borderBottomWidth: "4px",
-                      borderBottomColor: outcome.color,
-                    }}
+                  <div
+                    className="bg-white rounded-md p-1.5 border border-gray-200 cursor-pointer w-[80px]"
+                    style={{ borderBottomWidth: "3px", borderBottomColor: outcome.color }}
                   >
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="text-2xl font-light" style={{ color: outcome.color }}>
-                        {outcome.value}
-                      </div>
-                      <span className="text-xs font-medium text-gray-900 text-center">{outcome.label}</span>
-                      <div className="text-xs text-gray-600">
-                        {Math.round((outcome.value / totalVisitors) * 100)}% rate
-                      </div>
+                    <div className="flex flex-col items-center gap-0.5">
+                      <div className="text-sm font-light" style={{ color: outcome.color }}>{outcome.value}</div>
+                      <span className="text-[8px] font-medium text-gray-700 text-center leading-tight">{outcome.label}</span>
                     </div>
-                  </motion.div>
+                  </div>
                 </motion.div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Animated Particles - Multiple flowing simultaneously */}
+        {/* Animated Particles */}
         <AnimatePresence>
           {particles.map(particle => {
             const sourceIndex = getSourceIndex(particle.sourceId)
             const outcomeIndex = getOutcomeIndex(particle.outcomeId)
-
-            // Calculate positions based on index
-            const sourceXPercent = 10 + (sourceIndex * 20) // Spread across top (10%-90%)
-            const outcomeXPercent = 15 + (outcomeIndex * 23) // Spread across bottom (15%-84%)
+            const sourceXPercent = 10 + (sourceIndex * 20)
+            const outcomeXPercent = 15 + (outcomeIndex * 23)
 
             return (
               <motion.div
                 key={particle.id}
-                initial={{
-                  opacity: 0,
-                  scale: 0,
-                  x: `${sourceXPercent}%`,
-                  y: '8%'
-                }}
+                initial={{ opacity: 0, scale: 0, x: `${sourceXPercent}%`, y: '10%' }}
                 animate={{
                   opacity: [0, 1, 1, 1, 0],
                   scale: [0, 1, 1, 1, 0],
                   x: [`${sourceXPercent}%`, '50%', `${outcomeXPercent}%`],
-                  y: ['8%', '42%', '85%']
+                  y: ['10%', '45%', '85%']
                 }}
                 exit={{ opacity: 0, scale: 0 }}
-                transition={{
-                  duration: 2.5,
-                  times: [0, 0.15, 0.5, 0.85, 1],
-                  ease: "easeInOut"
-                }}
-                className="absolute w-3 h-3 rounded-full pointer-events-none"
-                style={{
-                  backgroundColor: particle.color,
-                  boxShadow: `0 0 10px ${particle.color}`,
-                  filter: 'blur(0.5px)'
-                }}
+                transition={{ duration: 2, times: [0, 0.15, 0.5, 0.85, 1], ease: "easeInOut" }}
+                className="absolute w-2 h-2 rounded-full pointer-events-none"
+                style={{ backgroundColor: particle.color, boxShadow: `0 0 6px ${particle.color}` }}
               />
             )
           })}
         </AnimatePresence>
-      </motion.div>
-
-      {/* Best Performing Path */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8 }}
-        className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border-2 border-green-300"
-      >
-        <div className="flex items-center gap-2 mb-2">
-          <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-          </svg>
-          <span className="text-sm font-medium text-gray-900">Best Performing Path</span>
-        </div>
-        <div className="text-xs text-gray-600">
-          Website Visit → Email Campaign → Demo Booked (34% conversion rate)
-        </div>
       </motion.div>
     </div>
   )

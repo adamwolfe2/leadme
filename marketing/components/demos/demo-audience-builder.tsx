@@ -40,7 +40,6 @@ export function DemoAudienceBuilder() {
   const [activeFilters, setActiveFilters] = useState<Filter[]>([])
   const [audienceCount, setAudienceCount] = useState(140000000)
   const [targetCount, setTargetCount] = useState(140000000)
-  const [estimatedCost, setEstimatedCost] = useState(0)
   const [recentContacts, setRecentContacts] = useState<Contact[]>([])
   const [growthData, setGrowthData] = useState<number[]>([0, 0, 0, 0, 0, 0, 0, 0])
   const [totalMatched, setTotalMatched] = useState(0)
@@ -86,7 +85,6 @@ export function DemoAudienceBuilder() {
     })
 
     setTargetCount(newCount)
-    setEstimatedCost(Math.floor(newCount * 0.0005))
   }, [activeFilters])
 
   // Animate count change
@@ -143,29 +141,26 @@ export function DemoAudienceBuilder() {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {/* Top Stats Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-2">
         {/* Audience Count */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-gradient-to-br from-blue-50 to-blue-50 rounded-xl p-6 text-center border border-gray-200 sm:col-span-2"
+          className="bg-gradient-to-br from-blue-50 to-blue-50 rounded-lg p-3 text-center border border-gray-200 col-span-2"
         >
-          <div className="text-sm text-gray-600 mb-2">Total Audience Size</div>
+          <div className="text-[10px] text-gray-600 mb-1">Total Audience Size</div>
           <motion.div
             key={Math.floor(audienceCount / 1000)}
             initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.3 }}
-            className="text-3xl sm:text-5xl text-gray-900 font-light mb-2"
+            className="text-xl text-gray-900 font-light"
           >
             {audienceCount.toLocaleString()}
           </motion.div>
-          <div className="text-xs text-gray-600">contacts available</div>
-
-          {/* Progress Bar */}
-          <div className="mt-4 w-full bg-white rounded-full h-3 overflow-hidden">
+          <div className="mt-1.5 w-full bg-white rounded-full h-1.5 overflow-hidden">
             <motion.div
               initial={{ width: "100%" }}
               animate={{ width: `${(audienceCount / 140000000) * 100}%` }}
@@ -179,42 +174,39 @@ export function DemoAudienceBuilder() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white rounded-xl p-6 text-center border border-gray-200 flex flex-col justify-center"
+          className="bg-white rounded-lg p-3 text-center border border-gray-200 flex flex-col justify-center"
         >
-          <div className="text-sm text-gray-600 mb-2">Contacts Matched</div>
+          <div className="text-[10px] text-gray-600 mb-1">Matched</div>
           <motion.div
             key={totalMatched}
             initial={{ scale: 1.3, color: "#10B981" }}
             animate={{ scale: 1, color: "#111827" }}
             transition={{ duration: 0.4 }}
-            className="text-2xl sm:text-4xl font-light mb-1"
+            className="text-xl font-light"
           >
             {totalMatched}
           </motion.div>
-          <div className="flex items-center justify-center gap-1 text-xs text-blue-600">
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-            </svg>
+          <div className="flex items-center justify-center gap-1 text-[10px] text-blue-600">
             <span>Live</span>
           </div>
         </motion.div>
       </div>
 
       {/* Live Contact Feed & Growth Chart */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-2">
         {/* Live Contact Feed */}
-        <div className="bg-white rounded-xl p-4 border border-gray-200">
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm text-gray-900 font-medium">Recent Matches</h4>
+        <div className="bg-white rounded-lg p-2.5 border border-gray-200">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="text-[10px] text-gray-900 font-medium">Recent Matches</h4>
             <motion.div
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="w-2 h-2 rounded-full bg-[#007AFF]"
+              className="w-1.5 h-1.5 rounded-full bg-[#007AFF]"
             />
           </div>
-          <div className="space-y-2 min-h-[120px]">
+          <div className="space-y-1">
             <AnimatePresence mode="popLayout">
-              {recentContacts.map((contact, index) => (
+              {recentContacts.slice(0, 3).map((contact, index) => (
                 <motion.div
                   key={contact.id}
                   initial={{ opacity: 0, x: -20, height: 0 }}
@@ -222,25 +214,11 @@ export function DemoAudienceBuilder() {
                   exit={{ opacity: 0, x: 20, height: 0 }}
                   transition={{ duration: 0.3 }}
                   layout
-                  className="bg-gray-50 rounded-lg p-3 border border-gray-200"
-                  style={{ opacity: 1 - index * 0.15 }}
+                  className="bg-gray-50 rounded p-1.5 border border-gray-200"
+                  style={{ opacity: 1 - index * 0.2 }}
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm text-gray-900 font-medium truncate">{contact.name}</div>
-                      <div className="text-xs text-gray-600 truncate">{contact.title}</div>
-                      <div className="text-xs text-gray-500 truncate">{contact.company}</div>
-                    </div>
-                    <motion.div
-                      initial={{ scale: 0, rotate: -180 }}
-                      animate={{ scale: 1, rotate: 0 }}
-                      className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0"
-                    >
-                      <svg className="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </motion.div>
-                  </div>
+                  <div className="text-[10px] text-gray-900 font-medium truncate">{contact.name}</div>
+                  <div className="text-[10px] text-gray-500 truncate">{contact.title} · {contact.company}</div>
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -248,9 +226,9 @@ export function DemoAudienceBuilder() {
         </div>
 
         {/* Growth Chart */}
-        <div className="bg-white rounded-xl p-4 border border-gray-200">
-          <h4 className="text-sm text-gray-900 font-medium mb-3">Growth Over Time</h4>
-          <div className="h-[120px] flex items-end justify-between gap-1">
+        <div className="bg-white rounded-lg p-2.5 border border-gray-200">
+          <h4 className="text-[10px] text-gray-900 font-medium mb-2">Growth</h4>
+          <div className="h-[72px] flex items-end justify-between gap-0.5">
             {growthData.map((value, index) => {
               const maxValue = Math.max(...growthData, 1)
               const height = (value / maxValue) * 100
@@ -261,59 +239,39 @@ export function DemoAudienceBuilder() {
                   initial={{ height: 0 }}
                   animate={{ height: `${height}%` }}
                   transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="flex-1 bg-gradient-to-t from-gray-400 to-gray-300 rounded-t relative group"
-                >
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    {value}
-                  </motion.div>
-                </motion.div>
+                  className="flex-1 bg-gradient-to-t from-gray-400 to-gray-300 rounded-t"
+                />
               )
             })}
-          </div>
-          <div className="mt-2 flex justify-between text-xs text-gray-500">
-            <span>0s</span>
-            <span>Now</span>
           </div>
         </div>
       </div>
 
-      {/* Active Filters */}
-      <div className="bg-white rounded-lg p-4 border border-gray-200">
-        <div className="text-sm text-gray-900 font-medium mb-3">Active Filters</div>
-        <div className="flex flex-wrap gap-2 min-h-[40px]">
+      {/* Active Filters + Quick Filter Buttons */}
+      <div className="bg-white rounded-lg p-2.5 border border-gray-200">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-[10px] text-gray-500 font-medium">Filters:</span>
           <AnimatePresence mode="popLayout">
             {activeFilters.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-sm text-gray-500 italic"
-              >
-                No filters applied - showing all 140M contacts
-              </motion.div>
+              <span className="text-[10px] text-gray-400 italic">None applied</span>
             ) : (
               activeFilters.map(filter => (
                 <motion.div
                   key={filter.id}
-                  initial={{ opacity: 0, scale: 0.8, x: -20 }}
-                  animate={{ opacity: 1, scale: 1, x: 0 }}
-                  exit={{ opacity: 0, scale: 0.8, x: 20 }}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
                   layout
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm border ${
+                  className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] border ${
                     filterColors[filter.category]
                   }`}
                 >
-                  <span className="font-medium">{filter.category}:</span>
                   <span>{filter.value}</span>
                   <button
                     onClick={() => removeFilter(filter.id)}
-                    className="ml-1 hover:bg-white/50 rounded-full p-0.5 transition-colors"
+                    className="hover:bg-white/50 rounded-full transition-colors"
                   >
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
@@ -322,65 +280,22 @@ export function DemoAudienceBuilder() {
             )}
           </AnimatePresence>
         </div>
-      </div>
-
-      {/* Filter Options Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {Object.entries(availableFilters).map(([category, options]) => (
-          <motion.div
-            key={category}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-lg p-4 border border-gray-200"
-          >
-            <div className="text-sm text-gray-900 font-medium mb-2 capitalize">{category}</div>
-            <div className="flex flex-wrap gap-1.5">
-              {options.slice(0, 3).map(option => (
-                <motion.button
-                  key={option}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => addFilter(category, option)}
-                  disabled={activeFilters.some(f => f.category === category)}
-                  className="px-2 py-1 bg-gray-50 hover:bg-gray-100 disabled:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-xs text-gray-700 rounded border border-gray-200 transition-colors"
-                >
-                  {option}
-                </motion.button>
-              ))}
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Cost Estimate & Export */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-lg p-4 border border-gray-200"
-      >
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            <div className="text-sm text-gray-600 mb-1">Estimated Cost</div>
-            <motion.div
-              key={estimatedCost}
-              initial={{ scale: 1.1, color: "#10B981" }}
-              animate={{ scale: 1, color: "#111827" }}
-              transition={{ duration: 0.3 }}
-              className="text-xl sm:text-2xl text-gray-900 font-light"
-            >
-              ${estimatedCost.toLocaleString()}
-            </motion.div>
-          </div>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-6 py-3 bg-[#007AFF] text-white rounded-lg font-medium hover:bg-[#0066DD] transition-colors disabled:opacity-50"
-            disabled={audienceCount === 0}
-          >
-            Export Audience
-          </motion.button>
+        <div className="flex flex-wrap gap-1 mt-1.5">
+          {Object.entries(availableFilters).map(([category, options]) => (
+            options.slice(0, 2).map(option => (
+              <motion.button
+                key={`${category}-${option}`}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => addFilter(category, option)}
+                disabled={activeFilters.some(f => f.category === category)}
+                className="px-2 py-0.5 bg-gray-50 hover:bg-gray-100 disabled:opacity-40 text-[10px] text-gray-600 rounded border border-gray-200 transition-colors"
+              >
+                {option}
+              </motion.button>
+            ))
+          ))}
         </div>
-      </motion.div>
+      </div>
     </div>
   )
 }

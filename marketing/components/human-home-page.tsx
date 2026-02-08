@@ -130,7 +130,7 @@ export function HumanHomePage() {
                   Get 100 Free Leads
                 </Button>
               </div>
-              <p className="text-xs text-gray-400 mb-4">No commitment required</p>
+              <div className="mb-4" />
 
               {/* Desktop Feature Pills (ClickUp-style flex-wrap rows) */}
               <div className="hidden lg:flex lg:flex-wrap gap-1.5">
@@ -194,7 +194,7 @@ export function HumanHomePage() {
                     <div className="w-2 h-2 rounded-full bg-gray-300" />
                     <div className="w-2 h-2 rounded-full bg-gray-300" />
                   </div>
-                  <div className="p-3 md:p-4 max-h-[60vh] overflow-y-auto">
+                  <div className="p-3 md:p-4">
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={activeFeature}

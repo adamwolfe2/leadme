@@ -53,97 +53,88 @@ export function DemoPipelineDashboard() {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-4 gap-2">
         {statsData.map((stat, i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3, delay: i * 0.05 }}
-            whileHover={{ y: -4, scale: 1.02 }}
-            className="bg-white rounded-lg p-4 border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all"
+            className="bg-white rounded-lg p-2 border border-gray-200"
           >
-            <div className="text-xs text-gray-600 mb-1">{stat.label}</div>
-            <div className="text-2xl text-gray-900 font-light">
+            <div className="text-[10px] text-gray-600">{stat.label}</div>
+            <div className="text-lg text-gray-900 font-light">
               {stat.prefix}
               {formatValue(animatedStats[i], stat)}
               {stat.suffix}
             </div>
-            <div className={`text-xs mt-1 font-medium ${stat.isGreen ? 'text-green-600' : 'text-gray-600'}`}>
+            <div className={`text-[10px] font-medium ${stat.isGreen ? 'text-green-600' : 'text-gray-600'}`}>
               {stat.subtitle}
             </div>
           </motion.div>
         ))}
       </div>
 
-      {/* Lead Sources */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.3 }}
-        className="bg-white rounded-lg p-4 border border-gray-200"
-      >
-        <div className="text-sm text-gray-900 font-medium mb-4">Top Lead Sources</div>
-        <div className="space-y-3">
-          {[
-            { source: "Website", percent: 35, color: "#007AFF" },
-            { source: "Pixel Tracking", percent: 28, color: "#10B981" },
-            { source: "Organic Search", percent: 18, color: "#8B5CF6" },
-            { source: "Email Campaigns", percent: 12, color: "#F59E0B" },
-            { source: "Paid Ads", percent: 7, color: "#6B7280" },
-          ].map((item, i) => (
-            <div key={i}>
-              <div className="flex justify-between text-xs mb-1.5">
-                <span className="text-gray-700">{item.source}</span>
-                <span className="text-gray-900 font-medium">{item.percent}%</span>
+      {/* Lead Sources + Activity Chart side by side */}
+      <div className="grid grid-cols-2 gap-2">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+          className="bg-white rounded-lg p-2.5 border border-gray-200"
+        >
+          <div className="text-[10px] text-gray-900 font-medium mb-2">Top Sources</div>
+          <div className="space-y-1.5">
+            {[
+              { source: "Website", percent: 35, color: "#007AFF" },
+              { source: "Pixel", percent: 28, color: "#10B981" },
+              { source: "Organic", percent: 18, color: "#8B5CF6" },
+              { source: "Email", percent: 12, color: "#F59E0B" },
+            ].map((item, i) => (
+              <div key={i}>
+                <div className="flex justify-between text-[10px] mb-0.5">
+                  <span className="text-gray-600">{item.source}</span>
+                  <span className="text-gray-900 font-medium">{item.percent}%</span>
+                </div>
+                <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${item.percent}%` }}
+                    transition={{ duration: 0.8, delay: 0.4 + i * 0.1 }}
+                    className="h-1.5 rounded-full"
+                    style={{ backgroundColor: item.color }}
+                  />
+                </div>
               </div>
-              <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${item.percent}%` }}
-                  transition={{ duration: 0.8, delay: 0.4 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                  className="h-2 rounded-full"
-                  style={{ backgroundColor: item.color }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </motion.div>
+            ))}
+          </div>
+        </motion.div>
 
-      {/* Activity Chart */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.5 }}
-        className="bg-white rounded-lg p-4 border border-gray-200"
-      >
-        <div className="text-sm text-gray-900 font-medium mb-4">Outbound Activity (Last 7 Days)</div>
-        <div className="flex items-end justify-between gap-2 h-20">
-          {[40, 65, 45, 80, 55, 90, 70].map((height, i) => (
-            <motion.div
-              key={i}
-              initial={{ height: 0 }}
-              animate={{ height: `${height}%` }}
-              transition={{ duration: 0.6, delay: 0.7 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-              whileHover={{ scale: 1.05, backgroundColor: "#007AFF" }}
-              className="flex-1 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t hover:shadow-lg transition-all cursor-pointer"
-              style={{ minWidth: "20px" }}
-            />
-          ))}
-        </div>
-        <div className="flex justify-between mt-2 text-xs text-gray-600">
-          <span>Mon</span>
-          <span>Tue</span>
-          <span>Wed</span>
-          <span>Thu</span>
-          <span>Fri</span>
-          <span>Sat</span>
-          <span>Sun</span>
-        </div>
-      </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.5 }}
+          className="bg-white rounded-lg p-2.5 border border-gray-200"
+        >
+          <div className="text-[10px] text-gray-900 font-medium mb-2">7-Day Activity</div>
+          <div className="flex items-end justify-between gap-1 h-14">
+            {[40, 65, 45, 80, 55, 90, 70].map((height, i) => (
+              <motion.div
+                key={i}
+                initial={{ height: 0 }}
+                animate={{ height: `${height}%` }}
+                transition={{ duration: 0.6, delay: 0.7 + i * 0.08 }}
+                className="flex-1 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t"
+              />
+            ))}
+          </div>
+          <div className="flex justify-between mt-1 text-[8px] text-gray-500">
+            <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+          </div>
+        </motion.div>
+      </div>
     </div>
   )
 }
