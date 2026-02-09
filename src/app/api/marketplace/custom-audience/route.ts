@@ -59,27 +59,62 @@ export async function POST(request: NextRequest) {
 
     // Send Slack notification (best-effort, don't fail the request)
     try {
-      const slackWebhookUrl = process.env.SLACK_SALES_WEBHOOK_URL
+      const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL
       if (slackWebhookUrl) {
         await fetch(slackWebhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            text: `New Custom Audience Request`,
+            text: '🎯 New Custom Audience Request',
             blocks: [
               {
                 type: 'header',
-                text: { type: 'plain_text', text: 'New Custom Audience Request' },
+                text: { type: 'plain_text', text: '🎯 New Custom Audience Request' },
               },
               {
                 type: 'section',
                 fields: [
                   { type: 'mrkdwn', text: `*User:* ${userData.full_name || userData.email}` },
+                  { type: 'mrkdwn', text: `*Workspace:* ${userData.workspace_id}` },
                   { type: 'mrkdwn', text: `*Industry:* ${validated.industry}` },
                   { type: 'mrkdwn', text: `*Geography:* ${validated.geography}` },
                   { type: 'mrkdwn', text: `*Volume:* ${validated.volume} leads` },
                   { type: 'mrkdwn', text: `*Company Size:* ${validated.companySize}` },
-                  { type: 'mrkdwn', text: `*Seniority:* ${validated.seniorityLevels.join(', ')}` },
+                ],
+              },
+              {
+                type: 'section',
+                text: {
+                  type: 'mrkdwn',
+                  text: `*Seniority:* ${validated.seniorityLevels.join(', ')}`,
+                },
+              },
+              ...(validated.intentSignals ? [{
+                type: 'section',
+                text: {
+                  type: 'mrkdwn',
+                  text: `*Intent Signals:*\n${validated.intentSignals}`,
+                },
+              }] : []),
+              ...(validated.additionalNotes ? [{
+                type: 'section',
+                text: {
+                  type: 'mrkdwn',
+                  text: `*Additional Notes:*\n${validated.additionalNotes}`,
+                },
+              }] : []),
+              {
+                type: 'divider',
+              },
+              {
+                type: 'actions',
+                elements: [
+                  {
+                    type: 'button',
+                    text: { type: 'plain_text', text: '👀 View in Admin' },
+                    url: `https://leads.meetcursive.com/admin/custom-audiences`,
+                    style: 'primary',
+                  },
                 ],
               },
             ],

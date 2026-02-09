@@ -375,6 +375,15 @@ export default function MarketplacePage() {
                 <span className="text-[13px] font-medium text-zinc-900">${credits.toFixed(2)} credits</span>
               </div>
               <Link
+                href="/marketplace/custom-audience"
+                className="h-9 px-4 text-[13px] font-medium border-2 border-emerald-500 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg transition-all duration-150 inline-flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+                Request Custom Audience
+              </Link>
+              <Link
                 href="/marketplace/my-leads"
                 className="h-9 px-4 text-[13px] font-medium border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150 inline-flex items-center gap-2"
               >
@@ -839,11 +848,34 @@ export default function MarketplacePage() {
                   <svg className="w-12 h-12 text-zinc-300 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                   </svg>
-                  <h3 className="text-[14px] font-medium text-zinc-900 mb-1">No leads found</h3>
-                  <p className="text-[13px] text-zinc-500 mb-4">Try adjusting your filters to see more results.</p>
+                  <h3 className="text-[14px] font-medium text-zinc-900 mb-1">No leads match your criteria</h3>
+                  <p className="text-[13px] text-zinc-500 mb-4">Try adjusting your filters or request a custom audience tailored to your needs.</p>
+
+                  {/* Custom Audience CTA - Always Show */}
+                  <div className="mt-6 p-6 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-lg border border-emerald-200">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                      </svg>
+                      <h4 className="text-[14px] font-semibold text-emerald-900">Can't find what you need?</h4>
+                    </div>
+                    <p className="text-[13px] text-emerald-700 mb-4">
+                      Get a <span className="font-semibold">free 25-lead sample</span> tailored to your exact criteria within 48 hours.
+                    </p>
+                    <Link
+                      href="/marketplace/custom-audience"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors text-sm shadow-sm"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                      Request Custom Audience
+                    </Link>
+                  </div>
+
                   {credits === 0 && (
-                    <div className="mt-4 pt-4 border-t border-zinc-200">
-                      <p className="text-[13px] text-zinc-600 mb-3">Need leads?</p>
+                    <div className="mt-6 pt-6 border-t border-zinc-200">
+                      <p className="text-[13px] text-zinc-600 mb-3">Or browse our data plans</p>
                       <div className="flex items-center justify-center gap-3">
                         <a
                           href={getServiceLink('data')}
