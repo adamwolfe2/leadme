@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -23,6 +23,9 @@ export default function ProfileSettingsPage() {
   const toast = useToast()
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [deleteConfirmText, setDeleteConfirmText] = useState('')
+  const deleteInputRef = useRef<HTMLInputElement>(null)
 
   // Fetch current user
   const { data: userData, isLoading, isError, error } = useQuery({
@@ -334,6 +337,70 @@ export default function ProfileSettingsPage() {
             </div>
           </div>
         </GradientCard>
+
+        {/* Danger Zone */}
+        <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-6">
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold text-destructive">Danger Zone</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Permanently delete your account and all associated data. This action cannot be undone.
+            </p>
+          </div>
+
+          {!showDeleteConfirm ? (
+            <Button
+              variant="destructive"
+              onClick={() => {
+                setShowDeleteConfirm(true)
+                setTimeout(() => deleteInputRef.current?.focus(), 100)
+              }}
+            >
+              Delete Account
+            </Button>
+          ) : (
+            <div className="space-y-4 max-w-md">
+              <Alert variant="destructive">
+                <AlertDescription>
+                  This will permanently delete your account, all leads, campaigns, and workspace data.
+                  This action is irreversible.
+                </AlertDescription>
+              </Alert>
+
+              <FormField
+                label='Type "delete my account" to confirm'
+                htmlFor="delete_confirm"
+              >
+                <Input
+                  id="delete_confirm"
+                  ref={deleteInputRef}
+                  value={deleteConfirmText}
+                  onChange={(e) => setDeleteConfirmText(e.target.value)}
+                  placeholder="delete my account"
+                  className="font-mono"
+                />
+              </FormField>
+
+              <div className="flex gap-3">
+                <Button
+                  variant="destructive"
+                  disabled={deleteConfirmText !== 'delete my account' || deleteAccountMutation.isPending}
+                  onClick={() => deleteAccountMutation.mutate()}
+                >
+                  {deleteAccountMutation.isPending ? 'Deleting...' : 'Permanently Delete Account'}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowDeleteConfirm(false)
+                    setDeleteConfirmText('')
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </PageContainer>
   )
