@@ -107,6 +107,7 @@ export interface WorkspaceBranding {
   logo_url: string | null
   primary_color: string
   secondary_color: string
+  accent_color: string | null
 }
 
 export interface QueryFilters {

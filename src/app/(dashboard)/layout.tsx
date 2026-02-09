@@ -10,6 +10,7 @@ import { AppShell } from '@/components/layout'
 import { ImpersonationBanner } from '@/components/admin'
 import { isAdmin } from '@/lib/auth/admin'
 import { TierProvider } from '@/lib/hooks/use-tier'
+import { BrandThemeWrapper } from '@/components/layout/brand-theme-wrapper'
 
 export default async function DashboardLayout({
   children,
@@ -47,24 +48,26 @@ export default async function DashboardLayout({
 
       return (
         <TierProvider>
-          <ImpersonationBanner />
-          <AppShell
-            user={{
-              name: mockUser.full_name,
-              email: mockUser.email,
-              plan: mockUser.plan,
-              role: mockUser.role,
-              creditsRemaining: mockUser.daily_credit_limit,
-              totalCredits: mockUser.daily_credit_limit,
-              avatarUrl: null,
-            }}
-            workspace={{
-              name: mockUser.workspaces.name,
-              logoUrl: null,
-            }}
-          >
-            {children}
-          </AppShell>
+          <BrandThemeWrapper>
+            <ImpersonationBanner />
+            <AppShell
+              user={{
+                name: mockUser.full_name,
+                email: mockUser.email,
+                plan: mockUser.plan,
+                role: mockUser.role,
+                creditsRemaining: mockUser.daily_credit_limit,
+                totalCredits: mockUser.daily_credit_limit,
+                avatarUrl: null,
+              }}
+              workspace={{
+                name: mockUser.workspaces.name,
+                logoUrl: null,
+              }}
+            >
+              {children}
+            </AppShell>
+          </BrandThemeWrapper>
         </TierProvider>
       )
     }
@@ -122,30 +125,32 @@ export default async function DashboardLayout({
 
   return (
     <TierProvider>
-      {/* Show impersonation banner for admins */}
-      {userIsAdmin && <ImpersonationBanner />}
+      <BrandThemeWrapper>
+        {/* Show impersonation banner for admins */}
+        {userIsAdmin && <ImpersonationBanner />}
 
-      <AppShell
-        user={{
-          name: userProfile.full_name || 'User',
-          email: userProfile.email,
-          plan: userProfile.plan || 'free',
-          role: userProfile.role,
-          creditsRemaining: (userProfile.daily_credit_limit || 0) - (userProfile.daily_credits_used || 0),
-          totalCredits: userProfile.daily_credit_limit || 0,
-          avatarUrl: null,
-        }}
-        workspace={
-          workspace
-            ? {
-                name: workspace.name,
-                logoUrl: workspace.branding?.logo_url || workspace.branding?.favicon_url || null,
-              }
-            : undefined
-        }
-      >
-        {children}
-      </AppShell>
+        <AppShell
+          user={{
+            name: userProfile.full_name || 'User',
+            email: userProfile.email,
+            plan: userProfile.plan || 'free',
+            role: userProfile.role,
+            creditsRemaining: (userProfile.daily_credit_limit || 0) - (userProfile.daily_credits_used || 0),
+            totalCredits: userProfile.daily_credit_limit || 0,
+            avatarUrl: null,
+          }}
+          workspace={
+            workspace
+              ? {
+                  name: workspace.name,
+                  logoUrl: workspace.branding?.logo_url || workspace.branding?.favicon_url || null,
+                }
+              : undefined
+          }
+        >
+          {children}
+        </AppShell>
+      </BrandThemeWrapper>
     </TierProvider>
   )
 }

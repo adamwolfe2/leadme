@@ -6,3 +6,4 @@
 
 export { ToastProvider, useToast } from './toast-context'
 export type { ToastType, ToastAction } from '@/components/ui/toast'
+export { BrandThemeProvider, useBrandTheme } from './brand-theme-context'

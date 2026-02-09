@@ -7,6 +7,7 @@ import { PageContainer, PageHeader } from '@/components/layout'
 const settingsTabs = [
   { label: 'Profile', href: '/settings' },
   { label: 'Client Profile', href: '/settings/client-profile' },
+  { label: 'Branding', href: '/settings/branding' },
   { label: 'Billing', href: '/settings/billing' },
   { label: 'Security', href: '/settings/security' },
   { label: 'Notifications', href: '/settings/notifications' },
