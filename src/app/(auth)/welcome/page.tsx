@@ -34,19 +34,36 @@ export default function WelcomePage() {
   async function checkUserStatus() {
     try {
       const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
 
-      if (!session) {
+      if (sessionError || !session) {
+        console.error('Session error:', sessionError)
         router.push('/login')
         return
       }
 
-      // Check if user already has a workspace
-      const { data: user } = await supabase
+      // Check if user already has a workspace with timeout
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Query timeout')), 3000)
+      )
+
+      const queryPromise = supabase
         .from('users')
         .select('workspace_id, role')
         .eq('auth_user_id', session.user.id)
-        .single() as { data: any; error: any }
+        .maybeSingle()
+
+      const { data: user, error: userError } = await Promise.race([
+        queryPromise,
+        timeoutPromise
+      ]) as any
+
+      // If query fails or times out, just show the form (safe fallback)
+      if (userError) {
+        console.error('User query error (showing form as fallback):', userError)
+        setLoading(false)
+        return
+      }
 
       if (user?.workspace_id) {
         // User is already set up, send to dashboard
@@ -56,7 +73,8 @@ export default function WelcomePage() {
 
       setLoading(false)
     } catch (err) {
-      console.error('Error checking user status:', err)
+      console.error('Error checking user status (showing form as fallback):', err)
+      // Safe fallback: show the form
       setLoading(false)
     }
   }
@@ -89,6 +107,14 @@ export default function WelcomePage() {
       })
 
       const data = await res.json()
+
+      // Handle 409 (user already has workspace) by redirecting to dashboard
+      if (res.status === 409 && data.workspace_id) {
+        const redirectTo = isMarketplace ? '/marketplace' : '/dashboard'
+        router.push(redirectTo)
+        router.refresh()
+        return
+      }
 
       if (!res.ok) {
         throw new Error(data.error || 'Failed to create account')
