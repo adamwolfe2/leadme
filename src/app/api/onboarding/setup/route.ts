@@ -13,13 +13,27 @@ import { z } from 'zod'
 
 const businessSchema = z.object({
   role: z.literal('business'),
-  businessName: z.string().min(1, 'Business name is required'),
-  industry: z.string().min(1, 'Industry is required'),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  email: z.string().email(),
+  companyName: z.string().min(1),
+  industry: z.string().min(1),
+  targetLocations: z.string().optional(),
+  monthlyLeadNeed: z.string().min(1),
 })
 
 const partnerSchema = z.object({
   role: z.literal('partner'),
-  companyName: z.string().min(1, 'Company name is required'),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  email: z.string().email(),
+  companyName: z.string().min(1),
+  partnerType: z.string().min(1),
+  primaryVerticals: z.string().min(1),
+  databaseSize: z.string().min(1),
+  enrichmentMethods: z.string().optional(),
+  linkedin: z.string().min(1),
+  website: z.string().optional(),
 })
 
 const setupSchema = z.discriminatedUnion('role', [businessSchema, partnerSchema])
@@ -56,7 +70,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (validated.role === 'business') {
-      const slug = validated.businessName
+      const slug = validated.companyName
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)/g, '')
@@ -70,7 +84,7 @@ export async function POST(request: NextRequest) {
 
       if (existing) {
         return NextResponse.json(
-          { error: 'Business name is taken. Please try another.' },
+          { error: 'Company name is taken. Please try another.' },
           { status: 409 }
         )
       }
@@ -79,12 +93,12 @@ export async function POST(request: NextRequest) {
       const { data: workspace, error: workspaceError } = await admin
         .from('workspaces')
         .insert({
-          name: validated.businessName,
+          name: validated.companyName,
           slug,
           subdomain: slug,
           industry_vertical: validated.industry,
           allowed_industries: [validated.industry],
-          allowed_regions: ['US'],
+          allowed_regions: validated.targetLocations ? [validated.targetLocations] : ['US'],
           onboarding_status: 'completed',
         })
         .select('id')
@@ -96,13 +110,14 @@ export async function POST(request: NextRequest) {
       }
 
       // Create user profile
+      const fullName = `${validated.firstName} ${validated.lastName}`
       const { data: userProfile, error: userError } = await admin
         .from('users')
         .insert({
           auth_user_id: authUser.id,
           workspace_id: workspace.id,
-          email: authUser.email!,
-          full_name: authUser.user_metadata.full_name || authUser.user_metadata.name || null,
+          email: validated.email,
+          full_name: fullName,
           role: 'owner',
           plan: 'free',
           daily_credit_limit: 3,
@@ -164,12 +179,14 @@ export async function POST(request: NextRequest) {
       sendSlackAlert({
         type: 'new_signup',
         severity: 'info',
-        message: `New business signup: ${validated.businessName} (${FREE_TRIAL_CREDITS.credits} free credits granted)`,
+        message: `New business signup: ${validated.companyName} (${FREE_TRIAL_CREDITS.credits} free credits granted)`,
         metadata: {
-          email: authUser.email,
-          name: authUser.user_metadata.full_name || authUser.user_metadata.name || 'N/A',
-          business: validated.businessName,
+          email: validated.email,
+          name: fullName,
+          company: validated.companyName,
           industry: validated.industry,
+          target_locations: validated.targetLocations || 'Not specified',
+          monthly_lead_need: validated.monthlyLeadNeed,
           workspace_id: workspace.id,
           free_credits: FREE_TRIAL_CREDITS.credits,
         },
@@ -215,13 +232,14 @@ export async function POST(request: NextRequest) {
       }
 
       // Create partner user
+      const fullName = `${validated.firstName} ${validated.lastName}`
       const { data: userProfile, error: userError } = await admin
         .from('users')
         .insert({
           auth_user_id: authUser.id,
           workspace_id: workspace.id,
-          email: authUser.email!,
-          full_name: authUser.user_metadata.full_name || authUser.user_metadata.name || null,
+          email: validated.email,
+          full_name: fullName,
           role: 'partner',
           plan: 'free',
           partner_approved: false,
@@ -283,10 +301,15 @@ export async function POST(request: NextRequest) {
         severity: 'info',
         message: `New partner signup: ${validated.companyName} (${FREE_TRIAL_CREDITS.credits} free credits granted)`,
         metadata: {
-          email: authUser.email,
-          name: authUser.user_metadata.full_name || authUser.user_metadata.name || 'N/A',
+          email: validated.email,
+          name: fullName,
           company: validated.companyName,
-          role: 'partner',
+          partner_type: validated.partnerType,
+          verticals: validated.primaryVerticals,
+          database_size: validated.databaseSize,
+          enrichment: validated.enrichmentMethods || 'Not specified',
+          linkedin: validated.linkedin,
+          website: validated.website || 'Not specified',
           workspace_id: workspace.id,
           free_credits: FREE_TRIAL_CREDITS.credits,
         },
