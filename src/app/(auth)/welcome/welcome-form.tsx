@@ -177,9 +177,9 @@ export default function WelcomeForm({ isMarketplace }: { isMarketplace: boolean 
 
               <button
                 onClick={() => setSelectedRole('partner')}
-                className="group relative overflow-hidden bg-white rounded-xl border-2 border-gray-200 p-6 text-left shadow-sm hover:shadow-lg hover:border-emerald-500 transition-all"
+                className="group relative overflow-hidden bg-white rounded-xl border-2 border-gray-200 p-6 text-left shadow-sm hover:shadow-lg hover:border-blue-500 transition-all"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600 mb-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-blue-600 mb-4">
                   <Upload className="h-6 w-6" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -322,7 +322,7 @@ export default function WelcomeForm({ isMarketplace }: { isMarketplace: boolean 
                         required
                         value={partnerType}
                         onChange={(e) => setPartnerType(e.target.value)}
-                        className="w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-emerald-600 sm:text-sm"
+                        className="w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600 sm:text-sm"
                       >
                         <option value="">Select partner type</option>
                         {partnerTypeOptions.map((type) => (
@@ -341,7 +341,7 @@ export default function WelcomeForm({ isMarketplace }: { isMarketplace: boolean 
                         required
                         value={primaryVerticals}
                         onChange={(e) => setPrimaryVerticals(e.target.value)}
-                        className="w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-emerald-600 sm:text-sm"
+                        className="w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600 sm:text-sm"
                         placeholder="e.g., Solar, HVAC, Insurance"
                       />
                     </div>
@@ -355,7 +355,7 @@ export default function WelcomeForm({ isMarketplace }: { isMarketplace: boolean 
                         required
                         value={databaseSize}
                         onChange={(e) => setDatabaseSize(e.target.value)}
-                        className="w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-emerald-600 sm:text-sm"
+                        className="w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600 sm:text-sm"
                       >
                         <option value="">Select database size</option>
                         {databaseSizeOptions.map((size) => (
@@ -373,7 +373,7 @@ export default function WelcomeForm({ isMarketplace }: { isMarketplace: boolean 
                         rows={3}
                         value={enrichmentMethods}
                         onChange={(e) => setEnrichmentMethods(e.target.value)}
-                        className="w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-emerald-600 sm:text-sm resize-none"
+                        className="w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600 sm:text-sm resize-none"
                         placeholder="How do you verify/enrich? (e.g., manual research, intent tools, scraped data)"
                       />
                     </div>
@@ -388,7 +388,7 @@ export default function WelcomeForm({ isMarketplace }: { isMarketplace: boolean 
                         required
                         value={linkedin}
                         onChange={(e) => setLinkedin(e.target.value)}
-                        className="w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-emerald-600 sm:text-sm"
+                        className="w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600 sm:text-sm"
                         placeholder="https://linkedin.com/in/yourprofile"
                       />
                     </div>
@@ -402,7 +402,7 @@ export default function WelcomeForm({ isMarketplace }: { isMarketplace: boolean 
                         type="text"
                         value={website}
                         onChange={(e) => setWebsite(e.target.value)}
-                        className="w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-emerald-600 sm:text-sm"
+                        className="w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600 sm:text-sm"
                         placeholder="https://yourcompany.com"
                       />
                     </div>
@@ -423,11 +423,7 @@ export default function WelcomeForm({ isMarketplace }: { isMarketplace: boolean 
               <button
                 type="submit"
                 disabled={submitting}
-                className={`flex-1 rounded-md px-4 py-3 text-sm font-semibold text-white shadow-sm ${
-                  selectedRole === 'business'
-                    ? 'bg-blue-600 hover:bg-blue-700'
-                    : 'bg-emerald-600 hover:bg-emerald-700'
-                } disabled:opacity-50`}
+                className="flex-1 rounded-md px-4 py-3 text-sm font-semibold text-white shadow-sm bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
               >
                 {submitting ? 'Creating account...' : selectedRole === 'business' ? 'Get Free Leads' : 'Join Partner Network'}
               </button>
