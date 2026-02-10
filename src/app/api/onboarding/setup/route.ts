@@ -40,17 +40,26 @@ const setupSchema = z.discriminatedUnion('role', [businessSchema, partnerSchema]
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('[Onboarding] Starting POST request')
+
     // 1. Verify auth session server-side
     const supabase = await createClient()
-    const { data: { user: authUser } } = await supabase.auth.getUser()
+    console.log('[Onboarding] Created Supabase client')
+
+    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
+    console.log('[Onboarding] Auth check:', { hasUser: !!authUser, authError: authError?.message })
 
     if (!authUser) {
+      console.log('[Onboarding] No auth user - returning 401')
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
 
     // 2. Parse and validate body
     const body = await request.json()
+    console.log('[Onboarding] Received body:', { role: body.role, email: body.email })
+
     const validated = setupSchema.parse(body)
+    console.log('[Onboarding] Validation passed')
 
     // 3. Use admin client (service role) to bypass RLS
     const admin = createAdminClient()
@@ -331,7 +340,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ workspace_id: workspace.id })
     }
   } catch (error) {
+    console.error('[Onboarding] Caught error:', error)
+
     if (error instanceof z.ZodError) {
+      console.error('[Onboarding] Validation error:', error.errors)
       return NextResponse.json(
         { error: 'Validation error', details: error.errors },
         { status: 400 }
@@ -339,6 +351,10 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('[Onboarding] Unexpected error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('[Onboarding] Error stack:', error instanceof Error ? error.stack : 'no stack')
+    return NextResponse.json({
+      error: 'Internal server error',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 })
   }
 }
