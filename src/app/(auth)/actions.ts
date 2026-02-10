@@ -84,22 +84,42 @@ export async function googleLoginAction(redirectTo: string = '/dashboard') {
   }
 
   redirectTo = sanitizeRedirectPath(redirectTo)
+
+  // Determine site URL: prefer env var, fall back to request origin
+  const headersList = await headers()
+  const origin = headersList.get('origin') || headersList.get('x-forwarded-host')
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+    || (origin ? `https://${origin.replace(/^https?:\/\//, '')}` : null)
+
+  console.warn('[Auth] Google OAuth: siteUrl=', siteUrl, 'NEXT_PUBLIC_SITE_URL=', process.env.NEXT_PUBLIC_SITE_URL || 'NOT SET')
+
+  if (!siteUrl) {
+    console.warn('[Auth] Google OAuth FAILED: no site URL available')
+    return { error: 'Site URL not configured. Please contact support.' }
+  }
+
+  const callbackUrl = `${siteUrl}/auth/callback?next=${redirectTo}`
+  console.warn('[Auth] Google OAuth callbackUrl:', callbackUrl)
+
   const supabase = await createClient()
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=${redirectTo}`,
+      redirectTo: callbackUrl,
     },
   })
 
   if (error) {
+    console.warn('[Auth] Google OAuth error from Supabase:', error.message)
     return { error: error.message }
   }
 
   if (data.url) {
+    console.warn('[Auth] Google OAuth redirecting to:', data.url.substring(0, 80) + '...')
     redirect(data.url)
   }
 
+  console.warn('[Auth] Google OAuth: no URL returned from Supabase')
   return { error: 'Failed to initiate Google login' }
 }
