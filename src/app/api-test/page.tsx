@@ -97,23 +97,13 @@ export default function ApiTestPage() {
       }
     })
 
-    // Test 3: Audience Labs Webhook
-    await testEndpoint('/api/webhooks/audience-labs', 'POST', {
-      event_type: 'import.batch',
-      import_job_id: 'import_test_456',
-      workspace_id: 'test-workspace',
-      leads: [
-        {
-          id: 'al_test_1',
-          first_name: 'Test',
-          last_name: 'AudienceLabs',
-          email: 'test@audiencelabs.com',
-          company_name: 'AudienceLabs Test',
-          company_industry: 'HVAC',
-          location: { state: 'TX', country: 'US' },
-          job_title: 'Manager'
-        }
-      ]
+    // Test 3: Audience Labs SuperPixel Webhook
+    await testEndpoint('/api/webhooks/audiencelab/superpixel', 'POST', {
+      pixel_id: 'test-pixel',
+      event: 'authentication',
+      email_raw: 'test@audiencelabs.com',
+      cookie_id: 'test_' + Date.now(),
+      ip_address: '127.0.0.1',
     })
 
     // Test 4: CSV Bulk Upload

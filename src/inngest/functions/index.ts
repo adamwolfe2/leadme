@@ -187,3 +187,6 @@ export { ghlPipelineLifecycle } from './ghl-pipeline-lifecycle'
 
 // Customer Health Monitor (daily cron for stuck customers)
 export { customerLifecycleMonitor } from './customer-lifecycle-monitor'
+
+// Audience Labs Event Processing
+export { processAudienceLabEvent } from './audiencelab-processor'

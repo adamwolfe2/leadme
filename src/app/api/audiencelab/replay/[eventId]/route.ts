@@ -1,0 +1,95 @@
+/**
+ * Audience Labs Event Replay
+ *
+ * POST /api/audiencelab/replay/:eventId
+ * Re-triggers normalization from raw event data (idempotent).
+ * Requires authenticated user + workspace membership.
+ */
+
+import { NextRequest, NextResponse } from 'next/server'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+import { inngest } from '@/inngest/client'
+import { z } from 'zod'
+
+const ParamsSchema = z.object({
+  eventId: z.string().uuid(),
+})
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ eventId: string }> }
+) {
+  try {
+    const resolvedParams = await params
+    const parsed = ParamsSchema.safeParse(resolvedParams)
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid event ID' }, { status: 400 })
+    }
+
+    const { eventId } = parsed.data
+
+    const cookieStore = await cookies()
+    const supabaseAuth = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      { cookies: { getAll: () => cookieStore.getAll() } }
+    )
+
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser()
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const supabase = createAdminClient()
+
+    // Get user's workspace
+    const { data: userData } = await supabase
+      .from('users')
+      .select('workspace_id')
+      .eq('auth_user_id', user.id)
+      .single()
+
+    if (!userData?.workspace_id) {
+      return NextResponse.json({ error: 'No workspace' }, { status: 403 })
+    }
+
+    // Verify event belongs to user's workspace
+    const { data: event, error: eventError } = await supabase
+      .from('audiencelab_events')
+      .select('id, source, workspace_id')
+      .eq('id', eventId)
+      .eq('workspace_id', userData.workspace_id)
+      .single()
+
+    if (eventError || !event) {
+      return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+    }
+
+    // Reset processed flag so the processor will re-run
+    await supabase
+      .from('audiencelab_events')
+      .update({ processed: false, error: null })
+      .eq('id', eventId)
+
+    // Re-trigger processing
+    await inngest.send({
+      name: 'audiencelab/event-received',
+      data: {
+        event_id: eventId,
+        workspace_id: event.workspace_id || userData.workspace_id,
+        source: event.source as 'superpixel' | 'audiencesync' | 'export',
+      },
+    })
+
+    return NextResponse.json({
+      success: true,
+      event_id: eventId,
+      message: 'Event queued for re-processing',
+    })
+  } catch (error) {
+    console.error('[AL Replay] Error:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}

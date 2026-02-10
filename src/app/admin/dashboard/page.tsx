@@ -129,7 +129,7 @@ export default function AdminDashboard() {
     fetchRules()
   }
 
-  const testWebhook = async (type: 'datashopper' | 'clay' | 'audience-labs') => {
+  const testWebhook = async (type: 'datashopper' | 'clay' | 'audiencelab') => {
     setLoading(true)
     setWebhookResponse('Sending...')
 
@@ -164,28 +164,24 @@ export default function AdminDashboard() {
         },
         enrichment_status: 'completed'
       },
-      'audience-labs': {
-        event_type: 'import.batch',
-        import_job_id: 'import_' + Date.now(),
-        workspace_id: Object.keys(leadsStats)[0],
-        leads: [
-          {
-            id: 'al_' + Date.now(),
-            first_name: 'Test',
-            last_name: 'AudienceLabs',
-            email: 'test@audiencelabs.com',
-            company_name: 'AudienceLabs Test',
-            company_industry: 'HVAC',
-            location: { state: 'TX', country: 'US' },
-            job_title: 'Manager'
-          }
-        ],
-        timestamp: new Date().toISOString()
+      audiencelab: {
+        pixel_id: 'test-pixel',
+        event: 'authentication',
+        email_raw: 'test@audiencelabs.com',
+        cookie_id: 'test_' + Date.now(),
+        ip_address: '127.0.0.1',
       }
     }
 
+    // Audience Labs webhook is at a different path
+    const urlMap: Record<string, string> = {
+      datashopper: '/api/webhooks/datashopper',
+      clay: '/api/webhooks/clay',
+      audiencelab: '/api/webhooks/audiencelab/superpixel',
+    }
+
     try {
-      const response = await fetch(`/api/webhooks/${type}`, {
+      const response = await fetch(urlMap[type], {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payloads[type])
@@ -457,7 +453,7 @@ export default function AdminDashboard() {
                   Simulate Clay Enrichment
                 </button>
                 <button
-                  onClick={() => testWebhook('audience-labs')}
+                  onClick={() => testWebhook('audiencelab')}
                   disabled={loading}
                   className="h-9 px-4 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 disabled:opacity-50"
                 >

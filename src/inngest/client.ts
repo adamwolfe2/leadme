@@ -498,6 +498,22 @@ export type Events = {
     }
   }
 
+  // Audience Labs Events
+  'audiencelab/event-received': {
+    data: {
+      event_id: string
+      workspace_id: string
+      source: 'superpixel' | 'audiencesync' | 'export'
+    }
+  }
+  'audiencelab/identity-updated': {
+    data: {
+      identity_id: string
+      workspace_id: string
+      lead_id?: string
+    }
+  }
+
   // GHL Pipeline Lifecycle Events
   'ghl/pipeline.update': {
     data: {

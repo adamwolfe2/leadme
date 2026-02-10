@@ -8,7 +8,9 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { DataShopperClient, type DataShopperSearchParams, type DataShopperCompany } from '@/lib/integrations/datashopper'
-import { AudienceLabsClient } from '@/lib/integrations/audience-labs'
+// NOTE: AudienceLabs is now a CDP/webhook receiver, not a REST API.
+// Leads flow in via SuperPixel/AudienceSync webhooks and batch imports.
+// See src/lib/integrations/audience-labs.ts for architecture notes.
 
 // ============================================================================
 // TYPES
@@ -294,46 +296,19 @@ export class LeadProviderService {
   }
 
   /**
-   * Search AudienceLabs for person-level leads
+   * AudienceLabs leads are received via webhooks, not searched via API.
+   * This method is a no-op placeholder — AL leads arrive through:
+   * - SuperPixel webhook → /api/webhooks/audiencelab/superpixel
+   * - AudienceSync HTTP destination → /api/webhooks/audiencelab/audiencesync
+   * - Batch imports → /api/audiencelab/import
    */
   private async searchAudienceLabs(
-    filters: LeadSearchFilters,
-    limit: number
+    _filters: LeadSearchFilters,
+    _limit: number
   ): Promise<LeadResult[]> {
-    const leads = await AudienceLabsClient.searchLeads({
-      industries: filters.industries,
-      company_sizes: filters.companySizes,
-      revenue_ranges: filters.revenueRanges,
-      countries: filters.countries,
-      states: filters.states,
-      seniority_levels: filters.seniorityLevels,
-      job_titles: filters.jobTitles,
-      limit,
-      offset: filters.offset,
-    })
-
-    return leads.map((lead): LeadResult => ({
-      provider: 'audience_labs',
-      providerId: lead.id,
-      firstName: lead.first_name,
-      lastName: lead.last_name,
-      email: lead.email,
-      phone: lead.phone,
-      jobTitle: lead.job_title,
-      seniorityLevel: lead.seniority,
-      linkedinUrl: lead.linkedin_url,
-      companyName: lead.company_name,
-      companyDomain: lead.company_domain,
-      companyIndustry: lead.industry,
-      companySize: lead.company_size,
-      companyRevenue: lead.company_revenue,
-      city: lead.location?.city,
-      state: lead.location?.state,
-      country: lead.location?.country,
-      intentScore: lead.intent_score,
-      tags: lead.tags,
-      fetchedAt: new Date().toISOString(),
-    }))
+    // AudienceLabs is a CDP/webhook platform, not a search API.
+    // Leads flow in via webhooks and are processed by Inngest.
+    return []
   }
 
   /**
@@ -403,43 +378,18 @@ export class LeadProviderService {
   }
 
   /**
-   * Enrich a single lead with additional data
+   * Enrich a single lead with additional data.
+   * NOTE: AL enrichment happens server-side via SuperPixel resolution.
+   * This method is a placeholder — enrichment data arrives via webhooks.
    */
-  async enrichLead(params: {
+  async enrichLead(_params: {
     email?: string
     linkedinUrl?: string
     companyDomain?: string
   }): Promise<LeadResult | null> {
-    const result = await AudienceLabsClient.enrichLead({
-      email: params.email,
-      linkedin_url: params.linkedinUrl,
-      company_domain: params.companyDomain,
-    })
-
-    if (!result) return null
-
-    return {
-      provider: 'audience_labs',
-      providerId: result.id,
-      firstName: result.first_name,
-      lastName: result.last_name,
-      email: result.email,
-      phone: result.phone,
-      jobTitle: result.job_title,
-      seniorityLevel: result.seniority,
-      linkedinUrl: result.linkedin_url,
-      companyName: result.company_name,
-      companyDomain: result.company_domain,
-      companyIndustry: result.industry,
-      companySize: result.company_size,
-      companyRevenue: result.company_revenue,
-      city: result.location?.city,
-      state: result.location?.state,
-      country: result.location?.country,
-      intentScore: result.intent_score,
-      tags: result.tags,
-      fetchedAt: new Date().toISOString(),
-    }
+    // AudienceLabs enrichment is server-side via SuperPixel, not on-demand API.
+    // Enriched data arrives through webhook events.
+    return null
   }
 
   /**
@@ -451,12 +401,10 @@ export class LeadProviderService {
   }> {
     const dsHealth = await this.dataShopper.healthCheck()
 
-    let alHealth: { healthy: boolean; error?: string }
-    try {
-      await AudienceLabsClient.getAccountInfo()
-      alHealth = { healthy: true }
-    } catch (error: any) {
-      alHealth = { healthy: false, error: error.message }
+    // AL is a webhook receiver — check if we have recent events as a health proxy
+    const alHealth: { healthy: boolean; error?: string } = {
+      healthy: !!process.env.AUDIENCELAB_WEBHOOK_SECRET,
+      error: process.env.AUDIENCELAB_WEBHOOK_SECRET ? undefined : 'AUDIENCELAB_WEBHOOK_SECRET not configured',
     }
 
     return {

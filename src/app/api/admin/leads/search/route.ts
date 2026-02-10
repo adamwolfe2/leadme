@@ -83,36 +83,11 @@ export async function POST(request: NextRequest) {
           remainingCredits: Infinity,
         }
       } else {
-        const { AudienceLabsClient } = await import('@/lib/integrations/audience-labs')
-        const alResults = await AudienceLabsClient.searchLeads({
-          industries: filters.industries,
-          company_sizes: filters.companySizes,
-          revenue_ranges: filters.revenueRanges,
-          countries: filters.countries,
-          states: filters.states,
-          seniority_levels: filters.seniorityLevels,
-          job_titles: filters.jobTitles,
-          limit: filters.limit || 50,
-          offset: filters.offset,
-        })
+        // AudienceLabs is now a CDP/webhook receiver, not a search API.
+        // AL leads flow in via SuperPixel/AudienceSync webhooks and batch imports.
         result = {
-          leads: alResults.map(lead => ({
-            provider: 'audience_labs' as const,
-            providerId: lead.id,
-            firstName: lead.first_name,
-            lastName: lead.last_name,
-            email: lead.email,
-            phone: lead.phone,
-            jobTitle: lead.job_title,
-            companyName: lead.company_name,
-            companyDomain: lead.company_domain,
-            companyIndustry: lead.industry,
-            city: lead.location?.city,
-            state: lead.location?.state,
-            country: lead.location?.country,
-            fetchedAt: new Date().toISOString(),
-          })),
-          total: alResults.length,
+          leads: [],
+          total: 0,
           provider: 'audience_labs',
           creditsUsed: 0,
           remainingCredits: Infinity,

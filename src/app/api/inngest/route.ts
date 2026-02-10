@@ -153,5 +153,8 @@ export const { GET, POST, PUT } = serve({
     functions.universalFailureHandler,
     functions.ghlPipelineLifecycle,
     functions.customerLifecycleMonitor,
+
+    // Audience Labs Event Processing
+    functions.processAudienceLabEvent,
   ],
 })
