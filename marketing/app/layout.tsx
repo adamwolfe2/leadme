@@ -73,6 +73,12 @@ export default function RootLayout({
             }("0NW1GHZ5RRO4");
           `}
         </Script>
+        {/* Audience Labs SuperPixel */}
+        <Script
+          src="https://cdn.v3.identitypxl.app/pixels/59aee3ac-1427-495e-b796-9b2ed0153adb/p.js"
+          strategy="afterInteractive"
+          async
+        />
       </head>
       <body
         className={`${inter.variable} ${dancingScript.variable} font-sans antialiased`}
