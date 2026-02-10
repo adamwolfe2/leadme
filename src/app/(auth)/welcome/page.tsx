@@ -6,7 +6,7 @@ import WelcomeForm from './welcome-form'
 export default async function WelcomePage({
   searchParams,
 }: {
-  searchParams: { source?: string }
+  searchParams: Promise<{ source?: string }>
 }) {
   const supabase = await createClient()
 
@@ -31,7 +31,8 @@ export default async function WelcomePage({
   }
 
   // If error or no workspace, show onboarding form
-  const isMarketplace = searchParams.source === 'marketplace'
+  const params = await searchParams
+  const isMarketplace = params.source === 'marketplace'
 
   return <WelcomeForm isMarketplace={isMarketplace} />
 }
