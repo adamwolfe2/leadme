@@ -147,7 +147,7 @@ export async function middleware(req: NextRequest) {
 
     // Workspace isolation: verify authenticated users have a valid workspace
     // Admins (in platform_admins table) bypass workspace checks
-    if (user && !isPublicRoute && !isAdminRoute && !isPartnerRoute && !pathname.startsWith('/onboarding') && !pathname.startsWith('/welcome')) {
+    if (user && !isPublicRoute && !isAdminRoute && !isPartnerRoute && !pathname.startsWith('/onboarding') && !pathname.startsWith('/welcome') && !pathname.startsWith('/api/onboarding')) {
       // Look up the user's workspace_id using admin client to bypass RLS
       // (the anon-key client triggers recursive RLS on the users table)
       const adminSupabaseForUser = createAdminClient()
