@@ -53,8 +53,9 @@ function fireInngestEvent(eventData: { name: string; data: Record<string, any> }
 
 export async function POST(request: NextRequest) {
   try {
-    // NOTE: console.warn used instead of console.log because production
-    // next.config.js strips console.log (removeConsole: { exclude: ['error','warn'] })
+    // NOTE: console.warn used instead of console.log/console.error because
+    // production next.config.js strips console.log AND Vercel runtime logs
+    // don't reliably surface console.error through the logs API.
     console.warn('[Onboarding] Starting POST request')
 
     // 1. Verify auth session server-side (with timeout)
@@ -83,7 +84,23 @@ export async function POST(request: NextRequest) {
     const validated = setupSchema.parse(body)
 
     // 3. Use admin client (service role) to bypass RLS
+    console.warn('[Onboarding] Creating admin client...')
     const admin = createAdminClient()
+
+    // 3b. Verify admin client connectivity
+    const { error: connError } = await admin
+      .from('workspaces')
+      .select('id')
+      .limit(1)
+
+    if (connError) {
+      console.warn('[Onboarding] Admin client connectivity FAILED:', connError.message, connError.code)
+      return NextResponse.json(
+        { error: 'Database connection failed', detail: connError.message },
+        { status: 500 }
+      )
+    }
+    console.warn('[Onboarding] Admin client connected OK')
 
     // 4. Check if user already has a workspace
     const { data: existingUser } = await admin
@@ -104,6 +121,8 @@ export async function POST(request: NextRequest) {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '')
+
+    console.warn('[Onboarding] Generated slug:', slug)
 
     // 6. Check slug availability (both business AND partner flows)
     const { data: existingSlug } = await admin
@@ -137,6 +156,8 @@ export async function POST(request: NextRequest) {
           onboarding_status: 'completed',
         }
 
+    console.warn('[Onboarding] Inserting workspace:', JSON.stringify(workspaceInsert))
+
     const { data: workspace, error: workspaceError } = await admin
       .from('workspaces')
       .insert(workspaceInsert)
@@ -144,13 +165,18 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (workspaceError) {
-      console.error('[Onboarding] Workspace creation failed:', workspaceError)
-      return NextResponse.json({ error: 'Failed to create workspace' }, { status: 500 })
+      console.warn('[Onboarding] Workspace creation FAILED:', workspaceError.message, workspaceError.code, workspaceError.details, workspaceError.hint)
+      return NextResponse.json(
+        { error: 'Failed to create workspace', detail: workspaceError.message, code: workspaceError.code },
+        { status: 500 }
+      )
     }
 
     console.warn('[Onboarding] Workspace created:', workspace.id)
 
     // 8. Create user profile
+    // NOTE: Only use columns that exist in the users table.
+    // is_partner (boolean) replaces the old partner_approved/active_subscription.
     const fullName = `${validated.firstName} ${validated.lastName}`
     const userInsert = validated.role === 'business'
       ? {
@@ -158,23 +184,23 @@ export async function POST(request: NextRequest) {
           workspace_id: workspace.id,
           email: validated.email,
           full_name: fullName,
-          role: 'owner',
-          plan: 'free',
+          role: 'owner' as const,
+          plan: 'free' as const,
           daily_credit_limit: 3,
           daily_credits_used: 0,
-          active_subscription: false,
-          partner_approved: false,
+          is_partner: false,
         }
       : {
           auth_user_id: authUser.id,
           workspace_id: workspace.id,
           email: validated.email,
           full_name: fullName,
-          role: 'partner',
-          plan: 'free',
-          partner_approved: false,
-          active_subscription: true,
+          role: 'partner' as const,
+          plan: 'free' as const,
+          is_partner: true,
         }
+
+    console.warn('[Onboarding] Inserting user for auth_user_id:', authUser.id)
 
     const { data: userProfile, error: userError } = await admin
       .from('users')
@@ -183,9 +209,13 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (userError) {
+      // Rollback: delete the workspace we just created
       await admin.from('workspaces').delete().eq('id', workspace.id)
-      console.error('[Onboarding] User creation failed:', userError)
-      return NextResponse.json({ error: 'Failed to create user profile' }, { status: 500 })
+      console.warn('[Onboarding] User creation FAILED:', userError.message, userError.code, userError.details, userError.hint)
+      return NextResponse.json(
+        { error: 'Failed to create user profile', detail: userError.message, code: userError.code },
+        { status: 500 }
+      )
     }
 
     console.warn('[Onboarding] User created:', userProfile.id)
@@ -218,11 +248,12 @@ export async function POST(request: NextRequest) {
         throw new Error(`Failed to record credit grant: ${grantError.message}`)
       }
     } catch (creditError) {
+      // Rollback: delete user and workspace
       await admin.from('users').delete().eq('id', userProfile.id)
       await admin.from('workspaces').delete().eq('id', workspace.id)
-      console.error('[Onboarding] Credit grant failed:', creditError)
+      console.warn('[Onboarding] Credit grant FAILED:', creditError instanceof Error ? creditError.message : creditError)
       return NextResponse.json(
-        { error: 'Failed to grant free credits' },
+        { error: 'Failed to grant free credits', detail: creditError instanceof Error ? creditError.message : 'Unknown' },
         { status: 500 }
       )
     }
@@ -280,7 +311,8 @@ export async function POST(request: NextRequest) {
 
     return response
   } catch (error) {
-    console.error('[Onboarding] Caught error:', error)
+    console.warn('[Onboarding] Caught error:', error instanceof Error ? error.message : error)
+    console.warn('[Onboarding] Stack:', error instanceof Error ? error.stack : 'no stack')
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -289,8 +321,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('[Onboarding] Unexpected error:', error instanceof Error ? error.message : error)
-    console.error('[Onboarding] Stack:', error instanceof Error ? error.stack : 'no stack')
     return NextResponse.json({
       error: 'Internal server error',
       message: error instanceof Error ? error.message : 'Unknown error'
