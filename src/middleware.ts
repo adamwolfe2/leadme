@@ -25,6 +25,16 @@ export async function middleware(req: NextRequest) {
       return NextResponse.next()
     }
 
+    // Webhook and Inngest paths handle their own auth — return immediately
+    // without creating a Supabase client (which can hang on serverless functions)
+    if (
+      pathname.startsWith('/api/webhooks') ||
+      pathname.startsWith('/api/inngest') ||
+      pathname === '/api/health'
+    ) {
+      return NextResponse.next()
+    }
+
     // Create Supabase client using SSR pattern
     const client = createClient(req)
     const { supabase } = client
