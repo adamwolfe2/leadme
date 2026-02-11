@@ -8,7 +8,19 @@ import { sendSlackAlert } from '@/lib/monitoring/alerts'
 export const runtime = 'edge'
 
 const provisionSchema = z.object({
-  website_url: z.string().url(),
+  website_url: z.string().url().refine((url) => {
+    try {
+      const parsed = new URL(url)
+      const hostname = parsed.hostname
+      // Reject localhost, raw IPs, and internal hostnames
+      if (hostname === 'localhost' || hostname === '127.0.0.1') return false
+      if (/^\d{1,3}(\.\d{1,3}){3}$/.test(hostname)) return false
+      if (!hostname.includes('.')) return false
+      return true
+    } catch {
+      return false
+    }
+  }, 'Please enter a valid public website URL'),
   website_name: z.string().max(200).optional(),
 })
 
@@ -21,10 +33,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get workspace_id from users table
+    // Get workspace_id and role from users table
     const { data: userData, error: userError } = await supabase
       .from('users')
-      .select('workspace_id, full_name')
+      .select('workspace_id, full_name, role')
       .eq('auth_user_id', user.id)
       .single()
 
@@ -32,22 +44,35 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 400 })
     }
 
+    // Only workspace owners/admins can provision pixels
+    if (userData.role && !['owner', 'admin'].includes(userData.role)) {
+      return NextResponse.json(
+        { error: 'Only workspace owners or admins can create pixels' },
+        { status: 403 }
+      )
+    }
+
     const body = await request.json()
     const validated = provisionSchema.parse(body)
 
-    // Check if workspace already has a pixel
     const adminSupabase = createAdminClient()
+
+    // Check if workspace already has an active pixel — return it (idempotent)
     const { data: existingPixel } = await adminSupabase
       .from('audiencelab_pixels')
-      .select('pixel_id')
+      .select('pixel_id, domain, is_active, snippet, label, created_at')
       .eq('workspace_id', userData.workspace_id)
+      .eq('is_active', true)
       .maybeSingle()
 
     if (existingPixel) {
-      return NextResponse.json(
-        { error: 'Workspace already has a pixel. Only one pixel per workspace is allowed.' },
-        { status: 409 }
-      )
+      // Idempotent: return existing pixel instead of 409
+      return NextResponse.json({
+        pixel_id: existingPixel.pixel_id,
+        snippet: existingPixel.snippet,
+        domain: existingPixel.domain,
+        existing: true,
+      })
     }
 
     // Extract domain from URL
@@ -77,8 +102,43 @@ export async function POST(request: NextRequest) {
       })
 
     if (insertError) {
+      // If it's a unique constraint violation (concurrent request), fetch and return existing
+      if (insertError.code === '23505') {
+        const { data: racePixel } = await adminSupabase
+          .from('audiencelab_pixels')
+          .select('pixel_id, domain, snippet')
+          .eq('workspace_id', userData.workspace_id)
+          .eq('is_active', true)
+          .maybeSingle()
+
+        if (racePixel) {
+          return NextResponse.json({
+            pixel_id: racePixel.pixel_id,
+            snippet: racePixel.snippet,
+            domain: racePixel.domain,
+            existing: true,
+          })
+        }
+      }
+
       console.error('[API] Pixel insert error:', insertError)
-      return NextResponse.json({ error: 'Failed to save pixel' }, { status: 500 })
+      // AL pixel was created but DB insert failed — log for recovery
+      sendSlackAlert({
+        type: 'webhook_failure',
+        severity: 'error',
+        message: `Pixel provisioned in AL but DB insert failed — needs manual recovery`,
+        metadata: {
+          workspace_id: userData.workspace_id,
+          al_pixel_id: result.pixel_id,
+          domain,
+          error: insertError.message,
+        },
+      }).catch(() => {})
+
+      return NextResponse.json(
+        { error: 'Failed to save pixel. Our team has been notified.' },
+        { status: 500 }
+      )
     }
 
     // Fire-and-forget Slack notification

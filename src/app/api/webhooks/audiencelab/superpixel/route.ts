@@ -14,6 +14,7 @@ import { SuperPixelWebhookPayloadSchema } from '@/lib/audiencelab/schemas'
 import { unwrapWebhookPayload, extractEventType, extractIpAddress } from '@/lib/audiencelab/field-map'
 import { processEventInline } from '@/lib/audiencelab/edge-processor'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 
 export const runtime = 'edge'
 
@@ -95,47 +96,24 @@ function captureHeaders(request: NextRequest): Record<string, string> {
 }
 
 /**
- * Resolve workspace from pixel_id or domain via audiencelab_pixels mapping.
- * Falls back to admin workspace if no mapping found.
+ * Resolve workspace strictly by pixel_id via audiencelab_pixels mapping.
+ * Returns null if pixel_id is unknown — caller must handle gracefully.
+ * No domain fallback, no admin fallback — strict tenant isolation.
  */
 async function resolveWorkspace(
   supabase: ReturnType<typeof createAdminClient>,
   pixelId: string | null,
-  landingUrl: string | null
 ): Promise<string | null> {
-  // Priority 1: pixel_id mapping
-  if (pixelId) {
-    const { data } = await supabase
-      .from('audiencelab_pixels')
-      .select('workspace_id')
-      .eq('pixel_id', pixelId)
-      .eq('is_active', true)
-      .single()
-    if (data?.workspace_id) return data.workspace_id
-  }
+  if (!pixelId) return null
 
-  // Priority 2: domain mapping from landing_url
-  if (landingUrl) {
-    try {
-      const domain = new URL(landingUrl).hostname.replace(/^www\./, '')
-      const { data } = await supabase
-        .from('audiencelab_pixels')
-        .select('workspace_id')
-        .eq('domain', domain)
-        .eq('is_active', true)
-        .single()
-      if (data?.workspace_id) return data.workspace_id
-    } catch { /* invalid URL, skip */ }
-  }
-
-  // Priority 3: fallback to admin workspace (well-known UUID)
-  const ADMIN_WORKSPACE_ID = '00000000-0000-0000-0000-000000000000'
-  const { data: adminWorkspace } = await supabase
-    .from('workspaces')
-    .select('id')
-    .eq('id', ADMIN_WORKSPACE_ID)
+  const { data } = await supabase
+    .from('audiencelab_pixels')
+    .select('workspace_id')
+    .eq('pixel_id', pixelId)
+    .eq('is_active', true)
     .single()
-  return adminWorkspace?.id || null
+
+  return data?.workspace_id || null
 }
 
 export async function POST(request: NextRequest) {
@@ -198,15 +176,61 @@ export async function POST(request: NextRequest) {
 
     const supabase = createAdminClient()
 
-    // Resolve workspace from first event's pixel_id or landing_url
+    // Resolve workspace strictly by pixel_id
     const firstEvent = events[0] || {}
-    const workspaceId = await resolveWorkspace(
-      supabase,
-      firstEvent.pixel_id || null,
-      firstEvent.landing_url || firstEvent.page_url || null
-    )
+    const pixelId = firstEvent.pixel_id || null
+    const workspaceId = await resolveWorkspace(supabase, pixelId)
 
-    // Store raw events and queue processing
+    // If pixel_id is unknown, store events with error state but do NOT create leads
+    if (!workspaceId) {
+      safeLog(`${LOG_PREFIX} Unknown pixel_id: ${pixelId || 'null'} — storing events without processing`)
+
+      // Store raw events with processed=false and no workspace
+      for (const event of events) {
+        const eventType = extractEventType(event)
+        const ipAddress = extractIpAddress(event)
+
+        await supabase
+          .from('audiencelab_events')
+          .insert({
+            source: 'superpixel',
+            pixel_id: event.pixel_id || null,
+            event_type: eventType,
+            hem_sha256: event.hem_sha256 || event.hem || null,
+            uid: event.uid || null,
+            profile_id: event.profile_id || null,
+            ip_address: ipAddress,
+            raw: event,
+            raw_headers: rawHeaders,
+            processed: false,
+            workspace_id: null,
+          })
+          .select('id')
+          .single()
+      }
+
+      // Fire-and-forget alert for unknown pixel
+      sendSlackAlert({
+        type: 'webhook_failure',
+        severity: 'warning',
+        message: `Unknown pixel_id received: ${pixelId || 'null'}`,
+        metadata: {
+          pixel_id: pixelId,
+          event_count: events.length,
+          source: 'superpixel',
+        },
+      }).catch(() => {})
+
+      return NextResponse.json({
+        success: true,
+        stored: events.length,
+        processed: 0,
+        total: events.length,
+        warning: 'unknown_pixel_id',
+      })
+    }
+
+    // Known pixel — store and process normally
     const insertedIds: string[] = []
 
     for (const event of events) {
@@ -241,13 +265,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    safeLog(`${LOG_PREFIX} Stored ${insertedIds.length}/${events.length} events`)
+    safeLog(`${LOG_PREFIX} Stored ${insertedIds.length}/${events.length} events for workspace ${workspaceId}`)
 
     // Process events inline (Edge-compatible — bypasses Inngest callback)
     const processed: string[] = []
     for (const id of insertedIds) {
       try {
-        const result = await processEventInline(id, workspaceId || '', 'superpixel')
+        const result = await processEventInline(id, workspaceId, 'superpixel')
         if (result.success) processed.push(id)
       } catch (err) {
         safeError(`${LOG_PREFIX} Inline processing failed for ${id}`, err)

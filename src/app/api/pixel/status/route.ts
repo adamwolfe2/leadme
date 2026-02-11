@@ -33,14 +33,15 @@ export async function GET() {
       .eq('workspace_id', userData.workspace_id)
       .maybeSingle()
 
-    // Count recent events (last 24h)
+    // Count recent superpixel events (last 24h) by pixel_id
     let recentEvents = 0
     if (pixel) {
       const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
       const { count } = await adminSupabase
         .from('audiencelab_events')
         .select('*', { count: 'exact', head: true })
-        .eq('workspace_id', userData.workspace_id)
+        .eq('pixel_id', pixel.pixel_id)
+        .eq('source', 'superpixel')
         .gte('received_at', twentyFourHoursAgo)
 
       recentEvents = count || 0
