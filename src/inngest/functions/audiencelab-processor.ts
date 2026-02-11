@@ -350,14 +350,111 @@ export const processAudienceLabEvent = inngest.createFunction(
       })
 
       // Also route to individual users based on their targeting preferences
+      // NOTE: Uses admin client directly because UserLeadRouterService uses
+      // createClient() which requires cookies (unavailable in Inngest context)
       await step.run('route-lead-to-users', async () => {
         try {
           const targetWorkspaceId = workspace_id || rawEvent.workspace_id
-          const { UserLeadRouterService } = await import('@/lib/services/user-lead-router.service')
-          const userRouter = new UserLeadRouterService(targetWorkspaceId)
-          const result = await userRouter.routeLead(leadResult.lead_id!)
-          if (result.matched) {
-            safeLog(`${LOG_PREFIX} Lead ${leadResult.lead_id} routed to ${result.assignedTo.length} user(s)`)
+
+          // Get lead data for matching
+          const { data: lead } = await supabase
+            .from('leads')
+            .select('id, company_industry, state_code, state, city, postal_code')
+            .eq('id', leadResult.lead_id!)
+            .single()
+
+          if (!lead) return
+
+          // Get all active user targeting for this workspace
+          const { data: targetingUsers } = await supabase
+            .from('user_targeting')
+            .select('user_id, target_industries, target_states, target_cities, target_zips, daily_lead_cap, daily_lead_count, weekly_lead_cap, weekly_lead_count, monthly_lead_cap, monthly_lead_count')
+            .eq('workspace_id', targetWorkspaceId)
+            .eq('is_active', true)
+
+          if (!targetingUsers?.length) return
+
+          const leadState = lead.state_code || lead.state
+          const leadIndustry = lead.company_industry
+          let assignedCount = 0
+
+          for (const ut of targetingUsers) {
+            // Check caps
+            if (ut.daily_lead_cap && ut.daily_lead_count >= ut.daily_lead_cap) continue
+            if (ut.weekly_lead_cap && ut.weekly_lead_count >= ut.weekly_lead_cap) continue
+            if (ut.monthly_lead_cap && ut.monthly_lead_count >= ut.monthly_lead_cap) continue
+
+            // Check geo match
+            let matchedGeo: string | null = null
+            const hasGeo = (ut.target_states?.length > 0) || (ut.target_cities?.length > 0) || (ut.target_zips?.length > 0)
+            if (hasGeo) {
+              if (leadState && ut.target_states?.includes(leadState)) {
+                matchedGeo = leadState
+              } else if (lead.city && ut.target_cities?.some((c: string) => c.toLowerCase() === lead.city.toLowerCase())) {
+                matchedGeo = lead.city
+              } else if (lead.postal_code && ut.target_zips?.includes(lead.postal_code)) {
+                matchedGeo = lead.postal_code
+              } else {
+                continue
+              }
+            }
+
+            // Check industry match
+            let matchedIndustry: string | null = null
+            const hasIndustry = (ut.target_industries?.length > 0)
+            if (hasIndustry) {
+              if (leadIndustry && ut.target_industries?.includes(leadIndustry)) {
+                matchedIndustry = leadIndustry
+              } else {
+                continue
+              }
+            }
+
+            if (!hasGeo && !hasIndustry) continue
+
+            // Create user_lead_assignment (junction record for My Leads page)
+            const { error: assignErr } = await supabase
+              .from('user_lead_assignments')
+              .insert({
+                workspace_id: targetWorkspaceId,
+                lead_id: lead.id,
+                user_id: ut.user_id,
+                matched_industry: matchedIndustry,
+                matched_geo: matchedGeo,
+                source: `audiencelab_${source}`,
+                status: 'new',
+              })
+
+            if (assignErr) {
+              if (assignErr.code === '23505') continue // Duplicate
+              safeError(`${LOG_PREFIX} Failed to assign lead to user ${ut.user_id}`, assignErr)
+              continue
+            }
+
+            // Set assigned_user_id on lead (first match wins)
+            await supabase
+              .from('leads')
+              .update({ assigned_user_id: ut.user_id })
+              .eq('id', lead.id)
+              .is('assigned_user_id', null)
+
+            // Increment user lead counts
+            await supabase
+              .from('user_targeting')
+              .update({
+                daily_lead_count: (ut.daily_lead_count || 0) + 1,
+                weekly_lead_count: (ut.weekly_lead_count || 0) + 1,
+                monthly_lead_count: (ut.monthly_lead_count || 0) + 1,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('user_id', ut.user_id)
+              .eq('workspace_id', targetWorkspaceId)
+
+            assignedCount++
+          }
+
+          if (assignedCount > 0) {
+            safeLog(`${LOG_PREFIX} Lead ${leadResult.lead_id} assigned to ${assignedCount} user(s)`)
           }
         } catch (err) {
           // User routing failure is non-fatal
