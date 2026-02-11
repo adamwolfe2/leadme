@@ -10,11 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton, SkeletonCard } from '@/components/ui/skeleton'
-import {
-  getServiceLink,
-  getCreditLink,
-  PAYMENT_LINKS,
-} from '@/lib/stripe/payment-links'
+import { getServiceLink } from '@/lib/stripe/payment-links'
+import { CREDIT_PACKAGES } from '@/lib/constants/credit-packages'
 
 // Integration logos for the Pro plan card
 const INTEGRATION_LOGOS = {
@@ -65,6 +62,33 @@ export default function BillingSettingsPage() {
       toast.error(error.message || 'Failed to cancel subscription')
     },
   })
+
+  const [purchasingPackage, setPurchasingPackage] = useState<string | null>(null)
+
+  const handlePurchaseCredits = async (packageId: string, credits: number, price: number) => {
+    setPurchasingPackage(packageId)
+    try {
+      const response = await fetch('/api/marketplace/credits/purchase', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ packageId, credits, amount: price }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to create checkout')
+      }
+
+      const { url } = await response.json()
+      if (url) {
+        window.location.href = url
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to start purchase')
+    } finally {
+      setPurchasingPackage(null)
+    }
+  }
 
   const handleManageBilling = async () => {
     setLoading(true)
@@ -523,98 +547,38 @@ export default function BillingSettingsPage() {
           </p>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Lead Purchase */}
-            <button
-              onClick={() => window.open(getCreditLink('leadPurchase'), '_blank', 'noopener,noreferrer')}
-              className="group border border-border rounded-lg p-4 hover:border-primary/50 hover:shadow-md transition-all text-left"
-            >
-              <div className="flex items-start justify-between mb-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <svg className="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
+            {CREDIT_PACKAGES.map((pkg) => (
+              <button
+                key={pkg.id}
+                onClick={() => handlePurchaseCredits(pkg.id, pkg.credits, pkg.price)}
+                disabled={purchasingPackage === pkg.id}
+                className={`group border rounded-lg p-4 hover:border-primary/50 hover:shadow-md transition-all text-left relative disabled:opacity-60 disabled:cursor-wait ${
+                  pkg.popular ? 'border-primary/30' : 'border-border'
+                }`}
+              >
+                {pkg.popular && (
+                  <Badge variant="default" className="absolute -top-2.5 right-3 text-[10px]">Popular</Badge>
+                )}
+                <div className="mb-3">
+                  <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors text-sm">
+                    {pkg.name}
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {pkg.credits.toLocaleString()} credits
+                  </p>
                 </div>
-                <svg className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </div>
-              <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors text-sm">
-                {PAYMENT_LINKS.credits.leadPurchase.name}
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                Individual lead credits
-              </p>
-            </button>
-
-            {/* Starter Credits */}
-            <button
-              onClick={() => window.open(getCreditLink('starter'), '_blank', 'noopener,noreferrer')}
-              className="group border border-border rounded-lg p-4 hover:border-primary/50 hover:shadow-md transition-all text-left"
-            >
-              <div className="flex items-start justify-between mb-3">
-                <div className="p-2 rounded-lg bg-emerald-500/10">
-                  <svg className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                <div className="flex items-baseline gap-1 mb-1">
+                  <span className="text-lg font-bold text-foreground">${pkg.price.toLocaleString()}</span>
                 </div>
-                <svg className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </div>
-              <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors text-sm">
-                {PAYMENT_LINKS.credits.starter.name}
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                Small credit pack to get started
-              </p>
-            </button>
-
-            {/* Professional Credits */}
-            <button
-              onClick={() => window.open(getCreditLink('professional'), '_blank', 'noopener,noreferrer')}
-              className="group border border-primary/30 rounded-lg p-4 hover:border-primary/50 hover:shadow-md transition-all text-left relative"
-            >
-              <Badge variant="default" className="absolute -top-2.5 right-3 text-[10px]">Popular</Badge>
-              <div className="flex items-start justify-between mb-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <svg className="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
+                <p className="text-xs text-muted-foreground">
+                  ${pkg.pricePerCredit}/credit
+                  {pkg.savings > 0 && ` · Save ${pkg.savings}%`}
+                </p>
+                <div className="mt-3 w-full text-center py-1.5 rounded-md bg-primary/10 text-primary text-xs font-medium group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                  {purchasingPackage === pkg.id ? 'Redirecting...' : 'Buy Now'}
                 </div>
-                <svg className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </div>
-              <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors text-sm">
-                {PAYMENT_LINKS.credits.professional.name}
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                Best value for growing teams
-              </p>
-            </button>
-
-            {/* Enterprise Credits */}
-            <button
-              onClick={() => window.open(getCreditLink('enterprise'), '_blank', 'noopener,noreferrer')}
-              className="group border border-border rounded-lg p-4 hover:border-primary/50 hover:shadow-md transition-all text-left"
-            >
-              <div className="flex items-start justify-between mb-3">
-                <div className="p-2 rounded-lg bg-purple-500/10">
-                  <svg className="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                </div>
-                <svg className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </div>
-              <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors text-sm">
-                {PAYMENT_LINKS.credits.enterprise.name}
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                Volume credits for large teams
-              </p>
-            </button>
+              </button>
+            ))}
           </div>
         </CardContent>
       </Card>

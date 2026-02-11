@@ -1,12 +1,13 @@
 // Credit Purchase API
 // Creates Stripe checkout session for credit purchases
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
 import { validateCreditPurchase } from '@/lib/constants/credit-packages'
-import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import { getStripeClient } from '@/lib/stripe/client'
 
 const purchaseSchema = z.object({
@@ -38,16 +39,6 @@ export async function POST(request: NextRequest) {
 
     if (!userData?.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
-    }
-
-    // RATE LIMITING: Check credit purchase rate limit (5 per minute per user)
-    const rateLimitResult = await withRateLimit(
-      request,
-      'credit-purchase',
-      `user:${user.id}`
-    )
-    if (rateLimitResult) {
-      return rateLimitResult
     }
 
     const body = await request.json()
@@ -107,8 +98,8 @@ export async function POST(request: NextRequest) {
         user_id: userData.id,
         credits: String(validated.credits),
       },
-      success_url: `${origin}/marketplace/credits?success=true&credits=${validated.credits}`,
-      cancel_url: `${origin}/marketplace/credits?canceled=true`,
+      success_url: `${origin}/settings/billing?success=true&credits=${validated.credits}`,
+      cancel_url: `${origin}/settings/billing?canceled=true`,
     })
 
     return NextResponse.json({

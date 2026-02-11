@@ -5,18 +5,12 @@ import { cn } from '@/lib/design-system'
 import { Sidebar, SidebarMobile } from './sidebar'
 import { Header } from './header'
 
-// Tier type for navigation gating
-type NavTier = 'free' | 'starter' | 'pro' | 'outbound'
-
-// Navigation item configuration with tier-gating and coming-soon support
+// Navigation item configuration
 interface NavItemConfig {
   name: string
   href: string
   icon: React.ReactNode
-  badge?: string | number
   adminOnly?: boolean
-  requiredTier?: NavTier
-  comingSoon?: boolean
   children?: { name: string; href: string }[]
 }
 
@@ -40,7 +34,6 @@ const navigationItems: NavItemConfig[] = [
   {
     name: 'Queries',
     href: '/queries',
-    requiredTier: 'pro',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -77,8 +70,6 @@ const navigationItems: NavItemConfig[] = [
   {
     name: 'CRM',
     href: '/crm',
-    requiredTier: 'pro',
-    comingSoon: true,
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -100,7 +91,6 @@ const navigationItems: NavItemConfig[] = [
     name: 'AI Studio',
     href: '/ai-studio',
     adminOnly: true,
-    requiredTier: 'outbound',
     icon: (
       <img src="/cursive-logo.png" alt="Cursive" className="h-5 w-5 object-contain" />
     ),
@@ -118,7 +108,6 @@ const navigationItems: NavItemConfig[] = [
     name: 'Leads',
     href: '/leads',
     adminOnly: true,
-    requiredTier: 'outbound',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -138,7 +127,6 @@ const navigationItems: NavItemConfig[] = [
   {
     name: 'People Search',
     href: '/people-search',
-    requiredTier: 'pro',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -154,7 +142,6 @@ const navigationItems: NavItemConfig[] = [
     name: 'AI Agents',
     href: '/agents',
     adminOnly: true,
-    requiredTier: 'outbound',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -174,7 +161,6 @@ const navigationItems: NavItemConfig[] = [
     name: 'Campaigns',
     href: '/campaigns',
     adminOnly: true,
-    requiredTier: 'outbound',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -195,7 +181,6 @@ const navigationItems: NavItemConfig[] = [
     name: 'Templates',
     href: '/templates',
     adminOnly: true,
-    requiredTier: 'outbound',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -210,8 +195,6 @@ const navigationItems: NavItemConfig[] = [
   {
     name: 'Trends',
     href: '/trends',
-    requiredTier: 'pro',
-    comingSoon: true,
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -240,8 +223,6 @@ const navigationItems: NavItemConfig[] = [
   {
     name: 'Services',
     href: '/services',
-    badge: 'New',
-    requiredTier: 'starter',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -270,7 +251,6 @@ const navigationItems: NavItemConfig[] = [
   {
     name: 'Buy Credits',
     href: '/settings/billing#buy-credits',
-    badge: 'New',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path

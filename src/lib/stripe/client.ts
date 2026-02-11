@@ -17,6 +17,7 @@ export function getStripeClient(): Stripe {
     }
     stripeClient = new Stripe(apiKey, {
       apiVersion: '2024-12-18.acacia',
+      httpClient: Stripe.createFetchHttpClient(),
     })
   }
   return stripeClient
