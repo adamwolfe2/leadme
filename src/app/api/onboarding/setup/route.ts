@@ -1,6 +1,6 @@
 /**
  * Onboarding Setup API
- * Creates workspace + user profile using admin client (bypasses RLS)
+ * Creates workspace + user profile + targeting using admin client (bypasses RLS)
  */
 
 import { NextResponse, type NextRequest } from 'next/server'
@@ -9,6 +9,75 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { FREE_TRIAL_CREDITS } from '@/lib/constants/credit-packages'
 import { z } from 'zod'
+
+// Monthly lead need → daily/weekly/monthly caps
+const LEAD_CAPS: Record<string, { daily: number; weekly: number; monthly: number }> = {
+  '10-25 leads': { daily: 2, weekly: 10, monthly: 25 },
+  '25-50 leads': { daily: 3, weekly: 15, monthly: 50 },
+  '50-100 leads': { daily: 5, weekly: 25, monthly: 100 },
+  '100-250 leads': { daily: 10, weekly: 65, monthly: 250 },
+  '250+ leads': { daily: 15, weekly: 75, monthly: 300 },
+}
+
+// US state name → abbreviation mapping
+const STATE_MAP: Record<string, string> = {
+  'alabama': 'AL', 'alaska': 'AK', 'arizona': 'AZ', 'arkansas': 'AR',
+  'california': 'CA', 'colorado': 'CO', 'connecticut': 'CT', 'delaware': 'DE',
+  'florida': 'FL', 'georgia': 'GA', 'hawaii': 'HI', 'idaho': 'ID',
+  'illinois': 'IL', 'indiana': 'IN', 'iowa': 'IA', 'kansas': 'KS',
+  'kentucky': 'KY', 'louisiana': 'LA', 'maine': 'ME', 'maryland': 'MD',
+  'massachusetts': 'MA', 'michigan': 'MI', 'minnesota': 'MN', 'mississippi': 'MS',
+  'missouri': 'MO', 'montana': 'MT', 'nebraska': 'NE', 'nevada': 'NV',
+  'new hampshire': 'NH', 'new jersey': 'NJ', 'new mexico': 'NM', 'new york': 'NY',
+  'north carolina': 'NC', 'north dakota': 'ND', 'ohio': 'OH', 'oklahoma': 'OK',
+  'oregon': 'OR', 'pennsylvania': 'PA', 'rhode island': 'RI', 'south carolina': 'SC',
+  'south dakota': 'SD', 'tennessee': 'TN', 'texas': 'TX', 'utah': 'UT',
+  'vermont': 'VT', 'virginia': 'VA', 'washington': 'WA', 'west virginia': 'WV',
+  'wisconsin': 'WI', 'wyoming': 'WY',
+}
+
+// Region → state codes
+const REGION_MAP: Record<string, string[]> = {
+  'northeast': ['CT', 'ME', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT'],
+  'southeast': ['AL', 'AR', 'FL', 'GA', 'KY', 'LA', 'MS', 'NC', 'SC', 'TN', 'VA', 'WV'],
+  'midwest': ['IL', 'IN', 'IA', 'KS', 'MI', 'MN', 'MO', 'NE', 'ND', 'OH', 'SD', 'WI'],
+  'southwest': ['AZ', 'NM', 'OK', 'TX'],
+  'west': ['AK', 'CA', 'CO', 'HI', 'ID', 'MT', 'NV', 'OR', 'UT', 'WA', 'WY'],
+}
+
+/** Parse free-text location string into state codes */
+function parseTargetLocations(raw: string | undefined): string[] {
+  if (!raw || raw.toLowerCase() === 'national' || raw.toLowerCase() === 'nationwide') {
+    return [] // empty = no geo filter = matches all
+  }
+
+  const states = new Set<string>()
+  const parts = raw.split(/[,;]+/).map(p => p.trim().toLowerCase()).filter(Boolean)
+
+  for (const part of parts) {
+    // Check exact state abbreviation (2-letter)
+    const upper = part.toUpperCase()
+    if (upper.length === 2 && Object.values(STATE_MAP).includes(upper)) {
+      states.add(upper)
+      continue
+    }
+    // Check full state name
+    if (STATE_MAP[part]) {
+      states.add(STATE_MAP[part])
+      continue
+    }
+    // Check region names
+    const regionKey = Object.keys(REGION_MAP).find(r => part.includes(r))
+    if (regionKey) {
+      for (const code of REGION_MAP[regionKey]) states.add(code)
+      continue
+    }
+    // If nothing matched, store the raw string as-is (user might type city names etc.)
+    states.add(part)
+  }
+
+  return Array.from(states)
+}
 
 // Allow up to 60s on Pro plan (Hobby caps at 10s regardless)
 export const maxDuration = 60
@@ -258,7 +327,42 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.warn('[Onboarding] Credits granted. Returning success.')
+    console.warn('[Onboarding] Credits granted.')
+
+    // 10. Create user targeting for business users (enables lead routing)
+    if (validated.role === 'business') {
+      try {
+        const targetStates = parseTargetLocations(validated.targetLocations)
+        const caps = LEAD_CAPS[validated.monthlyLeadNeed] || LEAD_CAPS['25-50 leads']
+
+        await admin
+          .from('user_targeting')
+          .insert({
+            user_id: userProfile.id,
+            workspace_id: workspace.id,
+            target_industries: [validated.industry],
+            target_states: targetStates,
+            target_cities: [],
+            target_zips: [],
+            target_sic_codes: [],
+            daily_lead_cap: caps.daily,
+            weekly_lead_cap: caps.weekly,
+            monthly_lead_cap: caps.monthly,
+            is_active: true,
+          })
+
+        console.warn('[Onboarding] User targeting created:', {
+          industries: [validated.industry],
+          states: targetStates,
+          caps,
+        })
+      } catch (targetingError) {
+        // Non-fatal: user can set targeting later from dashboard
+        console.warn('[Onboarding] User targeting creation failed (non-fatal):', targetingError instanceof Error ? targetingError.message : targetingError)
+      }
+    }
+
+    console.warn('[Onboarding] Returning success.')
 
     // Build the response FIRST, then fire non-blocking side effects
     const response = NextResponse.json({ workspace_id: workspace.id })
