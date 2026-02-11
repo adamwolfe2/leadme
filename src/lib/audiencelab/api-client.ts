@@ -1,0 +1,285 @@
+/**
+ * AudienceLab REST API Client
+ *
+ * Thin client for the AL REST API (https://api.audiencelab.io).
+ * Complements the existing webhook/push pipeline with pull capabilities:
+ *
+ * - Pixel provisioning: create pixels programmatically for B2B customers
+ * - Audience listing: inventory available audiences
+ * - On-demand enrichment: enrich/lookup profiles by filter criteria
+ *
+ * Auth: X-Api-Key header via AUDIENCELAB_ACCOUNT_API_KEY env var
+ * Existing webhook pipeline remains the canonical ingestion path.
+ */
+
+import { fetchWithTimeout } from '@/lib/utils/retry'
+
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
+
+const AL_API_BASE_URL = process.env.AUDIENCELAB_API_URL || 'https://api.audiencelab.io'
+const AL_API_KEY = process.env.AUDIENCELAB_ACCOUNT_API_KEY || ''
+const AL_API_TIMEOUT = 30000
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+export interface ALPixelCreateRequest {
+  websiteName: string
+  websiteUrl: string
+  webhookUrl?: string
+}
+
+export interface ALPixelCreateResponse {
+  pixel_id: string
+  install_url?: string
+  script?: string
+  website_name: string
+  website_url: string
+  webhook_url?: string
+  created_at?: string
+}
+
+export interface ALPixel {
+  pixel_id: string
+  website_name: string
+  website_url: string
+  webhook_url?: string
+  created_at?: string
+  status?: string
+}
+
+export interface ALAudience {
+  id: string
+  name: string
+  description?: string
+  size?: number
+  status?: string
+  created_at?: string
+  updated_at?: string
+}
+
+export interface ALAudienceListResponse {
+  audiences: ALAudience[]
+  total?: number
+  page?: number
+  limit?: number
+}
+
+export interface ALEnrichFilter {
+  email?: string
+  first_name?: string
+  last_name?: string
+  company?: string
+  phone?: string
+  address?: string
+  city?: string
+  state?: string
+  zip?: string
+}
+
+export interface ALEnrichRequest {
+  filter: ALEnrichFilter
+  fields?: string[]
+}
+
+export interface ALEnrichResult {
+  found: number
+  results: ALEnrichedProfile[]
+}
+
+export interface ALEnrichedProfile {
+  email?: string
+  first_name?: string
+  last_name?: string
+  personal_emails?: string[]
+  business_emails?: string[]
+  phones?: string[]
+  company_name?: string
+  company_domain?: string
+  job_title?: string
+  address?: string
+  city?: string
+  state?: string
+  zip?: string
+  gender?: string
+  age?: string
+  income_range?: string
+  homeowner?: boolean
+  [key: string]: unknown
+}
+
+// ============================================================================
+// API CLIENT
+// ============================================================================
+
+class AudienceLabApiError extends Error {
+  constructor(
+    message: string,
+    public statusCode: number,
+    public responseBody?: unknown
+  ) {
+    super(message)
+    this.name = 'AudienceLabApiError'
+  }
+}
+
+async function alFetch<T = unknown>(
+  endpoint: string,
+  options: RequestInit & { timeout?: number } = {}
+): Promise<T> {
+  if (!AL_API_KEY) {
+    throw new Error('AUDIENCELAB_ACCOUNT_API_KEY not configured')
+  }
+
+  const { timeout = AL_API_TIMEOUT, ...fetchOptions } = options
+
+  const url = `${AL_API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`
+
+  const response = await fetchWithTimeout(url, {
+    ...fetchOptions,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Api-Key': AL_API_KEY,
+      ...fetchOptions.headers,
+    },
+    timeout,
+  })
+
+  if (!response.ok) {
+    let body: unknown
+    try {
+      body = await response.json()
+    } catch {
+      body = await response.text().catch(() => null)
+    }
+    throw new AudienceLabApiError(
+      `AudienceLab API error: ${response.status} ${response.statusText}`,
+      response.status,
+      body
+    )
+  }
+
+  // Handle 204 No Content
+  if (response.status === 204) {
+    return {} as T
+  }
+
+  return response.json() as Promise<T>
+}
+
+// ============================================================================
+// PIXEL MANAGEMENT
+// ============================================================================
+
+/**
+ * Create a new SuperPixel for a customer's website.
+ * The returned pixel_id should be stored in audiencelab_pixels for routing.
+ */
+export async function createPixel(params: ALPixelCreateRequest): Promise<ALPixelCreateResponse> {
+  return alFetch<ALPixelCreateResponse>('/pixels', {
+    method: 'POST',
+    body: JSON.stringify({
+      websiteName: params.websiteName,
+      websiteUrl: params.websiteUrl,
+      webhookUrl: params.webhookUrl,
+    }),
+  })
+}
+
+/**
+ * List all pixels on the account.
+ */
+export async function listPixels(): Promise<ALPixel[]> {
+  const response = await alFetch<ALPixel[] | { pixels: ALPixel[] }>('/pixels', {
+    method: 'GET',
+  })
+  // Handle both array and wrapped response formats
+  return Array.isArray(response) ? response : response.pixels || []
+}
+
+// ============================================================================
+// AUDIENCE MANAGEMENT
+// ============================================================================
+
+/**
+ * List available audiences with optional pagination.
+ */
+export async function listAudiences(params?: {
+  page?: number
+  limit?: number
+}): Promise<ALAudienceListResponse> {
+  const searchParams = new URLSearchParams()
+  if (params?.page) searchParams.set('page', String(params.page))
+  if (params?.limit) searchParams.set('limit', String(params.limit))
+
+  const query = searchParams.toString()
+  const endpoint = query ? `/audiences?${query}` : '/audiences'
+
+  return alFetch<ALAudienceListResponse>(endpoint, { method: 'GET' })
+}
+
+// ============================================================================
+// ENRICHMENT
+// ============================================================================
+
+/**
+ * Enrich/lookup profiles by filter criteria.
+ * Returns matched profiles from AL's 280M+ consumer database.
+ */
+export async function enrich(params: ALEnrichRequest): Promise<ALEnrichResult> {
+  return alFetch<ALEnrichResult>('/enrich', {
+    method: 'POST',
+    body: JSON.stringify({
+      filter: params.filter,
+      ...(params.fields && { fields: params.fields }),
+    }),
+  })
+}
+
+// ============================================================================
+// CONVENIENCE: Full pixel provisioning for Cursive onboarding
+// ============================================================================
+
+/**
+ * Provision a pixel for a new Cursive customer.
+ * Creates the pixel in AL and returns all info needed for the customer.
+ *
+ * @param websiteName Customer's business name
+ * @param websiteUrl Customer's website URL
+ * @param cursiveWebhookUrl Webhook URL pointing to Cursive's superpixel handler
+ * @returns Pixel creation result with install snippet
+ */
+export async function provisionCustomerPixel(params: {
+  websiteName: string
+  websiteUrl: string
+  cursiveWebhookUrl?: string
+}): Promise<ALPixelCreateResponse> {
+  const webhookUrl = params.cursiveWebhookUrl ||
+    'https://leads.meetcursive.com/api/webhooks/audiencelab/superpixel'
+
+  return createPixel({
+    websiteName: params.websiteName,
+    websiteUrl: params.websiteUrl,
+    webhookUrl,
+  })
+}
+
+// ============================================================================
+// HEALTH CHECK
+// ============================================================================
+
+/**
+ * Quick check that the API key is valid and AL API is reachable.
+ */
+export async function healthCheck(): Promise<{ ok: boolean; error?: string }> {
+  try {
+    await listPixels()
+    return { ok: true }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown error'
+    return { ok: false, error: message }
+  }
+}

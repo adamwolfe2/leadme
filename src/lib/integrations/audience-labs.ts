@@ -1,16 +1,17 @@
 /**
  * Audience Labs Integration
  *
- * AL is a CDP/Activation + SuperPixel platform — NOT a traditional REST API.
- * Data flows INTO Cursive via three channels:
- *   1. Real-time SuperPixel events → /api/webhooks/audiencelab/superpixel
- *   2. AudienceSync HTTP destination → /api/webhooks/audiencelab/audiencesync
- *   3. Batch export imports → /api/audiencelab/import
+ * AL integration has two modes:
+ *   A) Push (webhooks) — canonical ingestion for real-time data:
+ *      1. SuperPixel events → /api/webhooks/audiencelab/superpixel
+ *      2. AudienceSync HTTP destination → /api/webhooks/audiencelab/audiencesync
+ *      3. Batch export imports → /api/audiencelab/import
+ *   B) Pull (REST API) — provisioning + enrichment:
+ *      - Pixel creation: POST /pixels (automated B2B onboarding)
+ *      - Audience listing: GET /audiences
+ *      - On-demand enrichment: POST /enrich
  *
- * This module provides shared utilities and future API client methods.
- * Webhook handlers and processing logic live in their respective route files
- * and src/inngest/functions/audiencelab-processor.ts.
- *
+ * REST API client: src/lib/audiencelab/api-client.ts
  * Schemas: src/lib/audiencelab/schemas.ts
  * Field normalization: src/lib/audiencelab/field-map.ts
  */
@@ -75,9 +76,20 @@ export function getPixelId(): string | null {
 }
 
 /**
- * Get the AL account API key (for future API use).
- * Not yet confirmed which REST endpoints exist outside the dashboard.
+ * Get the AL account API key for REST API access.
+ * Used by src/lib/audiencelab/api-client.ts for pixel provisioning,
+ * audience listing, and on-demand enrichment.
  */
 export function getAccountApiKey(): string | null {
   return process.env.AUDIENCELAB_ACCOUNT_API_KEY || null
 }
+
+// Re-export REST API client for convenience
+export {
+  createPixel,
+  listPixels,
+  listAudiences,
+  enrich,
+  provisionCustomerPixel,
+  healthCheck as alHealthCheck,
+} from '@/lib/audiencelab/api-client'
