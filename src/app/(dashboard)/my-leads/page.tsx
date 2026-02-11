@@ -70,7 +70,7 @@ export default async function MyLeadsPage() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-zinc-900">My Leads</h1>
-          <p className="mt-1 text-[13px] text-zinc-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             Leads matched to your targeting preferences
           </p>
         </div>

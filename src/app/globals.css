@@ -528,7 +528,7 @@
   }
 
   .text-gradient-cursive {
-    @apply bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 bg-clip-text text-transparent;
   }
 
   /* Background gradients */

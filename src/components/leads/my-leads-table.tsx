@@ -6,10 +6,11 @@
  * Displays the user's assigned leads with status management.
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/design-system'
 import type { Database } from '@/types/database.types'
+import type { RealtimeChannel } from '@supabase/supabase-js'
 
 type UserLeadAssignmentUpdate = Database['public']['Tables']['user_lead_assignments']['Update']
 
@@ -57,12 +58,10 @@ export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>('all')
   const [selectedLead, setSelectedLead] = useState<LeadAssignment | null>(null)
+  const [newLeadCount, setNewLeadCount] = useState(0)
+  const channelRef = useRef<RealtimeChannel | null>(null)
 
-  useEffect(() => {
-    fetchAssignments()
-  }, [userId, workspaceId, filter])
-
-  async function fetchAssignments() {
+  const fetchAssignments = useCallback(async () => {
     const supabase = createClient()
 
     let query = supabase
@@ -108,10 +107,92 @@ export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
       console.error('Failed to fetch assignments:', error)
     } else {
       setAssignments((data as unknown as LeadAssignment[]) || [])
+      setNewLeadCount(0)
     }
 
     setLoading(false)
-  }
+  }, [userId, workspaceId, filter])
+
+  useEffect(() => {
+    fetchAssignments()
+  }, [fetchAssignments])
+
+  // Realtime subscription for new lead assignments
+  useEffect(() => {
+    const supabase = createClient()
+
+    const channel = supabase
+      .channel(`user_leads:${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'user_lead_assignments',
+          filter: `user_id=eq.${userId}`,
+        },
+        async (payload) => {
+          // Fetch the full assignment with joined lead data
+          const { data } = await supabase
+            .from('user_lead_assignments')
+            .select(
+              `
+              id, lead_id, status, matched_industry, matched_sic_code, matched_geo, assigned_at, viewed_at,
+              leads (id, first_name, last_name, full_name, email, phone, company_name, job_title, city, state, state_code, company_industry, created_at)
+              `
+            )
+            .eq('id', payload.new.id)
+            .single()
+
+          if (data) {
+            const newAssignment = data as unknown as LeadAssignment
+            setAssignments((prev) => {
+              // Don't add duplicates
+              if (prev.some((a) => a.id === newAssignment.id)) return prev
+              return [newAssignment, ...prev]
+            })
+            setNewLeadCount((c) => c + 1)
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'user_lead_assignments',
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload) => {
+          setAssignments((prev) =>
+            prev.map((a) =>
+              a.id === payload.new.id
+                ? { ...a, status: payload.new.status as string, viewed_at: payload.new.viewed_at as string | null }
+                : a
+            )
+          )
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'user_lead_assignments',
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload) => {
+          setAssignments((prev) => prev.filter((a) => a.id !== payload.old.id))
+        }
+      )
+      .subscribe()
+
+    channelRef.current = channel
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [userId])
 
   async function updateStatus(assignmentId: string, newStatus: string) {
     const supabase = createClient()
@@ -170,6 +251,19 @@ export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
 
   return (
     <div className="rounded-lg border border-zinc-200 bg-white">
+      {/* New leads notification */}
+      {newLeadCount > 0 && (
+        <button
+          onClick={() => {
+            fetchAssignments()
+            setNewLeadCount(0)
+          }}
+          className="w-full px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 border-b border-blue-100 hover:bg-blue-100 transition-colors"
+        >
+          {newLeadCount} new lead{newLeadCount > 1 ? 's' : ''} arrived — click to refresh
+        </button>
+      )}
+
       {/* Filter tabs */}
       <div className="border-b border-zinc-200 px-4 py-3">
         <div className="flex gap-2">
