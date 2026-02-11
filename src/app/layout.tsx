@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { SkipLink } from '@/components/ui/skip-link'
 import { Providers } from '@/components/providers'
+import { CrispChat } from '@/components/crisp-chat'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -72,6 +73,7 @@ export default function RootLayout({
         <Providers>
           {children}
         </Providers>
+        <CrispChat />
       </body>
     </html>
   )
