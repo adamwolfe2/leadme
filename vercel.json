@@ -7,6 +7,10 @@
     {
       "path": "/api/cron/segment-pull",
       "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/cron/reset-lead-counts",
+      "schedule": "0 0 * * *"
     }
   ]
 }
