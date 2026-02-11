@@ -250,7 +250,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
       {/* Service Tier Upsell Banner */}
       {!activeSubscription && userProfile.plan === 'free' && (leadsCount ?? 0) > 0 && (
-        <GradientCard variant="primary" className="mb-8">
+        <GradientCard variant="prominent" className="mb-8">
           <div className="flex flex-col sm:flex-row items-start gap-4">
             <div className="p-3 rounded-lg bg-white/20">
               <Sparkles className="h-8 w-8 text-white" />
@@ -379,7 +379,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         </Link>
 
         <Link href="/services" className="group">
-          <GradientCard variant="primary" className="hover:shadow-lg transition-all duration-200">
+          <GradientCard variant="prominent" className="hover:shadow-lg transition-all duration-200">
             <div className="flex items-start gap-4">
               <div className="p-3 rounded-lg bg-white/20 group-hover:bg-white/30 transition-colors">
                 <Package className="h-6 w-6 text-white" />

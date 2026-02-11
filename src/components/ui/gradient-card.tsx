@@ -9,7 +9,7 @@ import { Card } from './card'
 interface GradientCardProps {
   children: React.ReactNode
   className?: string
-  variant?: 'subtle' | 'primary' | 'accent'
+  variant?: 'subtle' | 'primary' | 'accent' | 'prominent'
   noPadding?: boolean
 }
 
@@ -23,13 +23,15 @@ export function GradientCard({
     subtle: 'bg-gradient-to-br from-background via-background to-primary/5',
     primary: 'bg-gradient-to-br from-primary/10 via-primary/5 to-background',
     accent: 'bg-gradient-to-br from-accent/10 via-background to-accent/5',
+    prominent: 'bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white',
   }
 
   return (
     <Card
       className={cn(
         variants[variant],
-        'border-border/50 backdrop-blur-sm',
+        variant === 'prominent' ? 'border-primary/30' : 'border-border/50',
+        'backdrop-blur-sm',
         !noPadding && 'p-6',
         className
       )}
