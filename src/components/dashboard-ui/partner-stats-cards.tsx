@@ -32,7 +32,7 @@ export function PartnerStatsCards({ stats, isLoading = false }: PartnerStatsCard
           change: stats.leadsUploadedThisMonth,
           changeValue: stats.leadsUploadedThisMonth,
           icon: Upload,
-          trend: (stats.leadsUploadedThisMonth > 0 ? 'up' : 'neutral') as const,
+          trend: stats.leadsUploadedThisMonth > 0 ? 'up' as const : 'neutral' as const,
         },
         {
           title: 'Leads Sold',
@@ -40,7 +40,7 @@ export function PartnerStatsCards({ stats, isLoading = false }: PartnerStatsCard
           change: stats.leadsSoldThisMonth,
           changeValue: stats.leadsSoldThisMonth,
           icon: TrendingUp,
-          trend: (stats.leadsSoldThisMonth > 0 ? 'up' : 'neutral') as const,
+          trend: stats.leadsSoldThisMonth > 0 ? 'up' as const : 'neutral' as const,
         },
         {
           title: 'Total Earnings',
@@ -48,17 +48,17 @@ export function PartnerStatsCards({ stats, isLoading = false }: PartnerStatsCard
           change: stats.earningsThisMonth > 0 ? 15 : 0,
           changeValue: `$${stats.earningsThisMonth.toFixed(2)}`,
           icon: DollarSign,
-          trend: (stats.earningsThisMonth > 0 ? 'up' : 'neutral') as const,
+          trend: stats.earningsThisMonth > 0 ? 'up' as const : 'neutral' as const,
         },
         {
           title: 'Partner Score',
           value: `${stats.partnerScore}/100`,
           icon: Award,
-          trend: (stats.partnerScore >= 80
-            ? 'up'
+          trend: stats.partnerScore >= 80
+            ? 'up' as const
             : stats.partnerScore < 60
-            ? 'down'
-            : 'neutral') as const,
+            ? 'down' as const
+            : 'neutral' as const,
         },
       ]
     : []

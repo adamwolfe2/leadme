@@ -166,7 +166,7 @@ export class TwilioService {
       return {
         valid: lookup.valid || false,
         type: lookup.lineTypeIntelligence?.type,
-        carrier: lookup.lineTypeIntelligence?.carrier_name,
+        carrier: lookup.lineTypeIntelligence?.carrierName,
         country: lookup.countryCode,
       }
     } catch (error: any) {

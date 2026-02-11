@@ -78,7 +78,7 @@ export function ValidatedFormExample() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Text Input with Required */}
-          <FormField error={errors.full_name}>
+          <FormField error={errors.full_name?.message}>
             <FormLabel htmlFor="full_name" required>
               Full Name
             </FormLabel>
@@ -93,7 +93,7 @@ export function ValidatedFormExample() {
           </FormField>
 
           {/* Email Input */}
-          <FormField error={errors.email}>
+          <FormField error={errors.email?.message}>
             <FormLabel htmlFor="email" required>
               Email Address
             </FormLabel>
@@ -108,7 +108,7 @@ export function ValidatedFormExample() {
           </FormField>
 
           {/* Number Input with Optional */}
-          <FormField error={errors.age}>
+          <FormField error={errors.age?.message}>
             <FormLabel
               htmlFor="age"
               optional
@@ -127,7 +127,7 @@ export function ValidatedFormExample() {
           </FormField>
 
           {/* Select Dropdown */}
-          <FormField error={errors.country}>
+          <FormField error={errors.country?.message}>
             <FormLabel htmlFor="country" required>
               Country
             </FormLabel>
@@ -146,7 +146,7 @@ export function ValidatedFormExample() {
           </FormField>
 
           {/* Textarea */}
-          <FormField error={errors.bio}>
+          <FormField error={errors.bio?.message}>
             <FormLabel
               htmlFor="bio"
               optional
@@ -165,7 +165,7 @@ export function ValidatedFormExample() {
           </FormField>
 
           {/* Required Checkbox */}
-          <FormField error={errors.terms}>
+          <FormField error={errors.terms?.message}>
             <FormCheckbox
               id="terms"
               label="I agree to the terms and conditions"
@@ -175,7 +175,7 @@ export function ValidatedFormExample() {
           </FormField>
 
           {/* Optional Checkbox */}
-          <FormField error={errors.newsletter}>
+          <FormField error={errors.newsletter?.message}>
             <FormCheckbox
               id="newsletter"
               label="Subscribe to newsletter"

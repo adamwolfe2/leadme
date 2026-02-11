@@ -167,7 +167,7 @@ export function TwentyStyleTable({ data, onRowClick }: TwentyStyleTableProps) {
               <th className="w-12 px-3 py-2">
                 <Checkbox
                   checked={allSelected}
-                  onCheckedChange={toggleAllRows}
+                  onChange={toggleAllRows}
                   className="border-gray-300"
                 />
               </th>
@@ -226,11 +226,11 @@ export function TwentyStyleTable({ data, onRowClick }: TwentyStyleTableProps) {
             ) : (
               data.map((lead) => {
                 const isSelected = selectedRows.has(lead.id)
-                const faviconUrl = getCompanyFavicon(lead.website_url)
+                const faviconUrl = getCompanyFavicon(lead.company_domain ?? null)
                 const fullName = [lead.first_name, lead.last_name]
                   .filter(Boolean)
                   .join(' ') || 'Unnamed'
-                const initials = getInitials(lead.first_name, lead.last_name)
+                const initials = getInitials(lead.first_name ?? null, lead.last_name ?? null)
                 const avatarColor = getAvatarColor(fullName)
 
                 return (
@@ -246,7 +246,7 @@ export function TwentyStyleTable({ data, onRowClick }: TwentyStyleTableProps) {
                     <td className="px-3 py-2.5">
                       <Checkbox
                         checked={isSelected}
-                        onCheckedChange={(checked) => toggleRow(lead.id, { stopPropagation: () => {} } as React.MouseEvent)}
+                        onChange={() => toggleRow(lead.id, { stopPropagation: () => {} } as React.MouseEvent)}
                         onClick={(e) => e.stopPropagation()}
                         className="border-gray-300"
                       />

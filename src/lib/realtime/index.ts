@@ -72,8 +72,8 @@ export function useRealtimeSubscription<T extends Record<string, unknown>>(
           table: filter.table,
           filter: filter.filter,
         },
-        (payload) => {
-          callbackRef.current(payload as RealtimePostgresChangesPayload<T>)
+        (payload: RealtimePostgresChangesPayload<T>) => {
+          callbackRef.current(payload)
         }
       )
       .subscribe((status) => {

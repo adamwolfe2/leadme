@@ -8,7 +8,7 @@ export const STRIPE_CONFIG = {
    * Stripe API version
    * Can be overridden via STRIPE_API_VERSION environment variable
    */
-  apiVersion: (process.env.STRIPE_API_VERSION || '2025-02-24.acacia') as const,
+  apiVersion: (process.env.STRIPE_API_VERSION || '2025-02-24.acacia') as string,
 
   /**
    * Publishable key for client-side usage

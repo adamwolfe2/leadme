@@ -64,7 +64,7 @@ export function SearchForm({ onSearch, loading }: SearchFormProps) {
 
         {/* Company Domain */}
         <div className="space-y-4">
-          <FormField error={errors.domain}>
+          <FormField error={errors.domain?.message}>
             <FormLabel
               htmlFor="domain"
               required
@@ -83,7 +83,7 @@ export function SearchForm({ onSearch, loading }: SearchFormProps) {
           </FormField>
 
           {/* Company Name (Alternative) */}
-          <FormField error={errors.company}>
+          <FormField error={errors.company?.message}>
             <FormLabel
               htmlFor="company"
               optional
@@ -102,7 +102,7 @@ export function SearchForm({ onSearch, loading }: SearchFormProps) {
           </FormField>
 
           {/* Job Title */}
-          <FormField error={errors.job_title}>
+          <FormField error={errors.job_title?.message}>
             <FormLabel htmlFor="job_title" optional>
               Job Title
             </FormLabel>
@@ -117,7 +117,7 @@ export function SearchForm({ onSearch, loading }: SearchFormProps) {
           </FormField>
 
           {/* Seniority Level */}
-          <FormField error={errors.seniority}>
+          <FormField error={errors.seniority?.message}>
             <FormLabel htmlFor="seniority" optional>
               Seniority Level
             </FormLabel>
@@ -137,7 +137,7 @@ export function SearchForm({ onSearch, loading }: SearchFormProps) {
           </FormField>
 
           {/* Department */}
-          <FormField error={errors.department}>
+          <FormField error={errors.department?.message}>
             <FormLabel htmlFor="department" optional>
               Department
             </FormLabel>
@@ -157,7 +157,7 @@ export function SearchForm({ onSearch, loading }: SearchFormProps) {
           </FormField>
 
           {/* Location */}
-          <FormField error={errors.location}>
+          <FormField error={errors.location?.message}>
             <FormLabel htmlFor="location" optional>
               Location
             </FormLabel>
@@ -184,7 +184,7 @@ export function SearchForm({ onSearch, loading }: SearchFormProps) {
         />
 
         {saveSearch && (
-          <FormField error={errors.search_name} className="mt-3">
+          <FormField error={errors.search_name?.message} className="mt-3">
             <FormInput
               type="text"
               placeholder="Search name..."

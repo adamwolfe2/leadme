@@ -2,11 +2,14 @@
 
 import * as React from 'react'
 import { cn } from '@/lib/design-system'
+import type { FieldError, Merge, FieldErrorsImpl } from 'react-hook-form'
+
+type FormFieldError = string | FieldError | Merge<FieldError, FieldErrorsImpl<Record<string, unknown>>> | undefined
 
 interface FormFieldProps {
   label?: string
   description?: string
-  error?: string
+  error?: FormFieldError
   required?: boolean
   children: React.ReactNode
   className?: string
@@ -46,7 +49,7 @@ function FormField({
               clipRule="evenodd"
             />
           </svg>
-          {error}
+          {typeof error === 'string' ? error : error.message}
         </p>
       )}
     </div>

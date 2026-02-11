@@ -67,9 +67,10 @@ export const leadDelivery = inngest.createFunction(
 
     logger.info(`Delivering lead ${lead_id} via: ${delivery_channels.join(', ')}`)
 
-    const companyData = lead.company_data as LeadCompanyData | null
+    const companyData = (lead.company_data as LeadCompanyData | null) ?? {} as LeadCompanyData
     const contactData = lead.contact_data as LeadContactData | null
     const intentData = lead.intent_data as LeadIntentData | null
+    const intentScore = intentData?.score != null ? String(intentData.score) : undefined
     const query = (lead as Record<string, unknown>).queries as { name?: string; global_topics?: { topic: string; category: string } } | null
 
     // Step 2: Email delivery
@@ -81,7 +82,7 @@ export const leadDelivery = inngest.createFunction(
             return resend.emails.send({
               from: 'Cursive <leads@meetcursive.com>',
               to: user.email,
-              subject: `New ${intentData?.score?.toUpperCase() || 'Warm'} Lead: ${companyData.name}`,
+              subject: `New ${intentScore?.toUpperCase() || 'Warm'} Lead: ${companyData.name || 'Unknown'}`,
               html: generateLeadEmailHtml({
                 companyData,
                 contactData,
@@ -122,13 +123,13 @@ export const leadDelivery = inngest.createFunction(
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                  text: `🔥 New ${intentData?.score?.toUpperCase() || 'Warm'} Lead`,
+                  text: `🔥 New ${intentScore?.toUpperCase() || 'Warm'} Lead`,
                   blocks: [
                     {
                       type: 'header',
                       text: {
                         type: 'plain_text',
-                        text: `${getIntentEmoji(intentData?.score)} ${companyData.name}`,
+                        text: `${getIntentEmoji(intentScore)} ${companyData.name || 'Unknown'}`,
                       },
                     },
                     {
@@ -136,19 +137,19 @@ export const leadDelivery = inngest.createFunction(
                       fields: [
                         {
                           type: 'mrkdwn',
-                          text: `*Query:*\n${query.global_topics.topic}`,
+                          text: `*Query:*\n${query?.global_topics?.topic || 'N/A'}`,
                         },
                         {
                           type: 'mrkdwn',
-                          text: `*Intent Score:*\n${intentData?.score?.toUpperCase() || 'N/A'}`,
+                          text: `*Intent Score:*\n${intentScore?.toUpperCase() || 'N/A'}`,
                         },
                         {
                           type: 'mrkdwn',
-                          text: `*Industry:*\n${companyData.industry || 'N/A'}`,
+                          text: `*Industry:*\n${companyData?.industry || 'N/A'}`,
                         },
                         {
                           type: 'mrkdwn',
-                          text: `*Employees:*\n${companyData.employee_count || 'N/A'}`,
+                          text: `*Employees:*\n${companyData?.employee_count || 'N/A'}`,
                         },
                       ],
                     },
@@ -210,7 +211,7 @@ export const leadDelivery = inngest.createFunction(
                   company: companyData,
                   contact: contactData?.primary_contact,
                   intent: intentData,
-                  query: query.name,
+                  query: query?.name,
                   created_at: lead.created_at,
                 }),
               })
@@ -243,11 +244,11 @@ export const leadDelivery = inngest.createFunction(
     // Step 6: Upload to industry platform based on intent score
     await step.run('upload-to-platform', async () => {
       // Only upload hot and warm leads
-      if (intentData?.score === 'hot' || intentData?.score === 'warm') {
-        const industry = companyData.industry || query.global_topics.category
+      if (intentScore === 'hot' || intentScore === 'warm') {
+        const industry = companyData?.industry || query?.global_topics?.category || 'general'
 
         logger.info(
-          `Triggering platform upload for ${intentData.score} lead in ${industry}`
+          `Triggering platform upload for ${intentScore} lead in ${industry}`
         )
 
         await inngest.send({

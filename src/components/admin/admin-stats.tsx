@@ -57,7 +57,7 @@ export interface AdminMetrics {
 // METRIC CARD
 // ============================================
 
-interface MetricCardProps {
+export interface MetricCardProps {
   title: string
   value: string | number
   change?: number

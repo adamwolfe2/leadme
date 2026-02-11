@@ -218,7 +218,7 @@ export function UserTable({
             <div className="flex gap-2">
               <Select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setStatusFilter(e.target.value)}
                 className="w-32"
               >
                 <option value="all">All Status</option>
@@ -228,7 +228,7 @@ export function UserTable({
               </Select>
               <Select
                 value={planFilter}
-                onChange={(e) => setPlanFilter(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPlanFilter(e.target.value)}
                 className="w-32"
               >
                 <option value="all">All Plans</option>
@@ -320,7 +320,7 @@ export function UserEditModal({ user, isOpen, onClose, onSave }: UserEditModalPr
             <label className="text-sm font-medium text-foreground">Plan</label>
             <Select
               value={formData.plan}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                 setFormData({ ...formData, plan: e.target.value as AdminUser['plan'] })
               }
               className="mt-1 w-full"
@@ -347,7 +347,7 @@ export function UserEditModal({ user, isOpen, onClose, onSave }: UserEditModalPr
             <label className="text-sm font-medium text-foreground">Status</label>
             <Select
               value={formData.status}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                 setFormData({ ...formData, status: e.target.value as AdminUser['status'] })
               }
               className="mt-1 w-full"

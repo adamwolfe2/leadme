@@ -101,7 +101,7 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
 
   // Get unique sources from data
   const sources = React.useMemo(() => {
-    const uniqueSources = new Set(data.map((lead) => lead.source).filter(Boolean))
+    const uniqueSources = new Set(data.map((lead) => lead.source).filter((s): s is string => Boolean(s)))
     return Array.from(uniqueSources)
   }, [data])
 
@@ -491,8 +491,7 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
                             View Details
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={(e) => {
-                              e.stopPropagation()
+                            onClick={() => {
                               setEditingLead(lead)
                               setEditDialogOpen(true)
                             }}
@@ -507,8 +506,7 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             className="text-red-600"
-                            onClick={async (e) => {
-                              e.stopPropagation()
+                            onClick={async () => {
                               if (confirm('Are you sure you want to delete this lead?')) {
                                 try {
                                   const response = await fetch(`/api/crm/leads/${lead.id}`, {

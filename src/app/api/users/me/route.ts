@@ -26,7 +26,9 @@ export async function GET(request: NextRequest) {
       return unauthorized()
     }
 
-    let referralCode = user.referral_code
+    // Cast to any to access columns that may exist in DB but not in generated types
+    const userData = user as any
+    let referralCode = userData.referral_code as string | null
 
     // 2. Generate referral code if missing
     if (!referralCode) {
@@ -39,7 +41,7 @@ export async function GET(request: NextRequest) {
 
       while (attempts < maxAttempts) {
         // Check if code already exists
-        const { data: existingUser } = await supabase
+        const { data: existingUser } = await (supabase as any)
           .from('users')
           .select('id')
           .eq('referral_code', newCode)
@@ -47,7 +49,7 @@ export async function GET(request: NextRequest) {
 
         if (!existingUser) {
           // Code is unique, save it
-          const { data: updatedUser, error } = await supabase
+          const { data: updatedUser, error } = await (supabase as any)
             .from('users')
             .update({ referral_code: newCode })
             .eq('id', user.id)
@@ -55,7 +57,7 @@ export async function GET(request: NextRequest) {
             .single()
 
           if (!error && updatedUser) {
-            referralCode = updatedUser.referral_code
+            referralCode = (updatedUser as any).referral_code
           }
           break
         }
@@ -70,7 +72,7 @@ export async function GET(request: NextRequest) {
     const limit = DAILY_CREDIT_LIMITS[user.plan as keyof typeof DAILY_CREDIT_LIMITS] || DAILY_CREDIT_LIMITS.free
 
     // Check if daily reset is needed
-    const resetAt = new Date(user.daily_credits_reset_at || 0)
+    const resetAt = new Date(userData.daily_credits_reset_at || 0)
     const now = new Date()
     const creditsUsed = now > resetAt ? 0 : (user.daily_credits_used || 0)
 
@@ -88,13 +90,13 @@ export async function GET(request: NextRequest) {
       daily_credits_used: user.daily_credits_used,
       credits_remaining: Math.max(0, creditsRemaining),
       referral_code: referralCode,
-      referred_by: user.referred_by,
+      referred_by: userData.referred_by || null,
       created_at: user.created_at,
-      subscription_status: user.subscription_status,
-      subscription_period_end: user.subscription_period_end,
-      cancel_at_period_end: user.cancel_at_period_end,
-      notification_preferences: user.notification_preferences,
-      api_key: (user as any).api_key || null,
+      subscription_status: userData.subscription_status || null,
+      subscription_period_end: userData.subscription_period_end || null,
+      cancel_at_period_end: userData.cancel_at_period_end || false,
+      notification_preferences: userData.notification_preferences || null,
+      api_key: userData.api_key || null,
     })
   } catch (error: any) {
     return handleApiError(error)
@@ -138,37 +140,38 @@ export async function PATCH(request: NextRequest) {
       .from('users')
       .update(updates)
       .eq('id', user.id)
-      .select('id, email, full_name, workspace_id, role, plan, daily_credit_limit, daily_credits_used, daily_credits_reset_at, referral_code, referred_by, created_at, subscription_status, subscription_period_end, cancel_at_period_end, notification_preferences')
+      .select('*')
       .single()
 
     if (error) {
       throw error
     }
 
-    // 6. Return updated user
-    const limit = DAILY_CREDIT_LIMITS[updatedUser.plan as keyof typeof DAILY_CREDIT_LIMITS] || DAILY_CREDIT_LIMITS.free
-    const resetAt = new Date(updatedUser.daily_credits_reset_at || 0)
+    // 6. Return updated user (cast to any for columns not in generated types)
+    const updated = updatedUser as any
+    const limit = DAILY_CREDIT_LIMITS[updated.plan as keyof typeof DAILY_CREDIT_LIMITS] || DAILY_CREDIT_LIMITS.free
+    const resetAt = new Date(updated.daily_credits_reset_at || 0)
     const now = new Date()
-    const creditsUsed = now > resetAt ? 0 : (updatedUser.daily_credits_used || 0)
+    const creditsUsed = now > resetAt ? 0 : (updated.daily_credits_used || 0)
     const creditsRemaining = limit - creditsUsed
 
     return success({
-      id: updatedUser.id,
-      email: updatedUser.email,
-      full_name: updatedUser.full_name,
-      workspace_id: updatedUser.workspace_id,
-      role: updatedUser.role,
-      plan: updatedUser.plan,
-      daily_credit_limit: updatedUser.daily_credit_limit,
-      daily_credits_used: updatedUser.daily_credits_used,
+      id: updated.id,
+      email: updated.email,
+      full_name: updated.full_name,
+      workspace_id: updated.workspace_id,
+      role: updated.role,
+      plan: updated.plan,
+      daily_credit_limit: updated.daily_credit_limit,
+      daily_credits_used: updated.daily_credits_used,
       credits_remaining: Math.max(0, creditsRemaining),
-      referral_code: updatedUser.referral_code,
-      referred_by: updatedUser.referred_by,
-      created_at: updatedUser.created_at,
-      subscription_status: updatedUser.subscription_status,
-      subscription_period_end: updatedUser.subscription_period_end,
-      cancel_at_period_end: updatedUser.cancel_at_period_end,
-      notification_preferences: updatedUser.notification_preferences,
+      referral_code: updated.referral_code || null,
+      referred_by: updated.referred_by || null,
+      created_at: updated.created_at,
+      subscription_status: updated.subscription_status || null,
+      subscription_period_end: updated.subscription_period_end || null,
+      cancel_at_period_end: updated.cancel_at_period_end || false,
+      notification_preferences: updated.notification_preferences || null,
     })
   } catch (error: any) {
     return handleApiError(error)

@@ -140,12 +140,12 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
         }
 
         // Update partner pending balances for commissions
-        const partnerCommissions = items.reduce<Record<string, number>>((acc, item: any) => {
+        const partnerCommissions = items.reduce((acc: Record<string, number>, item: any) => {
           if (item.partner_id && item.commission_amount) {
             acc[item.partner_id] = (acc[item.partner_id] || 0) + item.commission_amount
           }
           return acc
-        }, {})
+        }, {} as Record<string, number>)
 
         for (const [partnerId, amount] of Object.entries(partnerCommissions)) {
           const { data: partner } = await supabase
@@ -305,14 +305,14 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
           .in('id', leadIds)
 
         // Reverse partner commissions
-        const partnerCommissions = items.reduce<Record<string, number>>((acc, item: any) => {
+        const partnerCommissions = items.reduce((acc: Record<string, number>, item: any) => {
           if (item.partner_id && item.commission_amount) {
             acc[item.partner_id] = (acc[item.partner_id] || 0) + item.commission_amount
           }
           return acc
-        }, {})
+        }, {} as Record<string, number>)
 
-        for (const [partnerId, amount] of Object.entries(partnerCommissions)) {
+        for (const [partnerId, amount] of Object.entries(partnerCommissions) as [string, number][]) {
           const { data: partner } = await supabase
             .from('partners')
             .select('pending_balance, total_earnings, total_leads_sold')

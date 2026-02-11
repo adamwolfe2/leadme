@@ -39,20 +39,18 @@ export async function POST(req: NextRequest) {
     const leadRepo = new CRMLeadRepository()
     const lead = await leadRepo.create({
       workspace_id: user.workspace_id,
-      uploaded_by_user_id: user.id,
-      partner_id: user.partner_id || null,
       email: validated.email,
       first_name: validated.first_name,
       last_name: validated.last_name,
-      phone: validated.phone || null,
-      company_name: validated.company_name || null,
-      company_industry: validated.company_industry || null,
-      business_type: validated.business_type || null,
-      title: validated.title || null,
-      city: validated.city || null,
-      state: validated.state || null,
+      phone: validated.phone || undefined,
+      company_name: validated.company_name || undefined,
+      company_industry: validated.company_industry || undefined,
+      business_type: validated.business_type || undefined,
+      title: validated.title || undefined,
+      city: validated.city || undefined,
+      state: validated.state || undefined,
       source: validated.source,
-      status: validated.status,
+      status: validated.status as import('@/types/crm.types').LeadStatus,
       created_at: new Date().toISOString(),
     })
 

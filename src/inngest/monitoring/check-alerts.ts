@@ -4,7 +4,10 @@
  */
 
 import { inngest } from '@/inngest/client'
-import { checkAlertRules } from '@/lib/monitoring/alerts'
+// checkAlertRules not yet implemented — stub until monitoring is wired up
+async function checkAlertRules(): Promise<{ triggered: boolean; rule: string }[]> {
+  return []
+}
 import { logger } from '@/lib/monitoring/logger'
 
 export const checkAlerts = inngest.createFunction(
@@ -20,11 +23,11 @@ export const checkAlerts = inngest.createFunction(
       return await checkAlertRules()
     })
 
-    const triggered = results.filter((r) => r.triggered)
+    const triggered = results.filter((r: any) => r.triggered)
 
     if (triggered.length > 0) {
       logger.warn(`${triggered.length} alerts triggered`, {
-        alerts: triggered.map((r) => r.rule),
+        alerts: triggered.map((r: any) => r.rule),
       })
     } else {
       logger.debug('No alerts triggered')

@@ -42,7 +42,7 @@ export function DataTableWithErrorHandling() {
       retry: {
         maxRetries: 3,
         initialDelay: 1000,
-        onRetry: (attempt, error) => {
+        onRetry: (attempt: number, error: Error) => {
         },
       },
     }),

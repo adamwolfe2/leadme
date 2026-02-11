@@ -7,7 +7,8 @@
 import { inngest } from '@/inngest/client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { LeadRoutingService } from '@/lib/services/lead-routing.service'
-import { clay } from '@/lib/integrations/clay'
+import { ClayClient } from '@/lib/integrations/clay'
+const clay = new ClayClient()
 import crypto from 'crypto'
 
 /**

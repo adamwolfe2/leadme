@@ -12,7 +12,7 @@ export {
   SystemStatus,
   RecentActivity,
   type MetricCardProps,
-  type AdminStats,
+  type AdminMetrics as AdminStats,
   type SystemService,
   type ActivityItem,
 } from './admin-stats'

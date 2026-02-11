@@ -7,7 +7,7 @@
 
 import { Building2, Mail, Phone, MapPin, Briefcase, Target, Calendar } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import type { Lead } from '@/types/database.types'
+import type { Lead } from '@/types'
 
 interface LeadMobileCardProps {
   lead: Lead

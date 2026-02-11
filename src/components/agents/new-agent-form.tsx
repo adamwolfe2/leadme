@@ -116,7 +116,7 @@ export function NewAgentForm() {
           )}
 
           {/* Agent Name */}
-          <FormField error={errors.name}>
+          <FormField error={errors.name?.message}>
             <FormLabel htmlFor="name" required>
               Agent Name
             </FormLabel>
@@ -131,7 +131,7 @@ export function NewAgentForm() {
           </FormField>
 
           {/* AI Provider */}
-          <FormField error={errors.ai_provider}>
+          <FormField error={errors.ai_provider?.message}>
             <FormLabel htmlFor="ai_provider" required>
               AI Provider
             </FormLabel>
@@ -147,7 +147,7 @@ export function NewAgentForm() {
           </FormField>
 
           {/* AI Model */}
-          <FormField error={errors.ai_model}>
+          <FormField error={errors.ai_model?.message}>
             <FormLabel htmlFor="ai_model" required>
               AI Model
             </FormLabel>
@@ -166,7 +166,7 @@ export function NewAgentForm() {
           </FormField>
 
           {/* Tone */}
-          <FormField error={errors.tone}>
+          <FormField error={errors.tone?.message}>
             <FormLabel htmlFor="tone" required>
               Response Tone
             </FormLabel>
@@ -185,7 +185,7 @@ export function NewAgentForm() {
           </FormField>
 
           {/* Email Bison API Key */}
-          <FormField error={errors.emailbison_api_key}>
+          <FormField error={errors.emailbison_api_key?.message}>
             <FormLabel
               htmlFor="emailbison_api_key"
               optional
@@ -204,7 +204,7 @@ export function NewAgentForm() {
           </FormField>
 
           {/* OpenAI API Key */}
-          <FormField error={errors.openai_api_key}>
+          <FormField error={errors.openai_api_key?.message}>
             <FormLabel
               htmlFor="openai_api_key"
               optional

@@ -111,17 +111,20 @@ export async function exportCampaignLeads(
   }
 
   // Flatten data
-  const flatData = (data || []).map((row) => ({
-    email: row.lead?.email,
-    first_name: row.lead?.first_name,
-    last_name: row.lead?.last_name,
-    company_name: row.lead?.company_name,
-    title: row.lead?.title,
-    status: row.status,
-    current_step: row.current_step,
-    enrichment_status: row.enrichment_status,
-    created_at: row.created_at,
-  }))
+  const flatData = (data || []).map((row) => {
+    const lead = row.lead as unknown as { email: any; first_name: any; last_name: any; company_name: any; title?: any } | null
+    return {
+      email: lead?.email,
+      first_name: lead?.first_name,
+      last_name: lead?.last_name,
+      company_name: lead?.company_name,
+      title: lead?.title,
+      status: row.status,
+      current_step: row.current_step,
+      enrichment_status: row.enrichment_status,
+      created_at: row.created_at,
+    }
+  })
 
   const fields = options.fields || [
     'email',
@@ -234,20 +237,23 @@ export async function exportConversations(
   }
 
   // Flatten data
-  const flatData = (data || []).map((row) => ({
-    lead_email: row.lead?.email,
-    lead_name: `${row.lead?.first_name || ''} ${row.lead?.last_name || ''}`.trim(),
-    company_name: row.lead?.company_name,
-    subject: row.subject_normalized,
-    status: row.status,
-    priority: row.priority,
-    message_count: row.message_count,
-    unread_count: row.unread_count,
-    sentiment: row.sentiment,
-    intent: row.intent,
-    last_message_at: row.last_message_at,
-    created_at: row.created_at,
-  }))
+  const flatData = (data || []).map((row) => {
+    const lead = row.lead as unknown as { email: any; first_name: any; last_name: any; company_name: any } | null
+    return {
+      lead_email: lead?.email,
+      lead_name: `${lead?.first_name || ''} ${lead?.last_name || ''}`.trim(),
+      company_name: lead?.company_name,
+      subject: row.subject_normalized,
+      status: row.status,
+      priority: row.priority,
+      message_count: row.message_count,
+      unread_count: row.unread_count,
+      sentiment: row.sentiment,
+      intent: row.intent,
+      last_message_at: row.last_message_at,
+      created_at: row.created_at,
+    }
+  })
 
   const fields = options.fields || [
     'lead_email',

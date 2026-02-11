@@ -90,14 +90,14 @@ export function useUpdateLead() {
       queryClient.invalidateQueries({ queryKey: ['crm-leads'] })
       toast({
         title: 'Lead updated',
-        description: 'The lead has been updated successfully.',
+        message: 'The lead has been updated successfully.',
       })
     },
     onError: (error: Error) => {
       toast({
         title: 'Update failed',
-        description: error.message,
-        variant: 'destructive',
+        message: error.message,
+        type: 'error',
       })
     },
   })
@@ -129,14 +129,14 @@ export function useBulkUpdateLeads() {
       queryClient.invalidateQueries({ queryKey: ['crm-leads'] })
       toast({
         title: 'Bulk update complete',
-        description: `Updated ${variables.ids.length} lead(s) successfully.`,
+        message: `Updated ${variables.ids.length} lead(s) successfully.`,
       })
     },
     onError: (error: Error) => {
       toast({
         title: 'Bulk update failed',
-        description: error.message,
-        variant: 'destructive',
+        message: error.message,
+        type: 'error',
       })
     },
   })

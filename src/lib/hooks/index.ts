@@ -47,7 +47,7 @@ export function useThrottle<T>(value: T, interval = 500): T {
  * Get the previous value of a state/prop
  */
 export function usePrevious<T>(value: T): T | undefined {
-  const ref = useRef<T>()
+  const ref = useRef<T | undefined>(undefined)
   useEffect(() => {
     ref.current = value
   })
@@ -183,7 +183,7 @@ interface Size {
  * Observe element size changes
  */
 export function useResizeObserver<T extends HTMLElement>(): [
-  React.RefObject<T>,
+  React.RefObject<T | null>,
   Size
 ] {
   const ref = useRef<T>(null)
@@ -399,7 +399,7 @@ export function useAsync<T, Args extends unknown[] = []>(
 export function useClickOutside<T extends HTMLElement>(
   handler: () => void,
   enabled = true
-): React.RefObject<T> {
+): React.RefObject<T | null> {
   const ref = useRef<T>(null)
 
   useEffect(() => {
@@ -565,7 +565,7 @@ export function useFocusReturn(): {
  * Deep compare memo - only re-render when deep equality fails
  */
 export function useDeepMemo<T>(factory: () => T, deps: React.DependencyList): T {
-  const ref = useRef<{ deps: React.DependencyList; value: T }>()
+  const ref = useRef<{ deps: React.DependencyList; value: T } | undefined>(undefined)
 
   if (!ref.current || !deepEqual(deps, ref.current.deps)) {
     ref.current = { deps, value: factory() }

@@ -80,7 +80,7 @@ export function DateRangePicker({
     <div className={cn('flex items-center gap-2', className)}>
       <Select
         value={dateRange.preset || 'custom'}
-        onChange={(e) => {
+        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
           const preset = e.target.value as DateRangePreset
           if (preset === 'custom') {
             setShowCustom(true)

@@ -1,7 +1,7 @@
 // SEO Configuration
 // Default SEO settings for the entire application
 
-import { DefaultSeoProps } from 'next-seo'
+import type { DefaultSeoProps } from 'next-seo/dist/pages'
 
 const SEO_CONFIG: DefaultSeoProps = {
   defaultTitle: 'Cursive - B2B Intent Lead Intelligence Platform',
@@ -9,19 +9,19 @@ const SEO_CONFIG: DefaultSeoProps = {
   description:
     'Identify companies actively researching your topics. Get enriched B2B lead data delivered automatically. Track intent signals and convert research into revenue.',
 
-  canonical: 'https://meetcursive.com',
+  canonical: 'https://www.meetcursive.com',
 
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://meetcursive.com',
+    url: 'https://www.meetcursive.com',
     siteName: 'Cursive',
     title: 'Cursive - B2B Intent Lead Intelligence Platform',
     description:
       'Identify companies actively researching your topics. Get enriched B2B lead data delivered automatically.',
     images: [
       {
-        url: 'https://meetcursive.com/og-image.png',
+        url: 'https://www.meetcursive.com/og-image.png',
         width: 1200,
         height: 630,
         alt: 'Cursive - B2B Intent Lead Intelligence',
@@ -88,13 +88,13 @@ export function generatePageSEO(props: {
   return {
     title: props.title,
     description: props.description,
-    canonical: props.path ? `https://meetcursive.com${props.path}` : undefined,
+    canonical: props.path ? `https://www.meetcursive.com${props.path}` : undefined,
     noindex: props.noIndex || false,
     nofollow: props.noIndex || false,
     openGraph: {
       title: props.title,
       description: props.description,
-      url: props.path ? `https://meetcursive.com${props.path}` : undefined,
+      url: props.path ? `https://www.meetcursive.com${props.path}` : undefined,
       images: props.image
         ? [
             {

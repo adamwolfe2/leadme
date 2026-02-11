@@ -194,6 +194,52 @@ interface DropdownMenuCheckboxItemProps {
   disabled?: boolean
 }
 
+// Sub-menu components for nested dropdown menus
+export function DropdownMenuSub({ children }: { children: React.ReactNode }) {
+  return <div className="relative">{children}</div>
+}
+
+export function DropdownMenuSubTrigger({
+  children,
+  className,
+}: {
+  children: React.ReactNode
+  className?: string
+}) {
+  return (
+    <div
+      className={cn(
+        'relative flex w-full cursor-pointer select-none items-center rounded-md px-2 py-2 text-sm outline-none transition-colors focus:bg-accent',
+        className
+      )}
+    >
+      {children}
+      <svg className="ml-auto h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+      </svg>
+    </div>
+  )
+}
+
+export function DropdownMenuSubContent({
+  children,
+  className,
+}: {
+  children: React.ReactNode
+  className?: string
+}) {
+  return (
+    <div
+      className={cn(
+        'absolute left-full top-0 z-dropdown min-w-[8rem] overflow-hidden rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-enterprise-md',
+        className
+      )}
+    >
+      {children}
+    </div>
+  )
+}
+
 export function DropdownMenuCheckboxItem({
   children,
   checked = false,

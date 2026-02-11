@@ -57,11 +57,11 @@ export async function extractBrandDNA(url: string): Promise<FirecrawlResult> {
     const normalizedUrl = url.startsWith('http') ? url : `https://${url}`
 
     // 1. Scrape the website for content and assets
-    const scrapeResult = await firecrawl.scrapeUrl(normalizedUrl, {
+    const scrapeResult: any = await firecrawl.scrape(normalizedUrl, {
       formats: ['markdown', 'html', 'links', 'screenshot'],
       onlyMainContent: true,
       includeTags: ['img', 'link', 'meta', 'style'],
-    })
+    } as any)
 
     // 2. Extract comprehensive brand intelligence with LLM
     const extractionSchema = {
@@ -153,12 +153,12 @@ export async function extractBrandDNA(url: string): Promise<FirecrawlResult> {
       required: ['company_name', 'primary_color', 'headline', 'tagline', 'meta_description']
     }
 
-    const extractResult = await firecrawl.scrapeUrl(normalizedUrl, {
+    const extractResult: any = await firecrawl.scrape(normalizedUrl, {
       formats: ['extract'],
       extract: {
         schema: extractionSchema,
       }
-    })
+    } as any)
 
     // 3. Return combined result with comprehensive brand intelligence
     return {

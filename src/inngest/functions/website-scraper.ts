@@ -37,10 +37,10 @@ export const scrapeWebsite = inngest.createFunction(
     const websiteData = await step.run('scrape-with-firecrawl', async () => {
       try {
         const data = await firecrawlService.scrapeWebsite(websiteUrl)
-        return { success: true, data }
+        return { success: true as const, data }
       } catch (error: any) {
         console.error('Firecrawl failed:', error.message)
-        return { success: false, error: error.message }
+        return { success: false as const, data: null, error: error.message }
       }
     })
 
@@ -55,10 +55,10 @@ export const scrapeWebsite = inngest.createFunction(
           const companyName = domain.split('.')[0]
 
           const data = await tavilyService.searchCompany(companyName, domain)
-          return { success: true, data }
+          return { success: true as const, data }
         } catch (error: any) {
           console.error('Tavily failed:', error.message)
-          return { success: false, error: error.message }
+          return { success: false as const, data: null, error: error.message }
         }
       })
 
