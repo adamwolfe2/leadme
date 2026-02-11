@@ -124,9 +124,6 @@ export async function middleware(req: NextRequest) {
       !pathname.startsWith('/api/admin/bypass-waitlist') &&
       pathname !== '/api/health'
 
-    // Auth routes (login, signup) - redirect to dashboard if already authenticated
-    const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/signup')
-
     // Use the authenticated user we already fetched above (don't fetch again)
     const user = authenticatedUser
 
@@ -139,12 +136,6 @@ export async function middleware(req: NextRequest) {
       })
       return redirectResponse
     }
-
-    // Waitlist page is still accessible but no longer force-redirects users
-    // Users can visit /waitlist directly if needed
-
-    // Auth routes (login, signup) - allow access even if authenticated
-    // Users may want to re-login or access these pages directly
 
     // Protected routes require authentication
     if (!isPublicRoute && !user) {
@@ -166,55 +157,22 @@ export async function middleware(req: NextRequest) {
       )
     }
 
-    // Workspace isolation: verify authenticated users have a valid workspace
-    // Admins (in platform_admins table) bypass workspace checks
+    // Workspace check: verify authenticated users have a workspace for dashboard routes.
+    // Uses a single DB query instead of 2-3. Admin routes already bypass this (isAdminRoute check above).
+    // The dashboard layout provides additional checks (profile existence, credit balance).
     if (user && !isPublicRoute && !isAdminRoute && !isPartnerRoute && !pathname.startsWith('/onboarding') && !pathname.startsWith('/welcome') && !pathname.startsWith('/api/onboarding')) {
-      // Look up the user's workspace_id using admin client to bypass RLS
-      // (the anon-key client triggers recursive RLS on the users table)
-      const adminSupabaseForUser = createAdminClient()
-      const { data: userRecord } = await adminSupabaseForUser
+      const adminSupabase = createAdminClient()
+      const { data: userRecord } = await adminSupabase
         .from('users')
         .select('workspace_id')
         .eq('auth_user_id', user.id)
         .single()
 
       if (!userRecord?.workspace_id) {
-        // Check if user is a platform admin (admins may not have a workspace)
-        // Use admin client to bypass RLS on platform_admins table
-        const adminSupabase = createAdminClient()
-        const { data: adminRecord } = await adminSupabase
-          .from('platform_admins')
-          .select('id')
-          .eq('email', user.email)
-          .eq('is_active', true)
-          .single()
-
-        if (!adminRecord) {
-          // Not an admin and no workspace -- redirect to onboarding
-          const onboardingUrl = new URL('/welcome', req.url)
-          return redirectWithCookies(onboardingUrl)
-        }
-        // Admin without workspace -- allow through
-      } else {
-        // Verify the workspace exists and is not suspended
-        const { data: workspace } = await supabase
-          .from('workspaces')
-          .select('id, is_suspended')
-          .eq('id', userRecord.workspace_id)
-          .single()
-
-        if (!workspace) {
-          // Workspace not found -- redirect to onboarding
-          const onboardingUrl = new URL('/welcome', req.url)
-          return redirectWithCookies(onboardingUrl)
-        }
-
-        if (workspace.is_suspended) {
-          // Workspace is suspended -- redirect to a suspended page or login
-          const suspendedUrl = new URL('/login', req.url)
-          suspendedUrl.searchParams.set('reason', 'workspace_suspended')
-          return redirectWithCookies(suspendedUrl)
-        }
+        // No workspace — redirect to onboarding. Admin routes are excluded above,
+        // so /admin/* is still accessible for admins without workspaces.
+        const onboardingUrl = new URL('/welcome', req.url)
+        return redirectWithCookies(onboardingUrl)
       }
     }
 
