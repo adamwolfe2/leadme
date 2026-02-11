@@ -30,12 +30,13 @@ export default async function WelcomePage({
       redirect('/dashboard')
     }
 
-    // User has session but no workspace — they're returning from OAuth
-    if (isReturning) {
-      return <AutoSubmitOnboarding isMarketplace={isMarketplace} />
-    }
+    // User has session but no workspace — they're returning from OAuth.
+    // Show AutoSubmitOnboarding which reads form data from sessionStorage.
+    // If sessionStorage is empty (e.g. user navigated here directly),
+    // AutoSubmitOnboarding will redirect them back to the quiz flow.
+    return <AutoSubmitOnboarding isMarketplace={isMarketplace} />
   }
 
-  // No session or session without workspace — show the quiz flow
+  // No session — show the quiz flow
   return <OnboardingFlow isMarketplace={isMarketplace} />
 }

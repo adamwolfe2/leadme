@@ -96,7 +96,7 @@ export function Header({ user, workspace, onMenuClick, className }: HeaderProps)
           <div className="hidden items-center gap-2 sm:flex">
             <span className="text-sm text-muted-foreground">Credits:</span>
             <span className="text-sm font-semibold text-foreground">
-              {user.creditsRemaining.toLocaleString()} / {user.totalCredits.toLocaleString()}
+              {user.creditsRemaining.toLocaleString()}
             </span>
           </div>
         )}

@@ -91,6 +91,7 @@ export default async function DashboardLayout({
     email: string
     plan: string | null
     role: string
+    workspace_id: string | null
     daily_credit_limit: number
     daily_credits_used: number
     workspaces: {
@@ -107,6 +108,18 @@ export default async function DashboardLayout({
 
   if (!userProfile) {
     redirect('/welcome')
+  }
+
+  // Fetch workspace credit balance from workspace_credits table
+  let creditBalance = 0
+  if (userProfile.workspace_id) {
+    const { data: creditsData } = await supabase
+      .from('workspace_credits')
+      .select('balance')
+      .eq('workspace_id', userProfile.workspace_id)
+      .single()
+
+    creditBalance = creditsData?.balance ?? 0
   }
 
   // Check if user is an admin (for showing impersonation banner)
@@ -135,8 +148,8 @@ export default async function DashboardLayout({
             email: userProfile.email,
             plan: userProfile.plan || 'free',
             role: userProfile.role,
-            creditsRemaining: (userProfile.daily_credit_limit || 0) - (userProfile.daily_credits_used || 0),
-            totalCredits: userProfile.daily_credit_limit || 0,
+            creditsRemaining: creditBalance,
+            totalCredits: creditBalance,
             avatarUrl: null,
           }}
           workspace={

@@ -168,7 +168,7 @@ export async function GET(request: NextRequest) {
         .from('users')
         .select('workspace_id')
         .eq('auth_user_id', authUser.id)
-        .single()
+        .maybeSingle()
 
       // Redirect to welcome page if no user profile exists
       if (!user || !user.workspace_id) {
@@ -176,15 +176,17 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Show loading page with auto-redirect
-    // Escape for safe injection into JavaScript string literal to prevent XSS
+    // Show loading page with auto-redirect.
+    // Use a short delay (1s) to ensure the browser fully processes Set-Cookie
+    // headers before navigating away. An immediate redirect (Refresh: 0) can
+    // cause cookie loss on some browsers, breaking the session on the next page.
     const safeRedirectUrl = escapeForJsStringLiteral(redirectUrl)
     const loadingHtml = LOADING_PAGE.replace('{{REDIRECT_URL}}', safeRedirectUrl)
     const response = new NextResponse(loadingHtml, {
       status: 200,
       headers: {
         'Content-Type': 'text/html',
-        'Refresh': `0; url=${encodeURI(redirectUrl)}`, // Meta refresh for instant redirect
+        'Refresh': `1; url=${encodeURI(redirectUrl)}`, // 1s delay for cookie propagation
       },
     })
 

@@ -34,6 +34,9 @@ export default function SignupPage() {
 
     const welcomeUrl = isMarketplace ? '/welcome?source=marketplace' : '/welcome'
 
+    // Use NEXT_PUBLIC_SITE_URL for consistent redirect (must match Supabase allowed redirects)
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/+$/, '')
+
     const { error: signUpError } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
@@ -42,7 +45,7 @@ export default function SignupPage() {
           full_name: data.full_name,
           signup_source: source || 'direct',
         },
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(welcomeUrl)}`,
+        emailRedirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(welcomeUrl)}`,
       },
     })
 
@@ -65,10 +68,13 @@ export default function SignupPage() {
 
     const oauthWelcomeUrl = isMarketplace ? '/welcome?source=marketplace' : '/welcome'
 
+    // Use NEXT_PUBLIC_SITE_URL for consistent redirect (must match Supabase allowed redirects)
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/+$/, '')
+
     const { error: signInError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(oauthWelcomeUrl)}`,
+        redirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(oauthWelcomeUrl)}`,
       },
     })
 

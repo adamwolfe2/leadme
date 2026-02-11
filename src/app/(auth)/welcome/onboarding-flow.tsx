@@ -62,11 +62,13 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
         ...data,
         isMarketplace,
       }))
+      // Use NEXT_PUBLIC_SITE_URL for consistent redirect (must match Supabase allowed redirects)
+      const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/+$/, '')
       // Trigger Google OAuth
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent('/welcome?returning=true')}`,
+          redirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent('/welcome?returning=true')}`,
         },
       })
       if (oauthError) {
@@ -134,10 +136,12 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
         ...data,
         isMarketplace,
       }))
+      // Use NEXT_PUBLIC_SITE_URL for consistent redirect (must match Supabase allowed redirects)
+      const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/+$/, '')
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent('/welcome?returning=true')}`,
+          redirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent('/welcome?returning=true')}`,
         },
       })
       if (oauthError) {

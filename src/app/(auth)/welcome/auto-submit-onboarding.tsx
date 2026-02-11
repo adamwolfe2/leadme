@@ -2,11 +2,14 @@
  * Auto-Submit Onboarding
  * Handles post-OAuth redirect: reads form data from sessionStorage,
  * submits to /api/onboarding/setup, shows loading, redirects to dashboard.
+ *
+ * Includes retry logic for 401 responses, since auth cookies may not be
+ * fully propagated immediately after the OAuth callback redirect.
  */
 
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 
@@ -14,18 +17,30 @@ interface AutoSubmitOnboardingProps {
   isMarketplace: boolean
 }
 
+/** Small helper: wait for `ms` milliseconds */
+function wait(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProps) {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [status, setStatus] = useState<'loading' | 'error'>('loading')
+  // Guard against double-invocation in React StrictMode / concurrent mode
+  const submittedRef = useRef(false)
 
   useEffect(() => {
+    if (submittedRef.current) return
+    submittedRef.current = true
+
     const submit = async () => {
       try {
         const stored = sessionStorage.getItem('cursive_onboarding')
         if (!stored) {
-          // No stored data — send them back to the quiz
-          router.replace('/welcome')
+          // No stored data -- send them back to the quiz.
+          // Use window.location to force a full page load so the server
+          // component re-evaluates the session state.
+          window.location.href = '/welcome'
           return
         }
 
@@ -33,25 +48,58 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
         // Remove the isMarketplace flag before sending to API
         const { isMarketplace: _, ...onboardingData } = data
 
-        const res = await fetch('/api/onboarding/setup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(onboardingData),
-        })
+        // Retry logic: the auth callback sets cookies but they may not be
+        // available to the API route on the very first request after redirect.
+        // Retry up to 3 times with exponential back-off for 401 responses.
+        const MAX_RETRIES = 3
+        let lastResponse: Response | null = null
 
-        if (res.status === 409) {
+        for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+          if (attempt > 0) {
+            // Wait before retrying: 500ms, 1500ms, 3000ms
+            await wait(500 * attempt)
+          }
+
+          lastResponse = await fetch('/api/onboarding/setup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(onboardingData),
+          })
+
+          // 401 = session not ready yet; retry
+          if (lastResponse.status === 401 && attempt < MAX_RETRIES) {
+            continue
+          }
+
+          // Any other status: stop retrying
+          break
+        }
+
+        if (!lastResponse) {
+          throw new Error('Failed to contact server')
+        }
+
+        if (lastResponse.status === 409) {
           // Already has workspace
           sessionStorage.removeItem('cursive_onboarding')
           router.push(isMarketplace ? '/marketplace' : '/dashboard')
           return
         }
 
-        if (!res.ok) {
-          const body = await res.json()
+        if (lastResponse.status === 401) {
+          // Still unauthorized after retries -- session may have expired
+          // or cookies were lost. Clear storage and send to login.
+          sessionStorage.removeItem('cursive_onboarding')
+          window.location.href = '/login?reason=session_expired'
+          return
+        }
+
+        if (!lastResponse.ok) {
+          const body = await lastResponse.json()
           throw new Error(body.error || 'Failed to create workspace')
         }
 
-        // Success — clear storage and redirect
+        // Success -- clear storage and redirect
         sessionStorage.removeItem('cursive_onboarding')
         router.push(isMarketplace ? '/marketplace' : '/dashboard')
       } catch (err: any) {
@@ -70,12 +118,29 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
           <Image src="/cursive-logo.png" alt="Cursive" width={64} height={64} className="mx-auto" />
           <h2 className="text-xl font-bold text-foreground">Something went wrong</h2>
           <p className="text-sm text-muted-foreground">{error}</p>
-          <button
-            onClick={() => router.push('/welcome')}
-            className="h-10 px-6 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
-          >
-            Try Again
-          </button>
+          <div className="flex flex-col gap-3 items-center">
+            <button
+              onClick={() => {
+                setStatus('loading')
+                setError(null)
+                submittedRef.current = false
+                // Force re-mount by navigating
+                window.location.href = '/welcome?returning=true'
+              }}
+              className="h-10 px-6 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              Try Again
+            </button>
+            <button
+              onClick={() => {
+                sessionStorage.removeItem('cursive_onboarding')
+                window.location.href = '/welcome'
+              }}
+              className="h-10 px-6 text-muted-foreground font-medium rounded-lg hover:text-foreground transition-colors"
+            >
+              Start Over
+            </button>
+          </div>
         </div>
       </div>
     )
