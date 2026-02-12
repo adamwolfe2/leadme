@@ -452,7 +452,38 @@ COMMENT ON POLICY "Public read access on industry_categories" ON industry_catego
   IS 'Intentional: read-only reference data (industry lookup). Audited 2026-02-12.';
 
 -- ============================================================================
--- SECTION 7: VERIFICATION QUERIES (SELECT only, safe to run)
+-- SECTION 7: CREDIT RPC LOCKDOWN
+-- Credit mutation functions restricted to service_role only.
+-- Prevents authenticated users from calling add_workspace_credits etc. directly.
+-- ============================================================================
+
+DO $$
+DECLARE
+  func_name text;
+  func_args text;
+BEGIN
+  FOREACH func_name IN ARRAY ARRAY[
+    'add_workspace_credits',
+    'deduct_workspace_credits',
+    'record_credit_usage',
+    'complete_credit_lead_purchase'
+  ]
+  LOOP
+    SELECT pg_get_function_identity_arguments(p.oid) INTO func_args
+    FROM pg_proc p
+    JOIN pg_namespace n ON p.pronamespace = n.oid
+    WHERE n.nspname = 'public' AND p.proname = func_name
+    LIMIT 1;
+
+    IF func_args IS NOT NULL THEN
+      EXECUTE format('REVOKE EXECUTE ON FUNCTION public.%I(%s) FROM authenticated', func_name, func_args);
+      EXECUTE format('GRANT EXECUTE ON FUNCTION public.%I(%s) TO service_role', func_name, func_args);
+    END IF;
+  END LOOP;
+END $$;
+
+-- ============================================================================
+-- SECTION 8: VERIFICATION QUERIES (SELECT only, safe to run)
 -- Run these after applying the migration to confirm zero drift.
 -- ============================================================================
 

@@ -7,7 +7,7 @@
  *   1. check_rls_regression() — detects bare auth.uid(), broad policies, PUBLIC execute grants
  *   2. audit_unused_indexes() — logs indexes with 0 scans for review
  *
- * Alerts to Slack on non-clean RLS status.
+ * Alerts to Slack only when state changes (dedupe via previous run comparison).
  * Results are also logged to security_events table by the DB functions.
  *
  * Schedule: Daily at 3:00 AM UTC (0 3 * * *)
@@ -30,9 +30,23 @@ export async function GET(request: NextRequest) {
   }
 
   const supabase = createAdminClient()
+  const startTime = Date.now()
+  const runId = crypto.randomUUID()
   const results: Record<string, unknown> = {}
 
   try {
+    // Fetch previous run's findings for dedupe
+    const { data: prevRun } = await supabase
+      .from('security_events')
+      .select('metadata')
+      .eq('event_type', 'rls_regression')
+      .eq('event_category', 'security_audit')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single()
+
+    const prevStatus = (prevRun?.metadata as Record<string, unknown>)?.status as string | undefined
+
     // 1. RLS regression check
     const { data: rlsData, error: rlsError } = await supabase.rpc(
       'check_rls_regression'
@@ -43,18 +57,28 @@ export async function GET(request: NextRequest) {
     } else {
       results.rls_regression = rlsData
 
-      // Alert on drift
-      if (rlsData?.status !== 'clean') {
+      // Alert only on state change: clean → drift, or first drift detection
+      const currentStatus = rlsData?.status as string | undefined
+      if (currentStatus !== 'clean' && prevStatus === 'clean') {
         await sendSlackAlert({
           type: 'system_health',
           severity: 'critical',
           message: 'RLS regression detected in nightly health check',
           metadata: {
+            run_id: runId,
             bare_auth_uid: String(rlsData?.bare_auth_uid_policies ?? '?'),
             broad_policies: String(rlsData?.overly_broad_policies ?? '?'),
             public_execute: String(rlsData?.public_execute_functions ?? '?'),
             action: 'Review security_events table and run hardening migration',
           },
+        })
+      } else if (currentStatus === 'clean' && prevStatus !== 'clean' && prevStatus != null) {
+        // Drift resolved — send recovery notification
+        await sendSlackAlert({
+          type: 'system_health',
+          severity: 'info',
+          message: 'RLS regression resolved — status is clean',
+          metadata: { run_id: runId },
         })
       }
     }
@@ -74,27 +98,31 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    const durationMs = Date.now() - startTime
     const rlsClean = (results.rls_regression as Record<string, unknown>)?.status === 'clean'
       || (results.rls_regression as Record<string, unknown>)?.error != null
 
     return NextResponse.json({
       success: true,
+      run_id: runId,
+      duration_ms: durationMs,
       timestamp: new Date().toISOString(),
       rls_status: rlsClean ? 'clean' : 'drift_detected',
       ...results,
     })
   } catch (error) {
+    const durationMs = Date.now() - startTime
     const message = error instanceof Error ? error.message : 'Unknown error'
 
     await sendSlackAlert({
       type: 'system_health',
       severity: 'error',
       message: 'Database health check cron failed',
-      metadata: { error: message },
+      metadata: { run_id: runId, error: message, duration_ms: String(durationMs) },
     }).catch(() => {}) // Don't let Slack failure crash the cron
 
     return NextResponse.json(
-      { error: 'Health check failed', detail: message },
+      { error: 'Health check failed', detail: message, run_id: runId, duration_ms: durationMs },
       { status: 500 }
     )
   }
