@@ -232,11 +232,16 @@ export function SidebarMobile({
 }: SidebarProps & { isOpen: boolean; onClose: () => void }) {
   const pathname = usePathname()
 
+  const isFirstRender = React.useRef(true)
   React.useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
     if (isOpen) {
       onClose()
     }
-  }, [pathname])
+  }, [pathname, onClose])
 
   // Prevent body scroll when sidebar is open
   React.useEffect(() => {

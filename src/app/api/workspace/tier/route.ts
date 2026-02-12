@@ -51,74 +51,67 @@ export async function GET(request: NextRequest) {
     }
 
     const supabase = await createClient()
+    const today = new Date().toISOString().split('T')[0]
+    const startOfMonth = new Date()
+    startOfMonth.setDate(1)
+    startOfMonth.setHours(0, 0, 0, 0)
 
-    // Check for active service subscription first (new service tier system)
-    const serviceSubscription = await serviceTierRepository.getWorkspaceActiveSubscription(user.workspace_id)
+    // Run all independent queries in parallel to reduce latency
+    const [
+      serviceSubscription,
+      { data: tierInfo },
+      { count: dailyLeadsUsed },
+      { count: monthlyLeadsUsed },
+      { count: teamMembersUsed },
+      { count: campaignsUsed },
+      { count: templatesUsed },
+      { count: emailAccountsUsed },
+    ] = await Promise.all([
+      serviceTierRepository.getWorkspaceActiveSubscription(user.workspace_id),
+      supabase
+        .from('workspace_tiers')
+        .select(`
+          *,
+          product_tiers (
+            id, name, slug, daily_lead_limit, monthly_lead_limit,
+            features, price_monthly, price_yearly
+          )
+        `)
+        .eq('workspace_id', user.workspace_id)
+        .single(),
+      supabase
+        .from('leads')
+        .select('id', { count: 'exact', head: true })
+        .eq('workspace_id', user.workspace_id)
+        .gte('created_at', `${today}T00:00:00Z`),
+      supabase
+        .from('leads')
+        .select('id', { count: 'exact', head: true })
+        .eq('workspace_id', user.workspace_id)
+        .gte('created_at', startOfMonth.toISOString()),
+      supabase
+        .from('users')
+        .select('id', { count: 'exact', head: true })
+        .eq('workspace_id', user.workspace_id),
+      supabase
+        .from('email_campaigns')
+        .select('id', { count: 'exact', head: true })
+        .eq('workspace_id', user.workspace_id),
+      supabase
+        .from('email_templates')
+        .select('id', { count: 'exact', head: true })
+        .eq('workspace_id', user.workspace_id),
+      supabase
+        .from('email_accounts')
+        .select('id', { count: 'exact', head: true })
+        .eq('workspace_id', user.workspace_id),
+    ])
+
+    // Fetch service tier details if subscription exists (depends on first query)
     let serviceTierData = null
     if (serviceSubscription) {
       serviceTierData = await serviceTierRepository.getTierById(serviceSubscription.service_tier_id)
     }
-
-    // Get workspace tier info (legacy product tier system)
-    const { data: tierInfo } = await supabase
-      .from('workspace_tiers')
-      .select(`
-        *,
-        product_tiers (
-          id,
-          name,
-          slug,
-          daily_lead_limit,
-          monthly_lead_limit,
-          features,
-          price_monthly,
-          price_yearly
-        )
-      `)
-      .eq('workspace_id', user.workspace_id)
-      .single()
-
-    // Get today's lead usage
-    const today = new Date().toISOString().split('T')[0]
-    const { count: dailyLeadsUsed } = await supabase
-      .from('leads')
-      .select('id', { count: 'exact', head: true })
-      .eq('workspace_id', user.workspace_id)
-      .gte('created_at', `${today}T00:00:00Z`)
-
-    // Get this month's lead usage
-    const startOfMonth = new Date()
-    startOfMonth.setDate(1)
-    startOfMonth.setHours(0, 0, 0, 0)
-    const { count: monthlyLeadsUsed } = await supabase
-      .from('leads')
-      .select('id', { count: 'exact', head: true })
-      .eq('workspace_id', user.workspace_id)
-      .gte('created_at', startOfMonth.toISOString())
-
-    // Get team members count
-    const { count: teamMembersUsed } = await supabase
-      .from('users')
-      .select('id', { count: 'exact', head: true })
-      .eq('workspace_id', user.workspace_id)
-
-    // Get campaigns count
-    const { count: campaignsUsed } = await supabase
-      .from('email_campaigns')
-      .select('id', { count: 'exact', head: true })
-      .eq('workspace_id', user.workspace_id)
-
-    // Get templates count
-    const { count: templatesUsed } = await supabase
-      .from('email_templates')
-      .select('id', { count: 'exact', head: true })
-      .eq('workspace_id', user.workspace_id)
-
-    // Get email accounts count
-    const { count: emailAccountsUsed } = await supabase
-      .from('email_accounts')
-      .select('id', { count: 'exact', head: true })
-      .eq('workspace_id', user.workspace_id)
 
     // Build response
     const productTier = tierInfo?.product_tiers as {
