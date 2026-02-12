@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { logger } from '@/lib/monitoring/logger'
 
 // These tables are not yet in the generated database types, so we define them manually
 interface ServiceTier {
@@ -77,7 +78,7 @@ export class ServiceTierRepository {
       .order('display_order', { ascending: true })
 
     if (error) {
-      console.error('[ServiceTierRepo] Error fetching public tiers:', error)
+      logger.error('[ServiceTierRepo] Error fetching public tiers:', error)
       throw new Error(`Failed to fetch service tiers: ${(error as any).message}`)
     }
 
@@ -96,7 +97,7 @@ export class ServiceTierRepository {
       .order('display_order', { ascending: true })
 
     if (error) {
-      console.error('[ServiceTierRepo] Error fetching all tiers:', error)
+      logger.error('[ServiceTierRepo] Error fetching all tiers:', error)
       throw new Error(`Failed to fetch service tiers: ${(error as any).message}`)
     }
 
@@ -119,7 +120,7 @@ export class ServiceTierRepository {
       if ((error as any).code === 'PGRST116') {
         return null
       }
-      console.error('[ServiceTierRepo] Error fetching tier by slug:', error)
+      logger.error('[ServiceTierRepo] Error fetching tier by slug:', error)
       throw new Error(`Failed to fetch service tier: ${(error as any).message}`)
     }
 
@@ -142,7 +143,7 @@ export class ServiceTierRepository {
       if ((error as any).code === 'PGRST116') {
         return null
       }
-      console.error('[ServiceTierRepo] Error fetching tier by ID:', error)
+      logger.error('[ServiceTierRepo] Error fetching tier by ID:', error)
       throw new Error(`Failed to fetch service tier: ${(error as any).message}`)
     }
 
@@ -166,7 +167,7 @@ export class ServiceTierRepository {
       if ((error as any).code === 'PGRST116') {
         return null
       }
-      console.error('[ServiceTierRepo] Error fetching active subscription:', error)
+      logger.error('[ServiceTierRepo] Error fetching active subscription:', error)
       throw new Error(`Failed to fetch subscription: ${(error as any).message}`)
     }
 
@@ -186,7 +187,7 @@ export class ServiceTierRepository {
       .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('[ServiceTierRepo] Error fetching workspace subscriptions:', error)
+      logger.error('[ServiceTierRepo] Error fetching workspace subscriptions:', error)
       throw new Error(`Failed to fetch subscriptions: ${(error as any).message}`)
     }
 
@@ -209,7 +210,7 @@ export class ServiceTierRepository {
       if ((error as any).code === 'PGRST116') {
         return null
       }
-      console.error('[ServiceTierRepo] Error fetching subscription with tier:', error)
+      logger.error('[ServiceTierRepo] Error fetching subscription with tier:', error)
       throw new Error(`Failed to fetch subscription: ${(error as any).message}`)
     }
 
@@ -229,7 +230,7 @@ export class ServiceTierRepository {
       .single()
 
     if (error) {
-      console.error('[ServiceTierRepo] Error creating subscription:', error)
+      logger.error('[ServiceTierRepo] Error creating subscription:', error)
       throw new Error(`Failed to create subscription: ${(error as any).message}`)
     }
 
@@ -250,7 +251,7 @@ export class ServiceTierRepository {
       .single()
 
     if (error) {
-      console.error('[ServiceTierRepo] Error updating subscription:', error)
+      logger.error('[ServiceTierRepo] Error updating subscription:', error)
       throw new Error(`Failed to update subscription: ${(error as any).message}`)
     }
 
@@ -273,7 +274,7 @@ export class ServiceTierRepository {
       if ((error as any).code === 'PGRST116') {
         return null
       }
-      console.error('[ServiceTierRepo] Error fetching subscription by Stripe ID:', error)
+      logger.error('[ServiceTierRepo] Error fetching subscription by Stripe ID:', error)
       throw new Error(`Failed to fetch subscription: ${(error as any).message}`)
     }
 
@@ -303,7 +304,7 @@ export class ServiceTierRepository {
       .single()
 
     if (error) {
-      console.error('[ServiceTierRepo] Error creating delivery:', error)
+      logger.error('[ServiceTierRepo] Error creating delivery:', error)
       throw new Error(`Failed to create delivery: ${(error as any).message}`)
     }
 
@@ -323,7 +324,7 @@ export class ServiceTierRepository {
       .order('delivery_period_start', { ascending: false })
 
     if (error) {
-      console.error('[ServiceTierRepo] Error fetching deliveries:', error)
+      logger.error('[ServiceTierRepo] Error fetching deliveries:', error)
       throw new Error(`Failed to fetch deliveries: ${(error as any).message}`)
     }
 
@@ -344,7 +345,7 @@ export class ServiceTierRepository {
       .single()
 
     if (error) {
-      console.error('[ServiceTierRepo] Error updating delivery:', error)
+      logger.error('[ServiceTierRepo] Error updating delivery:', error)
       throw new Error(`Failed to update delivery: ${(error as any).message}`)
     }
 
@@ -364,7 +365,7 @@ export class ServiceTierRepository {
       .order('delivery_period_start', { ascending: true })
 
     if (error) {
-      console.error('[ServiceTierRepo] Error fetching pending deliveries:', error)
+      logger.error('[ServiceTierRepo] Error fetching pending deliveries:', error)
       throw new Error(`Failed to fetch pending deliveries: ${(error as any).message}`)
     }
 
@@ -384,7 +385,7 @@ export class ServiceTierRepository {
       .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('[ServiceTierRepo] Error fetching active subscriptions:', error)
+      logger.error('[ServiceTierRepo] Error fetching active subscriptions:', error)
       throw new Error(`Failed to fetch active subscriptions: ${(error as any).message}`)
     }
 

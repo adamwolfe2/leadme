@@ -4,6 +4,7 @@
 import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
 import { sendPaymentFailedEmail } from '@/lib/email/service'
+import { logger } from '@/lib/monitoring/logger'
 
 /**
  * Handle customer.subscription.created event
@@ -240,7 +241,7 @@ export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
       invoice.attempt_count || 1
     )
   } catch (error) {
-    console.error('Failed to send payment failed email:', error)
+    logger.error('Failed to send payment failed email', { error: error instanceof Error ? error.message : String(error) })
     // Don't throw - we still want to process the webhook
   }
 }
@@ -276,7 +277,7 @@ export async function processWebhookEvent(event: Stripe.Event) {
         break
     }
   } catch (error: any) {
-    console.error(`[Stripe] Error processing webhook:`, error)
+    logger.error('[Stripe] Error processing webhook', { error: error instanceof Error ? error.message : String(error) })
     throw error
   }
 }
