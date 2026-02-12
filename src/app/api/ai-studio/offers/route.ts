@@ -6,8 +6,14 @@
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { safeError } from '@/lib/utils/log-sanitizer'
+
+const querySchema = z.object({
+  workspace: z.string().min(1, 'Invalid workspace ID format').regex(/^[a-zA-Z0-9-]+$/, 'Invalid workspace ID format'),
+})
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,11 +23,22 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url)
-    const workspaceId = searchParams.get('workspace')
+    const workspaceParam = searchParams.get('workspace')
 
-    if (!workspaceId) {
+    if (!workspaceParam) {
       return NextResponse.json({ error: 'workspace parameter required' }, { status: 400 })
     }
+
+    // Validate input
+    const validationResult = querySchema.safeParse({ workspace: workspaceParam })
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid workspace ID format' },
+        { status: 400 }
+      )
+    }
+
+    const { workspace: workspaceId } = validationResult.data
 
     const supabase = await createClient()
 
@@ -56,13 +73,13 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('[Offers] Database error:', error)
+      safeError('[Offers] Database error:', error)
       throw new Error('Failed to fetch offers')
     }
 
     return NextResponse.json({ offers: offers || [] })
   } catch (error: any) {
-    console.error('[Offers] Error:', error)
+    safeError('[Offers] Error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch offers' },
       { status: 500 }

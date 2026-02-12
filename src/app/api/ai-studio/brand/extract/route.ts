@@ -12,6 +12,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { extractBrandDNA, isValidUrl } from '@/lib/ai-studio/firecrawl'
 import { generateKnowledgeBase, generateCustomerProfiles } from '@/lib/ai-studio/knowledge'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@/types/database.types'
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest) {
   try {
     // Check if API keys are set
     if (!process.env.FIRECRAWL_API_KEY) {
-      console.error('[Brand Extract] FIRECRAWL_API_KEY not set')
+      safeError('[Brand Extract] FIRECRAWL_API_KEY not set')
       return NextResponse.json(
         { error: 'Required service not configured. Please contact support.' },
         { status: 500 }
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!process.env.ANTHROPIC_API_KEY && !process.env.OPENAI_API_KEY) {
-      console.error('[Brand Extract] No AI API key set')
+      safeError('[Brand Extract] No AI API key set')
       return NextResponse.json(
         { error: 'Required service not configured. Please contact support.' },
         { status: 500 }
@@ -109,7 +110,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error: any) {
-    console.error('[Brand Extract] Error:', error)
+    safeError('[Brand Extract] Error:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -143,7 +144,7 @@ async function processBrandExtractionWithTimeout(
       timeoutPromise,
     ])
   } catch (error: any) {
-    console.error('[Brand Extract] Background extraction failed:', error)
+    safeError('[Brand Extract] Background extraction failed:', error)
     await (supabase as any)
       .from('brand_workspaces')
       .update({
@@ -235,7 +236,7 @@ async function processBrandExtraction(
     }
 
   } catch (error: any) {
-    console.error('[Brand Extract] Background process error:', error)
+    safeError('[Brand Extract] Background process error:', error)
     throw error
   }
 }

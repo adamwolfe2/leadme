@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { generateAdCreative } from '@/lib/ai-studio/image-generation'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
 
 const generateSchema = z.object({
@@ -67,13 +68,13 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('[Creatives GET] Database error:', error)
+      safeError('[Creatives GET] Database error:', error)
       throw new Error('Failed to fetch creatives')
     }
 
     return NextResponse.json({ creatives: creatives || [] })
   } catch (error: any) {
-    console.error('[Creatives GET] Error:', error)
+    safeError('[Creatives GET] Error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch creatives' },
       { status: 500 }
@@ -154,13 +155,13 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (saveError) {
-      console.error('[Creatives POST] Save error:', saveError)
+      safeError('[Creatives POST] Save error:', saveError)
       throw new Error('Failed to save creative')
     }
 
     return NextResponse.json({ creative, message: 'Creative generated successfully' })
   } catch (error: any) {
-    console.error('[Creatives] Error:', error)
+    safeError('[Creatives] Error:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
