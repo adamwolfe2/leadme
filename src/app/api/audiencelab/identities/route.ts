@@ -13,6 +13,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { z } from 'zod'
+import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 
 const QuerySchema = z.object({
   q: z.string().optional(),
@@ -63,7 +64,8 @@ export async function GET(request: NextRequest) {
       .range(offset, offset + limit - 1)
 
     if (q) {
-      query = query.or(`primary_email.ilike.%${q}%,first_name.ilike.%${q}%,last_name.ilike.%${q}%,company_name.ilike.%${q}%,profile_id.ilike.%${q}%`)
+      const term = sanitizeSearchTerm(q)
+      query = query.or(`primary_email.ilike.%${term}%,first_name.ilike.%${term}%,last_name.ilike.%${term}%,company_name.ilike.%${term}%,profile_id.ilike.%${term}%`)
     }
 
     const { data, count, error } = await query

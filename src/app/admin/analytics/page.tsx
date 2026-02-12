@@ -49,7 +49,7 @@ export default function AdminAnalyticsPage() {
         .select('role')
         .eq('auth_user_id', user.id)
         .single() as { data: { role: string } | null }
-      if (!userData || (userData.role !== 'admin' && userData.role !== 'super_admin')) {
+      if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
         window.location.href = '/dashboard'
         return
       }
@@ -73,8 +73,8 @@ export default function AdminAnalyticsPage() {
   }, [dateRange])
 
   useEffect(() => {
-    fetchAnalytics()
-  }, [fetchAnalytics])
+    if (authChecked && isAdmin) fetchAnalytics()
+  }, [authChecked, isAdmin, fetchAnalytics])
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {

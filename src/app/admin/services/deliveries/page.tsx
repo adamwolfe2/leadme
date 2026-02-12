@@ -62,7 +62,7 @@ export default function AdminServiceDeliveriesPage() {
         .select('role')
         .eq('auth_user_id', user.id)
         .single() as { data: { role: string } | null }
-      if (!userData || (userData.role !== 'admin' && userData.role !== 'super_admin')) {
+      if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
         window.location.href = '/dashboard'
         return
       }

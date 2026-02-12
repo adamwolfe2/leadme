@@ -61,10 +61,10 @@ export default function AdminDashboard() {
       }
       const { data: userData } = await supabase
         .from('users')
-        .select('role, is_platform_admin')
+        .select('role')
         .eq('auth_user_id', user.id)
-        .single() as { data: { role: string; is_platform_admin: boolean } | null }
-      if (!userData || (!userData.is_platform_admin && userData.role !== 'admin' && userData.role !== 'super_admin')) {
+        .single() as { data: { role: string } | null }
+      if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
         window.location.href = '/dashboard'
         return
       }

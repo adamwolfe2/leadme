@@ -11,6 +11,7 @@ import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-
 import { createClient } from '@/lib/supabase/server'
 import { logDataExport } from '@/lib/services/audit.service'
 import { z } from 'zod'
+import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 
 const MAX_EXPORT_ROWS = 10_000
 
@@ -118,7 +119,7 @@ export async function POST(request: NextRequest) {
         query = query.lte('created_at', filters.dateTo)
       }
       if (filters.search) {
-        const term = filters.search.replace(/[%_]/g, '')
+        const term = sanitizeSearchTerm(filters.search)
         query = query.or(
           `first_name.ilike.%${term}%,` +
             `last_name.ilike.%${term}%,` +

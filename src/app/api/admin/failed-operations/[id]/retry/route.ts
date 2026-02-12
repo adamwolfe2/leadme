@@ -36,7 +36,7 @@ export async function POST(
       .eq('auth_user_id', user.id)
       .single()
 
-    if (!userData || (userData.role !== 'admin' && userData.role !== 'super_admin')) {
+    if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
       return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 })
     }
 

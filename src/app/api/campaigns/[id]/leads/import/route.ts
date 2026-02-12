@@ -11,6 +11,7 @@ import { createClient } from '@/lib/supabase/server'
 import { handleApiError, unauthorized, notFound, success, badRequest } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 import { checkBulkSuppression } from '@/lib/services/campaign/suppression.service'
+import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -349,8 +350,9 @@ async function fetchFilteredLeads(
   }
 
   if (filters.search) {
+    const term = sanitizeSearchTerm(filters.search)
     query = query.or(
-      `email.ilike.%${filters.search}%,company_name.ilike.%${filters.search}%,first_name.ilike.%${filters.search}%`
+      `email.ilike.%${term}%,company_name.ilike.%${term}%,first_name.ilike.%${term}%`
     )
   }
 

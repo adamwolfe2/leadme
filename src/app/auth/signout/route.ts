@@ -31,10 +31,13 @@ async function handleSignOut(request: NextRequest) {
   // Redirect to login page
   const response = NextResponse.redirect(new URL('/login', request.url))
 
-  // Set cookies
+  // Set cookies from supabase signOut
   cookieStore.forEach(({ name, value, options }) => {
     response.cookies.set(name, value, options)
   })
+
+  // Clear cached workspace cookie to prevent cross-user data leak
+  response.cookies.delete('x-workspace-id')
 
   return response
 }

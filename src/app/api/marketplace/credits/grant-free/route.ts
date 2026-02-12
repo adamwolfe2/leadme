@@ -24,22 +24,49 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
     }
 
-    // Check if already granted (idempotent)
-    const { data: existingGrant } = await supabase
+    // Atomically record the grant first — if a unique constraint exists on
+    // workspace_id, the second concurrent request will fail here instead of
+    // double-granting credits. We use upsert with ignoreDuplicates to detect.
+    const { data: grantResult, error: grantError } = await supabase
       .from('free_credit_grants')
+      .upsert(
+        {
+          workspace_id: userData.workspace_id,
+          user_id: userData.id,
+          credits_granted: FREE_TRIAL_CREDITS.credits,
+        },
+        { onConflict: 'workspace_id', ignoreDuplicates: true }
+      )
       .select('id')
-      .eq('workspace_id', userData.workspace_id)
-      .single()
 
-    if (existingGrant) {
+    // If upsert returned no rows, the grant already existed (duplicate ignored)
+    if (!grantResult?.length) {
       return NextResponse.json({
         message: 'Free credits already granted',
         credits: 0,
-        alreadyGranted: true
+        alreadyGranted: true,
       })
     }
 
-    // Grant credits - add to workspace balance via RPC
+    // If there was an actual error (not a conflict), check with a select
+    if (grantError) {
+      const { data: existingGrant } = await supabase
+        .from('free_credit_grants')
+        .select('id')
+        .eq('workspace_id', userData.workspace_id)
+        .single()
+
+      if (existingGrant) {
+        return NextResponse.json({
+          message: 'Free credits already granted',
+          credits: 0,
+          alreadyGranted: true,
+        })
+      }
+      throw grantError
+    }
+
+    // Grant recorded successfully — now add credits
     const { error: updateError } = await supabase.rpc('add_workspace_credits', {
       p_workspace_id: userData.workspace_id,
       p_amount: FREE_TRIAL_CREDITS.credits,
@@ -71,15 +98,6 @@ export async function POST(request: NextRequest) {
           })
       }
     }
-
-    // Record the grant
-    await supabase
-      .from('free_credit_grants')
-      .insert({
-        workspace_id: userData.workspace_id,
-        user_id: userData.id,
-        credits_granted: FREE_TRIAL_CREDITS.credits,
-      })
 
     return NextResponse.json({
       message: 'Free credits granted successfully',

@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 
 interface Workspace {
   id: string
@@ -56,7 +57,7 @@ export default function AdminAccountsPage() {
         .select('role')
         .eq('auth_user_id', user.id)
         .single() as { data: { role: string } | null }
-      if (!userData || (userData.role !== 'admin' && userData.role !== 'super_admin')) {
+      if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
         window.location.href = '/dashboard'
         return
       }
@@ -81,7 +82,8 @@ export default function AdminAccountsPage() {
         .order('created_at', { ascending: false })
 
       if (search) {
-        query = query.or(`name.ilike.%${search}%,slug.ilike.%${search}%`)
+        const term = sanitizeSearchTerm(search)
+        query = query.or(`name.ilike.%${term}%,slug.ilike.%${term}%`)
       }
 
       if (industryFilter) {

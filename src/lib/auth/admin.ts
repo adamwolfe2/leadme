@@ -9,6 +9,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import type { PlatformAdmin, AdminContext, Workspace, AdminActionType } from '@/types'
+import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 
 // Cookie name for impersonation session
 const IMPERSONATION_COOKIE = 'cursive_impersonation_session'
@@ -389,7 +390,8 @@ export async function getAllWorkspaces(options?: {
     .select('*, workspace_tiers(*, product_tiers(*))', { count: 'exact' })
 
   if (options?.search) {
-    query = query.or(`name.ilike.%${options.search}%,slug.ilike.%${options.search}%`)
+    const term = sanitizeSearchTerm(options.search)
+    query = query.or(`name.ilike.%${term}%,slug.ilike.%${term}%`)
   }
 
   if (options?.onboardingStatus) {
