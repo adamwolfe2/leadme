@@ -189,7 +189,7 @@ export interface Database {
           routing_rule_id: string | null
           routing_metadata: Json | null
           created_at: string
-          // New fields for DataShopper integration
+          // Extended lead data fields
           contact_title: string | null
           contact_seniority: string | null
           contact_department: string | null
@@ -245,7 +245,7 @@ export interface Database {
           routing_rule_id?: string | null
           routing_metadata?: Json | null
           created_at?: string
-          // New fields for DataShopper integration
+          // Extended lead data fields
           contact_title?: string | null
           contact_seniority?: string | null
           contact_department?: string | null
@@ -301,7 +301,7 @@ export interface Database {
           routing_rule_id?: string | null
           routing_metadata?: Json | null
           created_at?: string
-          // New fields for DataShopper integration
+          // Extended lead data fields
           contact_title?: string | null
           contact_seniority?: string | null
           contact_department?: string | null

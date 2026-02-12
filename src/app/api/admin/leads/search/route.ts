@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     } = body as {
       workspaceId?: string
       filters: LeadSearchFilters
-      provider?: 'datashopper' | 'audience_labs'
+      provider?: 'audience_labs'
       saveToWorkspace?: boolean
     }
 
@@ -52,48 +52,14 @@ export async function POST(request: NextRequest) {
     } else {
       // Admin search - no workspace limits
       // Use a dummy workspace ID for the search but don't track usage
-      if (provider === 'datashopper') {
-        const DataShopperClient = (await import('@/lib/integrations/datashopper')).DataShopperClient
-        const client = new DataShopperClient()
-        const dsResults = await client.searchCompanies({
-          topic: filters.topic || filters.keywords?.join(' ') || '',
-          location: {
-            country: filters.countries?.[0],
-            state: filters.states?.[0],
-            city: filters.cities?.[0],
-          },
-          industry: filters.industries,
-          limit: filters.limit || 50,
-        })
-        result = {
-          leads: dsResults.results.map(company => ({
-            provider: 'datashopper' as const,
-            firstName: '',
-            lastName: '',
-            companyName: company.name,
-            companyDomain: company.domain,
-            companyIndustry: company.industry,
-            companySize: company.employee_count?.toString(),
-            city: company.location?.city,
-            state: company.location?.state,
-            country: company.location?.country,
-            fetchedAt: new Date().toISOString(),
-          })),
-          total: dsResults.total,
-          provider: 'datashopper',
-          creditsUsed: 0, // Admin searches don't use credits
-          remainingCredits: Infinity,
-        }
-      } else {
-        // AudienceLabs is now a CDP/webhook receiver, not a search API.
-        // AL leads flow in via SuperPixel/AudienceSync webhooks and batch imports.
-        result = {
-          leads: [],
-          total: 0,
-          provider: 'audience_labs',
-          creditsUsed: 0,
-          remainingCredits: Infinity,
-        }
+      // AudienceLab is a CDP/webhook receiver, not a search API.
+      // AL leads flow in via SuperPixel/AudienceSync webhooks and batch imports.
+      result = {
+        leads: [],
+        total: 0,
+        provider: 'audience_labs',
+        creditsUsed: 0,
+        remainingCredits: Infinity,
       }
     }
 

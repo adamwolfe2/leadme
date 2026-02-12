@@ -130,25 +130,11 @@ export default function AdminDashboard() {
     fetchRules()
   }
 
-  const testWebhook = async (type: 'datashopper' | 'clay' | 'audiencelab') => {
+  const testWebhook = async (type: 'clay' | 'audiencelab') => {
     setLoading(true)
     setWebhookResponse('Sending...')
 
     const payloads = {
-      datashopper: {
-        event_type: 'leads.single',
-        workspace_id: Object.keys(leadsStats)[0],
-        lead: {
-          email: 'test@datashopper.com',
-          first_name: 'Test',
-          last_name: 'DataShopper',
-          company_name: 'DataShopper Test Co',
-          company_industry: 'Healthcare',
-          company_location: { state: 'CA', country: 'US' },
-          job_title: 'CEO',
-          datashopper_id: 'ds_' + Date.now()
-        }
-      },
       clay: {
         event_type: 'enrichment.completed',
         clay_record_id: 'clay_' + Date.now(),
@@ -176,7 +162,6 @@ export default function AdminDashboard() {
 
     // Audience Labs webhook is at a different path
     const urlMap: Record<string, string> = {
-      datashopper: '/api/webhooks/datashopper',
       clay: '/api/webhooks/clay',
       audiencelab: '/api/webhooks/audiencelab/superpixel',
     }
@@ -439,13 +424,6 @@ export default function AdminDashboard() {
             </div>
             <div className="p-5">
               <div className="flex gap-3 mb-4">
-                <button
-                  onClick={() => testWebhook('datashopper')}
-                  disabled={loading}
-                  className="h-9 px-4 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 disabled:opacity-50"
-                >
-                  Simulate DataShopper
-                </button>
                 <button
                   onClick={() => testWebhook('clay')}
                   disabled={loading}

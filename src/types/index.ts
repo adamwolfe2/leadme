@@ -154,11 +154,11 @@ export interface CompanyData {
 }
 
 // ============================================================================
-// LEAD DATA TYPES (for DataShopper integration)
+// LEAD DATA TYPES
 // ============================================================================
 
 /**
- * Intent signal from DataShopper
+ * Intent signal data
  */
 export interface IntentSignal {
   signal_type: string
@@ -209,25 +209,12 @@ export const INTENT_SCORES = [
  * Lead source types
  */
 export const LEAD_SOURCES = [
-  { value: 'datashopper', label: 'DataShopper' },
+  { value: 'audience_labs', label: 'AudienceLab' },
   { value: 'csv', label: 'CSV Import' },
   { value: 'manual', label: 'Manual Entry' },
   { value: 'query', label: 'Query' },
   { value: 'api', label: 'API' },
 ] as const
-
-/**
- * DataShopper raw data structure
- */
-export interface DataShopperRawData {
-  person_id?: string
-  company_id?: string
-  record_type?: 'person' | 'company'
-  matched_topics?: string[]
-  intent_signals?: IntentSignal[]
-  enrichment_date?: string
-  data_quality_score?: number
-}
 
 export interface ContactData {
   contacts: Array<{

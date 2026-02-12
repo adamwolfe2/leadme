@@ -183,7 +183,6 @@ export const PERFORMANCE_BUDGETS = {
   'db.select': 500,             // Database reads
   'db.insert': 200,             // Database inserts
   'db.update': 200,             // Database updates
-  'external.datashopper': 5000, // DataShopper API
   'external.clay': 3000,        // Clay API
   'external.stripe': 2000,      // Stripe API
 }

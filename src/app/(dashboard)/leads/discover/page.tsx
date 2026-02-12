@@ -709,7 +709,7 @@ export default function LeadDiscoveryPage() {
                       </span>
                     )}
                     <span className="px-2 py-1 text-xs font-medium bg-zinc-100 text-zinc-600 rounded-full">
-                      {lead.provider === 'datashopper' ? 'DataShopper' : 'AudienceLabs'}
+                      {lead.provider === 'audience_labs' ? 'AudienceLab' : lead.provider}
                     </span>
                   </div>
                 </div>

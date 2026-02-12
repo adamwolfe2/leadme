@@ -126,7 +126,6 @@ export const { GET, POST, PUT } = serve({
 
     // Bulk Upload Processing
     functions.processBulkUpload,
-    functions.enrichLeadFromDataShopper,
     functions.importLeadFromAudienceLabs,
 
     // Marketplace Upsell & Onboarding

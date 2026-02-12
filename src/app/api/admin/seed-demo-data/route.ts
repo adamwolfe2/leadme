@@ -204,7 +204,7 @@ export async function POST(request: NextRequest) {
         phone: Math.random() > 0.3 ? generatePhone() : null,
         job_title: randomElement(JOB_TITLES),
         linkedin_url: `https://linkedin.com/in/${firstName.toLowerCase()}-${lastName.toLowerCase()}-${randomInt(10000, 99999)}`,
-        source: randomElement(['datashopper', 'csv_import', 'manual', 'api', 'clay']),
+        source: randomElement(['audience_labs', 'csv_import', 'manual', 'api', 'clay']),
         enrichment_status: randomElement(['completed', 'completed', 'completed', 'pending']),
         delivery_status: randomElement(['delivered', 'delivered', 'pending']),
         status: weightedRandomStatus(),

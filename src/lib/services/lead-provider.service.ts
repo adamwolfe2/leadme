@@ -2,21 +2,19 @@
  * Unified Lead Provider Service
  * Cursive Platform
  *
- * Abstracts multiple lead data providers (DataShopper, AudienceLabs) into a
- * unified interface with tier-based rate limiting and usage tracking.
+ * Manages lead data flow with tier-based rate limiting and usage tracking.
+ * Primary data source: AudienceLab (CDP/webhook receiver).
+ * Leads flow in via SuperPixel/AudienceSync webhooks and batch imports.
+ * See src/lib/integrations/audience-labs.ts for architecture notes.
  */
 
 import { createClient } from '@/lib/supabase/server'
-import { DataShopperClient, type DataShopperSearchParams, type DataShopperCompany } from '@/lib/integrations/datashopper'
-// NOTE: AudienceLabs is now a CDP/webhook receiver, not a REST API.
-// Leads flow in via SuperPixel/AudienceSync webhooks and batch imports.
-// See src/lib/integrations/audience-labs.ts for architecture notes.
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
-export type LeadProvider = 'datashopper' | 'audience_labs' | 'manual'
+export type LeadProvider = 'audience_labs' | 'manual'
 
 export interface LeadSearchFilters {
   // Topic/Keyword (for intent-based search)
@@ -113,10 +111,8 @@ export interface WorkspaceLeadLimits {
 // ============================================================================
 
 export class LeadProviderService {
-  private dataShopper: DataShopperClient
-
   constructor() {
-    this.dataShopper = new DataShopperClient()
+    // AudienceLab leads arrive via webhooks, no client initialization needed
   }
 
   /**
@@ -209,14 +205,12 @@ export class LeadProviderService {
       limits.monthlyRemaining ?? Infinity
     )
 
-    // Choose provider
-    const provider = preferredProvider || this.selectBestProvider(filters)
+    // AudienceLab is the primary provider; leads arrive via webhooks
+    const provider: LeadProvider = preferredProvider || 'audience_labs'
 
     let leads: LeadResult[]
 
-    if (provider === 'datashopper') {
-      leads = await this.searchDataShopper(filters, effectiveLimit)
-    } else if (provider === 'audience_labs') {
+    if (provider === 'audience_labs') {
       leads = await this.searchAudienceLabs(filters, effectiveLimit)
     } else {
       throw new Error(`Unknown provider: ${provider}`)
@@ -235,68 +229,6 @@ export class LeadProviderService {
   }
 
   /**
-   * Search DataShopper for companies with intent signals
-   */
-  private async searchDataShopper(
-    filters: LeadSearchFilters,
-    limit: number
-  ): Promise<LeadResult[]> {
-    const params: DataShopperSearchParams = {
-      topic: filters.topic || filters.keywords?.join(' ') || '',
-      location: {
-        country: filters.countries?.[0],
-        state: filters.states?.[0],
-        city: filters.cities?.[0],
-      },
-      industry: filters.industries,
-      limit,
-    }
-
-    // Map company size to employee counts
-    if (filters.companySizes?.length) {
-      const sizeMap: Record<string, { min?: number; max?: number }> = {
-        '1-10': { min: 1, max: 10 },
-        '11-50': { min: 11, max: 50 },
-        '51-200': { min: 51, max: 200 },
-        '201-500': { min: 201, max: 500 },
-        '501-1000': { min: 501, max: 1000 },
-        '1001-5000': { min: 1001, max: 5000 },
-        '5001+': { min: 5001 },
-      }
-      const size = sizeMap[filters.companySizes[0]]
-      if (size) {
-        params.companySize = size
-      }
-    }
-
-    const response = await this.dataShopper.searchCompanies(params)
-
-    return response.results.map((company): LeadResult => ({
-      provider: 'datashopper',
-      firstName: '', // DataShopper returns companies, not people
-      lastName: '',
-      companyName: company.name,
-      companyDomain: company.domain,
-      companyIndustry: company.industry,
-      companySize: company.employee_count?.toString(),
-      companyRevenue: company.revenue?.toString(),
-      companyDescription: company.description,
-      companyTechnologies: company.technologies,
-      city: company.location?.city,
-      state: company.location?.state,
-      country: company.location?.country,
-      intentScore: this.calculateIntentScoreNumeric(company.intent_signals),
-      intentSignals: company.intent_signals?.map(s => ({
-        signalType: s.signal_type,
-        strength: s.signal_strength,
-        detectedAt: s.detected_at,
-        source: s.source,
-      })),
-      fetchedAt: new Date().toISOString(),
-    }))
-  }
-
-  /**
    * AudienceLabs leads are received via webhooks, not searched via API.
    * This method is a no-op placeholder — AL leads arrive through:
    * - SuperPixel webhook → /api/webhooks/audiencelab/superpixel
@@ -310,51 +242,6 @@ export class LeadProviderService {
     // AudienceLabs is a CDP/webhook platform, not a search API.
     // Leads flow in via webhooks and are processed by Inngest.
     return []
-  }
-
-  /**
-   * Select the best provider based on search criteria
-   */
-  private selectBestProvider(filters: LeadSearchFilters): LeadProvider {
-    // If searching by topic/intent, use DataShopper
-    if (filters.topic || filters.keywords?.length) {
-      return 'datashopper'
-    }
-
-    // If searching for specific people (job titles, seniority), use AudienceLabs
-    if (filters.jobTitles?.length || filters.seniorityLevels?.length) {
-      return 'audience_labs'
-    }
-
-    // Default to AudienceLabs for person-level data
-    return 'audience_labs'
-  }
-
-  /**
-   * Calculate numeric intent score from signals
-   */
-  private calculateIntentScoreNumeric(
-    signals?: DataShopperCompany['intent_signals']
-  ): number {
-    if (!signals || signals.length === 0) return 0
-
-    let score = 0
-    for (const signal of signals) {
-      switch (signal.signal_strength) {
-        case 'high':
-          score += 30
-          break
-        case 'medium':
-          score += 15
-          break
-        case 'low':
-          score += 5
-          break
-      }
-    }
-
-    // Cap at 100
-    return Math.min(100, score)
   }
 
   /**
@@ -397,11 +284,8 @@ export class LeadProviderService {
    * Get provider health status
    */
   async getProviderStatus(): Promise<{
-    datashopper: { healthy: boolean; error?: string }
     audienceLabs: { healthy: boolean; error?: string }
   }> {
-    const dsHealth = await this.dataShopper.healthCheck()
-
     // AL is a webhook receiver — check if we have recent events as a health proxy
     const alHealth: { healthy: boolean; error?: string } = {
       healthy: !!process.env.AUDIENCELAB_WEBHOOK_SECRET,
@@ -409,7 +293,6 @@ export class LeadProviderService {
     }
 
     return {
-      datashopper: dsHealth,
       audienceLabs: alHealth,
     }
   }

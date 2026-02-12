@@ -4,9 +4,9 @@
  * POST /api/leads/ingest
  *
  * Accepts leads from:
- * - DataShopper webhooks
  * - Manual API pushes
  * - External integrations
+ * - AudienceLab webhooks (via dedicated webhook routes)
  *
  * Automatically enriches and routes leads to matching clients.
  */
@@ -18,9 +18,7 @@ import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createMatchingEngine } from '@/lib/services/matching-engine.service'
 import { createUserLeadRouter } from '@/lib/services/user-lead-router.service'
-import { DataShopperRepository } from '@/lib/repositories/datashopper.repository'
 import { createClient } from '@/lib/supabase/server'
-import type { DataShopperIdentity } from '@/types/datashopper.types'
 
 // Schema for direct lead push
 const LeadPushSchema = z.object({
@@ -50,8 +48,7 @@ const LeadPushSchema = z.object({
   source: z.string().optional(),
   source_id: z.string().uuid().optional(),
 
-  // Optional DataShopper data
-  datashopper_id: z.number().optional(),
+  // Optional raw data
   raw_data: z.any().optional(),
 })
 
@@ -62,18 +59,8 @@ const IngestRequestSchema = z.object({
   // Batch of leads
   leads: z.array(LeadPushSchema).optional(),
 
-  // DataShopper format
-  datashopper: z
-    .object({
-      success: z.boolean(),
-      data: z.object({
-        identities: z.array(z.any()),
-      }),
-    })
-    .optional(),
-
   // Source tracking
-  source_type: z.enum(['api', 'datashopper', 'webhook', 'manual']).optional(),
+  source_type: z.enum(['api', 'webhook', 'manual']).optional(),
   source_id: z.string().uuid().optional(),
   source_name: z.string().optional(),
 
@@ -141,38 +128,6 @@ export async function POST(req: NextRequest) {
       }
 
       return { matched, assignedTo }
-    }
-
-    // Handle DataShopper format
-    if (request.datashopper?.success && request.datashopper.data.identities) {
-      const dsRepo = new DataShopperRepository(workspaceId)
-
-      for (const identity of request.datashopper.data.identities as DataShopperIdentity[]) {
-        try {
-          const leadId = await dsRepo.storeIdentity(identity, 'datashopper_webhook')
-
-          // Inngest disabled (Node.js runtime not available on this deployment)
-          // Original: inngest.send({ name: 'lead/created', data: { lead_id: leadId, workspace_id, source: 'datashopper' } })
-          console.log(`[Lead Ingest] DataShopper lead ${leadId} created (Inngest event skipped - Edge runtime)`)
-
-          if (request.auto_route) {
-            const routing = await routeLeadToAll(leadId)
-            results.push({
-              leadId,
-              matched: routing.matched,
-              assignedTo: routing.assignedTo,
-            })
-          } else {
-            results.push({ leadId, matched: false })
-          }
-        } catch (err) {
-          results.push({
-            leadId: '',
-            matched: false,
-            error: 'Failed to process identity',
-          })
-        }
-      }
     }
 
     // Handle batch leads
@@ -274,8 +229,6 @@ async function createLeadFromPush(
       state_code: leadData.state,
       postal_code: leadData.postal_code,
       country: leadData.country || 'US',
-      datashopper_id: leadData.datashopper_id,
-      datashopper_raw_data: leadData.raw_data || {},
       source: request.source_type || leadData.source || 'api',
       enrichment_status: 'pending',
       delivery_status: 'pending',

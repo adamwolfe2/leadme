@@ -65,22 +65,7 @@ export default function ApiTestPage() {
     setTesting(true)
     setResults([])
 
-    // Test 1: DataShopper Webhook
-    await testEndpoint('/api/webhooks/datashopper', 'POST', {
-      event_type: 'leads.single',
-      workspace_id: 'test-workspace',
-      lead: {
-        email: 'test@datashopper.com',
-        first_name: 'Test',
-        last_name: 'DataShopper',
-        company_name: 'DataShopper Test Co',
-        company_industry: 'Healthcare',
-        company_location: { state: 'CA', country: 'US' },
-        job_title: 'CEO'
-      }
-    })
-
-    // Test 2: Clay Webhook
+    // Test 1: Clay Webhook
     await testEndpoint('/api/webhooks/clay', 'POST', {
       event_type: 'enrichment.completed',
       clay_record_id: 'clay_test_123',

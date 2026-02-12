@@ -61,7 +61,7 @@ const apiRoutes = [
 
   // Webhooks
   { method: 'POST', path: '/api/webhooks/stripe', name: 'Stripe Webhook' },
-  { method: 'POST', path: '/api/webhooks/datashopper', name: 'DataShopper Webhook' },
+  { method: 'POST', path: '/api/webhooks/audiencelab/superpixel', name: 'AudienceLab Webhook' },
 
   // Inngest
   { method: 'ALL', path: '/api/inngest', name: 'Inngest Handler' },

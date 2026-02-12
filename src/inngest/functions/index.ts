@@ -156,7 +156,6 @@ export { monitorOperationsHealth } from './monitor-operations-health'
 // Bulk upload processing
 export {
   processBulkUpload,
-  enrichLeadFromDataShopper,
   importLeadFromAudienceLabs,
 } from '@/lib/inngest/functions/bulk-upload-processor'
 

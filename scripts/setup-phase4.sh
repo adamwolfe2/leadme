@@ -14,7 +14,6 @@ echo "📋 Checking environment variables..."
 required_vars=(
   "NEXT_PUBLIC_SUPABASE_URL"
   "SUPABASE_SERVICE_ROLE_KEY"
-  "DATASHOPPER_API_KEY"
   "CLAY_API_KEY"
   "RESEND_API_KEY"
   "INNGEST_EVENT_KEY"

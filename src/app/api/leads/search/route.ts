@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       saveLeads = true,
     } = body as {
       filters: LeadSearchFilters
-      provider?: 'datashopper' | 'audience_labs'
+      provider?: 'audience_labs'
       saveLeads?: boolean
     }
 
