@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/server'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
 import { validateCreditPurchase } from '@/lib/constants/credit-packages'
 import { getStripeClient } from '@/lib/stripe/client'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const purchaseSchema = z.object({
   packageId: z.string(),
@@ -107,7 +108,7 @@ export async function POST(request: NextRequest) {
       sessionId: session.id,
     })
   } catch (error) {
-    console.error('Failed to create credit purchase:', error)
+    safeError('Failed to create credit purchase:', error)
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request', details: error.errors },

@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getStripeClient } from '@/lib/stripe/client'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function POST(
   request: NextRequest,
@@ -94,7 +95,7 @@ export async function POST(
       paymentIntentId: paymentIntent.id,
     })
   } catch (error) {
-    console.error('[Lead Purchase] Error creating payment intent:', error)
+    safeError('[Lead Purchase] Error creating payment intent:', error)
     return NextResponse.json(
       { error: 'Failed to create payment intent' },
       { status: 500 }
