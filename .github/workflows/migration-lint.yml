@@ -1,0 +1,145 @@
+name: Migration Security Lint
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/migrations/**'
+
+jobs:
+  check-function-revokes:
+    name: Check REVOKE on CREATE FUNCTION
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint migration files for missing REVOKE statements
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # pg_trgm extension functions that should be excluded from REVOKE checks.
+          # These are created by CREATE EXTENSION pg_trgm and are owned by the extension,
+          # so revoking on them is unnecessary (and they may not appear as CREATE FUNCTION).
+          EXCLUDED_FUNCTIONS=(
+            similarity similarity_op similarity_dist
+            word_similarity word_similarity_op word_similarity_dist_op
+            word_similarity_commutator_op word_similarity_dist_commutator_op
+            strict_word_similarity strict_word_similarity_op strict_word_similarity_dist_op
+            strict_word_similarity_commutator_op strict_word_similarity_dist_commutator_op
+            set_limit show_limit show_trgm
+            gin_extract_query_trgm gin_extract_value_trgm gin_trgm_consistent gin_trgm_triconsistent
+            gtrgm_compress gtrgm_consistent gtrgm_decompress gtrgm_distance
+            gtrgm_in gtrgm_options gtrgm_out gtrgm_penalty gtrgm_picksplit
+            gtrgm_same gtrgm_union
+          )
+
+          is_excluded() {
+            local func_name="$1"
+            for excluded in "${EXCLUDED_FUNCTIONS[@]}"; do
+              if [[ "$func_name" == "$excluded" ]]; then
+                return 0
+              fi
+            done
+            return 1
+          }
+
+          errors=()
+          files_checked=0
+
+          # Only check migration SQL files changed in this PR
+          changed_files=$(git diff --name-only --diff-filter=ACMR "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" -- 'supabase/migrations/*.sql' || true)
+
+          if [[ -z "$changed_files" ]]; then
+            echo "No migration SQL files changed in this PR."
+            exit 0
+          fi
+
+          for file in $changed_files; do
+            if [[ ! -f "$file" ]]; then
+              continue
+            fi
+
+            files_checked=$((files_checked + 1))
+
+            # Normalize the file content: collapse multi-line CREATE FUNCTION into single lines
+            # so we can reliably extract function names even when the signature spans lines.
+            file_content=$(cat "$file")
+            file_upper=$(echo "$file_content" | tr '[:lower:]' '[:upper:]')
+
+            # Extract function names from CREATE [OR REPLACE] FUNCTION statements.
+            # Match: CREATE [OR REPLACE] FUNCTION [schema.]function_name(
+            # We use grep + sed to extract just the function name (without schema prefix).
+            func_names=$(echo "$file_content" \
+              | grep -i -oP 'CREATE\s+(OR\s+REPLACE\s+)?FUNCTION\s+(\w+\.)?(\w+)\s*\(' \
+              | sed -E 's/.*FUNCTION\s+(\w+\.)?([a-zA-Z_][a-zA-Z0-9_]*)\s*\(.*/\2/i' \
+              | sort -u || true)
+
+            if [[ -z "$func_names" ]]; then
+              continue
+            fi
+
+            for func_name in $func_names; do
+              # Skip excluded (extension) functions
+              if is_excluded "$func_name"; then
+                continue
+              fi
+
+              # Check for REVOKE EXECUTE ON FUNCTION <func_name> ... FROM PUBLIC
+              # The function name in the REVOKE may or may not include argument types.
+              # Match patterns like:
+              #   REVOKE EXECUTE ON FUNCTION func_name FROM PUBLIC
+              #   REVOKE EXECUTE ON FUNCTION func_name(args) FROM PUBLIC
+              #   REVOKE EXECUTE ON FUNCTION public.func_name FROM PUBLIC
+              #   REVOKE EXECUTE ON FUNCTION public.func_name(args) FROM PUBLIC
+              has_revoke_public=$(echo "$file_content" \
+                | grep -ciP "REVOKE\s+EXECUTE\s+ON\s+FUNCTION\s+(\w+\.)?${func_name}\b[^;]*FROM\s+PUBLIC" || true)
+
+              # Check for REVOKE ... FROM anon
+              has_revoke_anon=$(echo "$file_content" \
+                | grep -ciP "REVOKE\s+EXECUTE\s+ON\s+FUNCTION\s+(\w+\.)?${func_name}\b[^;]*FROM\s+anon" || true)
+
+              # Also check for dynamic REVOKE via format() that would cover this function
+              # (e.g., bulk revoke loops in hardening migrations). We look for patterns like:
+              #   REVOKE EXECUTE ON FUNCTION public.%I ... FROM PUBLIC
+              has_dynamic_revoke=$(echo "$file_content" \
+                | grep -ciP "REVOKE\s+EXECUTE\s+ON\s+FUNCTION\s+(\w+\.)?%I.*FROM\s+(PUBLIC|anon)" || true)
+
+              missing=""
+              if [[ "$has_revoke_public" -eq 0 && "$has_dynamic_revoke" -eq 0 ]]; then
+                missing="PUBLIC"
+              fi
+              if [[ "$has_revoke_anon" -eq 0 && "$has_dynamic_revoke" -eq 0 ]]; then
+                if [[ -n "$missing" ]]; then
+                  missing="$missing, anon"
+                else
+                  missing="anon"
+                fi
+              fi
+
+              if [[ -n "$missing" ]]; then
+                errors+=("  - ${file}: function '${func_name}' is missing REVOKE FROM ${missing}")
+              fi
+            done
+          done
+
+          echo "Checked ${files_checked} migration file(s)."
+
+          if [[ ${#errors[@]} -gt 0 ]]; then
+            echo ""
+            echo "::error::Missing REVOKE EXECUTE statements detected!"
+            echo ""
+            echo "The following functions are missing REVOKE statements:"
+            echo "Supabase auto-grants EXECUTE to PUBLIC on new functions."
+            echo "Every CREATE FUNCTION must include:"
+            echo "  REVOKE EXECUTE ON FUNCTION <name> FROM PUBLIC;"
+            echo "  REVOKE EXECUTE ON FUNCTION <name> FROM anon;"
+            echo ""
+            for err in "${errors[@]}"; do
+              echo "$err"
+            done
+            echo ""
+            echo "See: supabase/migrations/README.md for details on the REVOKE requirement."
+            exit 1
+          fi
+
+          echo "All functions have proper REVOKE statements."
