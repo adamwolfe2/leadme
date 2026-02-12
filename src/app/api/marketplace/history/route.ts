@@ -1,6 +1,8 @@
 // Marketplace Purchase History API
 // Get purchase history for the current workspace
 
+export const runtime = 'edge'
+
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'

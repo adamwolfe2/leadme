@@ -1,7 +1,8 @@
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth/admin'
-import { inngest } from '@/inngest/client'
 import { parse } from 'csv-parse/sync'
 
 // Industry mapping
@@ -219,23 +220,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Emit lead/created events for all uploaded leads (non-blocking)
+    // Inngest disabled (Node.js runtime not available on this deployment)
+    // Original: inngest.send(createdLeads.map(lead => ({ name: 'lead/created', data: { lead_id, workspace_id, source } })))
     if (createdLeads.length > 0) {
-      try {
-        const events = createdLeads.map((lead) => ({
-          name: 'lead/created' as const,
-          data: {
-            lead_id: lead.id,
-            workspace_id: lead.workspace_id,
-            source: source,
-          },
-        }))
-        inngest.send(events).catch((err: unknown) => {
-          console.error('[Admin Bulk Upload] Failed to emit lead/created events:', err)
-        })
-      } catch {
-        // Best-effort: don't fail upload if event emission fails
-      }
+      console.log(`[Admin Bulk Upload] ${createdLeads.length} leads created (Inngest events skipped - Edge runtime)`)
     }
 
     return NextResponse.json({

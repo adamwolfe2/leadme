@@ -1,6 +1,8 @@
 // Client Profile Detail API Routes
 // Get, update, and delete a specific client profile
 
+export const runtime = 'edge'
+
 import { type NextRequest } from 'next/server'
 import { ClientProfileRepository } from '@/lib/repositories/client-profile.repository'
 import { getCurrentUser } from '@/lib/auth/helpers'

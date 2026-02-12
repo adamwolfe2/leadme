@@ -5,6 +5,8 @@
  * Allows authenticated users to change their password.
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'

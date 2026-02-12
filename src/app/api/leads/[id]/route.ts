@@ -3,6 +3,8 @@
 // PUT /api/leads/[id] - Update lead
 // DELETE /api/leads/[id] - Delete lead
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { LeadRepository } from '@/lib/repositories/lead.repository'

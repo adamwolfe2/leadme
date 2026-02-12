@@ -2,6 +2,8 @@
 // GET /api/team/invites - Get pending invites
 // POST /api/team/invites - Create a new invite
 
+export const runtime = 'edge'
+
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { Resend } from 'resend'

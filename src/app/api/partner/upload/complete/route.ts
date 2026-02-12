@@ -1,10 +1,11 @@
 // Partner Upload Completion - Triggers Background Processing
 // Called after file is uploaded to storage, triggers Inngest job
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { z } from 'zod'
-import { inngest } from '@/inngest/client'
 
 const completeSchema = z.object({
   batch_id: z.string().uuid(),
@@ -95,15 +96,9 @@ export async function POST(request: NextRequest) {
       })
       .eq('id', batch_id)
 
-    // Trigger background processing job
-    await inngest.send({
-      name: 'partner/upload.process',
-      data: {
-        batch_id: batch_id,
-        partner_id: partner.id,
-        storage_path: batch.storage_path,
-      },
-    })
+    // Inngest disabled (Node.js runtime not available on this deployment)
+    // Original: await inngest.send({ name: 'partner/upload.process', data: { batch_id, partner_id, storage_path } })
+    console.log(`[Partner Upload Complete] Batch ${batch_id} ready for processing (Inngest event skipped - Edge runtime)`)
 
     return NextResponse.json({
       success: true,

@@ -5,9 +5,10 @@
  * Receives lead data from DataShopper and routes to appropriate workspace.
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import crypto from 'crypto'
 
 // Types for DataShopper webhook payload
 interface DataShopperLead {
@@ -31,28 +32,55 @@ interface DataShopperWebhookPayload {
 }
 
 /**
+ * Compute HMAC-SHA256 hex digest using Web Crypto API
+ */
+async function hmacSha256Hex(data: string, secret: string): Promise<string> {
+  const encoder = new TextEncoder()
+  const key = await crypto.subtle.importKey(
+    'raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  )
+  const sig = await crypto.subtle.sign('HMAC', key, encoder.encode(data))
+  return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+/**
+ * Compute SHA-256 hex digest using Web Crypto API
+ */
+async function sha256Hex(data: string): Promise<string> {
+  const encoded = new TextEncoder().encode(data)
+  const hash = await crypto.subtle.digest('SHA-256', encoded)
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+/**
+ * Constant-time string comparison to prevent timing attacks
+ */
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false
+  let result = 0
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  }
+  return result === 0
+}
+
+/**
  * Verify DataShopper webhook signature
  */
-function verifySignature(
+async function verifySignature(
   payload: string,
   signature: string | null,
   secret: string
-): boolean {
+): Promise<boolean> {
   if (!signature) {
     return false
   }
 
   // DataShopper uses HMAC-SHA256 signature
-  const expectedSignature = crypto
-    .createHmac('sha256', secret)
-    .update(payload)
-    .digest('hex')
+  const expectedSignature = await hmacSha256Hex(payload, secret)
 
   try {
-    return crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expectedSignature)
-    )
+    return timingSafeEqual(signature, expectedSignature)
   } catch {
     return false
   }
@@ -80,7 +108,7 @@ export async function POST(req: NextRequest) {
     const signature = req.headers.get('x-datashopper-signature') ||
                       req.headers.get('x-webhook-signature')
 
-    if (!verifySignature(rawBody, signature, webhookSecret)) {
+    if (!(await verifySignature(rawBody, signature, webhookSecret))) {
       console.error('[DataShopper Webhook] Invalid signature')
       return NextResponse.json(
         { error: 'Invalid signature' },
@@ -135,10 +163,7 @@ export async function POST(req: NextRequest) {
       payload.timestamp || '',
     ].filter(Boolean).join('|')
 
-    idempotencyKey = crypto
-      .createHash('sha256')
-      .update(idempotencyData)
-      .digest('hex')
+    idempotencyKey = await sha256Hex(idempotencyData)
 
     // Check if this webhook has already been processed
     const { data: existingKey } = await supabase

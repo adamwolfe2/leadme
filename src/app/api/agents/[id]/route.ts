@@ -1,6 +1,8 @@
 // Agent Detail API Routes
 // Get, update, and delete a specific agent
 
+export const runtime = 'edge'
+
 import { NextResponse, type NextRequest } from 'next/server'
 import { AgentRepository } from '@/lib/repositories/agent.repository'
 import { getCurrentUser } from '@/lib/auth/helpers'

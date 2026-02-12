@@ -5,11 +5,21 @@
  * Manages webhook configuration for workspaces.
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { z } from 'zod'
-import crypto from 'crypto'
+
+async function hmacSha256Hex(data: string, secret: string): Promise<string> {
+  const encoder = new TextEncoder()
+  const key = await crypto.subtle.importKey(
+    'raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  )
+  const sig = await crypto.subtle.sign('HMAC', key, encoder.encode(data))
+  return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
 
 // Request validation schemas
 const updateWebhookSchema = z.object({
@@ -161,7 +171,7 @@ export async function POST(req: NextRequest) {
         .single()
 
       if (!existing?.webhook_secret) {
-        updateData.webhook_secret = crypto.randomBytes(32).toString('hex')
+        updateData.webhook_secret = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => b.toString(16).padStart(2, '0')).join('')
         isNewSecret = true
       }
     }
@@ -255,10 +265,7 @@ export async function PUT(req: NextRequest) {
     // Generate signature
     const timestamp = Math.floor(Date.now() / 1000)
     const signaturePayload = `${timestamp}.${payloadString}`
-    const signature = crypto
-      .createHmac('sha256', workspace?.webhook_secret || 'test')
-      .update(signaturePayload)
-      .digest('hex')
+    const signature = await hmacSha256Hex(signaturePayload, workspace?.webhook_secret || 'test')
 
     // Send test webhook
     const controller = new AbortController()
@@ -324,7 +331,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     // Generate new secret
-    const newSecret = crypto.randomBytes(32).toString('hex')
+    const newSecret = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => b.toString(16).padStart(2, '0')).join('')
 
     const { error } = await supabase
       .from('workspaces')

@@ -1,6 +1,8 @@
 // Trends API
 // GET /api/trends - Get trending topics (gainers and losers)
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { TopicSearchService } from '@/lib/services/topic-search.service'

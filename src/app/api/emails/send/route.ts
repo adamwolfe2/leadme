@@ -1,6 +1,8 @@
 // Email Send API
 // Send transactional emails via Resend
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { sendEmail, createEmailTemplate } from '@/lib/email/resend-client'

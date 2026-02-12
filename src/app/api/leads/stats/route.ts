@@ -1,6 +1,8 @@
 // Leads Stats API
 // GET /api/leads/stats - Get lead statistics
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { LeadRepository } from '@/lib/repositories/lead.repository'

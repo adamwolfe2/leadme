@@ -1,6 +1,8 @@
 // Partner Settings API Route
 // PATCH /api/partner/settings - Update partner payout settings
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createAdminClient } from '@/lib/supabase/admin'

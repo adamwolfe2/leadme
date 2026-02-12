@@ -1,6 +1,8 @@
 // Referral Code Validation API
 // Validate a referral code and return referrer info
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { lookupReferralCode } from '@/lib/services/referral.service'
 

@@ -1,6 +1,8 @@
 // Team Members API
 // GET /api/team/members - Get all team members in workspace
 
+export const runtime = 'edge'
+
 import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'

@@ -9,6 +9,8 @@
  * Requires authenticated user with workspace membership.
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createServerClient } from '@supabase/ssr'
@@ -17,7 +19,12 @@ import { ImportRequestSchema, ExportRowSchema } from '@/lib/audiencelab/schemas'
 import { inngest } from '@/inngest/client'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { retryFetch } from '@/lib/utils/retry'
-import crypto from 'crypto'
+
+async function sha256Hex(data: string): Promise<string> {
+  const encoded = new TextEncoder().encode(data)
+  const hash = await crypto.subtle.digest('SHA-256', encoded)
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
 
 const LOG_PREFIX = '[AL Import]'
 const MAX_ROWS = 50000
@@ -70,9 +77,7 @@ export async function POST(request: NextRequest) {
     const workspaceId = parsed.data.workspaceId || userData.workspace_id
 
     // Idempotency: check if this import was already started
-    const importHash = crypto.createHash('sha256')
-      .update(`${fileUrl}|${audienceId || ''}|${workspaceId}`)
-      .digest('hex')
+    const importHash = await sha256Hex(`${fileUrl}|${audienceId || ''}|${workspaceId}`)
 
     const { data: existingJob } = await supabase
       .from('audiencelab_import_jobs')

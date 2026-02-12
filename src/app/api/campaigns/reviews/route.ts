@@ -1,6 +1,8 @@
 // Campaign Reviews Queue API Route
 // Get all pending reviews for the workspace (review queue)
 
+export const runtime = 'edge'
+
 import { type NextRequest } from 'next/server'
 import { CampaignRepository } from '@/lib/repositories/campaign.repository'
 import { getCurrentUser } from '@/lib/auth/helpers'

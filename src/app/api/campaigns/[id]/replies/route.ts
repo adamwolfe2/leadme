@@ -1,6 +1,8 @@
 // Campaign Replies API Routes
 // GET /api/campaigns/[id]/replies - List replies for a campaign
 
+export const runtime = 'edge'
+
 import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'

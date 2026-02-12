@@ -4,6 +4,8 @@
  * POST /api/crm/activities - Create a new activity
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { ActivityRepository } from '@/lib/repositories/activity.repository'

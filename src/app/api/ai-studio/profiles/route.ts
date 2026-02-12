@@ -3,6 +3,8 @@
  * GET /api/ai-studio/profiles - List customer profiles for a workspace
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'

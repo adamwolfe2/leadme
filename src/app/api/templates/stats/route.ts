@@ -1,6 +1,8 @@
 // Template Stats API Route
 // Get template performance statistics
 
+export const runtime = 'edge'
+
 import { type NextRequest } from 'next/server'
 import { TemplateRepository } from '@/lib/repositories/template.repository'
 import { getCurrentUser } from '@/lib/auth/helpers'

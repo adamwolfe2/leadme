@@ -3,6 +3,8 @@
  * Get and update workspace branding (colors, logo)
  */
 
+export const runtime = 'edge'
+
 import { type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, success, badRequest } from '@/lib/utils/api-error-handler'

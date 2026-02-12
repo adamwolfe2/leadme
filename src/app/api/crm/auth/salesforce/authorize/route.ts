@@ -6,10 +6,11 @@
  * Stores credentials in crm_connections table for use by SalesforceService.
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
-import crypto from 'crypto'
 
 // Salesforce OAuth Configuration
 const SF_OAUTH_URL = 'https://login.salesforce.com/services/oauth2/authorize'
@@ -78,7 +79,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Generate state parameter for CSRF protection
-    const state = crypto.randomBytes(32).toString('hex')
+    const state = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => b.toString(16).padStart(2, '0')).join('')
 
     // Store state in cookie for verification
     const cookieStore = await cookies()

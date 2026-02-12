@@ -4,6 +4,8 @@
  * POST /api/crm/companies - Create a new company
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { CompanyRepository } from '@/lib/repositories/company.repository'

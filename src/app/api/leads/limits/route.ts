@@ -3,6 +3,8 @@
  * GET /api/leads/limits - Get current workspace lead limits and usage
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { getLeadProviderService } from '@/lib/services/lead-provider.service'

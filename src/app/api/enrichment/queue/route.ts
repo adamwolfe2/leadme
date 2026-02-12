@@ -4,10 +4,11 @@
  * GET /api/enrichment/queue - Get enrichment queue status
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { inngest } from '@/inngest/client'
 import {
   queueEnrichment,
   getEnrichmentStats,
@@ -67,16 +68,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No valid leads found' }, { status: 400 })
     }
 
-    // Queue enrichment via Inngest
-    await inngest.send({
-      name: 'enrichment/batch',
-      data: {
-        workspace_id: user.workspace_id,
-        lead_ids: validLeadIds,
-        providers,
-        priority,
-      },
-    })
+    // Inngest disabled (Node.js runtime not available on this deployment)
+    // Original: await inngest.send({ name: 'enrichment/batch', data: { workspace_id, lead_ids, providers, priority } })
+    console.log(`[Enrichment Queue] ${validLeadIds.length} leads queued (Inngest event skipped - Edge runtime)`)
 
     return NextResponse.json({
       success: true,

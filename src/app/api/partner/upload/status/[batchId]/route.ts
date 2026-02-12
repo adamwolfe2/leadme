@@ -1,6 +1,8 @@
 // Partner Upload Status - Polling Endpoint
 // Returns current processing status and progress for an upload batch
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 

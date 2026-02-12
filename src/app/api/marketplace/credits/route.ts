@@ -1,6 +1,8 @@
 // Marketplace Credits API
 // Get current workspace credit balance
 
+export const runtime = 'edge'
+
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'

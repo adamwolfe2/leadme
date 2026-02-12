@@ -1,6 +1,8 @@
 // Admin Lead Approve API
 // Approve a lead for inclusion in marketplace
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 

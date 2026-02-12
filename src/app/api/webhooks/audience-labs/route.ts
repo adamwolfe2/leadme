@@ -4,7 +4,9 @@
  * This endpoint has been replaced by:
  * - /api/webhooks/audiencelab/superpixel (SuperPixel real-time events)
  * - /api/webhooks/audiencelab/audiencesync (AudienceSync HTTP destination)
- * - /api/audiencelab/import (batch export imports)
+ * - /api/audiencelab/export const runtime = 'edge'
+
+import (batch export imports)
  *
  * This stub remains to return a helpful error if anything still hits this path.
  */

@@ -11,6 +11,8 @@
  * Automatically enriches and routes leads to matching clients.
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'
@@ -18,7 +20,6 @@ import { createMatchingEngine } from '@/lib/services/matching-engine.service'
 import { createUserLeadRouter } from '@/lib/services/user-lead-router.service'
 import { DataShopperRepository } from '@/lib/repositories/datashopper.repository'
 import { createClient } from '@/lib/supabase/server'
-import { inngest } from '@/inngest/client'
 import type { DataShopperIdentity } from '@/types/datashopper.types'
 
 // Schema for direct lead push
@@ -150,21 +151,9 @@ export async function POST(req: NextRequest) {
         try {
           const leadId = await dsRepo.storeIdentity(identity, 'datashopper_webhook')
 
-          // Emit lead/created event for notifications (non-blocking)
-          try {
-            inngest.send({
-              name: 'lead/created',
-              data: {
-                lead_id: leadId,
-                workspace_id: workspaceId,
-                source: 'datashopper',
-              },
-            }).catch((err: unknown) => {
-              console.error('[Lead Ingest] Failed to emit lead/created event for DataShopper identity:', err)
-            })
-          } catch {
-            // Best-effort
-          }
+          // Inngest disabled (Node.js runtime not available on this deployment)
+          // Original: inngest.send({ name: 'lead/created', data: { lead_id: leadId, workspace_id, source: 'datashopper' } })
+          console.log(`[Lead Ingest] DataShopper lead ${leadId} created (Inngest event skipped - Edge runtime)`)
 
           if (request.auto_route) {
             const routing = await routeLeadToAll(leadId)
@@ -312,21 +301,9 @@ async function createLeadFromPush(
     })
   }
 
-  // Emit lead/created event for notifications (non-blocking)
-  try {
-    inngest.send({
-      name: 'lead/created',
-      data: {
-        lead_id: data.id,
-        workspace_id: workspaceId,
-        source: request.source_type || leadData.source || 'api',
-      },
-    }).catch((err: unknown) => {
-      console.error('[Lead Ingest] Failed to emit lead/created event:', err)
-    })
-  } catch {
-    // Best-effort: don't fail lead creation if event emission fails
-  }
+  // Inngest disabled (Node.js runtime not available on this deployment)
+  // Original: inngest.send({ name: 'lead/created', data: { lead_id: data.id, workspace_id, source } })
+  console.log(`[Lead Ingest] Lead ${data.id} created (Inngest event skipped - Edge runtime)`)
 
   return data.id
 }

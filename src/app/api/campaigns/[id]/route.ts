@@ -1,6 +1,8 @@
 // Campaign Detail API Routes
 // Get, update, and delete a specific campaign
 
+export const runtime = 'edge'
+
 import { type NextRequest } from 'next/server'
 import { CampaignRepository } from '@/lib/repositories/campaign.repository'
 import { getCurrentUser } from '@/lib/auth/helpers'
@@ -11,7 +13,6 @@ import {
   isValidTransition,
   type CampaignStatus,
 } from '@/lib/services/campaign/campaign-state-machine'
-import { inngest } from '@/inngest/client'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -111,17 +112,9 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
         return handleApiError(new Error(transitionResult.error))
       }
 
-      // Emit status change event for downstream processing
-      await inngest.send({
-        name: 'campaign/status-changed',
-        data: {
-          campaign_id: id,
-          workspace_id: user.workspace_id,
-          old_status: currentStatus,
-          new_status: newStatus,
-          triggered_by: user.id,
-        },
-      })
+      // Inngest disabled (Node.js runtime not available on this deployment)
+      // Original: await inngest.send({ name: 'campaign/status-changed', data: { campaign_id, workspace_id, old_status, new_status, triggered_by } })
+      console.log(`[Campaign] Status changed ${currentStatus} → ${newStatus} for campaign ${id} (Inngest event skipped - Edge runtime)`)
 
       // Remove status from validatedData to avoid double update
       delete validatedData.status

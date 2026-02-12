@@ -2,6 +2,8 @@
 // GET /api/users/me - Get current user info including credits
 // PATCH /api/users/me - Update user profile
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'

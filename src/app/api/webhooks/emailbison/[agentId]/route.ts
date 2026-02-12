@@ -1,11 +1,11 @@
 // EmailBison Webhook Handler
 // Receives webhook events from EmailBison and processes them
 
+export const runtime = 'edge'
+
 import { NextResponse, type NextRequest } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import crypto from 'crypto'
 import {
-  verifyWebhookSignature,
   parseWebhookEvent,
   isReplyReceivedEvent,
   isLeadUnsubscribedEvent,
@@ -19,6 +19,25 @@ interface RouteContext {
 
 // Webhook secret from environment
 const WEBHOOK_SECRET = process.env.EMAILBISON_WEBHOOK_SECRET || ''
+
+// Edge-compatible HMAC-SHA256 verification
+async function verifySignatureEdge(payload: string, signature: string, secret: string): Promise<boolean> {
+  const encoder = new TextEncoder()
+  const key = await crypto.subtle.importKey(
+    'raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  )
+  const sig = await crypto.subtle.sign('HMAC', key, encoder.encode(payload))
+  const expected = Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
+  const provided = signature.replace(/^sha256=/, '')
+  return expected === provided
+}
+
+// Edge-compatible SHA-256 hash
+async function sha256Hex(data: string): Promise<string> {
+  const encoded = new TextEncoder().encode(data)
+  const hash = await crypto.subtle.digest('SHA-256', encoded)
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
 
 export async function POST(request: NextRequest, context: RouteContext) {
   const { agentId } = await context.params
@@ -39,10 +58,10 @@ export async function POST(request: NextRequest, context: RouteContext) {
       )
     }
 
-    // Verify signature - REQUIRED for security
-    const verification = verifyWebhookSignature(rawBody, signature, WEBHOOK_SECRET)
-    if (!verification.isValid) {
-      console.error('[EmailBison Webhook] Signature verification failed:', verification.error)
+    // Verify signature - REQUIRED for security (Edge-compatible)
+    const isValid = await verifySignatureEdge(rawBody, signature, WEBHOOK_SECRET)
+    if (!isValid) {
+      console.error('[EmailBison Webhook] Signature verification failed')
       return NextResponse.json(
         { error: 'Invalid signature' },
         { status: 401 }
@@ -84,10 +103,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       eventData.timestamp || new Date().toISOString(),
     ].filter(Boolean).join('|')
 
-    idempotencyKey = crypto
-      .createHash('sha256')
-      .update(idempotencyData)
-      .digest('hex')
+    idempotencyKey = await sha256Hex(idempotencyData)
 
     // Check if this webhook has already been processed
     const { data: existingKey } = await supabase

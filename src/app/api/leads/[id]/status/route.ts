@@ -2,6 +2,8 @@
 // GET /api/leads/[id]/status - Get status history for a lead
 // PUT /api/leads/[id]/status - Update lead status
 
+export const runtime = 'edge'
+
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'

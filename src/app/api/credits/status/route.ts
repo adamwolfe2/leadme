@@ -1,6 +1,8 @@
 // Credits Status API
 // Returns current credit status for authenticated user
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { protectRoute, applyProtectionHeaders, PROTECTION_PRESETS } from '@/lib/middleware/api-protection'
 import { CreditService } from '@/lib/services/credit.service'

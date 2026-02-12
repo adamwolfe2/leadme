@@ -3,13 +3,14 @@
  * Import leads into a campaign from CSV, paste, or existing leads
  */
 
+export const runtime = 'edge'
+
 import { NextResponse, type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { handleApiError, unauthorized, notFound, success, badRequest } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 import { checkBulkSuppression } from '@/lib/services/campaign/suppression.service'
-import { inngest } from '@/inngest/client'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -146,15 +147,10 @@ export async function POST(request: NextRequest, context: RouteContext) {
       })
     }
 
-    // Trigger enrichment for newly added leads
+    // Inngest disabled (Node.js runtime not available on this deployment)
+    // Original: await inngest.send({ name: 'campaign/batch-enrich', data: { campaign_id, workspace_id } })
     if (result.added > 0 && campaign.status === 'active') {
-      await inngest.send({
-        name: 'campaign/batch-enrich',
-        data: {
-          campaign_id: campaignId,
-          workspace_id: user.workspace_id,
-        },
-      })
+      console.log(`[Campaign Lead Import] ${result.added} leads added to campaign ${campaignId} (Inngest enrichment skipped - Edge runtime)`)
     }
 
     return success(result)

@@ -1,6 +1,8 @@
 // Team Invite Detail API
 // DELETE /api/team/invites/[id] - Cancel an invite
 
+export const runtime = 'edge'
+
 import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'

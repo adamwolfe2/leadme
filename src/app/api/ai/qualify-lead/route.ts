@@ -3,6 +3,8 @@
  * POST /api/ai/qualify-lead - Qualify a lead using Claude AI
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'

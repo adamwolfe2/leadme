@@ -1,4 +1,6 @@
 // API endpoint for marketplace statistics
+export const runtime = 'edge'
+
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 

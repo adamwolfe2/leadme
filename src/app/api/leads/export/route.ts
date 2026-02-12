@@ -1,6 +1,8 @@
 // Leads Export API
 // POST /api/leads/export - Export leads to CSV
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { LeadRepository } from '@/lib/repositories/lead.repository'

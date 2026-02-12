@@ -1,16 +1,17 @@
 // API Key Generation Route
 // POST /api/integrations/api-key - Generate or regenerate an API key
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
-import crypto from 'crypto'
 
 /**
  * Generate a secure API key with a recognizable prefix
  */
 function generateApiKey(): string {
-  const randomBytes = crypto.randomBytes(32).toString('hex')
+  const randomBytes = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => b.toString(16).padStart(2, '0')).join('')
   return `csk_${randomBytes}`
 }
 

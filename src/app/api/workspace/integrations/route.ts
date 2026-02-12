@@ -3,6 +3,8 @@
  * Manage external service integrations
  */
 
+export const runtime = 'edge'
+
 import { NextResponse, type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, success, badRequest, notFound } from '@/lib/utils/api-error-handler'

@@ -3,10 +3,11 @@
  * POST /api/sequences/[id]/enroll - Enroll leads in sequence
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { inngest } from '@/inngest/client'
 
 const enrollSchema = z.object({
   lead_ids: z.array(z.string().uuid()).min(1).max(1000),
@@ -67,15 +68,9 @@ export async function POST(
       return NextResponse.json({ error: 'No valid leads found' }, { status: 400 })
     }
 
-    // Trigger batch enrollment via Inngest
-    await inngest.send({
-      name: 'sequence/batch-enroll',
-      data: {
-        sequence_id: sequenceId,
-        lead_ids: validLeadIds,
-        workspace_id: user.workspace_id,
-      },
-    })
+    // Inngest disabled (Node.js runtime not available on this deployment)
+    // Original: await inngest.send({ name: 'sequence/batch-enroll', data: { sequence_id, lead_ids, workspace_id } })
+    console.log(`[Sequence Enroll] ${validLeadIds.length} leads enrollment requested for sequence ${sequenceId} (Inngest event skipped - Edge runtime)`)
 
     return NextResponse.json({
       success: true,

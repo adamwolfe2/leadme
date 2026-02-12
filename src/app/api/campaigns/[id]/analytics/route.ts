@@ -1,6 +1,8 @@
 // Campaign Analytics API Route
 // GET /api/campaigns/[id]/analytics - Get campaign performance metrics
 
+export const runtime = 'edge'
+
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'

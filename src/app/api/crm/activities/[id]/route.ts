@@ -5,6 +5,8 @@
  * DELETE /api/crm/activities/[id] - Delete an activity
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { ActivityRepository } from '@/lib/repositories/activity.repository'

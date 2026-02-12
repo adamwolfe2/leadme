@@ -1,3 +1,5 @@
+export const runtime = 'edge'
+
 import { NextResponse } from 'next/server'
 import { WaitlistRepository } from '@/lib/repositories/waitlist.repository'
 import { createClient } from '@/lib/supabase/server'

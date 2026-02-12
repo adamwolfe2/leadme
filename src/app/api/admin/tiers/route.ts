@@ -5,6 +5,8 @@
  * PATCH /api/admin/tiers/override - Set tier overrides for workspace
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin, logAdminAction } from '@/lib/auth/admin'
 import { createClient } from '@/lib/supabase/server'

@@ -3,6 +3,8 @@
  * View and manage failed background jobs
  */
 
+export const runtime = 'edge'
+
 import { NextResponse, type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { requireAdmin } from '@/lib/auth/admin'

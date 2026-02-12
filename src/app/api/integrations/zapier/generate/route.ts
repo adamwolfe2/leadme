@@ -6,7 +6,8 @@
  * Zapier's "Webhooks by Zapier" trigger. Requires Pro plan.
  */
 
-import crypto from 'crypto'
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, forbidden } from '@/lib/utils/api-error-handler'
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 3. Generate a unique, unguessable webhook token
-    const webhookToken = crypto.randomBytes(32).toString('hex')
+    const webhookToken = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => b.toString(16).padStart(2, '0')).join('')
     const webhookUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/integrations/zapier/inbound/${webhookToken}`
 
     const supabase = createAdminClient()

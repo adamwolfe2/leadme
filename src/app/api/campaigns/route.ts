@@ -1,6 +1,8 @@
 // Campaigns API Routes
 // List all campaigns and create new campaigns
 
+export const runtime = 'edge'
+
 import { type NextRequest, NextResponse } from 'next/server'
 import { CampaignRepository } from '@/lib/repositories/campaign.repository'
 import { getCurrentUser } from '@/lib/auth/helpers'

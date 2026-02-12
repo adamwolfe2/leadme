@@ -4,6 +4,8 @@
  * POST /api/crm/contacts - Create a new contact
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { ContactRepository } from '@/lib/repositories/contact.repository'

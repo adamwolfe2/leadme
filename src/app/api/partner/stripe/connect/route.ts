@@ -1,6 +1,8 @@
 // Partner Stripe Connect API
 // Creates Stripe Connect account link for partner onboarding
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { PartnerRepository } from '@/lib/repositories/partner.repository'

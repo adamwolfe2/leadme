@@ -3,6 +3,8 @@
  * Admin endpoint to mark a failed operation as resolved
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { resolveFailedOperation } from '@/lib/monitoring/failed-operations'

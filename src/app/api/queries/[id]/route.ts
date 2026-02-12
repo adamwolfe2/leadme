@@ -1,5 +1,7 @@
 // Query Detail API Route - Get, Update, Delete
 
+export const runtime = 'edge'
+
 import { NextResponse, type NextRequest } from 'next/server'
 import { QueryRepository } from '@/lib/repositories/query.repository'
 import { getCurrentUser } from '@/lib/auth/helpers'

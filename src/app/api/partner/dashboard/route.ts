@@ -1,6 +1,8 @@
 // Partner Dashboard API Route
 // Returns dashboard statistics for the authenticated partner
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { getPartnerDashboardStats } from '@/lib/auth/partner'

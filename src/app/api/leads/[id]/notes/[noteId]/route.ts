@@ -2,6 +2,8 @@
 // PATCH /api/leads/[id]/notes/[noteId] - Update a note
 // DELETE /api/leads/[id]/notes/[noteId] - Delete a note
 
+export const runtime = 'edge'
+
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'

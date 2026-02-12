@@ -1,6 +1,8 @@
 // Bulk Lead Actions API
 // POST /api/leads/bulk - Perform bulk actions on leads
 
+export const runtime = 'edge'
+
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'

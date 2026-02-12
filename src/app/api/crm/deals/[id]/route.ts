@@ -5,6 +5,8 @@
  * DELETE /api/crm/deals/[id] - Delete a deal
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { DealRepository } from '@/lib/repositories/deal.repository'

@@ -2,10 +2,11 @@
 // For large files (>5MB), returns a signed URL for direct upload to storage
 // Then triggers background processing via Inngest
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { z } from 'zod'
-import { inngest } from '@/inngest/client'
 
 const SMALL_FILE_THRESHOLD = 5 * 1024 * 1024 // 5MB - files under this use direct upload
 const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB max

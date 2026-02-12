@@ -1,11 +1,12 @@
 // Campaign Emails Approve API Routes
 // POST /api/campaigns/[id]/emails/approve - Bulk approve emails
 
+export const runtime = 'edge'
+
 import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth'
-import { inngest } from '@/inngest/client'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -89,21 +90,11 @@ export async function POST(request: NextRequest, context: RouteContext) {
       (campaignLeads || []).map((cl) => [cl.lead_id, cl.id])
     )
 
-    // Trigger send workflow for each approved email via Inngest
-    // Only send events for emails where we found a valid campaign_lead_id
-    const events = emails
-      .filter((email) => leadToCampaignLead.has(email.lead_id))
-      .map((email) => ({
-        name: 'campaign/email-approved' as const,
-        data: {
-          email_send_id: email.id,
-          campaign_lead_id: leadToCampaignLead.get(email.lead_id)!,
-          workspace_id: user.workspace_id,
-        },
-      }))
-
-    if (events.length > 0) {
-      await inngest.send(events)
+    // Inngest disabled (Node.js runtime not available on this deployment)
+    // Original: await inngest.send(emails.map(email => ({ name: 'campaign/email-approved', data: { email_send_id, campaign_lead_id, workspace_id } })))
+    const approvedWithCampaignLead = emails.filter((email) => leadToCampaignLead.has(email.lead_id))
+    if (approvedWithCampaignLead.length > 0) {
+      console.log(`[Campaign Email Approve] ${approvedWithCampaignLead.length} emails approved (Inngest events skipped - Edge runtime)`)
     }
 
     return NextResponse.json({

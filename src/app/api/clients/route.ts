@@ -5,6 +5,8 @@
  * POST /api/clients - Create a new client profile
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'

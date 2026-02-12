@@ -1,9 +1,10 @@
 // AI Audit Submission API Route
 // Public endpoint for AI Readiness Audit form submissions (no auth required)
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { inngest } from '@/inngest/client'
 import { handleApiError, created } from '@/lib/utils/api-error-handler'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 
@@ -138,11 +139,9 @@ export async function POST(request: NextRequest) {
     if (validated.utm_medium?.trim()) eventData.utm_medium = validated.utm_medium.trim()
     if (validated.utm_campaign?.trim()) eventData.utm_campaign = validated.utm_campaign.trim()
 
-    // Emit event for Inngest to process asynchronously
-    await inngest.send({
-      name: 'ai-audit/submitted',
-      data: eventData as any,
-    })
+    // Inngest disabled (Node.js runtime not available on this deployment)
+    // Original: await inngest.send({ name: 'ai-audit/submitted', data: eventData })
+    console.log(`[AI Audit] Submission received for ${eventData.email} (Inngest event skipped - Edge runtime)`)
 
     // Non-blocking Slack notification
     sendSlackAlert({

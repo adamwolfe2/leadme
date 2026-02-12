@@ -5,6 +5,8 @@
  * Preview and validate CSV data before importing to database.
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { leadDataProcessor } from '@/lib/services/lead-data-processor.service'

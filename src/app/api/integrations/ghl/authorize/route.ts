@@ -5,10 +5,11 @@
  * Initiates the OAuth flow for connecting GoHighLevel accounts.
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
-import crypto from 'crypto'
 
 // GHL OAuth Configuration
 const GHL_OAUTH_URL = 'https://marketplace.gohighlevel.com/oauth/chooselocation'
@@ -77,7 +78,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Generate state parameter for CSRF protection
-    const state = crypto.randomBytes(32).toString('hex')
+    const state = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => b.toString(16).padStart(2, '0')).join('')
 
     // Store state in cookie for verification
     const cookieStore = await cookies()

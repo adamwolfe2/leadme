@@ -8,7 +8,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { isAdmin, getUserWithRole } from '@/lib/auth/roles'
+import { getUserWithRole } from '@/lib/auth/roles'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,22 +17,21 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  // Check admin role from database
+  // Use getSession() (local cookie read) instead of getUser() (network call that hangs)
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { session } } = await supabase.auth.getSession()
 
-  if (!user) {
+  if (!session?.user) {
     redirect('/login?error=unauthorized')
   }
 
-  // Verify user has admin or owner role
-  const hasAdminAccess = await isAdmin(user)
-  if (!hasAdminAccess) {
+  // Get user with role in single DB query (isAdmin was making a redundant call)
+  const userWithRole = await getUserWithRole(session.user)
+  if (!userWithRole || (userWithRole.role !== 'owner' && userWithRole.role !== 'admin')) {
     redirect('/dashboard?error=admin_required')
   }
 
-  const userWithRole = await getUserWithRole(user)
-  const adminEmail = userWithRole?.email || user.email || 'Admin'
+  const adminEmail = userWithRole.email || session.user.email || 'Admin'
 
   return (
     <div className="min-h-screen bg-zinc-50">

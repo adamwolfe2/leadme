@@ -5,6 +5,8 @@
  * Handles OAuth callback from GoHighLevel and stores credentials.
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'

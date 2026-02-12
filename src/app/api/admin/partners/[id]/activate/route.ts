@@ -1,6 +1,8 @@
 // Admin Partner Activate API
 // Activate a partner account
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { PartnerRepository } from '@/lib/repositories/partner.repository'

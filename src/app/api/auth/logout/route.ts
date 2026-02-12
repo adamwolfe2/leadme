@@ -3,6 +3,8 @@
  * POST /api/auth/logout - Sign out current user
  */
 
+export const runtime = 'edge'
+
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 

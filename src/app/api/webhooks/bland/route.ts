@@ -5,9 +5,10 @@
  * Receives voice call status updates and transcripts from Bland.ai.
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import crypto from 'crypto'
 
 // Types for Bland.ai webhook payload
 interface BlandTranscriptEntry {
@@ -42,13 +43,37 @@ interface BlandWebhookPayload {
 }
 
 /**
+ * Compute HMAC-SHA256 hex digest using Web Crypto API
+ */
+async function hmacSha256Hex(data: string, secret: string): Promise<string> {
+  const encoder = new TextEncoder()
+  const key = await crypto.subtle.importKey(
+    'raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  )
+  const sig = await crypto.subtle.sign('HMAC', key, encoder.encode(data))
+  return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+/**
+ * Constant-time string comparison to prevent timing attacks
+ */
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false
+  let result = 0
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  }
+  return result === 0
+}
+
+/**
  * Verify Bland.ai webhook signature
  */
-function verifySignature(
+async function verifySignature(
   payload: string,
   signature: string | null,
   secret: string
-): boolean {
+): Promise<boolean> {
   // SECURITY: Always require signature and secret - no dev mode bypass
   if (!signature) {
     return false
@@ -58,16 +83,10 @@ function verifySignature(
     return false
   }
 
-  const expectedSignature = crypto
-    .createHmac('sha256', secret)
-    .update(payload)
-    .digest('hex')
+  const expectedSignature = await hmacSha256Hex(payload, secret)
 
   try {
-    return crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expectedSignature)
-    )
+    return timingSafeEqual(signature, expectedSignature)
   } catch {
     return false
   }
@@ -151,7 +170,7 @@ export async function POST(req: NextRequest) {
     const signature = req.headers.get('x-bland-signature') ||
                       req.headers.get('x-webhook-signature')
 
-    if (!verifySignature(rawBody, signature, webhookSecret)) {
+    if (!(await verifySignature(rawBody, signature, webhookSecret))) {
       console.error('[Bland Webhook] Invalid signature')
       return NextResponse.json(
         { error: 'Invalid signature' },

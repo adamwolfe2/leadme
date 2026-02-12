@@ -1,8 +1,9 @@
 // Admin API: Manually Trigger Lead Enrichment
 // Used for testing and manual enrichment
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
-import { inngest } from '@/inngest/client'
 import { getCurrentUser } from '@/lib/auth/helpers'
 
 export async function POST(request: NextRequest) {
@@ -32,18 +33,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Trigger enrichment
-    await inngest.send({
-      name: 'lead/enrich',
-      data: {
-        lead_id,
-        workspace_id: user.workspace_id,
-      },
-    })
+    // Inngest disabled (Node.js runtime not available on this deployment)
+    // Original: await inngest.send({ name: 'lead/enrich', data: { lead_id, workspace_id } })
+    console.log(`[Admin Trigger Enrichment] Enrichment requested for lead ${lead_id} (Inngest disabled - Edge runtime)`)
 
     return NextResponse.json({
       success: true,
-      message: `Enrichment triggered for lead ${lead_id}`,
+      message: `Enrichment requested for lead ${lead_id} (Note: Inngest background processing unavailable)`,
     })
   } catch (error: any) {
     console.error('[Admin Trigger Enrichment] Error:', error)

@@ -1,4 +1,6 @@
 // API endpoint for lead statistics
+export const runtime = 'edge'
+
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 

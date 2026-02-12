@@ -1,8 +1,9 @@
 // Admin API: Manually Trigger Lead Generation
 // Used for testing and manual runs
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
-import { inngest } from '@/inngest/client'
 import { getCurrentUser } from '@/lib/auth/helpers'
 
 export async function POST(request: NextRequest) {
@@ -26,18 +27,13 @@ export async function POST(request: NextRequest) {
     const { query_id } = body
 
     if (query_id) {
-      // Trigger for specific query
-      await inngest.send({
-        name: 'lead/generate',
-        data: {
-          query_id,
-          workspace_id: user.workspace_id,
-        },
-      })
+      // Inngest disabled (Node.js runtime not available on this deployment)
+      // Original: await inngest.send({ name: 'lead/generate', data: { query_id, workspace_id } })
+      console.log(`[Admin Trigger Lead Generation] Generation requested for query ${query_id} (Inngest disabled - Edge runtime)`)
 
       return NextResponse.json({
         success: true,
-        message: `Lead generation triggered for query ${query_id}`,
+        message: `Lead generation requested for query ${query_id} (Note: Inngest background processing unavailable)`,
       })
     } else {
       // Trigger daily generation for all queries
