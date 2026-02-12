@@ -8,6 +8,7 @@
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { createAdminClient } from '@/lib/supabase/admin'
 
 // Types for Bland.ai webhook payload

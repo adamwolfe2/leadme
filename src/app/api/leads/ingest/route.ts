@@ -14,6 +14,7 @@
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createMatchingEngine } from '@/lib/services/matching-engine.service'

@@ -1,6 +1,7 @@
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { createClient } from '@/lib/supabase/server'
 
 export async function GET(request: NextRequest) {

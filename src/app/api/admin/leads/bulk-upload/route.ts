@@ -6,6 +6,7 @@ import { requireAdmin } from '@/lib/auth/admin'
 import { parse } from 'csv-parse/sync'
 import { calculateIntentScore, calculateFreshnessScore, calculateMarketplacePrice } from '@/lib/services/lead-scoring.service'
 import { routeLeadsToMatchingUsers } from '@/lib/services/marketplace-lead-routing'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Industry mapping
 const INDUSTRY_MAP: Record<string, string> = {

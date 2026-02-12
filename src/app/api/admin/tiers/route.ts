@@ -8,6 +8,7 @@
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { requireAdmin, logAdminAction } from '@/lib/auth/admin'
 import { createClient } from '@/lib/supabase/server'
 

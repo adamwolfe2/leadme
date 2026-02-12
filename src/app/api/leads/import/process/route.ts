@@ -8,6 +8,7 @@
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { createClient } from '@/lib/supabase/server'
 import { leadDataProcessor, type ProcessedLead } from '@/lib/services/lead-data-processor.service'
 import { geocodingService } from '@/lib/services/geocoding.service'

@@ -117,7 +117,7 @@ function fireInngestEvent(eventData: { name: string; data: Record<string, any> }
   try {
     // Lazy-import to avoid module-level init issues
     const { inngest } = require('@/inngest/client')
-    inngest.send(eventData).catch((error) => {
+    inngest.send(eventData).catch((error: unknown) => {
       safeError('[Onboarding] Inngest event send failed:', error)
     })
   } catch (error) {

@@ -9,6 +9,7 @@
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, forbidden } from '@/lib/utils/api-error-handler'
 import { createAdminClient } from '@/lib/supabase/admin'

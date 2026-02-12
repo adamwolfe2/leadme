@@ -5,6 +5,7 @@
 export const runtime = 'edge'
 
 import { NextRequest } from 'next/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
 import { Resend } from 'resend'
 import { createClient } from '@/lib/supabase/server'
