@@ -44,48 +44,6 @@ export async function middleware(req: NextRequest) {
     const client = createClient(req)
     const { supabase } = client
 
-    // Check if this is a truly public route that doesn't need auth at all.
-    // Skip auth for these routes entirely to prevent any redirect loop possibility.
-    const isTrulyPublicRoute =
-      pathname.startsWith('/login') ||
-      pathname.startsWith('/signup') ||
-      pathname.startsWith('/welcome') ||
-      pathname.startsWith('/auth/callback') ||
-      pathname.startsWith('/forgot-password') ||
-      pathname.startsWith('/reset-password') ||
-      pathname.startsWith('/verify-email') ||
-      pathname === '/' ||
-      pathname.startsWith('/api/waitlist') ||
-      pathname.startsWith('/api/webhooks') ||
-      pathname.startsWith('/api/cron') ||
-      pathname.startsWith('/api/debug') ||
-      pathname.startsWith('/api/admin/bypass-waitlist') ||
-      pathname === '/api/health' ||
-      pathname.startsWith('/api/inngest')
-
-    // Skip auth check for truly public routes to improve performance
-    let authenticatedUser: { id: string; email?: string } | null = null
-    if (!isTrulyPublicRoute) {
-      try {
-        // Use getSession() in middleware for a fast, local JWT check.
-        // getSession() reads the session from cookies without a network call
-        // (only makes a network call if the JWT is expired and needs refreshing).
-        // Page-level getUser() in dashboard layout provides actual server validation.
-        // This avoids timeout-induced redirect loops that getUser() caused.
-        const { data: { session } } = await supabase.auth.getSession()
-        authenticatedUser = session?.user ? {
-          id: session.user.id,
-          email: session.user.email,
-        } : null
-      } catch (e) {
-        safeError('[Middleware] Auth session check failed:', e)
-        // On error, set user to null — the protected route check below (line ~145)
-        // will redirect to login for protected routes, while public routes pass through.
-        // This prevents redirect loops when /login itself triggers an auth error.
-        authenticatedUser = null
-      }
-    }
-
     // Extract subdomain for multi-tenant routing
     const hostname = req.headers.get('host') || ''
     const host = hostname.split(':')[0] // Remove port if present
@@ -97,13 +55,13 @@ export async function middleware(req: NextRequest) {
     // Partner-only routes
     const isPartnerRoute = pathname.startsWith('/partner')
 
-    // Public routes that don't require authentication
+    // Public routes that don't require authentication (single source of truth)
     const isPublicRoute =
       pathname.startsWith('/login') ||
       pathname.startsWith('/signup') ||
-      pathname.startsWith('/welcome') || // Welcome/setup page
-      pathname.startsWith('/onboarding') || // Legacy onboarding pages
-      pathname.startsWith('/role-selection') || // Legacy role selection
+      pathname.startsWith('/welcome') ||
+      pathname.startsWith('/onboarding') ||
+      pathname.startsWith('/role-selection') ||
       pathname.startsWith('/forgot-password') ||
       pathname.startsWith('/reset-password') ||
       pathname.startsWith('/verify-email') ||
@@ -111,13 +69,13 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/auth/accept-invite') ||
       pathname === '/' ||
       pathname.startsWith('/_next') ||
-      pathname.startsWith('/api/webhooks') || // Webhooks are authenticated differently
-      pathname.startsWith('/api/cron') || // Cron routes use CRON_SECRET auth
-      pathname.startsWith('/api/waitlist') || // Waitlist API is public (admin management)
-      pathname.startsWith('/api/debug') || // Debug/diagnostic endpoints (handle own auth)
-      pathname.startsWith('/api/admin/bypass-waitlist') || // Admin bypass endpoint
-      pathname === '/api/health' || // Health check endpoint for monitoring
-      pathname.startsWith('/api/inngest') // Inngest routes
+      pathname.startsWith('/api/webhooks') ||
+      pathname.startsWith('/api/cron') ||
+      pathname.startsWith('/api/waitlist') ||
+      pathname.startsWith('/api/debug') ||
+      pathname.startsWith('/api/admin/bypass-waitlist') ||
+      pathname === '/api/health' ||
+      pathname.startsWith('/api/inngest')
 
     // API routes (except webhooks, waitlist, debug, and bypass) require authentication
     const isApiRoute = pathname.startsWith('/api') &&
@@ -128,7 +86,24 @@ export async function middleware(req: NextRequest) {
       !pathname.startsWith('/api/admin/bypass-waitlist') &&
       pathname !== '/api/health'
 
-    // Use the authenticated user we already fetched above (don't fetch again)
+    // Skip auth check entirely for public routes to prevent redirect loops
+    let authenticatedUser: { id: string; email?: string } | null = null
+    if (!isPublicRoute) {
+      try {
+        // getSession() reads the session from cookies and refreshes if expired.
+        // This is a local JWT check that only makes a network call when
+        // the token needs refreshing.
+        const { data: { session } } = await supabase.auth.getSession()
+        authenticatedUser = session?.user ? {
+          id: session.user.id,
+          email: session.user.email,
+        } : null
+      } catch (e) {
+        safeError('[Middleware] Auth session check failed:', e)
+        authenticatedUser = null
+      }
+    }
+
     const user = authenticatedUser
 
     // Helper to create redirect with cookies preserved
@@ -141,24 +116,50 @@ export async function middleware(req: NextRequest) {
       return redirectResponse
     }
 
-    // Protected routes require authentication
+    // Protected routes require authentication.
+    // If getSession() returned null but auth cookies exist in the request,
+    // let the request through — the page-level layout will re-attempt auth.
+    // This prevents redirect loops when token refresh intermittently fails
+    // in the middleware Edge runtime.
     if (!isPublicRoute && !user) {
-      const redirectUrl = new URL('/login', req.url)
-      redirectUrl.searchParams.set('redirect', pathname)
-      return redirectWithCookies(redirectUrl)
-    }
-
-    // API routes require authentication
-    if (isApiRoute && !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Admin routes require authentication
-    if (isAdminRoute && !user) {
-      return NextResponse.json(
-        { error: 'Admin access required' },
-        { status: 403 }
+      const hasAuthCookies = req.cookies.getAll().some(
+        c => c.name.startsWith('sb-') && c.name.includes('auth-token')
       )
+      if (!hasAuthCookies) {
+        // No auth cookies at all — user is definitely not logged in
+        if (isApiRoute) {
+          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+        const redirectUrl = new URL('/login', req.url)
+        redirectUrl.searchParams.set('redirect', pathname)
+        return redirectWithCookies(redirectUrl)
+      }
+      // Auth cookies exist but getSession() failed — let page-level handle it.
+      // The dashboard layout has its own getSession() check and will redirect
+      // to /login if the session is truly invalid.
+    }
+
+    // API routes require authentication (no auth cookies = definitely unauthorized)
+    if (isApiRoute && !user) {
+      const hasAuthCookies = req.cookies.getAll().some(
+        c => c.name.startsWith('sb-') && c.name.includes('auth-token')
+      )
+      if (!hasAuthCookies) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
+    }
+
+    // Admin routes require admin check (handled downstream if cookies present)
+    if (isAdminRoute && !user) {
+      const hasAuthCookies = req.cookies.getAll().some(
+        c => c.name.startsWith('sb-') && c.name.includes('auth-token')
+      )
+      if (!hasAuthCookies) {
+        return NextResponse.json(
+          { error: 'Admin access required' },
+          { status: 403 }
+        )
+      }
     }
 
     // Workspace check: verify authenticated users have a workspace for dashboard routes.

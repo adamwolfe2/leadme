@@ -1,6 +1,6 @@
 // Queries List Page
 
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { QueryRepository } from '@/lib/repositories/query.repository'
@@ -13,11 +13,25 @@ import { EmptyState } from '@/components/ui/empty-states'
 import { Plus, Search } from 'lucide-react'
 
 export default async function QueriesPage() {
-  const user = await getCurrentUser()
+  // Layout already verified auth — get session + profile for this page's needs
+  const supabase = await createClient()
+  const { data: { session } } = await supabase.auth.getSession()
 
-  if (!user) {
+  if (!session?.user) {
     redirect('/login')
   }
+
+  const { data: userData } = await supabase
+    .from('users')
+    .select('id, workspace_id, plan, role')
+    .eq('auth_user_id', session.user.id)
+    .single()
+
+  if (!userData?.workspace_id) {
+    redirect('/welcome')
+  }
+
+  const user = userData as { id: string; workspace_id: string; plan: string | null; role: string }
 
   // Get queries
   const queryRepo = new QueryRepository()

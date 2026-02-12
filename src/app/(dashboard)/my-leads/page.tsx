@@ -22,24 +22,21 @@ export const metadata = {
 export default async function MyLeadsPage() {
   const supabase = await createClient()
 
-  // Get user (session read from cookie — no network call; layout already verified auth)
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  const user = session?.user ?? null
+  // Layout already verified auth — get session for user ID (no network call)
+  const { data: { session } } = await supabase.auth.getSession()
 
-  if (!user) {
+  if (!session?.user) {
     redirect('/login')
   }
 
   // Get user profile
-  const { data: userData, error: userError } = await supabase
+  const { data: userData } = await supabase
     .from('users')
     .select('id, workspace_id, full_name, email')
-    .eq('auth_user_id', user.id)
+    .eq('auth_user_id', session.user.id)
     .single()
 
-  if (userError || !userData) {
+  if (!userData) {
     redirect('/welcome')
   }
 

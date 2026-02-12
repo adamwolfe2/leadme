@@ -10,6 +10,12 @@ export const createClient = (request: NextRequest) => {
     request,
   })
 
+  // Accumulate all cookies across multiple setAll calls to prevent cookie loss.
+  // The Supabase SDK may call setAll multiple times during a single getSession()
+  // (e.g., once to clear old cookies, once to set refreshed cookies). Without
+  // accumulation, recreating supabaseResponse in each setAll would lose earlier cookies.
+  const pendingCookies = new Map<string, { name: string; value: string; options?: Record<string, unknown> }>()
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -23,12 +29,16 @@ export const createClient = (request: NextRequest) => {
           cookiesToSet.forEach(({ name, value }: { name: string; value: string }) =>
             request.cookies.set(name, value)
           )
+          // Track all cookies (latest value wins for each name)
+          cookiesToSet.forEach((cookie) =>
+            pendingCookies.set(cookie.name, cookie)
+          )
           // Recreate response with updated request
           supabaseResponse = NextResponse.next({
             request,
           })
-          // CRITICAL: Set cookies on response for browser persistence
-          cookiesToSet.forEach(({ name, value, options }: { name: string; value: string; options?: Record<string, unknown> }) =>
+          // CRITICAL: Set ALL accumulated cookies on response for browser persistence
+          pendingCookies.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options as any)
           )
         },

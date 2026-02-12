@@ -19,11 +19,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const { onboarding } = await searchParams
   const supabase = await createClient()
 
-  // Get user (session read from cookie — no network call; layout already verified auth)
+  // Layout already verified auth — get session for user ID only (no network call)
   const { data: { session } } = await supabase.auth.getSession()
-  const user = session?.user ?? null
+  const user = session?.user
 
   if (!user) {
+    // Layout should have caught this, but safety fallback
     redirect('/login')
   }
 
