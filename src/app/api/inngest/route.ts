@@ -42,6 +42,7 @@ export const { GET, POST, PUT } = serve({
     functions.dailyCommissionRelease,
     functions.reconcilePayouts,
     functions.nightlyBalanceAudit,
+    functions.refreshEarningsView,
 
     // Lead Routing Retry & Cleanup
     functions.processLeadRoutingRetryQueue,

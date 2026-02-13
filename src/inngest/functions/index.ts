@@ -31,6 +31,9 @@ export {
 // Partner balance audit (nightly verification)
 export { nightlyBalanceAudit } from './nightly-balance-audit'
 
+// Partner earnings view refresh (hourly)
+export { refreshEarningsView } from './refresh-earnings-view'
+
 // Webhook retry processor
 export { webhookRetryProcessor } from './webhook-retry-processor'
 
