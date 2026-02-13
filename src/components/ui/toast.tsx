@@ -61,6 +61,9 @@ export function Toast({
   const style = toastStyles[type]
   const Icon = style.iconComponent
 
+  // Track close timeout for cleanup
+  const [closeTimeout, setCloseTimeout] = useState<NodeJS.Timeout | null>(null)
+
   useEffect(() => {
     if (duration <= 0) return
 
@@ -98,11 +101,21 @@ export function Toast({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duration, isPaused])
 
+  // Cleanup close timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (closeTimeout) {
+        clearTimeout(closeTimeout)
+      }
+    }
+  }, [closeTimeout])
+
   const handleClose = () => {
     setIsExiting(true)
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       onClose(id)
     }, 300) // Match animation duration
+    setCloseTimeout(timeout)
   }
 
   const safeAnimation = useSafeAnimation()

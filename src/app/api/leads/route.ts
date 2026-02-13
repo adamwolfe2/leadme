@@ -45,9 +45,9 @@ export async function GET(request: NextRequest) {
 
     const validated = leadFiltersSchema.parse(params)
 
-    // Parse pagination
-    const page = parseInt(validated.page || '1', 10)
-    const perPage = parseInt(validated.per_page || '50', 10)
+    // Parse pagination with safe defaults
+    const page = Math.max(1, parseInt(validated.page || '1', 10) || 1)
+    const perPage = Math.min(100, Math.max(1, parseInt(validated.per_page || '50', 10) || 50))
 
     // 3. Fetch leads with workspace filtering
     const leadRepo = new LeadRepository()

@@ -66,12 +66,19 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Parse number params
+    // Parse number params with NaN validation
     const numberParams = ['intentScoreMin', 'intentScoreMax', 'freshnessMin', 'priceMin', 'priceMax', 'limit', 'offset']
     for (const param of numberParams) {
       const value = searchParams.get(param)
       if (value) {
-        rawFilters[param] = parseFloat(value)
+        const parsed = parseFloat(value)
+        if (isNaN(parsed)) {
+          return NextResponse.json(
+            { error: `Invalid ${param}: must be a valid number` },
+            { status: 400 }
+          )
+        }
+        rawFilters[param] = parsed
       }
     }
 

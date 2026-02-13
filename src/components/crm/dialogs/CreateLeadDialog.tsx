@@ -1,6 +1,9 @@
 'use client'
 
 import * as React from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import {
   Dialog,
   DialogContent,
@@ -20,6 +23,23 @@ import {
   SelectValue,
 } from '@/components/ui/select-radix'
 
+const createLeadSchema = z.object({
+  email: z.string().email('Invalid email address').min(1, 'Email is required'),
+  first_name: z.string().min(1, 'First name is required').max(100),
+  last_name: z.string().min(1, 'Last name is required').max(100),
+  phone: z.string().optional(),
+  company_name: z.string().optional(),
+  company_industry: z.string().optional(),
+  business_type: z.string().optional(),
+  title: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  source: z.string().optional(),
+  status: z.string().optional(),
+})
+
+type CreateLeadForm = z.infer<typeof createLeadSchema>
+
 interface CreateLeadDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -27,29 +47,20 @@ interface CreateLeadDialogProps {
 }
 
 export function CreateLeadDialog({ open, onOpenChange, onSuccess }: CreateLeadDialogProps) {
-  const [isSubmitting, setIsSubmitting] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    setError(null)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<CreateLeadForm>({
+    resolver: zodResolver(createLeadSchema),
+    mode: 'onBlur',
+  })
 
-    const formData = new FormData(e.currentTarget)
-    const data = {
-      email: formData.get('email') as string,
-      first_name: formData.get('first_name') as string,
-      last_name: formData.get('last_name') as string,
-      phone: formData.get('phone') as string,
-      company_name: formData.get('company_name') as string,
-      company_industry: formData.get('company_industry') as string,
-      business_type: formData.get('business_type') as string,
-      title: formData.get('title') as string,
-      city: formData.get('city') as string,
-      state: formData.get('state') as string,
-      source: formData.get('source') as string,
-      status: formData.get('status') as string,
-    }
+  const onSubmit = async (data: CreateLeadForm) => {
+    setError(null)
 
     try {
       const response = await fetch('/api/crm/leads', {
@@ -59,115 +70,99 @@ export function CreateLeadDialog({ open, onOpenChange, onSuccess }: CreateLeadDi
       })
 
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Failed to create lead')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to create lead')
       }
 
       onSuccess?.()
       onOpenChange(false)
-      // Reset form
-      e.currentTarget.reset()
+      reset()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create lead')
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto" aria-describedby="create-lead-description">
         <DialogHeader>
           <DialogTitle>Create New Lead</DialogTitle>
-          <DialogDescription>
+          <DialogDescription id="create-lead-description">
             Add a new lead to your CRM. Fill in as much information as you have.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="first_name">First Name *</Label>
-              <Input id="first_name" name="first_name" required />
+              <Input id="first_name" {...register('first_name')} disabled={isSubmitting} />
+              {errors.first_name && (
+                <p className="text-xs text-red-600">{errors.first_name.message}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="last_name">Last Name *</Label>
-              <Input id="last_name" name="last_name" required />
+              <Input id="last_name" {...register('last_name')} disabled={isSubmitting} />
+              {errors.last_name && (
+                <p className="text-xs text-red-600">{errors.last_name.message}</p>
+              )}
             </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="email">Email *</Label>
-            <Input id="email" name="email" type="email" required />
+            <Input id="email" type="email" {...register('email')} disabled={isSubmitting} />
+            {errors.email && (
+              <p className="text-xs text-red-600">{errors.email.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="phone">Phone</Label>
-            <Input id="phone" name="phone" type="tel" />
+            <Input id="phone" type="tel" {...register('phone')} disabled={isSubmitting} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="company_name">Company Name</Label>
-            <Input id="company_name" name="company_name" />
+            <Input id="company_name" {...register('company_name')} disabled={isSubmitting} />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="company_industry">Industry</Label>
-              <Input id="company_industry" name="company_industry" placeholder="e.g., Healthcare, Technology" />
+              <Input id="company_industry" {...register('company_industry')} placeholder="e.g., Healthcare, Technology" disabled={isSubmitting} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="business_type">Business Type</Label>
-              <Input id="business_type" name="business_type" placeholder="e.g., Medical Spa, Retail" />
+              <Input id="business_type" {...register('business_type')} placeholder="e.g., Medical Spa, Retail" disabled={isSubmitting} />
             </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="title">Job Title</Label>
-            <Input id="title" name="title" placeholder="e.g., CEO, Marketing Director" />
+            <Input id="title" {...register('title')} placeholder="e.g., CEO, Marketing Director" disabled={isSubmitting} />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="city">City</Label>
-              <Input id="city" name="city" />
+              <Input id="city" {...register('city')} disabled={isSubmitting} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="state">State</Label>
-              <Input id="state" name="state" placeholder="e.g., CA, NY" />
+              <Input id="state" {...register('state')} placeholder="e.g., CA, NY" disabled={isSubmitting} />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="source">Source</Label>
-              <Select name="source" defaultValue="manual">
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="manual">Manual Entry</SelectItem>
-                  <SelectItem value="website">Website</SelectItem>
-                  <SelectItem value="referral">Referral</SelectItem>
-                  <SelectItem value="import">Import</SelectItem>
-                  <SelectItem value="partner">Partner</SelectItem>
-                </SelectContent>
-              </Select>
+              <Input id="source" {...register('source')} placeholder="manual" disabled={isSubmitting} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
-              <Select name="status" defaultValue="new">
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="new">New</SelectItem>
-                  <SelectItem value="contacted">Contacted</SelectItem>
-                  <SelectItem value="qualified">Qualified</SelectItem>
-                  <SelectItem value="converted">Converted</SelectItem>
-                  <SelectItem value="lost">Lost</SelectItem>
-                </SelectContent>
-              </Select>
+              <Input id="status" {...register('status')} placeholder="new" disabled={isSubmitting} />
             </div>
           </div>
 
