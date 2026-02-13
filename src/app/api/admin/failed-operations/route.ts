@@ -8,6 +8,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getFailedOperations } from '@/lib/monitoring/failed-operations'
+import { safeParseInt } from '@/lib/utils/parse-number'
 
 /**
  * GET /api/admin/failed-operations
@@ -15,34 +16,25 @@ import { getFailedOperations } from '@/lib/monitoring/failed-operations'
  */
 export async function GET(request: NextRequest) {
   try {
+    // SECURITY: Verify platform admin access
+    const { requireAdmin } = await import('@/lib/auth/admin')
+    await requireAdmin()
+
     const supabase = await createClient()
-
-    // Auth check - admin only
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Check if user is admin
-    const { data: userData } = await supabase
-      .from('users')
-      .select('role')
-      .eq('auth_user_id', user.id)
-      .single()
-
-    if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
-      return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 })
-    }
 
     // Parse query parameters
     const searchParams = request.nextUrl.searchParams
     const operationType = searchParams.get('type') as any
     const resolved = searchParams.get('resolved') === 'true'
-    const limit = parseInt(searchParams.get('limit') || '100')
-    const offset = parseInt(searchParams.get('offset') || '0')
+    const limit = safeParseInt(searchParams.get('limit'), {
+      min: 1,
+      max: 1000,
+      fallback: 100,
+    })
+    const offset = safeParseInt(searchParams.get('offset'), {
+      min: 0,
+      fallback: 0,
+    })
 
     // Get operations
     const operations = await getFailedOperations({

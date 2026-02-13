@@ -15,7 +15,14 @@ export async function GET() {
     // Auth check (session-based for read-only perf)
     const {
       data: { session },
+      error: sessionError,
     } = await supabase.auth.getSession()
+
+    if (sessionError) {
+      safeError('[Get Credits] Session error:', sessionError)
+      return NextResponse.json({ error: 'Authentication failed' }, { status: 401 })
+    }
+
     const user = session?.user ?? null
 
     if (!user) {
@@ -23,11 +30,16 @@ export async function GET() {
     }
 
     // Get user's workspace
-    const { data: userData } = await supabase
+    const { data: userData, error: userError } = await supabase
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', user.id)
       .single()
+
+    if (userError) {
+      safeError('[Get Credits] Failed to fetch user data:', userError)
+      return NextResponse.json({ error: 'Failed to fetch user data' }, { status: 500 })
+    }
 
     if (!userData?.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })

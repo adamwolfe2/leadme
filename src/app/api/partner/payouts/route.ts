@@ -1,15 +1,26 @@
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
+
+// Header validation schema
+const headersSchema = z.object({
+  apiKey: z.string().min(1, 'API key is required'),
+})
 
 export async function GET(request: NextRequest) {
   try {
     const apiKey = request.headers.get('X-API-Key')
 
-    if (!apiKey) {
-      return NextResponse.json({ error: 'API key required' }, { status: 401 })
+    // Validate headers
+    const headerValidation = headersSchema.safeParse({ apiKey })
+    if (!headerValidation.success) {
+      return NextResponse.json(
+        { error: 'API key required', details: headerValidation.error.format() },
+        { status: 401 }
+      )
     }
 
     const supabase = await createClient()
@@ -57,6 +68,13 @@ export async function GET(request: NextRequest) {
       payout_history: payoutHistory || [],
     })
   } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Validation error', details: error.format() },
+        { status: 400 }
+      )
+    }
+
     safeError('Partner payouts error:', error)
     return NextResponse.json({ error: 'Failed to fetch payouts' }, { status: 500 })
   }

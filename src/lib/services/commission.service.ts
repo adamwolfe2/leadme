@@ -150,7 +150,7 @@ export async function processPendingCommissions(): Promise<{
   // Calculate totals
   const totalAmount = items.reduce((sum, item) => sum + (item.commission_amount || 0), 0)
 
-  // Update partner available balances
+  // Update partner available balances atomically
   const partnerTotals = items.reduce<Record<string, number>>((acc, item) => {
     if (item.partner_id) {
       acc[item.partner_id] = (acc[item.partner_id] || 0) + (item.commission_amount || 0)
@@ -158,26 +158,15 @@ export async function processPendingCommissions(): Promise<{
     return acc
   }, {})
 
+  // Use atomic database function to prevent race conditions
   for (const [partnerId, amount] of Object.entries(partnerTotals)) {
-    const { data: partner } = await supabase
-      .from('partners')
-      .select('pending_balance, available_balance')
-      .eq('id', partnerId)
-      .single()
+    const { error: balanceError } = await supabase.rpc('move_pending_to_available', {
+      p_partner_id: partnerId,
+      p_amount: amount,
+    })
 
-    if (partner) {
-      const { error: balanceError } = await supabase
-        .from('partners')
-        .update({
-          pending_balance: Math.max(0, (partner.pending_balance || 0) - amount),
-          available_balance: (partner.available_balance || 0) + amount,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', partnerId)
-
-      if (balanceError) {
-        safeError(`[Commission] Failed to update partner ${partnerId} balance:`, balanceError)
-      }
+    if (balanceError) {
+      safeError(`[Commission] Failed to update partner ${partnerId} balance:`, balanceError)
     }
   }
 
@@ -272,21 +261,18 @@ export async function recordCommission(params: {
     throw new Error(`Failed to record commission: ${updateError.message}`)
   }
 
-  // Update partner pending balance
-  const { error: balanceError } = await supabase
-    .from('partners')
-    .update({
-      pending_balance: (partner.pending_balance || 0) + commission.amount,
-      total_earnings: (partner.total_earnings || 0) + commission.amount,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', params.partnerId)
+  // Update partner pending balance atomically
+  const { error: balanceError} = await supabase.rpc('increment_partner_balance', {
+    p_partner_id: params.partnerId,
+    p_pending_amount: commission.amount,
+    p_total_earnings_amount: commission.amount,
+  })
 
   if (balanceError) {
     throw new Error(`Failed to update partner balance: ${balanceError.message}`)
   }
 
-  // Record in partner_earnings table
+  // Record in partner_earnings table (audit trail)
   const { error: earningsError } = await supabase.from('partner_earnings').insert({
     partner_id: params.partnerId,
     lead_id: null, // Can be linked to lead_id if needed
@@ -296,7 +282,8 @@ export async function recordCommission(params: {
   })
 
   if (earningsError) {
-    safeError('[Commission] Failed to record partner earnings:', earningsError)
+    safeError('[Commission] CRITICAL: Failed to record partner earnings audit:', earningsError)
+    throw new Error(`Failed to record commission audit trail: ${earningsError.message}`)
   }
 }
 

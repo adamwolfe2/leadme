@@ -113,15 +113,20 @@ const partnerSchema = z.object({
 const setupSchema = z.discriminatedUnion('role', [businessSchema, partnerSchema])
 
 /** Fire-and-forget: send Inngest event without blocking response */
-function fireInngestEvent(eventData: { name: string; data: Record<string, any> }) {
+function fireInngestEvent(eventData: { name: string; data: Record<string, any> }): void {
   try {
     // Lazy-import to avoid module-level init issues
     const { inngest } = require('@/inngest/client')
-    inngest.send(eventData).catch((error: unknown) => {
+
+    // Explicitly void the promise to indicate fire-and-forget pattern
+    void inngest.send(eventData).catch((error: unknown) => {
       safeError('[Onboarding] Inngest event send failed:', error)
+      // Don't throw - this is intentionally non-blocking
+      return null
     })
   } catch (error) {
     safeError('[Onboarding] Inngest client init failed:', error)
+    // Don't throw - this is intentionally non-blocking
   }
 }
 

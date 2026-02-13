@@ -111,30 +111,17 @@ export class CreditService {
     const supabase = await createClient()
     const cost = CREDIT_COSTS[action]
 
-    // Increment usage
+    // Atomically increment usage via database function
     const { error: updateError } = await supabase.rpc('increment_credits', {
       user_id: userId,
       amount: cost,
     })
 
     if (updateError) {
-      // Fallback to manual update if RPC doesn't exist
-      const { data: user } = await supabase
-        .from('users')
-        .select('daily_credits_used')
-        .eq('id', userId)
-        .single()
-
-      if (user) {
-        const { error: fallbackError } = await supabase
-          .from('users')
-          .update({ daily_credits_used: user.daily_credits_used + cost })
-          .eq('id', userId)
-
-        if (fallbackError) {
-          safeError('[CreditService] Failed to update credits (fallback):', fallbackError)
-        }
-      }
+      // SECURITY: Do NOT use fallback - it has TOCTOU race condition
+      // If RPC fails, something is wrong (missing function, permissions)
+      safeError('[CreditService] Failed to increment credits atomically:', updateError)
+      throw new Error('Failed to consume credits')
     }
 
     // Log usage

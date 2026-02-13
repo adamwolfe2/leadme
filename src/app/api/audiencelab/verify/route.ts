@@ -49,15 +49,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const adminClient = createAdminClient()
-  const { data: userData } = await adminClient
-    .from('users')
-    .select('role')
-    .eq('auth_user_id', user.id)
-    .single()
+  // SECURITY: Verify platform admin access (not just workspace role)
+  const { isPlatformAdmin } = await import('@/lib/auth/permissions')
+  const isAdmin = await isPlatformAdmin()
 
-  if (!userData || userData.role !== 'admin') {
-    return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
+  if (!isAdmin) {
+    return NextResponse.json({ error: 'Platform admin access required' }, { status: 403 })
   }
 
   const results: Record<string, unknown> = {}

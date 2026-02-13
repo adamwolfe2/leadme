@@ -13,6 +13,7 @@ import { MobileFilters } from './components/MobileFilters'
 import { BuyLeadButton } from '@/components/marketplace/BuyLeadButton'
 import { UpsellBanner } from '@/components/marketplace/UpsellBanner'
 import { getServiceLink } from '@/lib/stripe/payment-links'
+import { getErrorMessage } from '@/lib/utils/error-messages'
 
 // Types for marketplace leads
 interface MarketplaceLeadPreview {
@@ -266,15 +267,14 @@ export default function MarketplacePage() {
         const error = await response.json()
         toast({
           title: 'Purchase failed',
-          message: error.error || 'Failed to purchase leads. Please try again.',
+          message: getErrorMessage(error.error || error),
           type: 'error',
         })
       }
     } catch (error) {
-      console.error('Purchase failed:', error)
       toast({
         title: 'Purchase failed',
-        message: 'An error occurred while purchasing leads. Please try again.',
+        message: getErrorMessage(error),
         type: 'error',
       })
     } finally {

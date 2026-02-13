@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
+import { z } from 'zod'
 import { handleServiceWebhookEvent } from '@/lib/stripe/service-webhooks'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -12,6 +13,23 @@ import { STRIPE_CONFIG } from '@/lib/stripe/config'
 import { TIMEOUTS, getDaysFromNow } from '@/lib/constants/timeouts'
 
 export const runtime = 'edge'
+
+// Validation schemas for webhook metadata
+const creditPurchaseMetadataSchema = z.object({
+  type: z.literal('credit_purchase'),
+  credit_purchase_id: z.string().uuid('Invalid credit purchase ID'),
+  workspace_id: z.string().uuid('Invalid workspace ID'),
+  user_id: z.string().uuid('Invalid user ID'),
+  credits: z.string().regex(/^\d+$/, 'Invalid credits format'),
+})
+
+const leadPurchaseMetadataSchema = z.object({
+  type: z.literal('lead_purchase'),
+  purchase_id: z.string().uuid('Invalid purchase ID'),
+  workspace_id: z.string().uuid('Invalid workspace ID'),
+  user_id: z.string().uuid('Invalid user ID'),
+  lead_count: z.string().regex(/^\d+$/, 'Invalid lead count format'),
+})
 
 // Lazy-load Stripe with Web Crypto provider for Edge runtime
 let stripeClient: Stripe | null = null
@@ -68,23 +86,20 @@ async function handleCheckoutSessionCompleted(event: Stripe.Event): Promise<void
  * Marks purchase as completed, adds credits, sends confirmation email
  */
 async function handleCreditPurchaseCompleted(session: Stripe.Checkout.Session): Promise<void> {
-  const { credit_purchase_id, workspace_id, user_id, credits } = session.metadata || {}
+  // Validate metadata with Zod
+  const metadataValidation = creditPurchaseMetadataSchema.safeParse(session.metadata)
 
-  if (!credit_purchase_id || !workspace_id || !user_id || !credits) {
-    safeError('[Stripe Webhook] Credit purchase missing required metadata fields', {
-      credit_purchase_id: !!credit_purchase_id,
-      workspace_id: !!workspace_id,
-      user_id: !!user_id,
-      credits: !!credits,
+  if (!metadataValidation.success) {
+    safeError('[Stripe Webhook] Invalid credit purchase metadata', {
+      errors: metadataValidation.error.format(),
+      metadata: session.metadata,
     })
     return
   }
 
+  const { credit_purchase_id, workspace_id, user_id, credits } = metadataValidation.data
+
   const creditsAmount = parseInt(credits, 10)
-  if (isNaN(creditsAmount) || creditsAmount <= 0) {
-    safeError('[Stripe Webhook] Invalid credits amount in metadata', { credits })
-    return
-  }
 
   safeLog(`[Stripe Webhook] Processing credit purchase: ${credit_purchase_id}`)
 
@@ -139,17 +154,18 @@ async function handleCreditPurchaseCompleted(session: Stripe.Checkout.Session): 
  * IDEMPOTENT: Handles duplicate webhook deliveries gracefully
  */
 async function handleLeadPurchaseCompleted(session: Stripe.Checkout.Session): Promise<void> {
-  const { purchase_id, workspace_id, user_id, lead_count } = session.metadata || {}
+  // Validate metadata with Zod
+  const metadataValidation = leadPurchaseMetadataSchema.safeParse(session.metadata)
 
-  if (!purchase_id || !workspace_id || !user_id || !lead_count) {
-    safeError('[Stripe Webhook] Lead purchase missing required metadata fields', {
-      purchase_id: !!purchase_id,
-      workspace_id: !!workspace_id,
-      user_id: !!user_id,
-      lead_count: !!lead_count,
+  if (!metadataValidation.success) {
+    safeError('[Stripe Webhook] Invalid lead purchase metadata', {
+      errors: metadataValidation.error.format(),
+      metadata: session.metadata,
     })
     return
   }
+
+  const { purchase_id, workspace_id, user_id, lead_count } = metadataValidation.data
 
   safeLog(`[Stripe Webhook] Processing lead purchase: ${purchase_id}`)
 

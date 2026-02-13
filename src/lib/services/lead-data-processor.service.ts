@@ -199,11 +199,12 @@ export class LeadDataProcessorService {
 
       if (result._errors.length > 0) {
         for (const error of result._errors) {
+          const fieldName = error.includes(':') ? error.split(':')[0] : 'unknown'
           errors.push({
             row: i + 1,
-            field: error.split(':')[0] || 'unknown',
+            field: fieldName,
             message: error,
-            value: row[error.split(':')[0]] || undefined,
+            value: row[fieldName] || undefined,
           })
         }
       }
@@ -270,8 +271,8 @@ export class LeadDataProcessorService {
     if (transformed.full_name) {
       lead.full_name = this.cleanString(transformed.full_name)
       // Try to split into first/last if not provided
-      if (!transformed.first_name && !transformed.last_name) {
-        const nameParts = lead.full_name!.split(' ')
+      if (!transformed.first_name && !transformed.last_name && lead.full_name) {
+        const nameParts = lead.full_name.split(' ')
         if (nameParts.length >= 2) {
           lead.first_name = nameParts[0]
           lead.last_name = nameParts.slice(1).join(' ')

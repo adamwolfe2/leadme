@@ -2,22 +2,56 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import { Button } from '@/components/ui/button'
+
+// Partner registration schema
+const partnerRegisterSchema = z.object({
+  name: z
+    .string()
+    .min(2, 'Name must be at least 2 characters')
+    .max(100, 'Name must be less than 100 characters')
+    .regex(/^[a-zA-Z\s'-]+$/, 'Name can only contain letters, spaces, hyphens, and apostrophes'),
+  email: z
+    .string()
+    .email('Invalid email address')
+    .min(1, 'Email is required')
+    .max(255, 'Email must be less than 255 characters'),
+  company_name: z
+    .string()
+    .min(2, 'Company name must be at least 2 characters')
+    .max(200, 'Company name must be less than 200 characters'),
+  phone: z
+    .string()
+    .optional()
+    .refine(
+      (val) => {
+        if (!val || val.length === 0) return true // Optional field
+        // Validate phone format: +1 (555) 123-4567 or similar
+        return /^\+?\d{1,3}[\s-]?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}$/.test(val.replace(/\s/g, ''))
+      },
+      { message: 'Invalid phone number format' }
+    ),
+})
+
+type PartnerRegisterForm = z.infer<typeof partnerRegisterSchema>
 
 export default function PartnerRegisterPage() {
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    company_name: '',
-    phone: '',
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<PartnerRegisterForm>({
+    resolver: zodResolver(partnerRegisterSchema),
+    mode: 'onBlur',
   })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+  const onSubmit = async (data: PartnerRegisterForm) => {
     setError(null)
 
     try {
@@ -25,7 +59,7 @@ export default function PartnerRegisterPage() {
       const registerResponse = await fetch('/api/partner/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(data),
       })
 
       if (!registerResponse.ok) {
@@ -52,9 +86,7 @@ export default function PartnerRegisterPage() {
       // Redirect to Stripe onboarding
       window.location.href = url
     } catch (err) {
-      console.error('Registration error:', err)
       setError(err instanceof Error ? err.message : 'Failed to complete registration')
-      setLoading(false)
     }
   }
 
@@ -122,69 +154,106 @@ export default function PartnerRegisterPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-2">
+              <label htmlFor="name" className="block text-sm font-medium text-zinc-700 mb-2">
                 Full Name *
               </label>
               <input
+                id="name"
                 type="text"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                {...register('name')}
+                disabled={isSubmitting}
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
+                  errors.name ? 'border-red-300' : 'border-zinc-300'
+                }`}
                 placeholder="Your full name"
+                aria-invalid={!!errors.name}
+                aria-describedby={errors.name ? 'name-error' : undefined}
               />
+              {errors.name && (
+                <p id="name-error" className="mt-1 text-sm text-red-600" role="alert">
+                  {errors.name.message}
+                </p>
+              )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-zinc-700 mb-2">
                 Email Address *
               </label>
               <input
+                id="email"
                 type="email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                {...register('email')}
+                disabled={isSubmitting}
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
+                  errors.email ? 'border-red-300' : 'border-zinc-300'
+                }`}
                 placeholder="you@company.com"
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? 'email-error' : undefined}
               />
+              {errors.email && (
+                <p id="email-error" className="mt-1 text-sm text-red-600" role="alert">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-2">
+              <label htmlFor="company_name" className="block text-sm font-medium text-zinc-700 mb-2">
                 Company Name *
               </label>
               <input
+                id="company_name"
                 type="text"
-                required
-                value={formData.company_name}
-                onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
-                className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                {...register('company_name')}
+                disabled={isSubmitting}
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
+                  errors.company_name ? 'border-red-300' : 'border-zinc-300'
+                }`}
                 placeholder="Your company name"
+                aria-invalid={!!errors.company_name}
+                aria-describedby={errors.company_name ? 'company-name-error' : undefined}
               />
+              {errors.company_name && (
+                <p id="company-name-error" className="mt-1 text-sm text-red-600" role="alert">
+                  {errors.company_name.message}
+                </p>
+              )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-2">
+              <label htmlFor="phone" className="block text-sm font-medium text-zinc-700 mb-2">
                 Phone Number (optional)
               </label>
               <input
+                id="phone"
                 type="tel"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                {...register('phone')}
+                disabled={isSubmitting}
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
+                  errors.phone ? 'border-red-300' : 'border-zinc-300'
+                }`}
                 placeholder="+1 (555) 123-4567"
+                aria-invalid={!!errors.phone}
+                aria-describedby={errors.phone ? 'phone-error' : undefined}
               />
+              {errors.phone && (
+                <p id="phone-error" className="mt-1 text-sm text-red-600" role="alert">
+                  {errors.phone.message}
+                </p>
+              )}
             </div>
 
             <div className="pt-4">
               <Button
                 type="submit"
-                disabled={loading}
+                disabled={isSubmitting}
                 className="w-full py-4 bg-zinc-900 hover:bg-zinc-800 text-white font-semibold rounded-lg transition-colors"
               >
-                {loading ? (
+                {isSubmitting ? (
                   <span className="flex items-center justify-center gap-2">
                     <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                       <circle

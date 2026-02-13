@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { Clock, Calendar } from 'lucide-react'
+import DOMPurify from 'isomorphic-dompurify'
 import { Breadcrumbs } from './breadcrumbs'
 import { TableOfContents } from './table-of-contents'
 import { CTABox } from './cta-box'
@@ -192,7 +193,21 @@ export function BlogPostLayout({ post, relatedPosts = [] }: BlogPostLayoutProps)
                   prose-img:rounded-lg prose-img:shadow-md
                   prose-blockquote:border-l-4 prose-blockquote:border-[#007AFF] prose-blockquote:bg-gray-50 prose-blockquote:py-2 prose-blockquote:px-4
                   print:prose-sm"
-                dangerouslySetInnerHTML={{ __html: post.content }}
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(post.content, {
+                    ALLOWED_TAGS: [
+                      'p', 'br', 'strong', 'em', 'u', 'b', 'i',
+                      'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+                      'ul', 'ol', 'li',
+                      'a', 'img',
+                      'blockquote', 'code', 'pre',
+                      'table', 'thead', 'tbody', 'tr', 'th', 'td',
+                      'div', 'span'
+                    ],
+                    ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel'],
+                    ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
+                  })
+                }}
               />
 
               {/* First CTA - After first third of content */}

@@ -18,20 +18,20 @@ export async function GET(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { data: userData } = await supabase
+  const { data: userData, error: userError } = await supabase
     .from('users')
     .select('workspace_id')
     .eq('auth_user_id', user.id)
     .single()
 
-  if (!userData || !userData.workspace_id) {
+  if (userError || !userData || !userData.workspace_id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   const workspaceId = userData.workspace_id
 
   // 2. Get purchase and verify ownership
-  const { data: purchase } = await supabase
+  const { data: purchase, error: purchaseError } = await supabase
     .from('marketplace_purchases')
     .select(
       `
@@ -52,7 +52,7 @@ export async function GET(
     .eq('status', 'completed')
     .single()
 
-  if (!purchase) {
+  if (purchaseError || !purchase) {
     return NextResponse.json({ error: 'Purchase not found' }, { status: 404 })
   }
 

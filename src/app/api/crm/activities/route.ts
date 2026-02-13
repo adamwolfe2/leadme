@@ -12,6 +12,7 @@ import { ActivityRepository } from '@/lib/repositories/activity.repository'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 import type { ActivityType } from '@/types/crm.types'
+import { safeParsePagination } from '@/lib/utils/parse-number'
 
 const activityFiltersSchema = z.object({
   activity_type: z.string().optional(),
@@ -68,8 +69,11 @@ export async function GET(request: NextRequest) {
     const validated = activityFiltersSchema.parse(params)
 
     // Parse pagination
-    const page = parseInt(validated.page || '1', 10)
-    const pageSize = parseInt(validated.page_size || '100', 10)
+    const { page, limit: pageSize } = safeParsePagination(
+      validated.page,
+      validated.page_size,
+      { defaultLimit: 100, maxLimit: 500 }
+    )
 
     // Parse filters
     const filters = {

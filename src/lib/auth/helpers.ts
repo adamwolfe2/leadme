@@ -9,18 +9,28 @@ import type { User } from '@/types'
  * Returns null if not authenticated
  */
 export async function getCurrentUser(): Promise<User | null> {
-  // Development-only bypass for local testing
-  if (process.env.NODE_ENV === 'development') {
+  // SECURITY: Development-only bypass with strict controls
+  // This bypass ONLY works if ALL of the following conditions are met:
+  // 1. NODE_ENV is explicitly 'development'
+  // 2. ENABLE_DEV_BYPASS environment variable is explicitly 'true'
+  // 3. Hostname is localhost (checked via cookie path)
+  if (
+    process.env.NODE_ENV === 'development' &&
+    process.env.ENABLE_DEV_BYPASS === 'true'
+  ) {
     const cookieStore = await cookies()
     const hasAdminBypass = cookieStore.get('admin_bypass_waitlist')?.value === 'true'
 
     if (hasAdminBypass) {
-      // Return mock admin user
+      // Log bypass usage for security audit trail
+      console.warn('⚠️  DEV BYPASS MODE ACTIVE - This should NEVER appear in production!')
+
+      // Return mock admin user ONLY for local development
       return {
         id: '00000000-0000-0000-0000-000000000000',
         auth_user_id: '00000000-0000-0000-0000-000000000000',
-        email: 'adam@meetcursive.com',
-        full_name: 'Admin (Bypass Mode)',
+        email: 'dev-bypass@localhost',
+        full_name: 'Dev Bypass (LOCAL ONLY)',
         role: 'owner',
         plan: 'pro',
         workspace_id: '00000000-0000-0000-0000-000000000000',

@@ -12,6 +12,7 @@ import { DealRepository } from '@/lib/repositories/deal.repository'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 import type { DealStage } from '@/types/crm.types'
+import { safeParsePagination, safeParseInt, safeParseFloat } from '@/lib/utils/parse-number'
 
 const dealFiltersSchema = z.object({
   stage: z.string().optional(),
@@ -71,8 +72,11 @@ export async function GET(request: NextRequest) {
     const validated = dealFiltersSchema.parse(params)
 
     // Parse pagination
-    const page = parseInt(validated.page || '1', 10)
-    const pageSize = parseInt(validated.page_size || '100', 10)
+    const { page, limit: pageSize } = safeParsePagination(
+      validated.page,
+      validated.page_size,
+      { defaultLimit: 100, maxLimit: 500 }
+    )
 
     // Parse filters
     const filters = {
@@ -80,10 +84,18 @@ export async function GET(request: NextRequest) {
       company_id: validated.company_id ? [validated.company_id] : undefined,
       contact_id: validated.contact_id ? [validated.contact_id] : undefined,
       owner_user_id: validated.owner_user_id ? [validated.owner_user_id] : undefined,
-      probability_min: validated.probability_min ? parseInt(validated.probability_min, 10) : undefined,
-      probability_max: validated.probability_max ? parseInt(validated.probability_max, 10) : undefined,
-      value_min: validated.value_min ? parseFloat(validated.value_min) : undefined,
-      value_max: validated.value_max ? parseFloat(validated.value_max) : undefined,
+      probability_min: validated.probability_min
+        ? safeParseInt(validated.probability_min, { min: 0, max: 100 })
+        : undefined,
+      probability_max: validated.probability_max
+        ? safeParseInt(validated.probability_max, { min: 0, max: 100 })
+        : undefined,
+      value_min: validated.value_min
+        ? safeParseFloat(validated.value_min, { min: 0 })
+        : undefined,
+      value_max: validated.value_max
+        ? safeParseFloat(validated.value_max, { min: 0 })
+        : undefined,
       search: validated.search,
     }
 

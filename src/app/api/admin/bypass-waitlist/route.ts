@@ -31,7 +31,8 @@ const bypassSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     // SECURITY: Block this endpoint entirely in production
-    if (process.env.NODE_ENV !== 'development') {
+    // AND require explicit opt-in via ENABLE_DEV_BYPASS environment variable
+    if (process.env.NODE_ENV !== 'development' || process.env.ENABLE_DEV_BYPASS !== 'true') {
       return NextResponse.json(
         { error: 'Not found' },
         { status: 404 }

@@ -4,24 +4,12 @@
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
-    const user = await getCurrentUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Only allow admins to trigger (check role)
-    if (user.role !== 'admin' && user.role !== 'owner') {
-      return NextResponse.json(
-        { error: 'Forbidden - Admin access required' },
-        { status: 403 }
-      )
-    }
+    // SECURITY: Verify platform admin access
+    const { requireAdmin } = await import('@/lib/auth/admin')
+    await requireAdmin()
 
     const body = await request.json()
     const { lead_id } = body

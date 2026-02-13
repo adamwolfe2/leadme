@@ -41,6 +41,7 @@ export function InlineStatusEdit({ leadId, currentStatus }: InlineStatusEditProp
   const [selectedStatus, setSelectedStatus] = useState(currentStatus)
   const [showSuccess, setShowSuccess] = useState(false)
   const updateMutation = useUpdateLead()
+  const successTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const { refs, floatingStyles, context } = useFloating({
     open: isOpen,
@@ -54,6 +55,15 @@ export function InlineStatusEdit({ leadId, currentStatus }: InlineStatusEditProp
   const role = useRole(context)
 
   const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss, role])
+
+  // Cleanup success timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (successTimeoutRef.current) {
+        clearTimeout(successTimeoutRef.current)
+      }
+    }
+  }, [])
 
   const handleStatusSelect = async (status: LeadStatus) => {
     if (status === selectedStatus) {
@@ -72,7 +82,10 @@ export function InlineStatusEdit({ leadId, currentStatus }: InlineStatusEditProp
 
       // Show success checkmark briefly
       setShowSuccess(true)
-      setTimeout(() => setShowSuccess(false), 2000)
+      successTimeoutRef.current = setTimeout(() => {
+        setShowSuccess(false)
+        successTimeoutRef.current = null
+      }, 2000)
     } catch (error) {
       // Revert on error
       setSelectedStatus(currentStatus)

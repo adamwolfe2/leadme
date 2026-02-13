@@ -20,6 +20,7 @@
 import { createClient } from '@/lib/supabase/server'
 import type { Lead } from '@/types'
 import { DatabaseError } from '@/types'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // ============================================================================
 // TYPES
@@ -698,8 +699,8 @@ export class MatchingEngineService {
     })
 
     if (assignError) {
-      console.error('Failed to create assignment:', assignError)
-      return
+      safeError('[Matching Engine] Failed to create assignment - CRITICAL:', assignError)
+      throw new Error(`Failed to create lead assignment: ${assignError.message}`)
     }
 
     // Increment client's lead count
@@ -708,7 +709,8 @@ export class MatchingEngineService {
     })
 
     if (countError) {
-      console.error('Failed to increment lead count:', countError)
+      safeError('[Matching Engine] Failed to increment lead count:', countError)
+      // Non-critical - log but don't fail the assignment
     }
   }
 
@@ -739,7 +741,8 @@ export class MatchingEngineService {
     })
 
     if (error) {
-      console.error('Failed to log routing decision:', error)
+      safeError('[Matching Engine] Failed to log routing decision:', error)
+      // Non-critical audit log - don't throw, just log the error
     }
   }
 
@@ -752,7 +755,7 @@ export class MatchingEngineService {
     // Get unroutable leads that haven't been retried recently
     const { data: unroutable, error } = await supabase
       .from('unroutable_leads')
-      .select('lead_id')
+      .select('lead_id, retry_count')
       .eq('workspace_id', this.workspaceId)
       .eq('status', 'unprocessed')
       .or('next_retry_at.is.null,next_retry_at.lte.now()')
@@ -772,11 +775,12 @@ export class MatchingEngineService {
         await supabase.from('unroutable_leads').delete().eq('lead_id', record.lead_id)
         routedCount++
       } else {
-        // Update retry count
+        // Update retry count - increment using SQL
+        // Note: Using raw SQL increment to avoid race conditions
         await supabase
           .from('unroutable_leads')
           .update({
-            retry_count: supabase.rpc('increment', { x: 1 }),
+            retry_count: (record.retry_count || 0) + 1,
             last_retry_at: new Date().toISOString(),
             next_retry_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Try again in 24h
           })

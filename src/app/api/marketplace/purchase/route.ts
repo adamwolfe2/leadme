@@ -16,9 +16,13 @@ import { TIMEOUTS, getDaysFromNow } from '@/lib/constants/timeouts'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 const purchaseSchema = z.object({
-  leadIds: z.array(z.string().uuid()).min(1).max(100),
-  paymentMethod: z.enum(['credits', 'stripe']).default('credits'),
-  idempotencyKey: z.string().uuid().optional(),
+  leadIds: z.array(z.string().uuid('Invalid lead ID format'))
+    .min(1, 'At least one lead ID is required')
+    .max(100, 'Cannot purchase more than 100 leads at once'),
+  paymentMethod: z.enum(['credits', 'stripe'], {
+    errorMap: () => ({ message: 'Payment method must be either credits or stripe' })
+  }).default('credits'),
+  idempotencyKey: z.string().uuid('Invalid idempotency key format').optional(),
 })
 
 export async function POST(request: NextRequest) {

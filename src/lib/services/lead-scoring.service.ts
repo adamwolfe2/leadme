@@ -223,6 +223,10 @@ function calculateEmailScore(
 
   // Check for personal email domains
   const emailDomain = email.split('@')[1]?.toLowerCase()
+  if (!emailDomain) {
+    return { score: -10, description: 'Invalid email format' }
+  }
+
   const isPersonal = PERSONAL_EMAIL_DOMAINS.includes(emailDomain)
   if (isPersonal) {
     return { score: 0, description: 'Personal email' }

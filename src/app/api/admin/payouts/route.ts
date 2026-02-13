@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { safeParsePagination } from '@/lib/utils/parse-number'
 
 /**
  * GET /api/admin/payouts
@@ -23,9 +24,11 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams
     const status = searchParams.get('status') || 'all'
     const partnerId = searchParams.get('partner_id')
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '50')
-    const offset = (page - 1) * limit
+    const { page, limit, offset } = safeParsePagination(
+      searchParams.get('page'),
+      searchParams.get('limit'),
+      { defaultLimit: 50, maxLimit: 100 }
+    )
 
     const adminClient = createAdminClient()
 

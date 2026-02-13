@@ -113,7 +113,11 @@ export async function routeLeadsToMatchingUsers(
       const leadIndustry = lead.company_industry
 
       for (const ut of targetingUsers) {
-        const counts = capTracker.get(ut.user_id)!
+        const counts = capTracker.get(ut.user_id)
+        if (!counts) {
+          safeError(`${LOG_PREFIX} Missing cap tracker for user ${ut.user_id}`)
+          continue
+        }
 
         // Check caps
         if (ut.daily_lead_cap && counts.daily >= ut.daily_lead_cap) continue
@@ -130,7 +134,7 @@ export async function routeLeadsToMatchingUsers(
         if (hasGeo) {
           if (leadState && (ut.target_states as string[] | null)?.includes(leadState)) {
             matchedGeo = leadState
-          } else if (lead.city && (ut.target_cities as string[] | null)?.some((c: string) => c.toLowerCase() === lead.city!.toLowerCase())) {
+          } else if (lead.city && (ut.target_cities as string[] | null)?.some((c: string) => c.toLowerCase() === (lead.city || '').toLowerCase())) {
             matchedGeo = lead.city
           } else if (lead.postal_code && (ut.target_zips as string[] | null)?.includes(lead.postal_code)) {
             matchedGeo = lead.postal_code
@@ -202,7 +206,7 @@ export async function routeLeadsToMatchingUsers(
         }
 
         // Queue email notification if enabled
-        const userData = ut.users as any
+        const userData = (ut.users as any)?.[0] as { id: string; email: string; full_name: string | null } | undefined
         if (ut.email_notifications && userData?.email && emailNotifs.length < MAX_EMAIL_TOTAL) {
           emailNotifs.push({
             user: { email: userData.email, name: userData.full_name },
@@ -215,7 +219,9 @@ export async function routeLeadsToMatchingUsers(
 
     // Step 4: Batch update lead counts in DB
     for (const ut of targetingUsers) {
-      const counts = capTracker.get(ut.user_id)!
+      const counts = capTracker.get(ut.user_id)
+      if (!counts) continue // Skip if missing from tracker
+
       const originalDaily = ut.daily_lead_count || 0
       if (counts.daily === originalDaily) continue // No change
 

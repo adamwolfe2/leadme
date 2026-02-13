@@ -3,6 +3,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 /**
  * GET /api/services/subscription
@@ -12,7 +13,15 @@ export async function GET(request: NextRequest) {
   try {
     // Verify authentication
     const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError) {
+      safeError('[Services Subscription] Auth error:', authError)
+      return NextResponse.json(
+        { error: 'Authentication failed' },
+        { status: 401 }
+      )
+    }
 
     if (!user) {
       return NextResponse.json(
@@ -22,11 +31,19 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user's workspace
-    const { data: userData } = await supabase
+    const { data: userData, error: userError } = await supabase
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', user.id)
       .single()
+
+    if (userError) {
+      safeError('[Services Subscription] Failed to fetch user data:', userError)
+      return NextResponse.json(
+        { error: 'Failed to fetch user data' },
+        { status: 500 }
+      )
+    }
 
     if (!userData || !userData.workspace_id) {
       return NextResponse.json(
@@ -87,7 +104,7 @@ export async function GET(request: NextRequest) {
       }))
     })
   } catch (error) {
-    console.error('[API] Error fetching service subscription:', error)
+    safeError('[Services Subscription] Unexpected error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch subscription' },
       { status: 500 }

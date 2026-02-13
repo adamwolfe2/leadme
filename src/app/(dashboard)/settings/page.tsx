@@ -26,6 +26,9 @@ export default function ProfileSettingsPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteConfirmText, setDeleteConfirmText] = useState('')
   const deleteInputRef = useRef<HTMLInputElement>(null)
+  const redirectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const messageTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const focusTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Fetch current user
   const { data: userData, isLoading, isError, error } = useQuery({
@@ -52,6 +55,15 @@ export default function ProfileSettingsPage() {
       email: '',
     },
   })
+
+  // Cleanup all timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (redirectTimeoutRef.current) clearTimeout(redirectTimeoutRef.current)
+      if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current)
+      if (focusTimeoutRef.current) clearTimeout(focusTimeoutRef.current)
+    }
+  }, [])
 
   // Reset form when user data loads
   useEffect(() => {
@@ -100,8 +112,9 @@ export default function ProfileSettingsPage() {
     },
     onSuccess: () => {
       toast.success('Account deleted successfully. Redirecting...')
-      setTimeout(() => {
+      redirectTimeoutRef.current = setTimeout(() => {
         router.push('/signup')
+        redirectTimeoutRef.current = null
       }, 2000)
     },
     onError: (error: Error) => {
@@ -116,7 +129,10 @@ export default function ProfileSettingsPage() {
   const copyToClipboard = (text: string, message: string) => {
     navigator.clipboard.writeText(text)
     setSuccessMessage(message)
-    setTimeout(() => setSuccessMessage(''), 3000)
+    messageTimeoutRef.current = setTimeout(() => {
+      setSuccessMessage('')
+      messageTimeoutRef.current = null
+    }, 3000)
   }
 
   if (isLoading) {
@@ -352,7 +368,10 @@ export default function ProfileSettingsPage() {
               variant="destructive"
               onClick={() => {
                 setShowDeleteConfirm(true)
-                setTimeout(() => deleteInputRef.current?.focus(), 100)
+                focusTimeoutRef.current = setTimeout(() => {
+                  deleteInputRef.current?.focus()
+                  focusTimeoutRef.current = null
+                }, 100)
               }}
             >
               Delete Account

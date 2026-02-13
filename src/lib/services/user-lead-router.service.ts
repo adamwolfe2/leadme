@@ -14,6 +14,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { notifyUserNewLead } from '@/lib/notifications/lead-notification'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import type { Lead } from '@/types'
 
 interface MatchedUser {
@@ -58,7 +59,7 @@ export class UserLeadRouterService {
       .single()
 
     if (leadError || !lead) {
-      console.error('Lead not found:', leadId)
+      safeError('Lead not found:', leadId)
       return { leadId, matched: false, assignedTo: [], notificationsSent: 0 }
     }
 
@@ -92,7 +93,7 @@ export class UserLeadRouterService {
         if (assignError) {
           // Likely duplicate - skip
           if (assignError.code === '23505') continue
-          console.error('Failed to create assignment:', assignError)
+          safeError('Failed to create assignment:', assignError)
           continue
         }
 
@@ -120,11 +121,11 @@ export class UserLeadRouterService {
               .eq('lead_id', leadId)
               .eq('user_id', user.userId)
           } catch (notifError) {
-            console.error('Failed to send notification:', notifError)
+            safeError('Failed to send notification:', notifError)
           }
         }
       } catch (err) {
-        console.error('Error processing user assignment:', err)
+        safeError('Error processing user assignment:', err)
       }
     }
 
@@ -178,7 +179,7 @@ export class UserLeadRouterService {
       .eq('is_active', true)
 
     if (error || !users) {
-      console.error('Failed to get user targeting:', error)
+      safeError('Failed to get user targeting:', error)
       return []
     }
 
@@ -200,7 +201,7 @@ export class UserLeadRouterService {
       if (hasGeoTargeting) {
         if (leadState && ut.target_states?.includes(leadState)) {
           matchedGeo = leadState
-        } else if (leadCity && ut.target_cities?.some((c: string) => c.toLowerCase() === leadCity.toLowerCase())) {
+        } else if (leadCity && ut.target_cities?.some((c: string) => c.toLowerCase() === (leadCity || '').toLowerCase())) {
           matchedGeo = leadCity
         } else if (leadZip && ut.target_zips?.includes(leadZip)) {
           matchedGeo = leadZip
@@ -241,11 +242,16 @@ export class UserLeadRouterService {
       }
 
       // User matches!
-      const userData = ut.users as any
+      const userData = (ut.users as any)?.[0] as { id: string; email: string; full_name: string | null } | undefined
+      if (!userData?.email) {
+        safeError('[UserLeadRouter] User data missing email:', ut.user_id)
+        continue
+      }
+
       matchedUsers.push({
         userId: ut.user_id,
-        userEmail: userData?.email || '',
-        userName: userData?.full_name || null,
+        userEmail: userData.email,
+        userName: userData.full_name,
         matchedIndustry,
         matchedSic,
         matchedGeo,
@@ -257,38 +263,36 @@ export class UserLeadRouterService {
   }
 
   /**
-   * Increment user's lead counts
+   * Increment user's lead counts (using safe read-modify-write pattern)
    */
   private async incrementUserLeadCount(userId: string): Promise<void> {
     const supabase = await createClient()
 
-    await supabase
-      .from('user_targeting')
-      .update({
-        daily_lead_count: supabase.rpc('increment_count', { count_col: 'daily_lead_count' }),
-        weekly_lead_count: supabase.rpc('increment_count', { count_col: 'weekly_lead_count' }),
-        monthly_lead_count: supabase.rpc('increment_count', { count_col: 'monthly_lead_count' }),
-        updated_at: new Date().toISOString(),
-      })
-      .eq('user_id', userId)
-
-    // Fallback if RPC doesn't exist - just increment manually
-    const { data: current } = await supabase
+    // Get current counts
+    const { data: current, error: fetchError } = await supabase
       .from('user_targeting')
       .select('daily_lead_count, weekly_lead_count, monthly_lead_count')
       .eq('user_id', userId)
       .single()
 
-    if (current) {
-      await supabase
-        .from('user_targeting')
-        .update({
-          daily_lead_count: (current.daily_lead_count || 0) + 1,
-          weekly_lead_count: (current.weekly_lead_count || 0) + 1,
-          monthly_lead_count: (current.monthly_lead_count || 0) + 1,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('user_id', userId)
+    if (fetchError || !current) {
+      safeError('[UserLeadRouter] Failed to fetch targeting for count increment:', fetchError)
+      return
+    }
+
+    // Increment
+    const { error: updateError } = await supabase
+      .from('user_targeting')
+      .update({
+        daily_lead_count: (current.daily_lead_count || 0) + 1,
+        weekly_lead_count: (current.weekly_lead_count || 0) + 1,
+        monthly_lead_count: (current.monthly_lead_count || 0) + 1,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('user_id', userId)
+
+    if (updateError) {
+      safeError('[UserLeadRouter] Failed to increment lead counts:', updateError)
     }
   }
 
@@ -341,7 +345,7 @@ export class UserLeadRouterService {
     const { data, count, error } = await query
 
     if (error) {
-      console.error('Failed to get user leads:', error)
+      safeError('Failed to get user leads:', error)
       return { leads: [], total: 0 }
     }
 

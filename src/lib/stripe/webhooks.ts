@@ -44,11 +44,14 @@ export async function handleSubscriptionCreated(
   }
 
   // Log billing event
+  const firstItem = subscription.items?.data?.[0]
+  const amount = firstItem?.price?.unit_amount ?? 0
+
   await supabase.from('billing_events').insert({
     workspace_id: workspaceId,
     event_type: 'subscription_created',
     stripe_event_id: subscription.id,
-    amount: subscription.items.data[0]?.price?.unit_amount || 0,
+    amount,
     currency: subscription.currency,
     metadata: {
       subscription_id: subscription.id,
@@ -105,11 +108,14 @@ export async function handleSubscriptionUpdated(
   }
 
   // Log billing event
+  const firstItem = subscription.items?.data?.[0]
+  const amount = firstItem?.price?.unit_amount ?? 0
+
   await supabase.from('billing_events').insert({
     workspace_id: workspaceId,
     event_type: 'subscription_updated',
     stripe_event_id: subscription.id,
-    amount: subscription.items.data[0]?.price?.unit_amount || 0,
+    amount,
     currency: subscription.currency,
     metadata: {
       subscription_id: subscription.id,
@@ -175,17 +181,23 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
 
   if (!invoice.subscription) return
 
-  const subscription = await supabase
+  const { data: subscription, error: subscriptionError } = await supabase
     .from('users')
     .select('workspace_id')
     .eq('stripe_subscription_id', invoice.subscription)
     .single()
 
-  if (!subscription.data) return
+  if (subscriptionError || !subscription) {
+    logger.error('[Stripe] Failed to find user for invoice.payment_succeeded', {
+      error: subscriptionError?.message,
+      subscription_id: invoice.subscription
+    })
+    return
+  }
 
   // Log billing event
   await supabase.from('billing_events').insert({
-    workspace_id: subscription.data.workspace_id,
+    workspace_id: subscription.workspace_id,
     event_type: 'payment_succeeded',
     stripe_event_id: invoice.id,
     amount: invoice.amount_paid,
@@ -208,17 +220,23 @@ export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
 
   if (!invoice.subscription) return
 
-  const subscription = await supabase
+  const { data: subscription, error: subscriptionError } = await supabase
     .from('users')
     .select('workspace_id, id, email, full_name')
     .eq('stripe_subscription_id', invoice.subscription)
     .single()
 
-  if (!subscription.data) return
+  if (subscriptionError || !subscription) {
+    logger.error('[Stripe] Failed to find user for invoice.payment_failed', {
+      error: subscriptionError?.message,
+      subscription_id: invoice.subscription
+    })
+    return
+  }
 
   // Log billing event
   await supabase.from('billing_events').insert({
-    workspace_id: subscription.data.workspace_id,
+    workspace_id: subscription.workspace_id,
     event_type: 'payment_failed',
     stripe_event_id: invoice.id,
     amount: invoice.amount_due,
@@ -234,8 +252,8 @@ export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
   // Send email notification to user about failed payment
   try {
     await sendPaymentFailedEmail(
-      subscription.data.email,
-      subscription.data.full_name || 'there',
+      subscription.email,
+      subscription.full_name || 'there',
       invoice.amount_due,
       invoice.currency,
       invoice.attempt_count || 1

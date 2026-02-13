@@ -8,10 +8,14 @@ import { serviceTierRepository } from '@/lib/repositories/service-tier.repositor
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 const checkoutSchema = z.object({
-  tier_slug: z.string(),
-  negotiated_monthly_price: z.number().optional(),
-  success_url: z.string().url().optional(),
-  cancel_url: z.string().url().optional()
+  tier_slug: z.string().min(1, 'Tier slug is required'),
+  negotiated_monthly_price: z.number()
+    .positive('Price must be positive')
+    .finite('Price must be a valid number')
+    .max(1000000, 'Price exceeds maximum limit')
+    .optional(),
+  success_url: z.string().url('Invalid success URL').optional(),
+  cancel_url: z.string().url('Invalid cancel URL').optional()
 })
 
 /**

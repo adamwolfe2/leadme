@@ -11,29 +11,11 @@ import { sendDeliveryNotificationEmail } from '@/lib/email/service-emails'
  */
 export async function POST(request: NextRequest) {
   try {
+    // SECURITY: Verify platform admin access
+    const { requireAdmin } = await import('@/lib/auth/admin')
+    await requireAdmin()
+
     const supabase = await createClient()
-
-    // Verify admin access
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      )
-    }
-
-    const { data: userData } = await supabase
-      .from('users')
-      .select('role')
-      .eq('auth_user_id', user.id)
-      .single()
-
-    if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
-      return NextResponse.json(
-        { error: 'Admin access required' },
-        { status: 403 }
-      )
-    }
 
     // Parse form data
     const formData = await request.formData()

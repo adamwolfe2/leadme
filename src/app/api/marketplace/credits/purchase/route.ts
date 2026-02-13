@@ -12,9 +12,15 @@ import { getStripeClient } from '@/lib/stripe/client'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 const purchaseSchema = z.object({
-  packageId: z.string(),
-  credits: z.number().positive(),
-  amount: z.number().positive(),
+  packageId: z.string().min(1, 'Package ID is required'),
+  credits: z.number()
+    .int('Credits must be a whole number')
+    .positive('Credits must be positive')
+    .max(1000000, 'Credits amount exceeds maximum'),
+  amount: z.number()
+    .positive('Amount must be positive')
+    .finite('Amount must be a valid number')
+    .max(1000000, 'Amount exceeds maximum limit'),
 })
 
 export async function POST(request: NextRequest) {
