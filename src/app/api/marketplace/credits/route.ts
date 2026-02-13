@@ -6,6 +6,7 @@ export const runtime = 'edge'
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET() {
   try {
@@ -42,7 +43,7 @@ export async function GET() {
       totalEarned: credits?.total_earned || 0,
     })
   } catch (error) {
-    console.error('Failed to get credits:', error)
+    safeError('Failed to get credits:', error)
     return NextResponse.json({ error: 'Failed to get credits' }, { status: 500 })
   }
 }

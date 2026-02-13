@@ -5,6 +5,7 @@ export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function POST(
   request: NextRequest,
@@ -58,7 +59,7 @@ export async function POST(
       .single()
 
     if (updateError) {
-      console.error('Error approving lead:', updateError)
+      safeError('Error approving lead:', updateError)
       return NextResponse.json(
         { error: 'Failed to approve lead' },
         { status: 500 }
@@ -80,7 +81,7 @@ export async function POST(
 
     return NextResponse.json({ lead: updatedLead })
   } catch (error) {
-    console.error('Error approving lead:', error)
+    safeError('Error approving lead:', error)
 
     return NextResponse.json(
       { error: 'Failed to approve lead' },

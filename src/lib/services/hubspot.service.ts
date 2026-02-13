@@ -2,6 +2,7 @@
 // CRM integration for bi-directional lead sync
 
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const HUBSPOT_API_BASE = 'https://api.hubapi.com'
 
@@ -94,7 +95,7 @@ export class HubSpotService {
       clearTimeout(timeoutId)
 
       if (!response.ok) {
-        console.error('[HubSpotService] Token refresh failed')
+        safeError('[HubSpotService] Token refresh failed')
         return false
       }
 
@@ -115,7 +116,7 @@ export class HubSpotService {
 
       return true
     } catch (error) {
-      console.error('[HubSpotService] Token refresh error:', error)
+      safeError('[HubSpotService] Token refresh error:', error)
       return false
     }
   }
@@ -199,7 +200,7 @@ export class HubSpotService {
 
       return { id: result.id, created: true }
     } catch (error: any) {
-      console.error('[HubSpotService] Upsert contact error:', error)
+      safeError('[HubSpotService] Upsert contact error:', error)
       throw error
     }
   }
@@ -284,7 +285,7 @@ export class HubSpotService {
 
       return { success: true, contactId }
     } catch (error: any) {
-      console.error('[HubSpotService] Sync lead error:', error)
+      safeError('[HubSpotService] Sync lead error:', error)
 
       // Log failed sync
       const supabase = await createClient()

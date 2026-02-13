@@ -2,6 +2,7 @@
 // Handles referral program logic for both buyers and partners
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Referral configuration - EXACT SPEC VALUES
 export const REFERRAL_CONFIG = {
@@ -218,7 +219,7 @@ export async function processBuyerSignupMilestone(referralId: string): Promise<{
     .eq('id', referralId)
 
   if (milestoneError) {
-    console.error('[Referral] Failed to record signup milestone:', milestoneError)
+    safeError('[Referral] Failed to record signup milestone:', milestoneError)
   }
 
   return { rewarded: true, creditsAwarded }
@@ -273,7 +274,7 @@ export async function processBuyerFirstPurchaseMilestone(referralId: string): Pr
     .eq('id', referralId)
 
   if (purchaseMilestoneError) {
-    console.error('[Referral] Failed to record first_purchase milestone:', purchaseMilestoneError)
+    safeError('[Referral] Failed to record first_purchase milestone:', purchaseMilestoneError)
   }
 
   return { rewarded: true, referrerCredits, refereeCredits }
@@ -334,7 +335,7 @@ export async function processBuyerSpendMilestone(referralId: string): Promise<{
     .eq('id', referralId)
 
   if (spendMilestoneError) {
-    console.error('[Referral] Failed to record spend_500 milestone:', spendMilestoneError)
+    safeError('[Referral] Failed to record spend_500 milestone:', spendMilestoneError)
   }
 
   return { rewarded: true, creditsAwarded }
@@ -401,7 +402,7 @@ export async function processPartnerReferralMilestones(referralId: string): Prom
         .eq('id', referral.referrer_partner_id)
 
       if (m1Error) {
-        console.error('[Referral] Failed to update partner balance (M1):', m1Error)
+        safeError('[Referral] Failed to update partner balance (M1):', m1Error)
       }
     }
   }
@@ -426,7 +427,7 @@ export async function processPartnerReferralMilestones(referralId: string): Prom
         .eq('id', referral.referrer_partner_id)
 
       if (m2Error) {
-        console.error('[Referral] Failed to update partner balance (M2):', m2Error)
+        safeError('[Referral] Failed to update partner balance (M2):', m2Error)
       }
     }
   }
@@ -451,7 +452,7 @@ export async function processPartnerReferralMilestones(referralId: string): Prom
         .eq('id', referral.referrer_partner_id)
 
       if (m3Error) {
-        console.error('[Referral] Failed to update partner balance (M3):', m3Error)
+        safeError('[Referral] Failed to update partner balance (M3):', m3Error)
       }
     }
   }
@@ -480,7 +481,7 @@ export async function processPartnerReferralMilestones(referralId: string): Prom
       .eq('id', referralId)
 
     if (referralUpdateError) {
-      console.error('[Referral] Failed to update referral record:', referralUpdateError)
+      safeError('[Referral] Failed to update referral record:', referralUpdateError)
     }
   }
 
@@ -551,7 +552,7 @@ async function addCreditsToWorkspace(
       .eq('workspace_id', workspaceId)
 
     if (creditUpdateError) {
-      console.error('[Referral] Failed to update workspace credits:', creditUpdateError)
+      safeError('[Referral] Failed to update workspace credits:', creditUpdateError)
     }
   } else {
     const { error: creditInsertError } = await supabase.from('workspace_credits').insert({
@@ -563,7 +564,7 @@ async function addCreditsToWorkspace(
     })
 
     if (creditInsertError) {
-      console.error('[Referral] Failed to create workspace credits:', creditInsertError)
+      safeError('[Referral] Failed to create workspace credits:', creditInsertError)
     }
   }
 }
@@ -677,7 +678,7 @@ export async function assignWorkspaceReferralCode(workspaceId: string): Promise<
     .eq('id', workspaceId)
 
   if (codeError) {
-    console.error('[Referral] Failed to assign workspace referral code:', codeError)
+    safeError('[Referral] Failed to assign workspace referral code:', codeError)
   }
 
   return code
@@ -711,7 +712,7 @@ export async function assignPartnerReferralCode(partnerId: string): Promise<stri
     .eq('id', partnerId)
 
   if (partnerCodeError) {
-    console.error('[Referral] Failed to assign partner referral code:', partnerCodeError)
+    safeError('[Referral] Failed to assign partner referral code:', partnerCodeError)
   }
 
   return code

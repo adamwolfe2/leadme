@@ -11,6 +11,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Salesforce OAuth Configuration
 const SF_OAUTH_URL = 'https://login.salesforce.com/services/oauth2/authorize'
@@ -72,7 +73,7 @@ export async function GET(req: NextRequest) {
     // Validate Salesforce configuration
     const clientId = process.env.SALESFORCE_CLIENT_ID
     if (!clientId) {
-      console.error('[Salesforce OAuth] Missing SALESFORCE_CLIENT_ID')
+      safeError('[Salesforce OAuth] Missing SALESFORCE_CLIENT_ID')
       return NextResponse.redirect(
         new URL('/settings/integrations?error=sf_not_configured', req.url)
       )
@@ -120,7 +121,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.redirect(oauthUrl.toString())
   } catch (error: any) {
-    console.error('[Salesforce OAuth] Authorization error:', error)
+    safeError('[Salesforce OAuth] Authorization error:', error)
     return NextResponse.redirect(
       new URL('/settings/integrations?error=sf_oauth_failed', req.url)
     )

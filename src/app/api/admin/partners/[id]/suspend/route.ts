@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { PartnerRepository } from '@/lib/repositories/partner.repository'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const suspendSchema = z.object({
   reason: z.string().min(10, 'Suspension reason must be at least 10 characters'),
@@ -66,7 +67,7 @@ export async function POST(
 
     return NextResponse.json({ partner })
   } catch (error) {
-    console.error('Error suspending partner:', error)
+    safeError('Error suspending partner:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

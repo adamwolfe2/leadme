@@ -10,6 +10,7 @@ import type {
   LeadStatus,
   NoteType,
 } from '@/types'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export interface LeadNoteFilters {
   note_type?: NoteType
@@ -58,7 +59,7 @@ export class LeadActivityRepository {
     const { data, error } = await query
 
     if (error) {
-      console.error('[LeadActivityRepository] Get notes error:', error)
+      safeError('[LeadActivityRepository] Get notes error:', error)
       throw new Error(`Failed to fetch notes: ${error.message}`)
     }
 
@@ -78,7 +79,7 @@ export class LeadActivityRepository {
       .single()
 
     if (error) {
-      console.error('[LeadActivityRepository] Create note error:', error)
+      safeError('[LeadActivityRepository] Create note error:', error)
       throw new Error(`Failed to create note: ${error.message}`)
     }
 
@@ -104,7 +105,7 @@ export class LeadActivityRepository {
       .single()
 
     if (error) {
-      console.error('[LeadActivityRepository] Update note error:', error)
+      safeError('[LeadActivityRepository] Update note error:', error)
       throw new Error(`Failed to update note: ${error.message}`)
     }
 
@@ -124,7 +125,7 @@ export class LeadActivityRepository {
       .eq('workspace_id', workspaceId)
 
     if (error) {
-      console.error('[LeadActivityRepository] Delete note error:', error)
+      safeError('[LeadActivityRepository] Delete note error:', error)
       throw new Error(`Failed to delete note: ${error.message}`)
     }
   }
@@ -152,7 +153,7 @@ export class LeadActivityRepository {
     })
 
     if (error) {
-      console.error('[LeadActivityRepository] Update status error:', error)
+      safeError('[LeadActivityRepository] Update status error:', error)
       throw new Error(`Failed to update status: ${error.message}`)
     }
   }
@@ -174,7 +175,7 @@ export class LeadActivityRepository {
       .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('[LeadActivityRepository] Get status history error:', error)
+      safeError('[LeadActivityRepository] Get status history error:', error)
       throw new Error(`Failed to fetch status history: ${error.message}`)
     }
 
@@ -204,7 +205,7 @@ export class LeadActivityRepository {
       .limit(limit)
 
     if (error) {
-      console.error('[LeadActivityRepository] Get activities error:', error)
+      safeError('[LeadActivityRepository] Get activities error:', error)
       throw new Error(`Failed to fetch activities: ${error.message}`)
     }
 
@@ -240,7 +241,7 @@ export class LeadActivityRepository {
       .single()
 
     if (error) {
-      console.error('[LeadActivityRepository] Log activity error:', error)
+      safeError('[LeadActivityRepository] Log activity error:', error)
       throw new Error(`Failed to log activity: ${error.message}`)
     }
 
@@ -265,7 +266,7 @@ export class LeadActivityRepository {
       .eq('workspace_id', workspaceId)
 
     if (error) {
-      console.error('[LeadActivityRepository] Get status counts error:', error)
+      safeError('[LeadActivityRepository] Get status counts error:', error)
       throw new Error(`Failed to fetch status counts: ${error.message}`)
     }
 

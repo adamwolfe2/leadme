@@ -6,6 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { getStripeClient } from '@/lib/stripe/client'
 import { COMMISSION_CONFIG, processPendingCommissions, getPartnersEligibleForPayout } from '@/lib/services/commission.service'
 import { sendPayoutCompletedEmail } from '@/lib/email/service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 /**
  * Weekly partner payout job
@@ -167,7 +168,7 @@ async function processPartnerPayout(partner: {
       })
 
     if (insertError) {
-      console.error('Failed to insert payout record:', insertError)
+      safeError('Failed to insert payout record:', insertError)
       // Don't fail - transfer already succeeded
     }
 
@@ -216,7 +217,7 @@ async function processPartnerPayout(partner: {
         }
       )
     } catch (emailError) {
-      console.error('[Payout] Failed to send completion email:', emailError)
+      safeError('[Payout] Failed to send completion email:', emailError)
       // Don't fail the payout if email fails
     }
 
@@ -226,7 +227,7 @@ async function processPartnerPayout(partner: {
       transferId: transfer.id,
     }
   } catch (error) {
-    console.error(`Stripe transfer failed for partner ${partner.partnerId}:`, error)
+    safeError(`Stripe transfer failed for partner ${partner.partnerId}:`, error)
 
     // Record failed payout attempt
     await supabase
@@ -377,7 +378,7 @@ export const reconcilePayouts = inngest.createFunction(
             reconciled++
           }
         } catch (err) {
-          console.error(`Failed to reconcile payout ${payout.id}:`, err)
+          safeError(`Failed to reconcile payout ${payout.id}:`, err)
         }
       })
     }

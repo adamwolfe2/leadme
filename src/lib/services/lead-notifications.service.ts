@@ -10,6 +10,7 @@
 
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const LOG_PREFIX = '[Lead Notifications]'
 
@@ -203,17 +204,17 @@ async function notifySlack(
 
     if (!response.ok) {
       const responseText = await response.text().catch(() => '')
-      console.error(
+      safeError(
         `${LOG_PREFIX} Slack webhook failed: HTTP ${response.status} - ${responseText}`
       )
       return false
     }
 
-    console.error(`${LOG_PREFIX} Slack notification sent for lead ${lead.lead_id}`)
+    safeError(`${LOG_PREFIX} Slack notification sent for lead ${lead.lead_id}`)
     return true
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error'
-    console.error(`${LOG_PREFIX} Slack webhook error: ${message}`)
+    safeError(`${LOG_PREFIX} Slack webhook error: ${message}`)
     return false
   }
 }
@@ -270,17 +271,17 @@ async function notifyZapier(
 
     if (!response.ok) {
       const responseText = await response.text().catch(() => '')
-      console.error(
+      safeError(
         `${LOG_PREFIX} Zapier webhook failed: HTTP ${response.status} - ${responseText}`
       )
       return false
     }
 
-    console.error(`${LOG_PREFIX} Zapier notification sent for lead ${lead.lead_id}`)
+    safeError(`${LOG_PREFIX} Zapier notification sent for lead ${lead.lead_id}`)
     return true
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error'
-    console.error(`${LOG_PREFIX} Zapier webhook error: ${message}`)
+    safeError(`${LOG_PREFIX} Zapier webhook error: ${message}`)
     return false
   }
 }
@@ -317,12 +318,12 @@ export async function notifyNewLead(
       .eq('workspace_id', workspaceId)
 
     if (error) {
-      console.error(`${LOG_PREFIX} Failed to fetch workspace users: ${error.message}`)
+      safeError(`${LOG_PREFIX} Failed to fetch workspace users: ${error.message}`)
       return result
     }
 
     if (!users || users.length === 0) {
-      console.error(`${LOG_PREFIX} No users found for workspace ${workspaceId}`)
+      safeError(`${LOG_PREFIX} No users found for workspace ${workspaceId}`)
       return result
     }
 
@@ -340,7 +341,7 @@ export async function notifyNewLead(
     }
 
     if (slackUrls.size === 0 && zapierUrls.size === 0) {
-      console.error(`${LOG_PREFIX} No webhooks configured for workspace ${workspaceId}`)
+      safeError(`${LOG_PREFIX} No webhooks configured for workspace ${workspaceId}`)
       return result
     }
 
@@ -371,7 +372,7 @@ export async function notifyNewLead(
 
     await Promise.allSettled(promises)
 
-    console.error(
+    safeError(
       `${LOG_PREFIX} Notification results for lead ${lead.lead_id}: ` +
         `Slack=${result.slack.count}/${slackUrls.size}, ` +
         `Zapier=${result.zapier.count}/${zapierUrls.size}`
@@ -392,7 +393,7 @@ export async function notifyNewLead(
     }).catch(() => {}) // Best-effort, don't block
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error'
-    console.error(`${LOG_PREFIX} Unexpected error in notifyNewLead: ${message}`)
+    safeError(`${LOG_PREFIX} Unexpected error in notifyNewLead: ${message}`)
   }
 
   return result

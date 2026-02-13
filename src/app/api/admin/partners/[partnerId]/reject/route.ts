@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { sendPartnerRejectedEmail } from '@/lib/email/service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const rejectSchema = z.object({
   reason: z.string().min(10, 'Please provide a reason'),
@@ -83,7 +84,7 @@ export async function POST(
       parsed.data.reason
     )
   } catch (emailError) {
-    console.error('[Partner Rejection] Failed to send email:', emailError)
+    safeError('[Partner Rejection] Failed to send email:', emailError)
     // Don't fail the rejection if email fails
   }
 

@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceCheckout } from '@/lib/stripe/service-checkout'
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const checkoutSchema = z.object({
   tier_slug: z.string(),
@@ -103,7 +104,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('[Service Checkout] Error:', error)
+    safeError('[Service Checkout] Error:', error)
     return NextResponse.json(
       { error: 'Failed to create checkout session' },
       { status: 500 }

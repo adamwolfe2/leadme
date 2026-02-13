@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/server'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import type { MarketplaceFilters, SeniorityLevel } from '@/types/database.types'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const filtersSchema = z.object({
   industries: z.array(z.string()).optional(),
@@ -119,7 +120,7 @@ export async function GET(request: NextRequest) {
       offset: validated.offset || 0,
     })
   } catch (error) {
-    console.error('Failed to browse leads:', error)
+    safeError('Failed to browse leads:', error)
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Invalid filters', details: error.errors }, { status: 400 })
     }

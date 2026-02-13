@@ -11,6 +11,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // HubSpot OAuth Configuration
 const HS_OAUTH_URL = 'https://app.hubspot.com/oauth/authorize'
@@ -72,7 +73,7 @@ export async function GET(req: NextRequest) {
     // Validate HubSpot configuration
     const clientId = process.env.HUBSPOT_CLIENT_ID
     if (!clientId) {
-      console.error('[HubSpot OAuth] Missing HUBSPOT_CLIENT_ID')
+      safeError('[HubSpot OAuth] Missing HUBSPOT_CLIENT_ID')
       return NextResponse.redirect(
         new URL('/settings/integrations?error=hs_not_configured', req.url)
       )
@@ -120,7 +121,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.redirect(oauthUrl.toString())
   } catch (error: any) {
-    console.error('[HubSpot OAuth] Authorization error:', error)
+    safeError('[HubSpot OAuth] Authorization error:', error)
     return NextResponse.redirect(
       new URL('/settings/integrations?error=hs_oauth_failed', req.url)
     )

@@ -3,6 +3,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { FREE_TRIAL_CREDITS } from '@/lib/constants/credit-packages'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function POST(request: NextRequest) {
   try {
@@ -105,7 +106,7 @@ export async function POST(request: NextRequest) {
       alreadyGranted: false,
     })
   } catch (error) {
-    console.error('Failed to grant free credits:', error)
+    safeError('Failed to grant free credits:', error)
     return NextResponse.json(
       { error: 'Failed to grant free credits' },
       { status: 500 }

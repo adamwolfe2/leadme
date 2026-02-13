@@ -5,6 +5,7 @@ import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { checkRateLimit } from '@/lib/utils/rate-limit'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -63,7 +64,7 @@ export async function loginAction(formData: FormData) {
   })
 
   if (signInError) {
-    console.error('❌ Server Action: Login error:', signInError)
+    safeError('❌ Server Action: Login error:', signInError)
     return { error: signInError.message }
   }
 
@@ -91,16 +92,16 @@ export async function googleLoginAction(redirectTo: string = '/dashboard') {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
     || (origin ? `https://${origin.replace(/^https?:\/\//, '')}` : null)
 
-  console.warn('[Auth] Google OAuth: siteUrl=', siteUrl, 'NEXT_PUBLIC_SITE_URL=', process.env.NEXT_PUBLIC_SITE_URL || 'NOT SET')
+  safeError(`[Auth] Google OAuth: siteUrl=${siteUrl} NEXT_PUBLIC_SITE_URL=${process.env.NEXT_PUBLIC_SITE_URL || 'NOT SET'}`)
 
   if (!siteUrl) {
-    console.warn('[Auth] Google OAuth FAILED: no site URL available')
+    safeError('[Auth] Google OAuth FAILED: no site URL available')
     return { error: 'Site URL not configured. Please contact support.' }
   }
 
   const normalizedSiteUrl = siteUrl.replace(/\/+$/, '')
   const callbackUrl = `${normalizedSiteUrl}/auth/callback?next=${encodeURIComponent(redirectTo)}`
-  console.warn('[Auth] Google OAuth callbackUrl:', callbackUrl)
+  safeError('[Auth] Google OAuth callbackUrl:', callbackUrl)
 
   const supabase = await createClient()
 
@@ -112,15 +113,15 @@ export async function googleLoginAction(redirectTo: string = '/dashboard') {
   })
 
   if (error) {
-    console.warn('[Auth] Google OAuth error from Supabase:', error.message)
+    safeError('[Auth] Google OAuth error from Supabase:', error.message)
     return { error: error.message }
   }
 
   if (data.url) {
-    console.warn('[Auth] Google OAuth redirecting to:', data.url.substring(0, 80) + '...')
+    safeError('[Auth] Google OAuth redirecting to:', data.url.substring(0, 80) + '...')
     redirect(data.url)
   }
 
-  console.warn('[Auth] Google OAuth: no URL returned from Supabase')
+  safeError('[Auth] Google OAuth: no URL returned from Supabase')
   return { error: 'Failed to initiate Google login' }
 }

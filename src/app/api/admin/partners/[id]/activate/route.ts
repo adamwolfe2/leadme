@@ -6,6 +6,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { PartnerRepository } from '@/lib/repositories/partner.repository'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function POST(
   request: NextRequest,
@@ -56,7 +57,7 @@ export async function POST(
 
     return NextResponse.json({ partner })
   } catch (error) {
-    console.error('Error activating partner:', error)
+    safeError('Error activating partner:', error)
 
     return NextResponse.json(
       { error: 'Failed to activate partner' },

@@ -4,6 +4,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 import type { LeadFilters, LeadTableRow, LeadUpdatePayload } from '@/types/crm.types'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export class CRMLeadRepository {
   async findByWorkspace(
@@ -97,7 +98,7 @@ export class CRMLeadRepository {
     const { data, count, error } = await query
 
     if (error) {
-      console.error('[CRMLeadRepository] Failed to fetch leads:', error)
+      safeError('[CRMLeadRepository] Failed to fetch leads:', error)
       throw new Error('Failed to fetch leads')
     }
 
@@ -131,7 +132,7 @@ export class CRMLeadRepository {
 
     if (error) {
       if (error.code === 'PGRST116') return null // Not found
-      console.error('[CRMLeadRepository] Failed to fetch lead:', error)
+      safeError('[CRMLeadRepository] Failed to fetch lead:', error)
       throw new Error('Failed to fetch lead')
     }
 
@@ -159,7 +160,7 @@ export class CRMLeadRepository {
       .single()
 
     if (error) {
-      console.error('[CRMLeadRepository] Failed to create lead:', error)
+      safeError('[CRMLeadRepository] Failed to create lead:', error)
       throw new Error('Failed to create lead')
     }
 
@@ -194,7 +195,7 @@ export class CRMLeadRepository {
       .single()
 
     if (error) {
-      console.error('[CRMLeadRepository] Failed to update lead:', error)
+      safeError('[CRMLeadRepository] Failed to update lead:', error)
       throw new Error('Failed to update lead')
     }
 
@@ -218,7 +219,7 @@ export class CRMLeadRepository {
       .eq('workspace_id', workspaceId)
 
     if (error) {
-      console.error('[CRMLeadRepository] Failed to bulk update leads:', error)
+      safeError('[CRMLeadRepository] Failed to bulk update leads:', error)
       throw new Error('Failed to bulk update leads')
     }
   }
@@ -233,7 +234,7 @@ export class CRMLeadRepository {
       .eq('workspace_id', workspaceId)
 
     if (error) {
-      console.error('[CRMLeadRepository] Failed to delete lead:', error)
+      safeError('[CRMLeadRepository] Failed to delete lead:', error)
       throw new Error('Failed to delete lead')
     }
   }
@@ -248,7 +249,7 @@ export class CRMLeadRepository {
       .eq('workspace_id', workspaceId)
 
     if (error) {
-      console.error('[CRMLeadRepository] Failed to bulk delete leads:', error)
+      safeError('[CRMLeadRepository] Failed to bulk delete leads:', error)
       throw new Error('Failed to bulk delete leads')
     }
   }

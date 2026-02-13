@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { PartnerRepository } from '@/lib/repositories/partner.repository'
 import { getStripeClient } from '@/lib/stripe/client'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function POST(request: NextRequest) {
   try {
@@ -69,7 +70,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ url: accountLink.url })
   } catch (error) {
-    console.error('Error creating Stripe Connect link:', error)
+    safeError('Error creating Stripe Connect link:', error)
     return NextResponse.json(
       { error: 'Failed to create Stripe Connect link' },
       { status: 500 }
@@ -109,7 +110,7 @@ export async function GET(request: NextRequest) {
       detailsSubmitted: account.details_submitted,
     })
   } catch (error) {
-    console.error('Error fetching Stripe Connect status:', error)
+    safeError('Error fetching Stripe Connect status:', error)
     return NextResponse.json(
       { error: 'Failed to fetch Stripe Connect status' },
       { status: 500 }

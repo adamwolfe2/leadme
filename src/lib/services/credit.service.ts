@@ -3,6 +3,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import type { Database } from '@/types/database.types'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export type CreditAction = 'lead_generation' | 'email_reveal' | 'export' | 'people_search'
 
@@ -76,7 +77,7 @@ export class CreditService {
         .eq('id', userId)
 
       if (resetError) {
-        console.error('[CreditService] Failed to reset daily credits:', resetError)
+        safeError('[CreditService] Failed to reset daily credits:', resetError)
       }
     }
 
@@ -131,7 +132,7 @@ export class CreditService {
           .eq('id', userId)
 
         if (fallbackError) {
-          console.error('[CreditService] Failed to update credits (fallback):', fallbackError)
+          safeError('[CreditService] Failed to update credits (fallback):', fallbackError)
         }
       }
     }
@@ -146,7 +147,7 @@ export class CreditService {
     })
 
     if (logError) {
-      console.error('[CreditService] Failed to log credit usage:', logError)
+      safeError('[CreditService] Failed to log credit usage:', logError)
     }
   }
 

@@ -6,6 +6,7 @@ export const runtime = 'edge'
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET() {
   try {
@@ -48,7 +49,7 @@ export async function GET() {
       totalLeads,
     })
   } catch (error) {
-    console.error('Failed to get purchase history:', error)
+    safeError('Failed to get purchase history:', error)
     return NextResponse.json(
       { error: 'Failed to get purchase history' },
       { status: 500 }

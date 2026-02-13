@@ -12,6 +12,7 @@ import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { cancelSubscription, resumeSubscription } from '@/lib/stripe/client'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Request validation schema
 const cancelSchema = z.object({
@@ -163,7 +164,7 @@ export async function POST(req: NextRequest) {
       })
     }
   } catch (error: any) {
-    console.error('[Billing Cancel] Error:', error)
+    safeError('[Billing Cancel] Error:', error)
     return NextResponse.json(
       { error: 'Failed to process request' },
       { status: 500 }

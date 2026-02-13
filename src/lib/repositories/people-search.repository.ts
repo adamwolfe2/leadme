@@ -2,6 +2,7 @@
 // Database access layer for people search with credit tracking
 
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export interface PeopleSearchFilters {
   company?: string
@@ -58,7 +59,7 @@ export class PeopleSearchRepository {
       .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('[PeopleSearchRepository] Find saved searches error:', error)
+      safeError('[PeopleSearchRepository] Find saved searches error:', error)
       throw new Error(`Failed to fetch saved searches: ${error.message}`)
     }
 
@@ -86,7 +87,7 @@ export class PeopleSearchRepository {
       .single()
 
     if (error) {
-      console.error('[PeopleSearchRepository] Save search error:', error)
+      safeError('[PeopleSearchRepository] Save search error:', error)
       throw new Error(`Failed to save search: ${error.message}`)
     }
 
@@ -106,7 +107,7 @@ export class PeopleSearchRepository {
       .eq('workspace_id', workspaceId)
 
     if (error) {
-      console.error('[PeopleSearchRepository] Delete saved search error:', error)
+      safeError('[PeopleSearchRepository] Delete saved search error:', error)
       throw new Error(`Failed to delete saved search: ${error.message}`)
     }
   }
@@ -142,7 +143,7 @@ export class PeopleSearchRepository {
     const { data, error } = await query.limit(100)
 
     if (error) {
-      console.error('[PeopleSearchRepository] Find results error:', error)
+      safeError('[PeopleSearchRepository] Find results error:', error)
       throw new Error(`Failed to fetch search results: ${error.message}`)
     }
 
@@ -170,7 +171,7 @@ export class PeopleSearchRepository {
       .single()
 
     if (error) {
-      console.error('[PeopleSearchRepository] Create result error:', error)
+      safeError('[PeopleSearchRepository] Create result error:', error)
       throw new Error(`Failed to create search result: ${error.message}`)
     }
 
@@ -194,7 +195,7 @@ export class PeopleSearchRepository {
     })
 
     if (error) {
-      console.error('[PeopleSearchRepository] Reveal email error:', error)
+      safeError('[PeopleSearchRepository] Reveal email error:', error)
 
       // Check if it's a credit limit error
       if (error.message?.includes('Insufficient credits')) {
@@ -239,7 +240,7 @@ export class PeopleSearchRepository {
     const { data, error } = await query.order('created_at', { ascending: false })
 
     if (error) {
-      console.error('[PeopleSearchRepository] Get credit usage error:', error)
+      safeError('[PeopleSearchRepository] Get credit usage error:', error)
       throw new Error(`Failed to fetch credit usage: ${error.message}`)
     }
 
@@ -272,7 +273,7 @@ export class PeopleSearchRepository {
     })
 
     if (error) {
-      console.error('[PeopleSearchRepository] Check credits error:', error)
+      safeError('[PeopleSearchRepository] Check credits error:', error)
       return false
     }
 

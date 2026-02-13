@@ -3,6 +3,7 @@ export const runtime = 'edge'
 
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET() {
   try {
@@ -109,7 +110,7 @@ export async function GET() {
       recentPurchases: recentPurchases?.length || 0,
     })
   } catch (error) {
-    console.error('Error fetching marketplace stats:', error)
+    safeError('Error fetching marketplace stats:', error)
     return NextResponse.json(
       { error: 'Failed to fetch marketplace statistics' },
       { status: 500 }

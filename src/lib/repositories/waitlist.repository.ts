@@ -3,6 +3,7 @@
 
 import { createAdminClient } from '@/lib/supabase/admin'
 import { DatabaseError } from '@/types'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export interface WaitlistSignup {
   id: string
@@ -57,7 +58,7 @@ export class WaitlistRepository {
       if (error.code === '23505') {
         throw new DatabaseError('Email already registered on waitlist')
       }
-      console.error('[WaitlistRepository] Create error:', error)
+      safeError('[WaitlistRepository] Create error:', error)
       throw new DatabaseError(`Failed to create waitlist signup: ${error.message}`)
     }
 
@@ -80,7 +81,7 @@ export class WaitlistRepository {
       if (error.code === 'PGRST116') {
         return null
       }
-      console.error('[WaitlistRepository] Find by email error:', error)
+      safeError('[WaitlistRepository] Find by email error:', error)
       throw new DatabaseError(`Failed to find waitlist signup: ${error.message}`)
     }
 
@@ -99,7 +100,7 @@ export class WaitlistRepository {
       .eq('email', email.toLowerCase())
 
     if (error) {
-      console.error('[WaitlistRepository] Email exists check error:', error)
+      safeError('[WaitlistRepository] Email exists check error:', error)
       throw new DatabaseError(`Failed to check email: ${error.message}`)
     }
 
@@ -122,7 +123,7 @@ export class WaitlistRepository {
       .range(from, to)
 
     if (error) {
-      console.error('[WaitlistRepository] Find all error:', error)
+      safeError('[WaitlistRepository] Find all error:', error)
       throw new DatabaseError(`Failed to fetch waitlist signups: ${error.message}`)
     }
 
@@ -145,7 +146,7 @@ export class WaitlistRepository {
       .select('*', { count: 'estimated', head: true })
 
     if (error) {
-      console.error('[WaitlistRepository] Count error:', error)
+      safeError('[WaitlistRepository] Count error:', error)
       return 0
     }
 
@@ -167,7 +168,7 @@ export class WaitlistRepository {
       .eq('email', email.toLowerCase())
 
     if (error) {
-      console.error('[WaitlistRepository] Mark as converted error:', error)
+      safeError('[WaitlistRepository] Mark as converted error:', error)
       throw new DatabaseError(`Failed to mark signup as converted: ${error.message}`)
     }
   }
@@ -185,7 +186,7 @@ export class WaitlistRepository {
       .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('[WaitlistRepository] Find by industry error:', error)
+      safeError('[WaitlistRepository] Find by industry error:', error)
       throw new DatabaseError(`Failed to fetch signups by industry: ${error.message}`)
     }
 

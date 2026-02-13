@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import type { PlatformAdmin, AdminContext, Workspace, AdminActionType } from '@/types'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Cookie name for impersonation session
 const IMPERSONATION_COOKIE = 'cursive_impersonation_session'
@@ -40,7 +41,7 @@ export async function isAdmin(): Promise<boolean> {
 
     return !!admin
   } catch (error) {
-    console.error('Admin check error:', error)
+    safeError('Admin check error:', error)
     return false
   }
 }
@@ -195,7 +196,7 @@ export async function startImpersonation(
 
     return { success: true, sessionId: session.id }
   } catch (error) {
-    console.error('Start impersonation error:', error)
+    safeError('Start impersonation error:', error)
     return { success: false, error: 'Failed to start impersonation' }
   }
 }
@@ -240,7 +241,7 @@ export async function endImpersonation(): Promise<{ success: boolean; error?: st
 
     return { success: true }
   } catch (error) {
-    console.error('End impersonation error:', error)
+    safeError('End impersonation error:', error)
     return { success: false, error: 'Failed to end impersonation' }
   }
 }
@@ -362,7 +363,7 @@ export async function logAdminAction(
     })
   } catch (error) {
     // Don't throw on audit log failures, just log
-    console.error('Failed to log admin action:', error)
+    safeError('Failed to log admin action:', error)
   }
 }
 

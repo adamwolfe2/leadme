@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 /**
  * GET /api/admin/payouts
@@ -58,7 +59,7 @@ export async function GET(req: NextRequest) {
     const { data: payouts, error, count } = await query
 
     if (error) {
-      console.error('[Admin Payouts] Query error:', error)
+      safeError('[Admin Payouts] Query error:', error)
       return NextResponse.json({ error: 'Failed to fetch payouts' }, { status: 500 })
     }
 
@@ -94,7 +95,7 @@ export async function GET(req: NextRequest) {
       },
     })
   } catch (error: any) {
-    console.error('[Admin Payouts] Error:', error)
+    safeError('[Admin Payouts] Error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

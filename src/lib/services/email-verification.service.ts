@@ -3,6 +3,7 @@
 
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { VerificationStatus } from '@/types/database.types'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Configuration
 const VERIFICATION_CONFIG = {
@@ -55,7 +56,7 @@ export async function verifyEmail(email: string): Promise<VerificationResult> {
   const apiKey = process.env.MILLIONVERIFIER_API_KEY
 
   if (!apiKey) {
-    console.warn('MillionVerifier API key not configured, returning unknown status')
+    safeError('MillionVerifier API key not configured, returning unknown status')
     return {
       email,
       status: 'unknown',
@@ -87,7 +88,7 @@ export async function verifyEmail(email: string): Promise<VerificationResult> {
       rawResult: data,
     }
   } catch (error) {
-    console.error(`Email verification failed for ${email}:`, error)
+    safeError(`Email verification failed for ${email}:`, error)
     return {
       email,
       status: 'unknown',
@@ -265,7 +266,7 @@ export async function processVerificationQueue(
       else if (result.status === 'catch_all') stats.catchAll++
       else stats.unknown++
     } catch (error) {
-      console.error(`Error processing queue item ${item.id}:`, error)
+      safeError(`Error processing queue item ${item.id}:`, error)
 
       // Handle retry or failure
       if (item.attempts >= VERIFICATION_CONFIG.MAX_RETRIES) {

@@ -10,6 +10,7 @@ import type {
   PartnerCreditTransaction,
   LeadPurchase,
 } from '@/types/database.types'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export class PartnerRepository {
   /**
@@ -25,7 +26,7 @@ export class PartnerRepository {
       .single()
 
     if (error) {
-      console.error('[PartnerRepository] Failed to get analytics:', error)
+      safeError('[PartnerRepository] Failed to get analytics:', error)
       return null
     }
 
@@ -61,7 +62,7 @@ export class PartnerRepository {
       .range(offset, offset + limit - 1)
 
     if (error) {
-      console.error('[PartnerRepository] Failed to get uploaded leads:', error)
+      safeError('[PartnerRepository] Failed to get uploaded leads:', error)
       throw new Error('Failed to fetch uploaded leads')
     }
 
@@ -113,7 +114,7 @@ export class PartnerRepository {
       .range(offset, offset + limit - 1)
 
     if (error) {
-      console.error('[PartnerRepository] Failed to get sold leads:', error)
+      safeError('[PartnerRepository] Failed to get sold leads:', error)
       throw new Error('Failed to fetch sold leads')
     }
 
@@ -150,7 +151,7 @@ export class PartnerRepository {
         }
       }
 
-      console.error('[PartnerRepository] Failed to get credits:', error)
+      safeError('[PartnerRepository] Failed to get credits:', error)
       return null
     }
 
@@ -175,7 +176,7 @@ export class PartnerRepository {
       .range(offset, offset + limit - 1)
 
     if (error) {
-      console.error('[PartnerRepository] Failed to get transactions:', error)
+      safeError('[PartnerRepository] Failed to get transactions:', error)
       throw new Error('Failed to fetch transactions')
     }
 
@@ -205,7 +206,7 @@ export class PartnerRepository {
     })
 
     if (error) {
-      console.error('[PartnerRepository] Failed to credit partner:', error)
+      safeError('[PartnerRepository] Failed to credit partner:', error)
       throw new Error('Failed to credit partner for sale')
     }
 
@@ -240,7 +241,7 @@ export class PartnerRepository {
       .single()
 
     if (error) {
-      console.error('[PartnerRepository] Failed to record purchase:', error)
+      safeError('[PartnerRepository] Failed to record purchase:', error)
       throw new Error('Failed to record lead purchase')
     }
 
@@ -268,7 +269,7 @@ export class PartnerRepository {
       .select('purchase_price, partner_commission, platform_fee')
 
     if (error) {
-      console.error('[PartnerRepository] Failed to get platform revenue:', error)
+      safeError('[PartnerRepository] Failed to get platform revenue:', error)
       return {
         total_revenue: 0,
         partner_payouts: 0,

@@ -13,6 +13,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import type { CompanyEnrichmentData } from '@/types'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // ============================================================================
 // TYPES
@@ -154,7 +155,7 @@ interface ClearbitCompany {
 
 async function fetchClearbitCompany(domain: string): Promise<ClearbitCompany | null> {
   if (!CLEARBIT_API_KEY) {
-    console.warn('CLEARBIT_API_KEY not configured')
+    safeError('CLEARBIT_API_KEY not configured')
     return null
   }
 
@@ -183,7 +184,7 @@ async function fetchClearbitCompany(domain: string): Promise<ClearbitCompany | n
 
     return await response.json()
   } catch (error) {
-    console.error('Clearbit fetch error:', error)
+    safeError('Clearbit fetch error:', error)
     return null
   }
 }
@@ -323,7 +324,7 @@ export class CompanyEnrichmentService {
           result.source = result.source === 'clearbit' ? 'combined' : 'firecrawl'
         }
       } catch (error) {
-        console.error('Firecrawl error:', error)
+        safeError('Firecrawl error:', error)
       }
     }
 
@@ -345,7 +346,7 @@ export class CompanyEnrichmentService {
           result.source = 'tavily'
         }
       } catch (error) {
-        console.error('Tavily error:', error)
+        safeError('Tavily error:', error)
       }
     }
 
@@ -611,7 +612,7 @@ export class CompanyEnrichmentService {
         { onConflict: 'domain' }
       )
     } catch (error) {
-      console.error('Failed to cache enrichment:', error)
+      safeError('Failed to cache enrichment:', error)
     }
   }
 }

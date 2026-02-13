@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin, getAdminContext, logAdminAction } from '@/lib/auth/admin'
 import { getLeadProviderService, type LeadSearchFilters } from '@/lib/services/lead-provider.service'
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function POST(request: NextRequest) {
   try {
@@ -93,7 +94,7 @@ export async function POST(request: NextRequest) {
         .select('id')
 
       if (error) {
-        console.error('Failed to save leads:', error)
+        safeError('Failed to save leads:', error)
       } else {
         // Log admin action
         await logAdminAction(
@@ -112,7 +113,7 @@ export async function POST(request: NextRequest) {
       ...result,
     })
   } catch (error: any) {
-    console.error('Admin lead search error:', error)
+    safeError('Admin lead search error:', error)
 
     if (error.name === 'LeadLimitExceededError') {
       return NextResponse.json(
@@ -188,7 +189,7 @@ export async function GET(request: NextRequest) {
       warning: allWorkspaces && !workspaceId ? 'Results include leads from all workspaces' : undefined,
     })
   } catch (error: any) {
-    console.error('[Admin Lead Search History] Error:', error)
+    safeError('[Admin Lead Search History] Error:', error)
     return NextResponse.json(
       { error: 'Failed to get lead history' },
       { status: 500 }

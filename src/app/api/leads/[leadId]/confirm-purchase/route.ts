@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getStripeClient } from '@/lib/stripe/client'
 import { PartnerRepository } from '@/lib/db/repositories/partner.repository'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function POST(
   request: NextRequest,
@@ -136,13 +137,13 @@ export async function POST(
       .eq('id', leadId)
 
     if (updateError) {
-      console.error('[Confirm Purchase] Failed to update lead:', updateError)
+      safeError('[Confirm Purchase] Failed to update lead:', updateError)
       throw new Error('Failed to assign purchased lead to buyer')
     }
 
     return NextResponse.json({ success: true, purchaseId: purchase.id })
   } catch (error) {
-    console.error('[Confirm Purchase] Error:', error)
+    safeError('[Confirm Purchase] Error:', error)
     return NextResponse.json(
       { error: 'Failed to confirm purchase' },
       { status: 500 }

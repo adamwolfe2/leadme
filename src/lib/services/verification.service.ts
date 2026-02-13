@@ -3,6 +3,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { twilioService } from './twilio.service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export interface EmailVerificationResult {
   status: 'valid' | 'invalid' | 'risky' | 'unknown'
@@ -73,7 +74,7 @@ export class VerificationService {
 
       return result
     } catch (error: any) {
-      console.error('[VerificationService] Email verification error:', error)
+      safeError('[VerificationService] Email verification error:', error)
       throw error
     }
   }
@@ -119,7 +120,7 @@ export class VerificationService {
 
       return result
     } catch (error: any) {
-      console.error('[VerificationService] Phone verification error:', error)
+      safeError('[VerificationService] Phone verification error:', error)
       throw error
     }
   }

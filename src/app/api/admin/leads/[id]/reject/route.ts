@@ -6,6 +6,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const rejectSchema = z.object({
   reason: z.string().min(10, 'Rejection reason must be at least 10 characters'),
@@ -92,7 +93,7 @@ export async function POST(
       .single()
 
     if (updateError) {
-      console.error('Error rejecting lead:', updateError)
+      safeError('Error rejecting lead:', updateError)
       return NextResponse.json(
         { error: 'Failed to reject lead' },
         { status: 500 }
@@ -136,14 +137,14 @@ export async function POST(
           }),
         })
       } catch (emailError) {
-        console.error('Failed to send rejection email:', emailError)
+        safeError('Failed to send rejection email:', emailError)
         // Don't fail the request if email fails
       }
     }
 
     return NextResponse.json({ lead: updatedLead })
   } catch (error) {
-    console.error('Error rejecting lead:', error)
+    safeError('Error rejecting lead:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

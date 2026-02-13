@@ -3,6 +3,7 @@
 
 import type { CommissionCalculation } from '@/types/database.types'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -175,7 +176,7 @@ export async function processPendingCommissions(): Promise<{
         .eq('id', partnerId)
 
       if (balanceError) {
-        console.error(`[Commission] Failed to update partner ${partnerId} balance:`, balanceError)
+        safeError(`[Commission] Failed to update partner ${partnerId} balance:`, balanceError)
       }
     }
   }
@@ -295,7 +296,7 @@ export async function recordCommission(params: {
   })
 
   if (earningsError) {
-    console.error('[Commission] Failed to record partner earnings:', earningsError)
+    safeError('[Commission] Failed to record partner earnings:', earningsError)
   }
 }
 

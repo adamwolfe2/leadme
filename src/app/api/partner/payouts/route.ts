@@ -2,6 +2,7 @@ export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET(request: NextRequest) {
   try {
@@ -56,7 +57,7 @@ export async function GET(request: NextRequest) {
       payout_history: payoutHistory || [],
     })
   } catch (error: any) {
-    console.error('Partner payouts error:', error)
+    safeError('Partner payouts error:', error)
     return NextResponse.json({ error: 'Failed to fetch payouts' }, { status: 500 })
   }
 }

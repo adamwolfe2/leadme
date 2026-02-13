@@ -6,6 +6,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET(request: NextRequest) {
   try {
@@ -106,7 +107,7 @@ export async function GET(request: NextRequest) {
       total: leads.length,
     })
   } catch (error) {
-    console.error('Failed to fetch purchased leads:', error)
+    safeError('Failed to fetch purchased leads:', error)
     return NextResponse.json(
       { error: 'Failed to fetch purchased leads' },
       { status: 500 }

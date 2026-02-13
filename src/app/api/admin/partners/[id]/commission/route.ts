@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { PartnerRepository } from '@/lib/repositories/partner.repository'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const commissionSchema = z.object({
   payoutRate: z.number().min(0).max(1),
@@ -72,7 +73,7 @@ export async function PATCH(
 
     return NextResponse.json({ partner })
   } catch (error) {
-    console.error('Error updating commission:', error)
+    safeError('Error updating commission:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

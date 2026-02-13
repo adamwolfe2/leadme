@@ -6,6 +6,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Add HTML loading page for better UX during callback
 const LOADING_PAGE = `
@@ -149,7 +150,7 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (error) {
-      console.error('Error exchanging code for session:', error)
+      safeError('Error exchanging code for session:', error)
       return NextResponse.redirect(
         new URL('/login?error=auth_callback_error', requestUrl.origin)
       )
