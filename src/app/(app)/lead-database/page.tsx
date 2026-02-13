@@ -11,7 +11,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/components/ui/select-radix'
 import { Database, Search, Coins, Users, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -245,7 +245,7 @@ export default function LeadDatabasePage() {
                   {preview.credit_cost.toFixed(2)}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  ${preview.credit_cost_per_lead}/lead × 25 leads
+                  {preview.credit_cost_per_lead} credits/lead × 25 leads
                 </div>
               </div>
             </div>
@@ -286,7 +286,7 @@ export default function LeadDatabasePage() {
                         </div>
                       </div>
                       <Badge variant="outline">
-                        Score: {Math.floor(Math.random() * 40) + 60}
+                        Verified
                       </Badge>
                     </div>
                   ))}

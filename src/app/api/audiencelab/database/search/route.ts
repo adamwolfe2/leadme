@@ -16,8 +16,9 @@ import { z } from 'zod'
 // Import AL API client
 import {
   previewAudience,
+  createAudience,
   fetchAudienceRecords,
-  type ALEnrichFilter,
+  type ALAudienceFilter,
 } from '@/lib/audiencelab/api-client'
 
 const searchSchema = z.object({
@@ -74,12 +75,12 @@ export async function POST(request: NextRequest) {
       try {
         const preview = await previewAudience({
           filters: audienceQuery,
-          limit: 10, // Sample size
         })
 
-        // Calculate credit cost (e.g., $0.50 per lead = 0.5 credits)
+        // Calculate credit cost for 25 leads (or fewer if less available)
         const creditCostPerLead = 0.5
-        const totalCost = preview.count * creditCostPerLead
+        const maxPullable = Math.min(preview.count, 25)
+        const totalCost = maxPullable * creditCostPerLead
 
         return NextResponse.json({
           preview: {
@@ -118,12 +119,20 @@ export async function POST(request: NextRequest) {
       }
 
       try {
-        // Fetch records from AL
-        const records = await fetchAudienceRecords({
+        // Step 1: Create audience with filters
+        const audience = await createAudience({
           filters: audienceQuery,
-          limit: maxRecords,
-          offset: (params.page - 1) * params.limit,
+          name: `db-search-${Date.now()}-${workspace.id.substring(0, 8)}`,
         })
+
+        // Step 2: Fetch records from created audience
+        const recordsResponse = await fetchAudienceRecords(
+          audience.audienceId,
+          params.page,
+          maxRecords
+        )
+
+        const records = recordsResponse.data || []
 
         if (!records || records.length === 0) {
           return NextResponse.json({
@@ -134,14 +143,43 @@ export async function POST(request: NextRequest) {
           })
         }
 
-        // Calculate actual cost based on records pulled
-        const actualCost = records.length * creditCostPerLead
+        // Check for duplicate leads by email BEFORE charging credits
+        const emails = records
+          .map(r => r.BUSINESS_EMAIL || r.PERSONAL_EMAILS?.split(',')[0])
+          .filter(Boolean)
+
+        const { data: existingLeads } = await supabase
+          .from('leads')
+          .select('email')
+          .eq('workspace_id', workspace.id)
+          .in('email', emails)
+
+        const existingEmails = new Set(existingLeads?.map(l => l.email) || [])
+
+        // Filter out leads that already exist
+        const newRecords = records.filter(record => {
+          const email = record.BUSINESS_EMAIL || record.PERSONAL_EMAILS?.split(',')[0]
+          return email && !existingEmails.has(email)
+        })
+
+        if (newRecords.length === 0) {
+          return NextResponse.json({
+            leads: [],
+            pulled: 0,
+            credits_charged: 0,
+            message: 'All leads already exist in your workspace',
+          })
+        }
+
+        // Calculate actual cost based on NEW records (not duplicates)
+        const actualCost = newRecords.length * creditCostPerLead
+        const newBalance = workspace.credits_balance - actualCost
 
         // Deduct credits
         const { error: creditError } = await supabase
           .from('workspaces')
           .update({
-            credits_balance: workspace.credits_balance - actualCost,
+            credits_balance: newBalance,
           })
           .eq('id', workspace.id)
 
@@ -153,8 +191,8 @@ export async function POST(request: NextRequest) {
           )
         }
 
-        // Store leads in workspace
-        const leadsToInsert = records.map(record => ({
+        // Store only new leads in workspace
+        const leadsToInsert = newRecords.map(record => ({
           workspace_id: workspace.id,
           email: record.BUSINESS_EMAIL || record.PERSONAL_EMAILS?.split(',')[0] || null,
           first_name: record.FIRST_NAME || null,
@@ -183,9 +221,15 @@ export async function POST(request: NextRequest) {
           await supabase
             .from('workspaces')
             .update({
-              credits_balance: workspace.credits_balance, // Restore original balance
+              credits_balance: newBalance + actualCost, // Restore to original balance
             })
             .eq('id', workspace.id)
+
+          safeLog('[AL Database Search] Credits refunded:', {
+            workspace_id: workspace.id,
+            refunded: actualCost,
+            restored_balance: workspace.credits_balance,
+          })
 
           safeError('[AL Database Search] Lead insert failed:', insertError)
           return NextResponse.json(
@@ -201,24 +245,32 @@ export async function POST(request: NextRequest) {
           credits_used: actualCost,
           action_type: 'al_database_pull',
           metadata: {
-            records_pulled: records.length,
+            total_fetched: records.length,
+            new_leads: newRecords.length,
+            duplicates_skipped: records.length - newRecords.length,
             filters: params,
           },
         })
 
         safeLog('[AL Database Search] Pulled records:', {
           workspace_id: workspace.id,
-          count: records.length,
+          total_fetched: records.length,
+          new_leads: newRecords.length,
+          duplicates_skipped: records.length - newRecords.length,
           cost: actualCost,
         })
 
         return NextResponse.json({
           success: true,
           leads: insertedLeads,
-          pulled: records.length,
+          pulled: newRecords.length,
           credits_charged: actualCost,
-          new_balance: workspace.credits_balance - actualCost,
-          message: `Successfully pulled ${records.length} leads`,
+          new_balance: newBalance,
+          message: `Successfully pulled ${newRecords.length} leads${
+            records.length > newRecords.length
+              ? ` (${records.length - newRecords.length} duplicates skipped)`
+              : ''
+          }`,
         })
       } catch (alError) {
         safeError('[AL Database Search] Pull error:', alError)
@@ -247,17 +299,31 @@ export async function POST(request: NextRequest) {
 /**
  * Build AL audience query from search parameters
  */
-function buildAudienceQuery(params: z.infer<typeof searchSchema>): ALEnrichFilter {
-  const query: ALEnrichFilter = {}
+function buildAudienceQuery(params: z.infer<typeof searchSchema>): ALAudienceFilter {
+  const query: ALAudienceFilter = {}
 
-  // Note: AL API filter format may vary - adjust based on actual API docs
-  // This is a placeholder structure
-  if (params.search) {
-    query.company = params.search
+  // Map industries
+  if (params.industries && params.industries.length > 0) {
+    query.industries = params.industries
   }
 
-  // Map filter arrays to AL format
-  // (Actual implementation depends on AL API docs - may need adjustments)
+  // Map states
+  if (params.states && params.states.length > 0) {
+    query.state = params.states
+  }
+
+  // Map seniority levels
+  if (params.seniority_levels && params.seniority_levels.length > 0) {
+    query.seniority = params.seniority_levels
+  }
+
+  // Map job titles to departments
+  if (params.job_titles && params.job_titles.length > 0) {
+    query.departments = params.job_titles
+  }
+
+  // Note: company_sizes not directly supported by ALAudienceFilter
+  // Would need to map to SIC codes or employee count ranges
 
   return query
 }

@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
         const pixelResponse = await provisionCustomerPixel({
           websiteName: data.website_name,
           websiteUrl: data.website_url,
-          webhookUrl: data.webhook_url || `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/audiencelab/superpixel`,
+          cursiveWebhookUrl: data.webhook_url || `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/audiencelab/superpixel`,
         })
 
         // Store pixel mapping
