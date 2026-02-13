@@ -7,6 +7,7 @@
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import {
   requireAdmin,
   startImpersonation,
@@ -14,20 +15,27 @@ import {
   getActiveImpersonationSession,
 } from '@/lib/auth/admin'
 
+const impersonateSchema = z.object({
+  workspaceId: z.string().uuid('Invalid workspace ID'),
+  reason: z.string().max(500, 'Reason too long').optional(),
+})
+
 export async function POST(request: NextRequest) {
   try {
     // Verify admin (throws if not admin)
     await requireAdmin()
 
     const body = await request.json()
-    const { workspaceId, reason } = body
+    const validation = impersonateSchema.safeParse(body)
 
-    if (!workspaceId) {
+    if (!validation.success) {
       return NextResponse.json(
-        { error: 'Workspace ID is required' },
+        { error: 'Invalid request', details: validation.error.format() },
         { status: 400 }
       )
     }
+
+    const { workspaceId, reason } = validation.data
 
     const result = await startImpersonation(workspaceId, reason)
 

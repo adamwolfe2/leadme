@@ -211,16 +211,38 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    // Admin routes require admin check (handled downstream if cookies present)
-    if (isAdminRoute && !user) {
-      const hasAuthCookies = req.cookies.getAll().some(
-        c => c.name.startsWith('sb-') && c.name.includes('auth-token')
-      )
-      if (!hasAuthCookies) {
-        return NextResponse.json(
-          { error: 'Admin access required' },
-          { status: 403 }
+    // Admin routes require admin role verification
+    if (isAdminRoute) {
+      if (!user) {
+        const hasAuthCookies = req.cookies.getAll().some(
+          c => c.name.startsWith('sb-') && c.name.includes('auth-token')
         )
+        if (!hasAuthCookies) {
+          return NextResponse.json(
+            { error: 'Admin access required' },
+            { status: 403 }
+          )
+        }
+      } else {
+        // User is authenticated - verify admin/owner role
+        const adminSupabase = createAdminClient()
+        const { data: userRecord } = await adminSupabase
+          .from('users')
+          .select('role')
+          .eq('auth_user_id', user.id)
+          .single()
+
+        if (!userRecord || (userRecord.role !== 'admin' && userRecord.role !== 'owner')) {
+          // Not an admin - redirect to dashboard
+          if (pathname.startsWith('/api/admin')) {
+            return NextResponse.json(
+              { error: 'Admin role required' },
+              { status: 403 }
+            )
+          }
+          const dashboardUrl = new URL('/dashboard', req.url)
+          return redirectWithCookies(dashboardUrl)
+        }
       }
     }
 

@@ -69,7 +69,15 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    const context: OAuthContext = JSON.parse(contextCookie)
+    let context: OAuthContext
+    try {
+      context = JSON.parse(contextCookie)
+    } catch (parseError) {
+      safeError('[HubSpot OAuth] Failed to parse context cookie:', parseError)
+      return NextResponse.redirect(
+        new URL('/settings/integrations?error=hs_invalid_context', req.url)
+      )
+    }
 
     // Clear OAuth cookies
     cookieStore.delete('hs_oauth_state')
@@ -112,7 +120,19 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    const tokens: HubSpotTokenResponse = await tokenResponse.json()
+    let tokens: HubSpotTokenResponse
+    try {
+      const parsed = await tokenResponse.json()
+      if (!parsed.access_token || !parsed.refresh_token) {
+        throw new Error('Missing required token fields')
+      }
+      tokens = parsed
+    } catch (tokenParseError) {
+      safeError('[HubSpot OAuth] Failed to parse tokens:', tokenParseError)
+      return NextResponse.redirect(
+        new URL('/settings/integrations?error=hs_invalid_tokens', req.url)
+      )
+    }
 
     // Calculate token expiration from HubSpot's expires_in (seconds)
     const expiresAt = new Date(Date.now() + tokens.expires_in * 1000).toISOString()

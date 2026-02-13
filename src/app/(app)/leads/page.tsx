@@ -32,9 +32,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select-radix'
-import { Search, Loader2, Mail, Phone, Building, Star } from 'lucide-react'
+import { Search, Mail, Phone, Building, Star } from 'lucide-react'
 import { useRealtimeLeads } from '@/hooks/use-realtime-leads'
 import { RealtimeIndicator } from '@/components/realtime/realtime-indicator'
+import { SkeletonLeadsTable } from '@/components/ui/skeleton'
 
 export default function LeadsPage() {
   const [search, setSearch] = useState('')
@@ -88,11 +89,11 @@ export default function LeadsPage() {
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="container mx-auto py-4 sm:py-8 px-4 sm:px-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-3xl font-bold">My Leads</h1>
-          <p className="text-muted-foreground mt-2">
+          <h1 className="text-2xl sm:text-3xl font-bold">My Leads</h1>
+          <p className="text-muted-foreground mt-1 sm:mt-2 text-sm sm:text-base">
             Manage and track your workspace leads
           </p>
         </div>
@@ -108,7 +109,7 @@ export default function LeadsPage() {
         </CardHeader>
         <CardContent>
           {/* Filters */}
-          <div className="flex gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -119,7 +120,7 @@ export default function LeadsPage() {
               />
             </div>
             <Select value={sourceFilter} onValueChange={setSourceFilter}>
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-full sm:w-[200px]">
                 <SelectValue placeholder="All Sources" />
               </SelectTrigger>
               <SelectContent>
@@ -134,9 +135,7 @@ export default function LeadsPage() {
 
           {/* Table */}
           {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin" />
-            </div>
+            <SkeletonLeadsTable />
           ) : leads.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <p className="text-lg font-medium">No leads found</p>
@@ -147,21 +146,23 @@ export default function LeadsPage() {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Contact</TableHead>
-                    <TableHead>Company</TableHead>
-                    <TableHead>Source</TableHead>
-                    <TableHead>Score</TableHead>
-                    <TableHead>Added</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {leads.map((lead: any) => (
-                    <TableRow key={lead.id}>
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Contact</TableHead>
+                      <TableHead>Company</TableHead>
+                      <TableHead>Source</TableHead>
+                      <TableHead>Score</TableHead>
+                      <TableHead>Added</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {leads.map((lead: any) => (
+                      <TableRow key={lead.id}>
                       <TableCell className="font-medium">
                         {lead.first_name} {lead.last_name}
                       </TableCell>
@@ -218,6 +219,68 @@ export default function LeadsPage() {
                 </TableBody>
               </Table>
             </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-4">
+              {leads.map((lead: any) => (
+                <Card key={lead.id} className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="font-medium">
+                          {lead.first_name} {lead.last_name}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge className={`${getSourceBadgeColor(lead.source)} text-xs`}>
+                            {lead.source.replace('audiencelab_', '')}
+                          </Badge>
+                          <div className="flex items-center gap-1">
+                            <Star
+                              className={`h-3 w-3 ${getScoreColor(lead.score)}`}
+                              fill="currentColor"
+                            />
+                            <span className={`text-sm font-medium ${getScoreColor(lead.score)}`}>
+                              {lead.score}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {lead.email && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Mail className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        <span className="truncate">{lead.email}</span>
+                      </div>
+                    )}
+
+                    {lead.phone && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Phone className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        <span>{lead.phone}</span>
+                      </div>
+                    )}
+
+                    {lead.company_name && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Building className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        <div>
+                          <p>{lead.company_name}</p>
+                          {lead.job_title && (
+                            <p className="text-xs text-muted-foreground">{lead.job_title}</p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="text-xs text-muted-foreground pt-2 border-t">
+                      Added {new Date(lead.created_at).toLocaleDateString()}
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </>
           )}
         </CardContent>
       </Card>

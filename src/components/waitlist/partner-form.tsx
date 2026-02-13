@@ -95,8 +95,11 @@ export function PartnerForm({ vslAnswers, onSubmit, onBack }: PartnerFormProps) 
                   type="text"
                   className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   placeholder="John"
+                  aria-required="true"
+                  aria-invalid={!!errors.firstName}
+                  aria-describedby={errors.firstName ? 'firstName-error' : undefined}
                 />
-                {errors.firstName && <p className="text-xs text-destructive mt-1">{errors.firstName.message}</p>}
+                {errors.firstName && <p id="firstName-error" className="text-xs text-destructive mt-1" role="alert">{errors.firstName.message}</p>}
               </div>
 
               <div>
@@ -109,8 +112,11 @@ export function PartnerForm({ vslAnswers, onSubmit, onBack }: PartnerFormProps) 
                   type="text"
                   className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   placeholder="Smith"
+                  aria-required="true"
+                  aria-invalid={!!errors.lastName}
+                  aria-describedby={errors.lastName ? 'lastName-error' : undefined}
                 />
-                {errors.lastName && <p className="text-xs text-destructive mt-1">{errors.lastName.message}</p>}
+                {errors.lastName && <p id="lastName-error" className="text-xs text-destructive mt-1" role="alert">{errors.lastName.message}</p>}
               </div>
             </div>
 
@@ -124,8 +130,11 @@ export function PartnerForm({ vslAnswers, onSubmit, onBack }: PartnerFormProps) 
                 type="email"
                 className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 placeholder="john@agency.com"
+                aria-required="true"
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? 'email-error' : undefined}
               />
-              {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
+              {errors.email && <p id="email-error" className="text-xs text-destructive mt-1" role="alert">{errors.email.message}</p>}
             </div>
 
             <div>
@@ -138,8 +147,11 @@ export function PartnerForm({ vslAnswers, onSubmit, onBack }: PartnerFormProps) 
                 type="text"
                 className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 placeholder="Acme Lead Gen"
+                aria-required="true"
+                aria-invalid={!!errors.companyName}
+                aria-describedby={errors.companyName ? 'companyName-error' : undefined}
               />
-              {errors.companyName && <p className="text-xs text-destructive mt-1">{errors.companyName.message}</p>}
+              {errors.companyName && <p id="companyName-error" className="text-xs text-destructive mt-1" role="alert">{errors.companyName.message}</p>}
             </div>
 
             <div>
@@ -150,6 +162,9 @@ export function PartnerForm({ vslAnswers, onSubmit, onBack }: PartnerFormProps) 
                 {...register('partnerType')}
                 id="partnerType"
                 className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                aria-required="true"
+                aria-invalid={!!errors.partnerType}
+                aria-describedby={errors.partnerType ? 'partnerType-error' : undefined}
               >
                 <option value="">Select partner type</option>
                 {partnerTypeOptions.map((type) => (
@@ -158,7 +173,7 @@ export function PartnerForm({ vslAnswers, onSubmit, onBack }: PartnerFormProps) 
                   </option>
                 ))}
               </select>
-              {errors.partnerType && <p className="text-xs text-destructive mt-1">{errors.partnerType.message}</p>}
+              {errors.partnerType && <p id="partnerType-error" className="text-xs text-destructive mt-1" role="alert">{errors.partnerType.message}</p>}
             </div>
 
             <div>
@@ -171,8 +186,11 @@ export function PartnerForm({ vslAnswers, onSubmit, onBack }: PartnerFormProps) 
                 type="text"
                 className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 placeholder="e.g., Solar, HVAC, Insurance"
+                aria-required="true"
+                aria-invalid={!!errors.primaryVerticals}
+                aria-describedby={errors.primaryVerticals ? 'primaryVerticals-error' : undefined}
               />
-              {errors.primaryVerticals && <p className="text-xs text-destructive mt-1">{errors.primaryVerticals.message}</p>}
+              {errors.primaryVerticals && <p id="primaryVerticals-error" className="text-xs text-destructive mt-1" role="alert">{errors.primaryVerticals.message}</p>}
             </div>
 
             <div>
@@ -183,6 +201,9 @@ export function PartnerForm({ vslAnswers, onSubmit, onBack }: PartnerFormProps) 
                 {...register('databaseSize')}
                 id="databaseSize"
                 className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                aria-required="true"
+                aria-invalid={!!errors.databaseSize}
+                aria-describedby={errors.databaseSize ? 'databaseSize-error' : undefined}
               >
                 <option value="">Select database size</option>
                 {partnerQ1Options.map((option) => (
@@ -191,7 +212,7 @@ export function PartnerForm({ vslAnswers, onSubmit, onBack }: PartnerFormProps) 
                   </option>
                 ))}
               </select>
-              {errors.databaseSize && <p className="text-xs text-destructive mt-1">{errors.databaseSize.message}</p>}
+              {errors.databaseSize && <p id="databaseSize-error" className="text-xs text-destructive mt-1" role="alert">{errors.databaseSize.message}</p>}
             </div>
 
             <div>
@@ -204,6 +225,7 @@ export function PartnerForm({ vslAnswers, onSubmit, onBack }: PartnerFormProps) 
                 rows={3}
                 className="w-full px-3 py-2 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
                 placeholder="How do you verify/enrich? (e.g., manual research, intent tools, scraped data)"
+                aria-required="false"
               />
             </div>
 
@@ -217,8 +239,11 @@ export function PartnerForm({ vslAnswers, onSubmit, onBack }: PartnerFormProps) 
                 type="text"
                 className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 placeholder="https://linkedin.com/in/yourprofile"
+                aria-required="true"
+                aria-invalid={!!errors.linkedin}
+                aria-describedby={errors.linkedin ? 'linkedin-error' : undefined}
               />
-              {errors.linkedin && <p className="text-xs text-destructive mt-1">{errors.linkedin.message}</p>}
+              {errors.linkedin && <p id="linkedin-error" className="text-xs text-destructive mt-1" role="alert">{errors.linkedin.message}</p>}
             </div>
 
             <div>
@@ -231,6 +256,7 @@ export function PartnerForm({ vslAnswers, onSubmit, onBack }: PartnerFormProps) 
                 type="text"
                 className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 placeholder="https://yourcompany.com"
+                aria-required="false"
               />
             </div>
 

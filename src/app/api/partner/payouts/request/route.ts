@@ -3,6 +3,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Request validation schema
@@ -18,10 +19,49 @@ const payoutRequestSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = await createClient()
     const apiKey = request.headers.get('X-API-Key')
 
-    if (!apiKey) {
-      return NextResponse.json({ error: 'API key required' }, { status: 401 })
+    let partnerId: string | null = null
+
+    // Try session-based auth first (for logged-in partners)
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (user) {
+      // User is logged in - get their linked partner
+      const adminClient = createAdminClient()
+      const { data: userData } = await adminClient
+        .from('users')
+        .select('linked_partner_id')
+        .eq('auth_user_id', user.id)
+        .single()
+
+      if (userData?.linked_partner_id) {
+        partnerId = userData.linked_partner_id
+      } else {
+        return NextResponse.json(
+          { error: 'No partner account linked to your user' },
+          { status: 403 }
+        )
+      }
+    } else if (apiKey) {
+      // Fallback to API key auth (for server-to-server integrations)
+      const { data: apiPartner } = await supabase
+        .from('partners')
+        .select('id')
+        .eq('api_key', apiKey)
+        .eq('is_active', true)
+        .single()
+
+      if (!apiPartner) {
+        return NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
+      }
+      partnerId = apiPartner.id
+    } else {
+      return NextResponse.json(
+        { error: 'Authentication required - please log in or provide API key' },
+        { status: 401 }
+      )
     }
 
     // Parse and validate request body
@@ -40,18 +80,16 @@ export async function POST(request: NextRequest) {
 
     const { amount } = validation.data
 
-    const supabase = await createClient()
-
-    // Validate partner
+    // Fetch partner data
     const { data: partner, error: partnerError } = await supabase
       .from('partners')
       .select('id, stripe_account_id, stripe_onboarding_complete, available_balance, payout_threshold')
-      .eq('api_key', apiKey)
+      .eq('id', partnerId)
       .eq('is_active', true)
       .single()
 
     if (partnerError || !partner) {
-      return NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
+      return NextResponse.json({ error: 'Partner not found' }, { status: 404 })
     }
 
     // Check if Stripe is connected

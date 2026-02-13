@@ -142,6 +142,78 @@ function SkeletonStatCard({ className }: { className?: string }) {
   )
 }
 
+function SkeletonLeadCard({ className }: { className?: string }) {
+  return (
+    <div className={cn('rounded-lg border border-border p-4 space-y-3', className)}>
+      <div className="flex items-start justify-between">
+        <div className="space-y-2 flex-1">
+          <Skeleton className="h-5 w-1/3" />
+          <div className="flex gap-2">
+            <Skeleton className="h-4 w-16" />
+            <Skeleton className="h-4 w-12" />
+          </div>
+        </div>
+      </div>
+      <Skeleton className="h-4 w-2/3" />
+      <Skeleton className="h-4 w-1/2" />
+      <Skeleton className="h-4 w-3/4" />
+      <div className="pt-2 border-t">
+        <Skeleton className="h-3 w-24" />
+      </div>
+    </div>
+  )
+}
+
+function SkeletonLeadsTable({ rows = 10 }: { rows?: number }) {
+  return (
+    <>
+      {/* Desktop Table View */}
+      <div className="hidden md:block">
+        <SkeletonTable rows={rows} columns={6} />
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-4">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <SkeletonLeadCard key={i} />
+        ))}
+      </div>
+    </>
+  )
+}
+
+function SkeletonMarketplace() {
+  return (
+    <div className="space-y-6">
+      {/* Filter section */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <Skeleton className="h-10 flex-1" />
+        <Skeleton className="h-10 w-full sm:w-[200px]" />
+        <Skeleton className="h-10 w-full sm:w-[200px]" />
+      </div>
+
+      {/* Cards grid */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="rounded-lg border border-border p-6 space-y-4">
+            <div className="flex items-start justify-between">
+              <Skeleton className="h-6 w-32" />
+              <Skeleton className="h-5 w-16" />
+            </div>
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+            <div className="flex gap-2">
+              <Skeleton className="h-8 w-20" />
+              <Skeleton className="h-8 w-20" />
+            </div>
+            <Skeleton className="h-10 w-full" />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export {
   Skeleton,
   SkeletonText,
@@ -149,4 +221,7 @@ export {
   SkeletonTable,
   SkeletonAvatar,
   SkeletonStatCard,
+  SkeletonLeadCard,
+  SkeletonLeadsTable,
+  SkeletonMarketplace,
 }

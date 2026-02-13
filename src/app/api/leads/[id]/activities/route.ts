@@ -36,7 +36,7 @@ export async function GET(
     }
 
     // 3. Get activities
-    const limit = parseInt(searchParams.get('limit') || '50', 10)
+    const limit = Math.max(1, Math.min(100, parseInt(searchParams.get('limit') || '50', 10) || 50))
     const activityRepo = new LeadActivityRepository()
     const activities = await activityRepo.getActivities(id, user.workspace_id, limit)
 

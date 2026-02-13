@@ -11,6 +11,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { cookies } from 'next/headers'
+import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 
 // Slack OAuth Token URL
@@ -80,7 +81,29 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    const context: OAuthContext = JSON.parse(contextCookie)
+    let context: OAuthContext
+    try {
+      context = JSON.parse(contextCookie)
+    } catch (parseError) {
+      safeError('[Slack OAuth] Failed to parse context cookie:', parseError)
+      return NextResponse.redirect(
+        new URL('/settings/integrations?error=slack_invalid_context', req.url)
+      )
+    }
+
+    // SECURITY: Validate context belongs to current authenticated user
+    // (Prevents cookie injection attack where attacker could set victim's workspace_id)
+    const authClient = await createClient()
+    const { data: { user: authUser } } = await authClient.auth.getUser()
+    if (!authUser || authUser.id !== context.user_id) {
+      safeError('[Slack OAuth] Context user mismatch - potential attack', {
+        authUserId: authUser?.id,
+        contextUserId: context.user_id,
+      })
+      return NextResponse.redirect(
+        new URL('/settings/integrations?error=slack_unauthorized', req.url)
+      )
+    }
 
     // Clear OAuth cookies
     cookieStore.delete('slack_oauth_state')

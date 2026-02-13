@@ -97,8 +97,11 @@ export function BusinessForm({ vslAnswers, onSubmit, onBack }: BusinessFormProps
                   type="text"
                   className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   placeholder="John"
+                  aria-required="true"
+                  aria-invalid={!!errors.firstName}
+                  aria-describedby={errors.firstName ? 'firstName-error' : undefined}
                 />
-                {errors.firstName && <p className="text-xs text-destructive mt-1">{errors.firstName.message}</p>}
+                {errors.firstName && <p id="firstName-error" className="text-xs text-destructive mt-1" role="alert">{errors.firstName.message}</p>}
               </div>
 
               <div>
@@ -111,8 +114,11 @@ export function BusinessForm({ vslAnswers, onSubmit, onBack }: BusinessFormProps
                   type="text"
                   className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   placeholder="Smith"
+                  aria-required="true"
+                  aria-invalid={!!errors.lastName}
+                  aria-describedby={errors.lastName ? 'lastName-error' : undefined}
                 />
-                {errors.lastName && <p className="text-xs text-destructive mt-1">{errors.lastName.message}</p>}
+                {errors.lastName && <p id="lastName-error" className="text-xs text-destructive mt-1" role="alert">{errors.lastName.message}</p>}
               </div>
             </div>
 
@@ -127,8 +133,11 @@ export function BusinessForm({ vslAnswers, onSubmit, onBack }: BusinessFormProps
                 type="email"
                 className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 placeholder="john@company.com"
+                aria-required="true"
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? 'email-error' : undefined}
               />
-              {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
+              {errors.email && <p id="email-error" className="text-xs text-destructive mt-1" role="alert">{errors.email.message}</p>}
             </div>
 
             {/* Company Name */}
@@ -142,8 +151,11 @@ export function BusinessForm({ vslAnswers, onSubmit, onBack }: BusinessFormProps
                 type="text"
                 className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 placeholder="Your company name"
+                aria-required="true"
+                aria-invalid={!!errors.companyName}
+                aria-describedby={errors.companyName ? 'companyName-error' : undefined}
               />
-              {errors.companyName && <p className="text-xs text-destructive mt-1">{errors.companyName.message}</p>}
+              {errors.companyName && <p id="companyName-error" className="text-xs text-destructive mt-1" role="alert">{errors.companyName.message}</p>}
             </div>
 
             {/* Industry */}
@@ -155,6 +167,9 @@ export function BusinessForm({ vslAnswers, onSubmit, onBack }: BusinessFormProps
                 {...register('industry')}
                 id="industry"
                 className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                aria-required="true"
+                aria-invalid={!!errors.industry}
+                aria-describedby={errors.industry ? 'industry-error' : undefined}
               >
                 <option value="">Select an industry</option>
                 {industryOptions.map((industry) => (
@@ -163,7 +178,7 @@ export function BusinessForm({ vslAnswers, onSubmit, onBack }: BusinessFormProps
                   </option>
                 ))}
               </select>
-              {errors.industry && <p className="text-xs text-destructive mt-1">{errors.industry.message}</p>}
+              {errors.industry && <p id="industry-error" className="text-xs text-destructive mt-1" role="alert">{errors.industry.message}</p>}
             </div>
 
             {/* Target Locations */}
@@ -177,6 +192,7 @@ export function BusinessForm({ vslAnswers, onSubmit, onBack }: BusinessFormProps
                 type="text"
                 className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 placeholder="e.g., California, Northeast US, National"
+                aria-required="false"
               />
             </div>
 
@@ -189,6 +205,9 @@ export function BusinessForm({ vslAnswers, onSubmit, onBack }: BusinessFormProps
                 {...register('monthlyLeadNeed')}
                 id="monthlyLeadNeed"
                 className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                aria-required="true"
+                aria-invalid={!!errors.monthlyLeadNeed}
+                aria-describedby={errors.monthlyLeadNeed ? 'monthlyLeadNeed-error' : undefined}
               >
                 <option value="">Select lead volume</option>
                 {businessQ1Options.map((option) => (
@@ -197,7 +216,7 @@ export function BusinessForm({ vslAnswers, onSubmit, onBack }: BusinessFormProps
                   </option>
                 ))}
               </select>
-              {errors.monthlyLeadNeed && <p className="text-xs text-destructive mt-1">{errors.monthlyLeadNeed.message}</p>}
+              {errors.monthlyLeadNeed && <p id="monthlyLeadNeed-error" className="text-xs text-destructive mt-1" role="alert">{errors.monthlyLeadNeed.message}</p>}
             </div>
 
             {/* Submit Button */}

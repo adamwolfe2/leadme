@@ -49,8 +49,22 @@ export function PartnerSignupForm({ vslAnswers, onSubmit, onBack, error }: Partn
 
   const onEmailSubmit = async (data: PartnerFormData) => {
     setPasswordError(null)
-    if (!password || password.length < 6) {
-      setPasswordError('Password must be at least 6 characters')
+
+    // Validate password matches server requirements
+    if (!password || password.length < 8) {
+      setPasswordError('Password must be at least 8 characters')
+      return
+    }
+    if (!/[a-z]/.test(password)) {
+      setPasswordError('Password must contain a lowercase letter')
+      return
+    }
+    if (!/[A-Z]/.test(password)) {
+      setPasswordError('Password must contain an uppercase letter')
+      return
+    }
+    if (!/[0-9]/.test(password)) {
+      setPasswordError('Password must contain a number')
       return
     }
     setIsSubmitting(true)
@@ -138,80 +152,80 @@ export function PartnerSignupForm({ vslAnswers, onSubmit, onBack, error }: Partn
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="firstName" className="block text-sm font-medium text-foreground mb-1.5">First name *</label>
-                  <input {...register('firstName')} id="firstName" type="text" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="John" />
-                  {errors.firstName && <p className="text-xs text-destructive mt-1">{errors.firstName.message}</p>}
+                  <input {...register('firstName')} id="firstName" type="text" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="John" aria-required="true" aria-invalid={!!errors.firstName} aria-describedby={errors.firstName ? 'firstName-error' : undefined} />
+                  {errors.firstName && <p id="firstName-error" className="text-xs text-destructive mt-1" role="alert">{errors.firstName.message}</p>}
                 </div>
                 <div>
                   <label htmlFor="lastName" className="block text-sm font-medium text-foreground mb-1.5">Last name *</label>
-                  <input {...register('lastName')} id="lastName" type="text" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Smith" />
-                  {errors.lastName && <p className="text-xs text-destructive mt-1">{errors.lastName.message}</p>}
+                  <input {...register('lastName')} id="lastName" type="text" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Smith" aria-required="true" aria-invalid={!!errors.lastName} aria-describedby={errors.lastName ? 'lastName-error' : undefined} />
+                  {errors.lastName && <p id="lastName-error" className="text-xs text-destructive mt-1" role="alert">{errors.lastName.message}</p>}
                 </div>
               </div>
 
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1.5">Work email *</label>
-                <input {...register('email')} id="email" type="email" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="john@agency.com" />
-                {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
+                <input {...register('email')} id="email" type="email" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="john@agency.com" aria-required="true" aria-invalid={!!errors.email} aria-describedby={errors.email ? 'email-error' : undefined} />
+                {errors.email && <p id="email-error" className="text-xs text-destructive mt-1" role="alert">{errors.email.message}</p>}
               </div>
 
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1.5">Password *</label>
-                <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Min. 6 characters" />
-                {passwordError && <p className="text-xs text-destructive mt-1">{passwordError}</p>}
+                <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Min. 6 characters" aria-required="true" aria-invalid={!!passwordError} aria-describedby={passwordError ? 'password-error' : undefined} />
+                {passwordError && <p id="password-error" className="text-xs text-destructive mt-1" role="alert">{passwordError}</p>}
               </div>
 
               <div>
                 <label htmlFor="companyName" className="block text-sm font-medium text-foreground mb-1.5">Company/Agency name *</label>
-                <input {...register('companyName')} id="companyName" type="text" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Acme Lead Gen" />
-                {errors.companyName && <p className="text-xs text-destructive mt-1">{errors.companyName.message}</p>}
+                <input {...register('companyName')} id="companyName" type="text" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Acme Lead Gen" aria-required="true" aria-invalid={!!errors.companyName} aria-describedby={errors.companyName ? 'companyName-error' : undefined} />
+                {errors.companyName && <p id="companyName-error" className="text-xs text-destructive mt-1" role="alert">{errors.companyName.message}</p>}
               </div>
 
               <div>
                 <label htmlFor="partnerType" className="block text-sm font-medium text-foreground mb-1.5">Partner type *</label>
-                <select {...register('partnerType')} id="partnerType" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                <select {...register('partnerType')} id="partnerType" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" aria-required="true" aria-invalid={!!errors.partnerType} aria-describedby={errors.partnerType ? 'partnerType-error' : undefined}>
                   <option value="">Select partner type</option>
                   {partnerTypeOptions.map((type) => (
                     <option key={type} value={type}>{type}</option>
                   ))}
                 </select>
-                {errors.partnerType && <p className="text-xs text-destructive mt-1">{errors.partnerType.message}</p>}
+                {errors.partnerType && <p id="partnerType-error" className="text-xs text-destructive mt-1" role="alert">{errors.partnerType.message}</p>}
               </div>
 
               <div>
                 <label htmlFor="primaryVerticals" className="block text-sm font-medium text-foreground mb-1.5">Primary verticals you serve *</label>
-                <input {...register('primaryVerticals')} id="primaryVerticals" type="text" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="e.g., Solar, HVAC, Insurance" />
-                {errors.primaryVerticals && <p className="text-xs text-destructive mt-1">{errors.primaryVerticals.message}</p>}
+                <input {...register('primaryVerticals')} id="primaryVerticals" type="text" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="e.g., Solar, HVAC, Insurance" aria-required="true" aria-invalid={!!errors.primaryVerticals} aria-describedby={errors.primaryVerticals ? 'primaryVerticals-error' : undefined} />
+                {errors.primaryVerticals && <p id="primaryVerticals-error" className="text-xs text-destructive mt-1" role="alert">{errors.primaryVerticals.message}</p>}
               </div>
 
               <div>
                 <label htmlFor="databaseSize" className="block text-sm font-medium text-foreground mb-1.5">Current database size *</label>
-                <select {...register('databaseSize')} id="databaseSize" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                <select {...register('databaseSize')} id="databaseSize" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" aria-required="true" aria-invalid={!!errors.databaseSize} aria-describedby={errors.databaseSize ? 'databaseSize-error' : undefined}>
                   <option value="">Select database size</option>
                   {partnerQ1Options.map((option) => (
                     <option key={option} value={option}>{option}</option>
                   ))}
                 </select>
-                {errors.databaseSize && <p className="text-xs text-destructive mt-1">{errors.databaseSize.message}</p>}
+                {errors.databaseSize && <p id="databaseSize-error" className="text-xs text-destructive mt-1" role="alert">{errors.databaseSize.message}</p>}
               </div>
 
               <div>
                 <label htmlFor="enrichmentMethods" className="block text-sm font-medium text-foreground mb-1.5">
                   Lead enrichment methods <span className="text-muted-foreground">(optional)</span>
                 </label>
-                <textarea {...register('enrichmentMethods')} id="enrichmentMethods" rows={3} className="w-full px-3 py-2 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none" placeholder="How do you verify/enrich? (e.g., manual research, intent tools, scraped data)" />
+                <textarea {...register('enrichmentMethods')} id="enrichmentMethods" rows={3} className="w-full px-3 py-2 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none" placeholder="How do you verify/enrich? (e.g., manual research, intent tools, scraped data)" aria-required="false" />
               </div>
 
               <div>
                 <label htmlFor="linkedin" className="block text-sm font-medium text-foreground mb-1.5">LinkedIn *</label>
-                <input {...register('linkedin')} id="linkedin" type="text" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="https://linkedin.com/in/yourprofile" />
-                {errors.linkedin && <p className="text-xs text-destructive mt-1">{errors.linkedin.message}</p>}
+                <input {...register('linkedin')} id="linkedin" type="text" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="https://linkedin.com/in/yourprofile" aria-required="true" aria-invalid={!!errors.linkedin} aria-describedby={errors.linkedin ? 'linkedin-error' : undefined} />
+                {errors.linkedin && <p id="linkedin-error" className="text-xs text-destructive mt-1" role="alert">{errors.linkedin.message}</p>}
               </div>
 
               <div>
                 <label htmlFor="website" className="block text-sm font-medium text-foreground mb-1.5">
                   Website <span className="text-muted-foreground">(optional)</span>
                 </label>
-                <input {...register('website')} id="website" type="text" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="https://yourcompany.com" />
+                <input {...register('website')} id="website" type="text" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="https://yourcompany.com" aria-required="false" />
               </div>
 
               <button

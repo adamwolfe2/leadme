@@ -22,8 +22,6 @@ interface PayoutRequest {
 }
 
 export default function PartnerPayoutsPage() {
-  const [apiKey, setApiKey] = useState('')
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [partnerName, setPartnerName] = useState('')
   const [stats, setStats] = useState<PayoutStats | null>(null)
   const [payoutHistory, setPayoutHistory] = useState<PayoutRequest[]>([])
@@ -35,32 +33,28 @@ export default function PartnerPayoutsPage() {
   const [success, setSuccess] = useState('')
 
   useEffect(() => {
-    const storedKey = localStorage.getItem('partner_api_key')
-    if (storedKey) {
-      setApiKey(storedKey)
-      authenticateAndFetch(storedKey)
-    } else {
-      setLoading(false)
-    }
+    fetchPayoutData()
   }, [])
 
-  const authenticateAndFetch = async (key: string) => {
+  const fetchPayoutData = async () => {
     try {
-      const response = await fetch('/api/partner/payouts', {
-        headers: { 'X-API-Key': key },
-      })
+      // Session-based authentication (no API key needed)
+      const response = await fetch('/api/partner/payouts')
 
       if (response.ok) {
         const data = await response.json()
-        setIsAuthenticated(true)
         setPartnerName(data.partner_name)
         setStats(data.stats)
         setPayoutHistory(data.payout_history || [])
+      } else {
+        const errorData = await response.json()
+        setError(errorData.error || 'Failed to load payout data')
       }
     } catch (err) {
-      console.error('Failed to fetch payout data')
+      setError('Failed to fetch payout data')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   const handleRequestPayout = async () => {
@@ -84,10 +78,10 @@ export default function PartnerPayoutsPage() {
     setError('')
 
     try {
+      // Session-based authentication (no API key needed)
       const response = await fetch('/api/partner/payouts/request', {
         method: 'POST',
         headers: {
-          'X-API-Key': apiKey,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ amount }),
@@ -99,7 +93,7 @@ export default function PartnerPayoutsPage() {
         setSuccess('Payout request submitted successfully!')
         setShowRequestModal(false)
         setRequestAmount('')
-        authenticateAndFetch(apiKey)
+        fetchPayoutData() // Refresh payout data
       } else {
         setError(data.error || 'Failed to submit request')
       }
@@ -112,9 +106,9 @@ export default function PartnerPayoutsPage() {
 
   const handleConnectStripe = async () => {
     try {
+      // Session-based authentication (no API key needed)
       const response = await fetch('/api/partner/stripe/connect', {
         method: 'POST',
-        headers: { 'X-API-Key': apiKey },
       })
 
       const data = await response.json()
@@ -134,11 +128,11 @@ export default function PartnerPayoutsPage() {
     )
   }
 
-  if (!isAuthenticated) {
+  if (error && !stats) {
     return (
       <div className="min-h-screen bg-zinc-50 flex items-center justify-center px-4">
         <div className="text-center">
-          <p className="text-zinc-600 mb-4">Please sign in to view your payouts</p>
+          <p className="text-red-600 mb-4">{error}</p>
           <Link href="/partner" className="text-primary hover:underline">
             Go to Partner Portal
           </Link>

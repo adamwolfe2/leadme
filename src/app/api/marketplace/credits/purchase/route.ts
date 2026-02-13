@@ -105,8 +105,8 @@ export async function POST(request: NextRequest) {
         user_id: userData.id,
         credits: String(validated.credits),
       },
-      success_url: `${origin}/settings/billing?success=true&credits=${validated.credits}`,
-      cancel_url: `${origin}/settings/billing?canceled=true`,
+      success_url: `${origin}/marketplace/credits?success=true&credits=${validated.credits}`,
+      cancel_url: `${origin}/marketplace/credits?canceled=true`,
     })
 
     return NextResponse.json({

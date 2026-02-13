@@ -30,7 +30,7 @@ function getStripe(): Stripe {
 }
 
 // Credit package definitions
-export const CREDIT_PACKAGES = [
+const CREDIT_PACKAGES = [
   {
     id: 'starter',
     name: 'Starter',

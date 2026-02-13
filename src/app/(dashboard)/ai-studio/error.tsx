@@ -30,7 +30,7 @@ export default function AIStudioError({
             Something went wrong
           </h1>
           <p className="text-sm text-muted-foreground">
-            We encountered an error while loading this AI Studio page. Don't worry, your data is safe.
+            We encountered an error while loading this AI Studio page. Don&apos;t worry, your data is safe.
           </p>
         </div>
 

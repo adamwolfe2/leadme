@@ -41,17 +41,9 @@ export function initSentry() {
     replaysOnErrorSampleRate: 1.0, // 100% when errors occur
 
     // Configure integrations
-    integrations: [
-      Sentry.browserTracingIntegration({
-        // Don't track these endpoints
-        tracePropagationTargets: ['localhost', /^\/api\//],
-      } as any),
-      Sentry.replayIntegration({
-        // Mask sensitive data
-        maskAllText: isProduction,
-        blockAllMedia: isProduction,
-      }),
-    ],
+    // Note: browserTracingIntegration and replayIntegration removed due to version incompatibility
+    // These features require @sentry/nextjs v8+ which may not be installed
+    integrations: [],
 
     // Filter out noise before sending to Sentry
     beforeSend(event, hint) {

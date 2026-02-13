@@ -37,6 +37,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { SkeletonCard } from '@/components/ui/skeleton'
 
 interface FilterRule {
   id: string
@@ -473,7 +474,7 @@ export default function SegmentBuilderPage() {
                     <div className="text-center py-12 text-muted-foreground">
                       <Filter className="h-12 w-12 mx-auto mb-4 opacity-50" />
                       <p>No filters added yet</p>
-                      <p className="text-sm mt-2">Click "Add Filter" to get started</p>
+                      <p className="text-sm mt-2">Click &quot;Add Filter&quot; to get started</p>
                     </div>
                   ) : (
                     filters.map((filter, idx) => (
@@ -701,7 +702,7 @@ export default function SegmentBuilderPage() {
                   <CardContent>
                     <div className="text-center py-12 text-muted-foreground">
                       <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>Add filters and click "Preview"</p>
+                      <p>Add filters and click &quot;Preview&quot;</p>
                       <p className="text-sm mt-2">to see matching leads</p>
                     </div>
                   </CardContent>
@@ -720,14 +721,15 @@ export default function SegmentBuilderPage() {
             </CardHeader>
             <CardContent>
               {segmentsLoading ? (
-                <div className="text-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground mt-4">Loading segments...</p>
+                <div className="space-y-3">
+                  <SkeletonCard />
+                  <SkeletonCard />
+                  <SkeletonCard />
                 </div>
               ) : savedSegments.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
                   <p>No saved segments yet</p>
-                  <p className="text-sm mt-2">Build a segment and click "Save" to reuse it</p>
+                  <p className="text-sm mt-2">Build a segment and click &quot;Save&quot; to reuse it</p>
                 </div>
               ) : (
                 <div className="space-y-3">

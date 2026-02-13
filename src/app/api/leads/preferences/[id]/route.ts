@@ -2,6 +2,7 @@ export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { safeParseFloat } from '@/lib/utils/parse-number'
 
 export async function PATCH(
   request: NextRequest,
@@ -53,10 +54,10 @@ export async function PATCH(
     if (body.target_intent_signals !== undefined) updateData.target_intent_signals = body.target_intent_signals
     if (body.max_leads_per_day !== undefined) updateData.max_leads_per_day = body.max_leads_per_day
     if (body.max_cost_per_lead !== undefined) {
-      updateData.max_cost_per_lead = body.max_cost_per_lead ? parseFloat(body.max_cost_per_lead) : null
+      updateData.max_cost_per_lead = body.max_cost_per_lead ? safeParseFloat(body.max_cost_per_lead, { min: 0 }) : null
     }
     if (body.monthly_budget !== undefined) {
-      updateData.monthly_budget = body.monthly_budget ? parseFloat(body.monthly_budget) : null
+      updateData.monthly_budget = body.monthly_budget ? safeParseFloat(body.monthly_budget, { min: 0 }) : null
     }
 
     const { data: preference, error } = await supabase

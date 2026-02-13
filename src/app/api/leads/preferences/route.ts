@@ -3,6 +3,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { createClient } from '@/lib/supabase/server'
+import { safeParseFloat } from '@/lib/utils/parse-number'
 
 export async function GET(request: NextRequest) {
   try {
@@ -94,8 +95,8 @@ export async function POST(request: NextRequest) {
         target_company_sizes: target_company_sizes || [],
         target_intent_signals: target_intent_signals || [],
         max_leads_per_day: max_leads_per_day || 10,
-        max_cost_per_lead: max_cost_per_lead ? parseFloat(max_cost_per_lead) : null,
-        monthly_budget: monthly_budget ? parseFloat(monthly_budget) : null,
+        max_cost_per_lead: max_cost_per_lead ? safeParseFloat(max_cost_per_lead, { min: 0 }) : null,
+        monthly_budget: monthly_budget ? safeParseFloat(monthly_budget, { min: 0 }) : null,
       })
       .select('id, workspace_id, name, description, target_industries, target_regions, target_company_sizes, target_intent_signals, max_leads_per_day, max_cost_per_lead, monthly_budget, created_at, updated_at')
       .single()

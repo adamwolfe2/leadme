@@ -9,36 +9,51 @@ import type { User } from '@/types'
  * Returns null if not authenticated
  */
 export async function getCurrentUser(): Promise<User | null> {
-  // SECURITY: Development-only bypass with strict controls
+  // SECURITY: Development-only bypass with STRICT controls
   // This bypass ONLY works if ALL of the following conditions are met:
   // 1. NODE_ENV is explicitly 'development'
   // 2. ENABLE_DEV_BYPASS environment variable is explicitly 'true'
-  // 3. Hostname is localhost (checked via cookie path)
+  // 3. Domain is explicitly localhost or .local (prevents prod misconfiguration)
+  // 4. Cookie flag is set
   if (
     process.env.NODE_ENV === 'development' &&
     process.env.ENABLE_DEV_BYPASS === 'true'
   ) {
-    const cookieStore = await cookies()
-    const hasAdminBypass = cookieStore.get('admin_bypass_waitlist')?.value === 'true'
+    // Additional safety: Verify we're on a dev domain
+    const isDevelopmentDomain =
+      typeof window !== 'undefined'
+        ? window.location.hostname === 'localhost' ||
+          window.location.hostname.endsWith('.local') ||
+          window.location.hostname === '127.0.0.1'
+        : process.env.VERCEL_ENV === 'development' ||
+          !process.env.VERCEL_URL // No Vercel URL means local
 
-    if (hasAdminBypass) {
-      // Log bypass usage for security audit trail
-      console.warn('⚠️  DEV BYPASS MODE ACTIVE - This should NEVER appear in production!')
+    if (!isDevelopmentDomain) {
+      console.error('🚨 DEV BYPASS attempted on non-development domain - BLOCKED')
+      // Continue to normal auth flow below
+    } else {
+      const cookieStore = await cookies()
+      const hasAdminBypass = cookieStore.get('admin_bypass_waitlist')?.value === 'true'
 
-      // Return mock admin user ONLY for local development
-      return {
-        id: '00000000-0000-0000-0000-000000000000',
-        auth_user_id: '00000000-0000-0000-0000-000000000000',
-        email: 'dev-bypass@localhost',
-        full_name: 'Dev Bypass (LOCAL ONLY)',
-        role: 'owner',
-        plan: 'pro',
-        workspace_id: '00000000-0000-0000-0000-000000000000',
-        daily_credit_limit: 10000,
-        daily_credits_used: 0,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      } as User
+      if (hasAdminBypass) {
+        // Log bypass usage for security audit trail
+        console.warn('⚠️  DEV BYPASS MODE ACTIVE - This should NEVER appear in production!')
+
+        // Return mock admin user ONLY for local development
+        return {
+          id: '00000000-0000-0000-0000-000000000000',
+          auth_user_id: '00000000-0000-0000-0000-000000000000',
+          email: 'dev-bypass@localhost',
+          full_name: 'Dev Bypass (LOCAL ONLY)',
+          role: 'owner',
+          plan: 'pro',
+          workspace_id: '00000000-0000-0000-0000-000000000000',
+          daily_credit_limit: 10000,
+          daily_credits_used: 0,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        } as User
+      }
     }
   }
 

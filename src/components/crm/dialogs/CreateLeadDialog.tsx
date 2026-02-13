@@ -24,18 +24,40 @@ import {
 } from '@/components/ui/select-radix'
 
 const createLeadSchema = z.object({
-  email: z.string().email('Invalid email address').min(1, 'Email is required'),
-  first_name: z.string().min(1, 'First name is required').max(100),
-  last_name: z.string().min(1, 'Last name is required').max(100),
-  phone: z.string().optional(),
-  company_name: z.string().optional(),
-  company_industry: z.string().optional(),
-  business_type: z.string().optional(),
-  title: z.string().optional(),
-  city: z.string().optional(),
-  state: z.string().optional(),
-  source: z.string().optional(),
-  status: z.string().optional(),
+  email: z
+    .string()
+    .min(1, 'Email is required')
+    .email('Invalid email address')
+    .max(255, 'Email too long')
+    .refine(
+      (email) => !email.includes('..') && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
+      { message: 'Invalid email format' }
+    ),
+  first_name: z
+    .string()
+    .min(1, 'First name is required')
+    .max(100, 'First name too long')
+    .regex(/^[a-zA-Z\s'-]+$/, 'First name contains invalid characters'),
+  last_name: z
+    .string()
+    .min(1, 'Last name is required')
+    .max(100, 'Last name too long')
+    .regex(/^[a-zA-Z\s'-]+$/, 'Last name contains invalid characters'),
+  phone: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || /^[\d\s\-\+\(\)\.]+$/.test(val),
+      { message: 'Invalid phone number format' }
+    ),
+  company_name: z.string().max(200, 'Company name too long').optional(),
+  company_industry: z.string().max(100, 'Industry too long').optional(),
+  business_type: z.string().max(50, 'Business type too long').optional(),
+  title: z.string().max(100, 'Title too long').optional(),
+  city: z.string().max(100, 'City too long').optional(),
+  state: z.string().max(50, 'State too long').optional(),
+  source: z.string().max(100, 'Source too long').optional(),
+  status: z.string().max(50, 'Status too long').optional(),
 })
 
 type CreateLeadForm = z.infer<typeof createLeadSchema>
@@ -96,36 +118,69 @@ export function CreateLeadDialog({ open, onOpenChange, onSuccess }: CreateLeadDi
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="first_name">First Name *</Label>
-              <Input id="first_name" {...register('first_name')} disabled={isSubmitting} />
+              <Input
+                id="first_name"
+                {...register('first_name')}
+                disabled={isSubmitting}
+                aria-required="true"
+                aria-invalid={!!errors.first_name}
+                aria-describedby={errors.first_name ? 'first_name-error' : undefined}
+              />
               {errors.first_name && (
-                <p className="text-xs text-red-600">{errors.first_name.message}</p>
+                <p id="first_name-error" className="text-xs text-red-600" role="alert">{errors.first_name.message}</p>
               )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="last_name">Last Name *</Label>
-              <Input id="last_name" {...register('last_name')} disabled={isSubmitting} />
+              <Input
+                id="last_name"
+                {...register('last_name')}
+                disabled={isSubmitting}
+                aria-required="true"
+                aria-invalid={!!errors.last_name}
+                aria-describedby={errors.last_name ? 'last_name-error' : undefined}
+              />
               {errors.last_name && (
-                <p className="text-xs text-red-600">{errors.last_name.message}</p>
+                <p id="last_name-error" className="text-xs text-red-600" role="alert">{errors.last_name.message}</p>
               )}
             </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="email">Email *</Label>
-            <Input id="email" type="email" {...register('email')} disabled={isSubmitting} />
+            <Input
+              id="email"
+              type="email"
+              {...register('email')}
+              disabled={isSubmitting}
+              aria-required="true"
+              aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? 'email-error' : undefined}
+            />
             {errors.email && (
-              <p className="text-xs text-red-600">{errors.email.message}</p>
+              <p id="email-error" className="text-xs text-red-600" role="alert">{errors.email.message}</p>
             )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="phone">Phone</Label>
-            <Input id="phone" type="tel" {...register('phone')} disabled={isSubmitting} />
+            <Input
+              id="phone"
+              type="tel"
+              {...register('phone')}
+              disabled={isSubmitting}
+              aria-required="false"
+            />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="company_name">Company Name</Label>
-            <Input id="company_name" {...register('company_name')} disabled={isSubmitting} />
+            <Input
+              id="company_name"
+              {...register('company_name')}
+              disabled={isSubmitting}
+              aria-required="false"
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">

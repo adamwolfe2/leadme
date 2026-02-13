@@ -36,9 +36,9 @@ import {
   Zap,
   Target,
   Activity,
-  Loader2,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { SkeletonStatCard, SkeletonCard, SkeletonTable } from '@/components/ui/skeleton'
 
 export default function AnalyticsPage() {
   // Fetch workspace stats
@@ -102,8 +102,34 @@ export default function AnalyticsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="container mx-auto py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
+          <p className="text-muted-foreground mt-2">
+            Comprehensive metrics and insights for your workspace
+          </p>
+        </div>
+
+        {/* Loading skeleton */}
+        <div className="space-y-6">
+          {/* Key metrics skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <SkeletonStatCard />
+            <SkeletonStatCard />
+            <SkeletonStatCard />
+            <SkeletonStatCard />
+          </div>
+
+          {/* Charts skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <SkeletonCard className="h-80" />
+            <SkeletonCard className="h-80" />
+          </div>
+
+          <div className="grid grid-cols-1 gap-6">
+            <SkeletonCard className="h-96" />
+          </div>
+        </div>
       </div>
     )
   }
@@ -423,9 +449,7 @@ export default function AnalyticsPage() {
             </CardHeader>
             <CardContent>
               {segmentLoading ? (
-                <div className="text-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-                </div>
+                <SkeletonTable rows={5} columns={4} />
               ) : segmentPerf.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
                   No active segments yet
@@ -481,9 +505,7 @@ export default function AnalyticsPage() {
             </CardHeader>
             <CardContent>
               {pixelLoading ? (
-                <div className="text-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-                </div>
+                <SkeletonTable rows={5} columns={5} />
               ) : pixelPerf.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
                   No active pixels yet
