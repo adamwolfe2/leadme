@@ -3,7 +3,6 @@
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/middleware'
-import { createAdminClient } from '@/lib/supabase/admin'
 import { validateRequiredEnvVars } from '@/lib/env-validation'
 import { logger } from '@/lib/monitoring/logger'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -225,8 +224,8 @@ export async function middleware(req: NextRequest) {
         }
       } else {
         // User is authenticated - verify admin/owner role
-        const adminSupabase = createAdminClient()
-        const { data: userRecord } = await adminSupabase
+        // Use Edge-compatible client (RLS policies allow users to query their own record)
+        const { data: userRecord } = await supabase
           .from('users')
           .select('role')
           .eq('auth_user_id', user.id)
@@ -253,8 +252,8 @@ export async function middleware(req: NextRequest) {
       const cachedWorkspaceId = req.cookies.get('x-workspace-id')?.value
 
       if (!cachedWorkspaceId) {
-        const adminSupabase = createAdminClient()
-        const { data: userRecord } = await adminSupabase
+        // Use Edge-compatible client (RLS policies allow users to query their own record)
+        const { data: userRecord } = await supabase
           .from('users')
           .select('workspace_id')
           .eq('auth_user_id', user.id)
