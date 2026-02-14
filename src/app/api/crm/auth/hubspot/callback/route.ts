@@ -62,6 +62,21 @@ export async function GET(req: NextRequest) {
       )
     }
 
+    // SECURITY: Validate timestamp to prevent replay attacks
+    const stateParts = storedState.split('.')
+    if (stateParts.length === 2) {
+      const timestamp = parseInt(stateParts[1], 10)
+      const age = Date.now() - timestamp
+      const MAX_AGE = 10 * 60 * 1000 // 10 minutes in milliseconds
+
+      if (age > MAX_AGE || age < 0) {
+        safeError('[HubSpot OAuth] State token expired or invalid timestamp')
+        return NextResponse.redirect(
+          new URL('/settings/integrations?error=hs_session_expired', req.url)
+        )
+      }
+    }
+
     // Get context from cookie
     const contextCookie = cookieStore.get('hs_oauth_context')?.value
     if (!contextCookie) {

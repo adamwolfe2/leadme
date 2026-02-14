@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
 
 export const runtime = 'edge'
 
@@ -24,27 +23,38 @@ export async function GET() {
       return NextResponse.json({ error: 'No workspace found' }, { status: 400 })
     }
 
-    const adminSupabase = createAdminClient()
+    // SECURITY FIX: Use standard client instead of admin client to enforce RLS policies
+    // This ensures users can only access their own workspace's pixel data
 
-    // Get pixel for this workspace
-    const { data: pixel } = await adminSupabase
+    // Get pixel for this workspace (RLS will enforce workspace isolation)
+    const { data: pixel, error: pixelError } = await supabase
       .from('audiencelab_pixels')
       .select('pixel_id, domain, is_active, snippet, install_url, created_at, label')
       .eq('workspace_id', userData.workspace_id)
       .maybeSingle()
 
+    if (pixelError) {
+      console.error('[API] Failed to fetch pixel:', pixelError)
+      // Don't expose error details to client
+    }
+
     // Count recent superpixel events (last 24h) by pixel_id
     let recentEvents = 0
     if (pixel) {
       const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-      const { count } = await adminSupabase
+      const { count, error: eventsError } = await supabase
         .from('audiencelab_events')
         .select('*', { count: 'exact', head: true })
         .eq('pixel_id', pixel.pixel_id)
         .eq('source', 'superpixel')
         .gte('received_at', twentyFourHoursAgo)
 
-      recentEvents = count || 0
+      if (eventsError) {
+        console.error('[API] Failed to fetch events count:', eventsError)
+        // Continue with recentEvents = 0
+      } else {
+        recentEvents = count || 0
+      }
     }
 
     return NextResponse.json({

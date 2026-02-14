@@ -79,29 +79,36 @@ export async function GET(req: NextRequest) {
     }
 
     // Generate state parameter for CSRF protection
-    const state = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => b.toString(16).padStart(2, '0')).join('')
+    // Include timestamp for replay attack prevention
+    const randomBytes = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('')
+    const timestamp = Date.now()
+    const state = `${randomBytes}.${timestamp}`
 
     // Store state in cookie for verification
     const cookieStore = await cookies()
     cookieStore.set('slack_oauth_state', state, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'strict', // SECURITY: Changed from 'lax' to 'strict' for better CSRF protection
       maxAge: 600, // 10 minutes
       path: '/',
     })
 
     // Store workspace info for callback
+    // SECURITY: This cookie is validated against authenticated session in callback
     cookieStore.set(
       'slack_oauth_context',
       JSON.stringify({
         workspace_id: user.workspace_id,
         user_id: user.id,
+        timestamp, // Include timestamp for additional validation
       }),
       {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        sameSite: 'strict', // SECURITY: Changed from 'lax' to 'strict'
         maxAge: 600,
         path: '/',
       }
