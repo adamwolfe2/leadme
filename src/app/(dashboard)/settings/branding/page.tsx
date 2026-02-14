@@ -301,6 +301,153 @@ export default function BrandingSettingsPage() {
           {saveMutation.isPending ? 'Saving...' : 'Save Branding'}
         </Button>
       </div>
+
+      {/* Premium White Label Features */}
+      <div className="rounded-xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 p-6">
+        <div className="flex items-start gap-4">
+          <div className="flex-shrink-0">
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+              </svg>
+            </div>
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-zinc-900 mb-1">🎁 Premium White Label & Custom Domain</h3>
+            <p className="text-sm text-zinc-600">
+              Remove Cursive branding completely, add your own company name throughout the platform, and use your own custom domain for a fully white-labeled experience.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <WhiteLabelRequestCards toast={toast} />
+    </div>
+  )
+}
+
+// White Label Request Cards Component
+function WhiteLabelRequestCards({ toast }: { toast: ReturnType<typeof useToast> }) {
+  const [requesting, setRequesting] = useState<string | null>(null)
+
+  const handleRequest = async (type: 'white_label' | 'custom_domain', title: string, description: string) => {
+    setRequesting(type)
+    try {
+      const response = await fetch('/api/features/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          feature_type: type,
+          request_title: title,
+          request_description: description,
+          priority: 'normal',
+        }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to submit request')
+      }
+
+      toast.success('Request submitted! Our team will contact you shortly.')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to submit request')
+    } finally {
+      setRequesting(null)
+    }
+  }
+
+  return (
+    <div className="grid gap-4 md:grid-cols-2">
+      {/* White Label Branding */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base">White Label Branding</CardTitle>
+            <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+              Premium
+            </span>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Remove all Cursive branding and replace with your company name throughout the platform.
+          </p>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-2 text-sm text-muted-foreground mb-4">
+            <li className="flex items-start gap-2">
+              <svg className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Remove "Powered by Cursive"
+            </li>
+            <li className="flex items-start gap-2">
+              <svg className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Custom company name everywhere
+            </li>
+            <li className="flex items-start gap-2">
+              <svg className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Custom email templates
+            </li>
+          </ul>
+          <Button
+            className="w-full"
+            variant="outline"
+            onClick={() => handleRequest('white_label', 'White Label Branding Request', 'Please set up white label branding for my workspace')}
+            disabled={requesting === 'white_label'}
+          >
+            {requesting === 'white_label' ? 'Requesting...' : '🎁 Request White Label'}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Custom Domain */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base">Custom Domain</CardTitle>
+            <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+              Premium
+            </span>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Use your own domain name (e.g., leads.yourcompany.com) for the platform.
+          </p>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-2 text-sm text-muted-foreground mb-4">
+            <li className="flex items-start gap-2">
+              <svg className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Your own subdomain
+            </li>
+            <li className="flex items-start gap-2">
+              <svg className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              SSL certificate included
+            </li>
+            <li className="flex items-start gap-2">
+              <svg className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              DNS setup assistance
+            </li>
+          </ul>
+          <Button
+            className="w-full"
+            variant="outline"
+            onClick={() => handleRequest('custom_feature', 'Custom Domain Setup Request', 'Please help me set up a custom domain for my workspace')}
+            disabled={requesting === 'custom_domain'}
+          >
+            {requesting === 'custom_domain' ? 'Requesting...' : '🎁 Request Custom Domain'}
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   )
 }

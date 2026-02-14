@@ -68,6 +68,93 @@ function IntegrationLogo({ name }: { name: string }) {
   )
 }
 
+// Integration Card Component
+function IntegrationCard({ integration, toast }: { integration: { name: string; key: string; description: string; premium: boolean }; toast: ReturnType<typeof useToast> }) {
+  const [requesting, setRequesting] = useState(false)
+
+  const handleRequestIntegration = async () => {
+    setRequesting(true)
+    try {
+      const response = await fetch('/api/features/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          feature_type: 'custom_integration',
+          request_title: `${integration.name} Integration Request`,
+          request_description: `Please set up ${integration.name} integration to sync leads automatically.`,
+          request_data: {
+            integration_name: integration.name,
+            integration_key: integration.key,
+          },
+          priority: 'normal',
+        }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to submit request')
+      }
+
+      toast.success(`${integration.name} integration requested! Our team will contact you shortly.`)
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to submit request')
+    } finally {
+      setRequesting(false)
+    }
+  }
+
+  return (
+    <div className="rounded-xl border border-zinc-200 p-4 hover:border-primary/30 transition-colors">
+      <div className="flex items-start gap-4">
+        <div className="flex-shrink-0">
+          <IntegrationLogo name={integration.key} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-zinc-900">{integration.name}</h3>
+            {integration.premium && (
+              <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                Premium
+              </span>
+            )}
+          </div>
+          <p className="mt-1 text-xs text-zinc-500 line-clamp-2">{integration.description}</p>
+        </div>
+      </div>
+      <div className="mt-4">
+        {integration.premium ? (
+          <button
+            onClick={handleRequestIntegration}
+            disabled={requesting}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-xs font-medium text-primary hover:bg-primary/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {requesting ? (
+              <>
+                <svg className="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Requesting...
+              </>
+            ) : (
+              <>
+                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                </svg>
+                Request Integration
+              </>
+            )}
+          </button>
+        ) : (
+          <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+            Coming Soon - Free
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // Webhook event types supported by the platform
 const WEBHOOK_EVENTS = [
   { key: 'lead.created', label: 'Lead Created', description: 'When a new lead is identified' },
@@ -745,7 +832,25 @@ export default function IntegrationsClient() {
         )}
       </div>
 
-      {/* CRM & Other Integrations - Coming Soon */}
+      {/* Premium CRM & Other Integrations */}
+      <div className="rounded-xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 p-6">
+        <div className="flex items-start gap-4">
+          <div className="flex-shrink-0">
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-zinc-900 mb-1">🎁 Premium CRM Integrations</h3>
+            <p className="text-sm text-zinc-600">
+              Connect your favorite CRM and sync leads automatically. Our team will set up bi-directional sync, custom field mapping, and automation workflows tailored to your needs.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-zinc-900 mb-6">CRM & Other Integrations</h2>
 
@@ -755,54 +860,44 @@ export default function IntegrationsClient() {
               name: 'Salesforce',
               key: 'salesforce',
               description: 'Sync leads directly to your Salesforce CRM',
+              premium: true,
             },
             {
               name: 'HubSpot',
               key: 'hubspot',
               description: 'Push leads into HubSpot contacts and deals',
+              premium: true,
             },
             {
               name: 'Google Sheets',
               key: 'google-sheets',
               description: 'Export leads automatically to Google Sheets',
+              premium: false,
             },
             {
               name: 'Pipedrive',
               key: 'pipedrive',
               description: 'Create deals in Pipedrive automatically',
+              premium: true,
             },
             {
               name: 'Microsoft Teams',
               key: 'microsoft-teams',
               description: 'Receive lead notifications in Teams',
+              premium: true,
             },
             {
               name: 'Discord',
               key: 'discord',
               description: 'Get lead alerts in Discord channels',
+              premium: false,
             },
           ].map((integration) => (
-            <div
+            <IntegrationCard
               key={integration.key}
-              className="rounded-xl border border-zinc-200 p-4 opacity-60 hover:opacity-80 transition-opacity"
-            >
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0">
-                  <IntegrationLogo name={integration.key} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-semibold text-zinc-900">
-                    {integration.name}
-                  </h3>
-                  <p className="mt-1 text-xs text-zinc-500 line-clamp-2">{integration.description}</p>
-                </div>
-              </div>
-              <div className="mt-4">
-                <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-zinc-100 text-zinc-600">
-                  Coming Soon
-                </span>
-              </div>
-            </div>
+              integration={integration}
+              toast={toast}
+            />
           ))}
         </div>
       </div>
