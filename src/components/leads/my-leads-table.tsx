@@ -68,6 +68,18 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
 
+  // SECURITY: Validate page is within bounds to prevent expensive out-of-range queries
+  useEffect(() => {
+    if (page > totalPages && totalPages > 0) {
+      console.warn(`[Pagination] Page ${page} exceeds totalPages ${totalPages}, resetting to page 1`)
+      setPage(1)
+    }
+    if (page < 1) {
+      console.warn(`[Pagination] Page ${page} is below minimum, resetting to page 1`)
+      setPage(1)
+    }
+  }, [page, totalPages])
+
   const fetchAssignments = useCallback(async () => {
     const supabase = createClient()
 
@@ -212,6 +224,16 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
           }
 
           setAssignments((prev) => prev.filter((a) => a.id !== payload.old.id))
+
+          // Close modal if the deleted lead is currently selected
+          setSelectedLead((current) => {
+            if (current?.id === payload.old.id) {
+              console.log('[Realtime] Closing modal for deleted lead')
+              return null
+            }
+            return current
+          })
+
           onLeadChange?.()
         }
       )
@@ -227,28 +249,57 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
   const updateStatus = useCallback(async (assignmentId: string, newStatus: string) => {
     const supabase = createClient()
 
-    const update: UserLeadAssignmentUpdate = {
-      status: newStatus,
+    // Capture previous state for rollback on error
+    const previousAssignment = assignments.find((a) => a.id === assignmentId)
+    if (!previousAssignment) {
+      console.error('[Status Update] Assignment not found:', assignmentId)
+      return
     }
 
-    if (newStatus === 'viewed') {
-      update.viewed_at = new Date().toISOString()
-    } else if (newStatus === 'contacted') {
-      update.contacted_at = new Date().toISOString()
-    }
+    const previousStatus = previousAssignment.status
 
-    const { error } = await supabase
-      .from('user_lead_assignments')
-      .update(update as never)
-      .eq('id', assignmentId)
+    // Optimistic update: Update UI immediately
+    setAssignments((prev) =>
+      prev.map((a) => (a.id === assignmentId ? { ...a, status: newStatus } : a))
+    )
 
-    if (!error) {
-      setAssignments((prev) =>
-        prev.map((a) => (a.id === assignmentId ? { ...a, status: newStatus } : a))
-      )
+    try {
+      const update: UserLeadAssignmentUpdate = {
+        status: newStatus,
+      }
+
+      if (newStatus === 'viewed') {
+        update.viewed_at = new Date().toISOString()
+      } else if (newStatus === 'contacted') {
+        update.contacted_at = new Date().toISOString()
+      }
+
+      const { error } = await supabase
+        .from('user_lead_assignments')
+        .update(update as never)
+        .eq('id', assignmentId)
+        .eq('workspace_id', workspaceId) // SECURITY: Verify workspace
+
+      if (error) {
+        // Rollback optimistic update on error
+        console.error('[Status Update] Failed to update status:', error)
+        setAssignments((prev) =>
+          prev.map((a) => (a.id === assignmentId ? { ...a, status: previousStatus } : a))
+        )
+        // TODO: Show error toast to user
+        return
+      }
+
+      // Success - notify parent component
       onLeadChange?.()
+    } catch (err) {
+      // Rollback on exception
+      console.error('[Status Update] Exception during update:', err)
+      setAssignments((prev) =>
+        prev.map((a) => (a.id === assignmentId ? { ...a, status: previousStatus } : a))
+      )
     }
-  }, [onLeadChange])
+  }, [assignments, workspaceId, onLeadChange])
 
   function formatDate(dateStr: string) {
     return new Date(dateStr).toLocaleDateString('en-US', {
@@ -485,7 +536,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
       )}
 
       {/* Lead detail modal */}
-      {selectedLead && (
+      {selectedLead && selectedLead.leads && (
         <LeadDetailModal
           assignment={selectedLead}
           onClose={() => setSelectedLead(null)}
@@ -509,6 +560,30 @@ const LeadDetailModal = memo(function LeadDetailModal({
   onStatusChange: (status: string) => void
 }) {
   const lead = assignment.leads
+
+  // ERROR HANDLING: Validate lead data exists
+  if (!lead) {
+    console.error('[LeadDetailModal] Lead data is missing for assignment:', assignment.id)
+    return (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+        onClick={onClose}
+      >
+        <div className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
+          <h2 className="text-lg font-semibold text-red-600 mb-2">Error Loading Lead</h2>
+          <p className="text-zinc-600 mb-4">
+            The lead data could not be loaded. It may have been deleted.
+          </p>
+          <button
+            onClick={onClose}
+            className="w-full px-4 py-2 bg-zinc-900 text-white rounded-md hover:bg-zinc-800"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   function getLeadName() {
     return (
