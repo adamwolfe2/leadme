@@ -386,6 +386,9 @@ function getSubdomain(hostname: string): string | null {
 
 // Configure which routes the middleware runs on
 export const config = {
+  // CRITICAL: Use Node.js runtime instead of Edge Runtime
+  // Edge Runtime has compatibility issues with Supabase auth session validation
+  runtime: 'nodejs',
   matcher: [
     /*
      * Match all request paths except:
