@@ -386,8 +386,17 @@ function getSubdomain(hostname: string): string | null {
 
 // Configure which routes the middleware runs on
 export const config = {
-  // CRITICAL: Use Node.js runtime instead of Edge Runtime
+  // ⚠️ CRITICAL - DO NOT REMOVE ⚠️
+  // Use Node.js runtime instead of Edge Runtime
+  //
   // Edge Runtime has compatibility issues with Supabase auth session validation
+  // causing 503 errors and infinite login redirect loops.
+  //
+  // See commits: 2ec386e, 5946bb5, 39c9ed7
+  // Issue: getSession() fails in Edge Runtime → auth cookies not validated → redirect loop
+  // Solution: Force Node.js runtime for full Supabase compatibility
+  //
+  // ⚠️ REMOVING THIS WILL BREAK LOGIN - DO NOT CHANGE TO 'edge' ⚠️
   runtime: 'nodejs',
   matcher: [
     /*
