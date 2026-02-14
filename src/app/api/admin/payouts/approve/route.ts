@@ -11,6 +11,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { getStripeClient } from '@/lib/stripe/client'
 import { requireAdmin } from '@/lib/auth/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { checkRateLimit, RATE_LIMIT_CONFIGS } from '@/lib/utils/rate-limit'
 import { z } from 'zod'
 
 const payoutApproveSchema = z.object({
@@ -19,7 +20,27 @@ const payoutApproveSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    await requireAdmin()
+    const admin = await requireAdmin()
+
+    // SECURITY: Rate limit payout approvals to prevent abuse
+    const rateLimitKey = `payout_approval:${admin.email}`
+    const rateLimit = checkRateLimit(rateLimitKey, RATE_LIMIT_CONFIGS.payout_approval)
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Too many payout approvals. Please try again later.',
+          retryAfter: rateLimit.retryAfter
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(rateLimit.retryAfter),
+            'X-RateLimit-Remaining': '0',
+          }
+        }
+      )
+    }
 
     const stripe = getStripeClient()
     const supabase = await createClient()

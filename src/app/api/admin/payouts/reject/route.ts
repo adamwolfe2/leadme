@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
+import { checkRateLimit, RATE_LIMIT_CONFIGS } from '@/lib/utils/rate-limit'
 import { z } from 'zod'
 
 const payoutRejectSchema = z.object({
@@ -18,7 +19,27 @@ const payoutRejectSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    await requireAdmin()
+    const admin = await requireAdmin()
+
+    // SECURITY: Rate limit payout rejections to prevent abuse
+    const rateLimitKey = `payout_rejection:${admin.email}`
+    const rateLimit = checkRateLimit(rateLimitKey, RATE_LIMIT_CONFIGS.payout_rejection)
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Too many payout operations. Please try again later.',
+          retryAfter: rateLimit.retryAfter
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(rateLimit.retryAfter),
+            'X-RateLimit-Remaining': '0',
+          }
+        }
+      )
+    }
 
     const supabase = await createClient()
 
