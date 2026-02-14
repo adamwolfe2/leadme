@@ -248,13 +248,83 @@ export default function PixelSettingsPage() {
     )
   }
 
-  // No pixel - show setup form
+  // No pixel - show REQUEST form (premium feature)
+  const [requestDescription, setRequestDescription] = useState('')
+  const [submittingRequest, setSubmittingRequest] = useState(false)
+
+  const handleRequestPixel = async () => {
+    if (!websiteUrl) {
+      toast.error('Please enter your website URL')
+      return
+    }
+
+    try {
+      new URL(websiteUrl)
+    } catch {
+      toast.error('Please enter a valid URL (e.g. https://example.com)')
+      return
+    }
+
+    setSubmittingRequest(true)
+    try {
+      const response = await fetch('/api/features/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          feature_type: 'pixel',
+          request_title: `Pixel Installation Request for ${websiteName || new URL(websiteUrl).hostname}`,
+          request_description: requestDescription || `Please install a tracking pixel for ${websiteUrl}`,
+          request_data: {
+            website_url: websiteUrl,
+            website_name: websiteName,
+          },
+          priority: 'normal',
+        }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to submit request')
+      }
+
+      toast.success('Request submitted! Our team will contact you shortly.')
+      setWebsiteUrl('')
+      setWebsiteName('')
+      setRequestDescription('')
+      queryClient.invalidateQueries({ queryKey: ['pixel', 'status'] })
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to submit request')
+    } finally {
+      setSubmittingRequest(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
+      {/* Premium Feature Badge */}
+      <div className="rounded-xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 p-6">
+        <div className="flex items-start gap-4">
+          <div className="flex-shrink-0">
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+              </svg>
+            </div>
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-zinc-900 mb-1">🎁 Premium Feature: Custom Pixel Installation</h3>
+            <p className="text-sm text-zinc-600">
+              Unlock advanced visitor tracking with a custom pixel installation. Our team will set up and configure your tracking pixel to identify anonymous visitors and convert them into qualified leads.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Request Form */}
       <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-zinc-900 mb-2">Install Your Tracking Pixel</h2>
+        <h2 className="text-lg font-semibold text-zinc-900 mb-2">Request Pixel Installation</h2>
         <p className="text-sm text-zinc-500 mb-6">
-          Create a tracking pixel for your website to identify anonymous visitors and turn them into leads.
+          Submit your request below and our team will set up your tracking pixel within 24-48 hours.
         </p>
 
         <div className="space-y-4 max-w-lg">
@@ -285,12 +355,25 @@ export default function PixelSettingsPage() {
             <p className="mt-1 text-xs text-zinc-500">Defaults to your domain name if left blank</p>
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-zinc-700 mb-2">
+              Additional Details <span className="text-zinc-400">(optional)</span>
+            </label>
+            <textarea
+              placeholder="Any specific requirements or questions?"
+              className="block w-full rounded-lg border-zinc-300 shadow-sm focus:border-primary focus:ring-primary"
+              rows={3}
+              value={requestDescription}
+              onChange={(e) => setRequestDescription(e.target.value)}
+            />
+          </div>
+
           <button
-            onClick={handleCreatePixel}
-            disabled={provisionMutation.isPending || !websiteUrl}
+            onClick={handleRequestPixel}
+            disabled={submittingRequest || !websiteUrl}
             className="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
           >
-            {provisionMutation.isPending ? 'Creating Pixel...' : 'Create Pixel'}
+            {submittingRequest ? 'Submitting Request...' : '🎁 Request Pixel Installation'}
           </button>
         </div>
       </div>
@@ -307,6 +390,9 @@ export default function PixelSettingsPage() {
               The Cursive tracking pixel identifies anonymous visitors on your website using first-party data.
               When a visitor matches our identity graph, they become a lead in your dashboard with
               verified contact information, company details, and more.
+            </p>
+            <p className="mt-2 text-sm text-zinc-600">
+              <strong>💬 Need help?</strong> Use the chat widget in the bottom-right corner to speak with our team directly.
             </p>
           </div>
         </div>
