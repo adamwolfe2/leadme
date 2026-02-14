@@ -1,24 +1,13 @@
 export const runtime = 'edge'
 
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { isAdmin } from '@/lib/auth/roles'
+import { requireAdmin } from '@/lib/auth/admin'
 
 export async function GET() {
   try {
-    // Check admin authentication
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const hasAdminAccess = await isAdmin(user)
-    if (!hasAdminAccess) {
-      return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
-    }
+    // SECURITY: Verify platform admin authorization
+    await requireAdmin()
 
     // Fetch all support messages using admin client
     const adminSupabase = createAdminClient()

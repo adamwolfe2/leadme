@@ -2,6 +2,7 @@ export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/auth/admin'
 import { sendPartnerApprovedEmail } from '@/lib/email/service'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -12,24 +13,8 @@ export async function POST(
   const supabase = await createClient()
   const { partnerId } = await params
 
-  // Verify admin
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  const { data: admin } = await supabase
-    .from('platform_admins')
-    .select('id')
-    .eq('email', user.email)
-    .eq('is_active', true)
-    .single()
-
-  if (!admin) {
-    return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
-  }
+  // SECURITY: Verify platform admin authorization
+  const admin = await requireAdmin()
 
   // Approve partner
   const { data: partner, error } = await supabase
@@ -56,7 +41,7 @@ export async function POST(
     entity_type: 'partner',
     entity_id: partner.id,
     metadata: {
-      approved_by: user.email,
+      approved_by: admin.email,
       partner_company: partner.company_name,
     },
   })
