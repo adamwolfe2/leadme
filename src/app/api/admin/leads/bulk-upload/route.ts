@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
 import { parse } from 'csv-parse/sync'
+import { z } from 'zod'
 import { calculateIntentScore, calculateFreshnessScore, calculateMarketplacePrice } from '@/lib/services/lead-scoring.service'
 import { routeLeadsToMatchingUsers } from '@/lib/services/marketplace-lead-routing'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -54,6 +55,27 @@ function normalizeState(state: string): string | null {
   return VALID_STATES.includes(normalized) ? normalized : null
 }
 
+// CSV row validation schema
+const csvRowSchema = z.object({
+  first_name: z.string().min(1).max(100).regex(/^[a-zA-Z\s'-]+$/, 'Invalid first name'),
+  last_name: z.string().min(1).max(100).regex(/^[a-zA-Z\s'-]+$/, 'Invalid last name'),
+  email: z.string().email().max(255),
+  phone: z.string().max(20).regex(/^[\d\s\-()+.]+$/, 'Invalid phone').optional().nullable(),
+  company_name: z.string().max(200).optional().nullable(),
+  company_domain: z.string().max(200).optional().nullable(),
+  job_title: z.string().max(200).optional().nullable(),
+  city: z.string().max(100).optional().nullable(),
+  state: z.string().length(2).toUpperCase(),
+  industry: z.string().min(1).max(100),
+  intent_signal: z.string().max(500).optional().nullable(),
+  seniority_level: z.enum(['junior', 'mid', 'senior', 'executive', 'unknown']).optional().nullable(),
+  company_size: z.string().max(50).optional().nullable(),
+  company_employee_count: z.string().regex(/^\d+$/).optional().nullable(),
+  utm_source: z.string().max(200).optional().nullable(),
+  utm_medium: z.string().max(200).optional().nullable(),
+  utm_campaign: z.string().max(200).optional().nullable(),
+})
+
 function calculateLeadScore(lead: any): number {
   let score = 50 // Base score
 
@@ -89,6 +111,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
 
+    // Validate file size (max 10MB)
+    const MAX_FILE_SIZE = 10 * 1024 * 1024
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: 'File too large. Maximum size is 10MB.' },
+        { status: 413 }
+      )
+    }
+
     // Parse CSV
     const csvContent = await file.text()
     let records: any[]
@@ -108,6 +139,15 @@ export async function POST(request: NextRequest) {
         errors: [`CSV parsing error: ${e.message}`],
         category_summary: {},
       })
+    }
+
+    // Validate max record count to prevent DoS
+    const MAX_RECORDS = 10000
+    if (records.length > MAX_RECORDS) {
+      return NextResponse.json(
+        { error: `Too many records. Maximum ${MAX_RECORDS} records per upload.` },
+        { status: 413 }
+      )
     }
 
     // Collect all emails for batch deduplication check
@@ -147,31 +187,28 @@ export async function POST(request: NextRequest) {
       const rowNum = i + 2 // Account for header row
 
       try {
-        // Validate required fields
-        if (!row.first_name || !row.last_name) {
-          results.errors.push(`Row ${rowNum}: Missing first_name or last_name`)
+        // Validate row with Zod schema
+        const validationResult = csvRowSchema.safeParse(row)
+        if (!validationResult.success) {
+          const errors = validationResult.error.errors.map(e => e.message).join(', ')
+          results.errors.push(`Row ${rowNum}: Validation failed - ${errors}`)
           results.failed++
           continue
         }
 
-        if (!row.email) {
-          results.errors.push(`Row ${rowNum}: Missing email`)
-          results.failed++
-          continue
-        }
+        const validRow = validationResult.data
+        const email = validRow.email.toLowerCase().trim()
 
-        const email = row.email.toLowerCase().trim()
-
-        const state = normalizeState(row.state)
+        const state = normalizeState(validRow.state)
         if (!state) {
-          results.errors.push(`Row ${rowNum}: Invalid state code "${row.state}"`)
+          results.errors.push(`Row ${rowNum}: Invalid state code "${validRow.state}"`)
           results.failed++
           continue
         }
 
-        const industry = normalizeIndustry(row.industry)
+        const industry = normalizeIndustry(validRow.industry)
         if (!industry) {
-          results.errors.push(`Row ${rowNum}: Invalid industry "${row.industry}"`)
+          results.errors.push(`Row ${rowNum}: Invalid industry "${validRow.industry}"`)
           results.failed++
           continue
         }
@@ -188,33 +225,33 @@ export async function POST(request: NextRequest) {
         // Mark email as seen for in-batch dedup
         existingEmails.add(email)
 
-        // Calculate lead score (basic)
-        const leadScore = calculateLeadScore(row)
+        // Calculate lead score (basic) - using validated data
+        const leadScore = calculateLeadScore(validRow)
 
-        // Calculate marketplace scores
+        // Calculate marketplace scores with sanitized input
         const intentScore = calculateIntentScore({
-          seniority_level: row.seniority_level || 'unknown',
-          company_size: row.company_size || null,
-          company_employee_count: row.company_employee_count ? Number(row.company_employee_count) : null,
+          seniority_level: validRow.seniority_level || 'unknown',
+          company_size: validRow.company_size || null,
+          company_employee_count: validRow.company_employee_count ? Number(validRow.company_employee_count) : null,
           email: email,
-          company_domain: row.company_domain || null,
-          phone: row.phone || null,
-          first_name: row.first_name,
-          last_name: row.last_name,
-          city: row.city || null,
+          company_domain: validRow.company_domain || null,
+          phone: validRow.phone || null,
+          first_name: validRow.first_name,
+          last_name: validRow.last_name,
+          city: validRow.city || null,
           state: state,
-          job_title: row.job_title || null,
+          job_title: validRow.job_title || null,
         })
 
         const freshnessScore = calculateFreshnessScore(new Date())
         const marketplacePrice = calculateMarketplacePrice({
           intentScore: intentScore.score,
           freshnessScore,
-          hasPhone: !!row.phone,
+          hasPhone: !!validRow.phone,
           verificationStatus: 'pending',
         })
 
-        const fullName = [row.first_name, row.last_name].filter(Boolean).join(' ')
+        const fullName = [validRow.first_name, validRow.last_name].filter(Boolean).join(' ')
 
         // Insert lead as marketplace lead using admin client
         const { data: insertedLead, error: insertError } = await adminClient.from('leads').insert({
@@ -222,28 +259,28 @@ export async function POST(request: NextRequest) {
           is_marketplace_listed: true,
           marketplace_status: 'available',
           source: source,
-          first_name: row.first_name,
-          last_name: row.last_name,
+          first_name: validRow.first_name,
+          last_name: validRow.last_name,
           full_name: fullName,
           email: email,
-          phone: row.phone || null,
-          company_name: row.company_name || `${row.first_name}'s Company`,
-          company_domain: row.company_domain || null,
+          phone: validRow.phone || null,
+          company_name: validRow.company_name || `${validRow.first_name}'s Company`,
+          company_domain: validRow.company_domain || null,
           company_industry: industry,
-          job_title: row.job_title || null,
-          city: row.city || null,
+          job_title: validRow.job_title || null,
+          city: validRow.city || null,
           state: state,
           state_code: state,
           country: 'US',
           country_code: 'US',
-          intent_signal: row.intent_signal || null,
+          intent_signal: validRow.intent_signal || null,
           lead_score: leadScore,
           intent_score_calculated: intentScore.score,
           freshness_score: freshnessScore,
           marketplace_price: marketplacePrice,
-          utm_source: row.utm_source || null,
-          utm_medium: row.utm_medium || null,
-          utm_campaign: row.utm_campaign || null,
+          utm_source: validRow.utm_source || null,
+          utm_medium: validRow.utm_medium || null,
+          utm_campaign: validRow.utm_campaign || null,
           enrichment_status: 'pending',
           delivery_status: 'pending',
         } as any).select('id').single()

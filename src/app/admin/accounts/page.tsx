@@ -146,28 +146,31 @@ export default function AdminAccountsPage() {
   }
 
   const toggleSuspend = async (workspace: Workspace) => {
-    if (workspace.is_suspended) {
-      // Unsuspend
-      await (supabase
-        .from('workspaces') as any)
-        .update({
-          is_suspended: false,
-          suspended_reason: null,
-          suspended_at: null,
-        })
-        .eq('id', workspace.id)
-    } else {
-      // Suspend - could add a modal for reason
-      await (supabase
-        .from('workspaces') as any)
-        .update({
-          is_suspended: true,
-          suspended_reason: 'Suspended by admin',
-          suspended_at: new Date().toISOString(),
-        })
-        .eq('id', workspace.id)
+    const action = workspace.is_suspended ? 'unsuspend' : 'suspend'
+    const reason = workspace.is_suspended
+      ? undefined
+      : prompt('Reason for suspension (optional):') || undefined
+
+    // User cancelled suspension
+    if (!workspace.is_suspended && reason === null) return
+
+    try {
+      const response = await fetch(`/api/admin/workspaces/${workspace.id}/suspend`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, reason }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to update workspace')
+      }
+
+      refetch()
+    } catch (error) {
+      console.error('Failed to toggle suspension:', error)
+      alert(error instanceof Error ? error.message : 'Failed to update workspace')
     }
-    refetch()
   }
 
   const industries = [
