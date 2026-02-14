@@ -1,8 +1,9 @@
 'use client'
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tantml:react-query'
 import { useState } from 'react'
 import { useToast } from '@/lib/hooks/use-toast'
+import { PixelFeatureBanner } from '@/components/premium/PremiumFeatureBanner'
 
 interface PixelStatus {
   has_pixel: boolean
@@ -29,6 +30,18 @@ export default function PixelSettingsPage() {
   const [requestDescription, setRequestDescription] = useState('')
   const [submittingRequest, setSubmittingRequest] = useState(false)
 
+  // Check if workspace has pixel access
+  const { data: workspaceData } = useQuery({
+    queryKey: ['workspace', 'features'],
+    queryFn: async () => {
+      const response = await fetch('/api/workspace/features')
+      if (!response.ok) throw new Error('Failed to fetch workspace features')
+      return response.json()
+    },
+  })
+
+  const hasPixelAccess = workspaceData?.has_pixel_access ?? false
+
   const { data, isLoading } = useQuery<PixelStatus>({
     queryKey: ['pixel', 'status'],
     queryFn: async () => {
@@ -36,6 +49,7 @@ export default function PixelSettingsPage() {
       if (!response.ok) throw new Error('Failed to fetch pixel status')
       return response.json()
     },
+    enabled: hasPixelAccess, // Only fetch if user has access
   })
 
   const provisionMutation = useMutation({
@@ -112,6 +126,22 @@ export default function PixelSettingsPage() {
     } finally {
       setSavingSnippet(false)
     }
+  }
+
+  // Show premium banner if no pixel access
+  if (workspaceData && !hasPixelAccess) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-zinc-900">Pixel Tracking</h1>
+          <p className="mt-1 text-sm text-zinc-600">
+            Track your website visitors and convert them into leads
+          </p>
+        </div>
+
+        <PixelFeatureBanner />
+      </div>
+    )
   }
 
   if (isLoading) {

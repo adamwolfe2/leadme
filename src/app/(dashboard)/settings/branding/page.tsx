@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { FormField } from '@/components/ui/form-field'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useToast } from '@/lib/hooks/use-toast'
+import { WhitelabelFeatureBanner } from '@/components/premium/PremiumFeatureBanner'
 
 const DEFAULT_PRIMARY = '#3b82f6'
 const DEFAULT_SECONDARY = '#8b5cf6'
@@ -38,6 +39,18 @@ export default function BrandingSettingsPage() {
   const [logoUrl, setLogoUrl] = useState('')
   const [hasChanges, setHasChanges] = useState(false)
 
+  // Check if workspace has whitelabel access
+  const { data: workspaceData } = useQuery({
+    queryKey: ['workspace', 'features'],
+    queryFn: async () => {
+      const response = await fetch('/api/workspace/features')
+      if (!response.ok) throw new Error('Failed to fetch workspace features')
+      return response.json()
+    },
+  })
+
+  const hasWhitelabelAccess = workspaceData?.has_whitelabel_access ?? false
+
   // Fetch current branding
   const { data: brandingData, isLoading } = useQuery({
     queryKey: ['workspace-branding'],
@@ -46,6 +59,7 @@ export default function BrandingSettingsPage() {
       if (!response.ok) throw new Error('Failed to fetch branding')
       return response.json()
     },
+    enabled: hasWhitelabelAccess, // Only fetch if user has access
   })
 
   const branding = brandingData?.data?.branding
@@ -106,6 +120,22 @@ export default function BrandingSettingsPage() {
       setLogoUrl(branding.logo_url || '')
       setHasChanges(false)
     }
+  }
+
+  // Show premium banner if no whitelabel access
+  if (workspaceData && !hasWhitelabelAccess) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-zinc-900">White-Label Branding</h1>
+          <p className="mt-1 text-sm text-zinc-600">
+            Remove Cursive branding and use your own colors, logo, and domain
+          </p>
+        </div>
+
+        <WhitelabelFeatureBanner />
+      </div>
+    )
   }
 
   if (isLoading) {

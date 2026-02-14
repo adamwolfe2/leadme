@@ -87,6 +87,12 @@ export default async function AdminLayout({
                   Requests
                 </Link>
                 <Link
+                  href="/admin/premium-requests"
+                  className="text-sm text-zinc-300 hover:text-white transition-colors"
+                >
+                  Premium
+                </Link>
+                <Link
                   href="/admin/leads"
                   className="text-sm text-zinc-300 hover:text-white transition-colors"
                 >
