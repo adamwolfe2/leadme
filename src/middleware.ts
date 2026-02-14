@@ -4,7 +4,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/middleware'
 import { validateRequiredEnvVars } from '@/lib/env-validation'
-import { logger } from '@/lib/monitoring/logger'
+// import { logger } from '@/lib/monitoring/logger'  // TEMP: Disabled for Edge Runtime debugging
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 // ─── Rate Limiting (in-memory, Edge-compatible) ───────────────────────────
@@ -151,15 +151,18 @@ export async function middleware(req: NextRequest) {
     let authenticatedUser: { id: string; email?: string } | null = null
     if (!isPublicRoute) {
       try {
+        console.log('[Middleware] Checking auth for protected route:', pathname)
         // getSession() reads the session from cookies and refreshes if expired.
         // This is a local JWT check that only makes a network call when
         // the token needs refreshing.
         const { data: { session } } = await supabase.auth.getSession()
+        console.log('[Middleware] Session check result:', { hasSession: !!session, hasUser: !!session?.user })
         authenticatedUser = session?.user ? {
           id: session.user.id,
           email: session.user.email,
         } : null
       } catch (e) {
+        console.error('[Middleware] Auth session check FAILED:', e)
         safeError('[Middleware] Auth session check failed:', e)
         authenticatedUser = null
       }
@@ -186,8 +189,10 @@ export async function middleware(req: NextRequest) {
       const hasAuthCookies = req.cookies.getAll().some(
         c => c.name.startsWith('sb-') && c.name.includes('auth-token')
       )
+      console.log('[Middleware] No user found, checking cookies:', { hasAuthCookies, pathname })
       if (!hasAuthCookies) {
         // No auth cookies at all — user is definitely not logged in
+        console.log('[Middleware] No auth cookies - redirecting to login')
         if (isApiRoute) {
           return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
@@ -198,6 +203,7 @@ export async function middleware(req: NextRequest) {
       // Auth cookies exist but getSession() failed — let page-level handle it.
       // The dashboard layout has its own getSession() check and will redirect
       // to /login if the session is truly invalid.
+      console.log('[Middleware] Auth cookies exist but no session - letting page handle it')
     }
 
     // API routes require authentication (no auth cookies = definitely unauthorized)
@@ -286,11 +292,16 @@ export async function middleware(req: NextRequest) {
     const duration = Date.now() - startTime
     if (duration > 1000) {
       // Only log slow requests
-      logger.info('Slow middleware request', {
+      // logger.info('Slow middleware request', {  // TEMP: Disabled for Edge Runtime debugging
+      //   method: req.method,
+      //   pathname,
+      //   duration,
+      //   ip: req.headers.get('x-forwarded-for') || 'unknown',
+      // })
+      console.log('[Middleware] Slow request:', {
         method: req.method,
         pathname,
         duration,
-        ip: req.headers.get('x-forwarded-for') || 'unknown',
       })
     }
 
