@@ -45,6 +45,14 @@ export function useRealtimePixels({
     // Subscribe to pixel events for this workspace
     const channel = supabase
       .channel(`pixel-events:workspace:${workspaceId}`)
+      .on('system', { event: '*' }, (payload) => {
+        // Monitor connection status - don't show toast for pixels (less critical)
+        if (payload.type === 'CLOSED' || payload.type === 'ERROR') {
+          console.error('[Realtime] Pixel connection closed or error:', payload)
+          // Invalidate queries to refetch stale data
+          queryClient.invalidateQueries({ queryKey: ['analytics', 'pixels'] })
+        }
+      })
       .on(
         'postgres_changes',
         {
@@ -76,7 +84,11 @@ export function useRealtimePixels({
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [workspaceId, enabled, queryClient, onNewEvent])
+    // NOTE: queryClient is stable and doesn't need to be in deps
+    // Callbacks (onNewEvent) are intentionally omitted to prevent
+    // subscription recreation on every render. They capture the latest values via closure.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workspaceId, enabled])
 
   return stats
 }

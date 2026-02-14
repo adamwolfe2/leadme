@@ -41,6 +41,19 @@ export function useRealtimeLeads({
     // Subscribe to leads table changes for this workspace
     const channel = supabase
       .channel(`leads:workspace:${workspaceId}`)
+      .on('system', { event: '*' }, (payload) => {
+        // Monitor connection status
+        if (payload.type === 'CLOSED' || payload.type === 'ERROR') {
+          console.error('[Realtime] Connection closed or error:', payload)
+          if (showToasts) {
+            toast.error('Real-time connection lost', {
+              description: 'Refreshing data...',
+            })
+          }
+          // Invalidate queries to refetch stale data
+          queryClient.invalidateQueries({ queryKey: ['leads'] })
+        }
+      })
       .on(
         'postgres_changes',
         {
@@ -111,5 +124,9 @@ export function useRealtimeLeads({
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [workspaceId, enabled, queryClient, onInsert, onUpdate, onDelete, showToasts])
+    // NOTE: queryClient is stable and doesn't need to be in deps
+    // Callbacks (onInsert, onUpdate, onDelete) are intentionally omitted to prevent
+    // subscription recreation on every render. They capture the latest values via closure.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workspaceId, enabled])
 }

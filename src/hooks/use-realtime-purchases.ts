@@ -37,6 +37,19 @@ export function useRealtimePurchases({
     // Subscribe to marketplace purchases where user is the seller
     const channel = supabase
       .channel(`purchases:workspace:${workspaceId}`)
+      .on('system', { event: '*' }, (payload) => {
+        // Monitor connection status
+        if (payload.type === 'CLOSED' || payload.type === 'ERROR') {
+          console.error('[Realtime] Connection closed or error:', payload)
+          if (showToasts) {
+            toast.error('Real-time connection lost', {
+              description: 'Refreshing data...',
+            })
+          }
+          // Invalidate queries to refetch stale data
+          queryClient.invalidateQueries({ queryKey: ['purchases'] })
+        }
+      })
       .on(
         'postgres_changes',
         {
@@ -74,5 +87,9 @@ export function useRealtimePurchases({
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [workspaceId, enabled, queryClient, onPurchaseCompleted, showToasts])
+    // NOTE: queryClient is stable and doesn't need to be in deps
+    // Callbacks (onPurchaseCompleted) are intentionally omitted to prevent
+    // subscription recreation on every render. They capture the latest values via closure.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workspaceId, enabled])
 }
