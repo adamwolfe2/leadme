@@ -1,48 +1,12 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft } from "lucide-react"
-import { Metadata } from "next"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
-
-export const metadata: Metadata = {
-  title: "How to Implement WebMCP on Your B2B SaaS Website (With Real Code) | Cursive",
-  description: "Step-by-step guide to implementing WebMCP on a Next.js B2B site. Includes declarative forms, imperative tool registration, llms.txt, and testing with Chrome 146.",
-  keywords: "WebMCP implementation guide, WebMCP Next.js, how to add WebMCP, WebMCP tutorial, WebMCP code example",
-
-  openGraph: {
-    title: "How to Implement WebMCP on Your B2B SaaS Website (With Real Code) | Cursive",
-    description: "Step-by-step guide to implementing WebMCP on a Next.js B2B site. Includes declarative forms, imperative tool registration, llms.txt, and testing with Chrome 146.",
-    type: "article",
-    url: "https://www.meetcursive.com/blog/webmcp-implementation-guide-b2b-saas",
-    siteName: "Cursive",
-    images: [{
-      url: "https://www.meetcursive.com/og-image.png",
-      width: 1200,
-      height: 630,
-      alt: "Code editor showing WebMCP declarative form attributes and imperative tool registration alongside a Chrome DevTools panel displaying registered tools",
-    }],
-    locale: "en_US",
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "How to Implement WebMCP on Your B2B SaaS Website (With Real Code) | Cursive",
-    description: "Step-by-step guide to implementing WebMCP on a Next.js B2B site. Includes declarative forms, imperative tool registration, llms.txt, and testing with Chrome 146.",
-    images: ["https://www.meetcursive.com/og-image.png"],
-    creator: "@meetcursive",
-  },
-
-  alternates: {
-    canonical: "https://www.meetcursive.com/blog/webmcp-implementation-guide-b2b-saas",
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-  },
-}
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
 export default function BlogPost() {
   return (
@@ -55,7 +19,8 @@ export default function BlogPost() {
         image: "https://www.meetcursive.com/cursive-logo.png",
       })} />
 
-      {/* Header */}
+      <HumanView>
+        {/* Header */}
       <section className="py-12 bg-white">
         <Container>
           <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
@@ -561,6 +526,163 @@ return {
           </div>
         </Container>
       </section>
+      </HumanView>
+
+      <MachineView>
+        <MachineContent>
+          <h1 className="text-2xl font-bold mb-4">How to Implement WebMCP on Your B2B SaaS Website (With Real Code)</h1>
+
+          <p className="text-gray-700 mb-6">
+            Definitive implementation guide for WebMCP on B2B SaaS sites. Covers declarative forms, imperative tool registration, llms.txt, /api/ai-info endpoints, and testing with Chrome 146. Framework-agnostic concepts with Next.js/React examples. Published: February 15, 2026.
+          </p>
+
+          <MachineSection title="Key Takeaways">
+            <MachineList items={[
+              "WebMCP has two APIs: Declarative (annotate forms) and Imperative (register JS tools)",
+              "Declarative API: Add toolname, tooldescription, toolparamdescription attributes to forms",
+              "Imperative API: Use navigator.modelContext.registerTool() to expose JS functions as tools",
+              "Supporting infrastructure: llms.txt, /api/ai-info JSON endpoint, JSON-LD structured data",
+              "Testing: Chrome 146 Canary + Experimental Web Platform Features flag + Model Context Tool Inspector extension",
+              "Implementation time: 30 min for declarative forms, 1 day for imperative tools, 2-3 days total"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Prerequisites">
+            <MachineList items={[
+              "Modern web framework (Next.js 14+, Nuxt 3, Astro, SvelteKit, or plain HTML)",
+              "Chrome 146 Canary with Experimental Web Platform Features flag enabled",
+              "Model Context Tool Inspector Chrome extension for debugging",
+              "No NPM packages, build plugins, or SDKs required - WebMCP is browser-native"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Step 1: Declarative API (Quick Win - 30 min)">
+            <p className="text-gray-700 mb-3">
+              Annotate existing HTML forms to make them agent-readable. Three attributes do all the work:
+            </p>
+            <MachineList items={[
+              "toolname: Add to <form> tag - identifier agents use (e.g., 'requestDemo')",
+              "tooldescription: Add to <form> tag - explains what form does and outcome",
+              "toolparamdescription: Add to each <input> - describes expected data for field"
+            ]} />
+            <p className="text-gray-700 mt-3">
+              Example: Contact form becomes agent-callable by adding these attributes. Agent reads structured attributes, constructs parameters, submits programmatically instead of clicking/typing.
+            </p>
+          </MachineSection>
+
+          <MachineSection title="Step 2: Imperative API (Power Move - 1 day)">
+            <p className="text-gray-700 mb-3">
+              Register JavaScript functions as callable tools for agents. Enables structured data responses for any question (pricing, comparisons, features) even without corresponding UI.
+            </p>
+            <p className="text-gray-700 mb-3">
+              <strong>Implementation pattern (React/Next.js):</strong>
+            </p>
+            <MachineList items={[
+              "Create WebMCPProvider component with 'use client' directive",
+              "Use useEffect to check if navigator.modelContext exists (feature detection)",
+              "Call navigator.modelContext.registerTool() with: name, description, inputSchema (JSON Schema), annotations (readOnlyHint), execute function",
+              "Execute function receives validated params, returns structured JSON (not HTML/markdown)",
+              "Include component in root layout to auto-register tools on every page"
+            ]} />
+            <p className="text-gray-700 mt-3">
+              Example: getPricing tool accepts optional 'plan' parameter, returns plans array with name/price/features plus pricing_page URL. Agents call tool, get clean JSON, no DOM interaction.
+            </p>
+          </MachineSection>
+
+          <MachineSection title="Step 3: Supporting Infrastructure">
+            <div className="space-y-4">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">llms.txt (10 min):</p>
+                <p className="text-gray-700 mb-2">
+                  Plain-text file at site root. Think robots.txt for AI. Sections: About, Products, WebMCP Tools Available, Structured Data Endpoints, Contact.
+                </p>
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">/api/ai-info Endpoint (30 min):</p>
+                <p className="text-gray-700 mb-2">
+                  JSON endpoint returning complete product info: company, description, products array (name/price/features), webmcp_tools list, links object. Cache for 1 hour. Works for agents without browser context.
+                </p>
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">JSON-LD Structured Data:</p>
+                <p className="text-gray-700 mb-2">
+                  Schema.org markup for pages. Example: SoftwareApplication schema for pricing page with Offer objects. Available to search crawlers and agents that parse DOM but don't execute JS. Complements WebMCP.
+                </p>
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">robots.txt Review:</p>
+                <p className="text-gray-700 mb-2">
+                  Ensure AI crawlers (GPTBot, ClaudeBot, Google-Extended) aren't blocked. They need access to llms.txt and /api/ai-info.
+                </p>
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="Step 4: Testing Your Implementation">
+            <MachineList items={[
+              "Chrome 146 Canary: Enable 'Experimental Web Platform Features' at chrome://flags, restart browser",
+              "Model Context Tool Inspector: Chrome extension shows all tools (declarative + imperative) in DevTools panel. Test tool execution with parameters.",
+              "DevTools Console: Check navigator.modelContext exists, run navigator.modelContext.getTools() to list tools, manually call tools with navigator.modelContext.callTool(name, params)",
+              "Manual Agent Testing: Use browser-based AI agent (Claude in Chrome Canary), ask questions tools should answer, verify agent calls tools vs. visual scraping",
+              "Debugging: If navigator.modelContext undefined = flag not enabled. If getTools() returns empty = registration code not running."
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Tool Design Best Practices">
+            <MachineList items={[
+              "Name tools like API endpoints: getProductPricing (clear, action-oriented, unambiguous)",
+              "Write descriptions for agents: Include what tool does, what it returns, when to use it",
+              "Return structured JSON only: Never HTML or markdown. Agent formats presentation.",
+              "Include URLs in responses: pricing_page, demo_url, signup_url for navigation",
+              "Mark read-only tools: readOnlyHint: true for safe operations (pricing lookups, comparisons)",
+              "Think like a buyer: Map prospect questions to tools (cost? vs competitors? industries? results? how to start?)"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Implementation Timeline">
+            <MachineList items={[
+              "Declarative API: 1 afternoon (30-60 min per form)",
+              "Imperative API: 1 day (3-6 tools)",
+              "Supporting infrastructure: 1 day (llms.txt, /api/ai-info, JSON-LD)",
+              "Total: 2-3 days of engineering time for complete implementation"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Cursive Implementation">
+            <p className="text-gray-700 mb-3">
+              Cursive's live WebMCP implementation on meetcursive.com:
+            </p>
+            <MachineList items={[
+              "6 imperative tools: getPricing, compareCursiveToCompetitor, getCursiveCapabilities, bookDemo, getResults, getIndustries",
+              "7 declarative forms: annotated with toolname/tooldescription",
+              "Full infrastructure: llms.txt, /api/ai-info, JSON-LD schemas",
+              "Test with Chrome Canary at meetcursive.com to see tools in action"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Related Resources">
+            <MachineList items={[
+              { label: "What Is WebMCP?", href: "/blog/what-is-webmcp-guide", description: "Non-technical guide for marketers and growth teams" },
+              { label: "Why We Made Cursive Agent-Ready", href: "/blog/webmcp-ai-agent-ready-lead-generation", description: "Strategic context for WebMCP implementation" },
+              { label: "AI Agents Are Replacing the Buyer Journey", href: "/blog/ai-agents-replacing-buyer-journey", description: "Why buyer journey is going agentic" },
+              { label: "WebMCP Specification", href: "https://github.com/webmachinelearning/webmcp", description: "Full spec on GitHub" },
+              { label: "VentureBeat Coverage", href: "https://venturebeat.com/infrastructure/google-chrome-ships-webmcp-in-early-preview-turning-every-website-into-a", description: "Industry implications of WebMCP" },
+              { label: "Chrome Developer Blog", href: "https://developer.chrome.com/blog/webmcp-epp", description: "Official implementation guide" }
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Get Started with Cursive">
+            <p className="text-gray-700 mb-3">
+              Cursive is WebMCP-ready and live now. Visit meetcursive.com with Chrome Canary to test the tools, or book a demo to see how we generate leads.
+            </p>
+            <MachineList items={[
+              { label: "Platform Overview", href: "/platform", description: "See what Cursive does" },
+              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Book a Demo", href: "/book", description: "See Cursive in real-time" }
+            ]} />
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
     </main>
   )
 }
