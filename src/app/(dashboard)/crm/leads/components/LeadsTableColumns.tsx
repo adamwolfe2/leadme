@@ -429,7 +429,7 @@ export function createLeadsTableColumns(
             <DropdownMenuItem onClick={() => window.location.href = `/crm/leads/${lead.id}`}>
               View details
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => alert('Edit functionality coming soon')}>
+            <DropdownMenuItem onClick={() => window.location.href = `/crm/leads/${lead.id}?edit=true`}>
               Edit lead
             </DropdownMenuItem>
             <DropdownMenuSeparator />
