@@ -61,7 +61,7 @@ export function HumanHomePage() {
   return (
     <main className="bg-white">
       {/* ===== HERO SECTION ===== */}
-      <section className="pt-14 pb-6 bg-white lg:min-h-[90vh] lg:flex lg:flex-col lg:justify-center">
+      <section id="hero" className="pt-14 pb-6 bg-white lg:min-h-[90vh] lg:flex lg:flex-col lg:justify-center">
         <Container className="max-w-[1440px] lg:px-12">
           {/* Eyebrow Badge */}
           <motion.div
@@ -217,7 +217,7 @@ export function HumanHomePage() {
       <CustomerLogos />
 
       {/* Two Ways to Get Started */}
-      <section className="py-20 bg-[#F7F9FB]">
+      <section id="pricing" className="py-20 bg-[#F7F9FB]">
         <Container>
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
@@ -300,7 +300,7 @@ export function HumanHomePage() {
       </section>
 
       {/* Problem → Solution (Benefit-Led) */}
-      <section className="py-20 bg-white">
+      <section id="products" className="py-20 bg-white">
         <Container>
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
@@ -339,7 +339,7 @@ export function HumanHomePage() {
       <CompetitiveAdvantagesSection />
 
       {/* Core Features Grid */}
-      <section className="py-20 bg-[#F7F9FB]">
+      <section id="features" className="py-20 bg-[#F7F9FB]">
         <Container>
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-2">
@@ -391,7 +391,7 @@ export function HumanHomePage() {
       <HowItWorksSection />
 
       {/* Integrations Showcase */}
-      <section className="py-20 bg-[#F7F9FB]">
+      <section id="integrations" className="py-20 bg-[#F7F9FB]">
         <Container>
           <IntegrationsShowcase
             title="Works With Your Existing Stack"
@@ -401,7 +401,7 @@ export function HumanHomePage() {
       </section>
 
       {/* Proven Results */}
-      <section className="py-20 bg-white">
+      <section id="case-studies" className="py-20 bg-white">
         <Container>
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
@@ -444,7 +444,7 @@ export function HumanHomePage() {
       <FAQSection />
 
       {/* Explore by Industry */}
-      <section className="py-20 bg-white">
+      <section id="industries" className="py-20 bg-white">
         <Container>
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">

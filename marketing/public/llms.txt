@@ -300,7 +300,26 @@ Cursive implements the WebMCP (Web Model Context Protocol) standard, exposing st
 
 - **contactCursive** — Contact form on /contact
 - **requestFreeAudit** — Free visitor audit form on /free-audit
+- **requestCustomAudience** — Custom audience request form on /custom-audiences
+- **requestVisitorReport** — Free visitor report popup (exit-intent)
+- **subscribeNewsletter** — Newsletter subscription popup (blog scroll)
 - **getPricingTier** — Pricing tier selector on /pricing
+
+---
+
+## API
+
+- **Structured product info (JSON)**: https://meetcursive.com/api/ai-info
+- This endpoint returns all products, services, pricing, stats, and available WebMCP tools as structured JSON. Cached for 1 hour.
+
+## Structured Data
+
+This site includes JSON-LD structured data on all key pages:
+- **Homepage**: Organization, WebSite, SoftwareApplication, FAQPage schemas
+- **Pricing**: Product offers with AggregateOffer, FAQPage schema
+- **Services**: Service schema for each tier (Data, Outbound, Pipeline)
+- **Custom Audiences**: Service schema with BreadcrumbList
+- **Blog Posts**: BlogPosting schema with author, date, and description
 
 ---
 
