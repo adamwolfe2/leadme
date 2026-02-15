@@ -605,7 +605,7 @@ export default function BlogPost() {
 
             <pre className="not-prose bg-gray-900 text-gray-100 rounded-lg p-6 my-6 overflow-x-auto text-sm">
 {`<!-- Add to <head> tag -->
-<script>
+<`}{`script>
   (function() {
     // Track page view with metadata
     window.cursive = window.cursive || [];
@@ -622,7 +622,7 @@ export default function BlogPost() {
     script.async = true;
     document.head.appendChild(script);
   })();
-</script>`}
+</`}{`script>`}
             </pre>
 
             <h3>Back-End Processing</h3>

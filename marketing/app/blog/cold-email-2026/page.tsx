@@ -516,7 +516,7 @@ export default function BlogPost() {
               <p className="text-gray-700 mb-2"><strong>Line 2:</strong> We helped [Similar Company] with [specific outcome] after their [similar event]</p>
               <p className="text-gray-700 mb-2"><strong>Line 3:</strong> [One sentence about what you do in plain English]</p>
               <p className="text-gray-700 mb-2"><strong>Line 4:</strong> Worth a 15-min chat?</p>
-              <p className="text-gray-700 mt-3 text-sm"><strong>Length:</strong> 50-100 words ideal (each sentence >120 words drops reply rate ~10%)</p>
+              <p className="text-gray-700 mt-3 text-sm"><strong>Length:</strong> 50-100 words ideal (each sentence {'>'} 120 words drops reply rate ~10%)</p>
             </div>
             <p className="text-gray-700 mb-3">
               Why this works: Specific subject (2.4x higher open vs generic), timely trigger (shows you're paying attention), social proof (similar company/situation builds credibility), clear low-friction ask (15-min chat easier than 30-min demo), plain text format (3x less likely to land in spam vs HTML templates).
