@@ -1,31 +1,15 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, ArrowRight, Check, X } from "lucide-react"
-import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 import Link from "next/link"
-
-export const metadata = generateMetadata({
-  title: "8 Best ZoomInfo Alternatives & Competitors for 2026 (Cheaper Options)",
-  description: "Tired of ZoomInfo's $15k-$40k+ annual contracts? Compare 8 affordable ZoomInfo alternatives for B2B data, intent signals, and prospecting. Find the right fit for your budget.",
-  keywords: [
-    "zoominfo alternatives",
-    "zoominfo competitors",
-    "zoominfo alternative cheaper",
-    "zoominfo replacement",
-    "affordable b2b data providers",
-    "b2b contact database",
-    "sales intelligence tools",
-    "zoominfo pricing alternatives",
-    "cheaper than zoominfo",
-    "b2b prospecting tools 2026"
-  ],
-  canonical: "https://www.meetcursive.com/blog/zoominfo-alternatives-comparison",
-})
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
 const faqs = [
   {
@@ -60,7 +44,8 @@ export default function BlogPost() {
       <StructuredData data={generateFAQSchema({ faqs })} />
       <StructuredData data={generateBlogPostSchema({ title: "8 Best ZoomInfo Alternatives & Competitors for 2026 (Cheaper Options)", description: "Tired of ZoomInfo's $15k-$40k+ annual contracts? Compare 8 affordable ZoomInfo alternatives for B2B data, intent signals, and prospecting. Find the right fit for your budget.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
-      {/* Header */}
+      <HumanView>
+        {/* Header */}
       <section className="py-12 bg-white">
         <Container>
           <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">

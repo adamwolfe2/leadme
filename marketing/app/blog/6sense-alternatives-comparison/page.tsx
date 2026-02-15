@@ -1,30 +1,15 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, Check, X } from "lucide-react"
-import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
+import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { ArticleSchema, BreadcrumbSchema } from "@/components/schema/SchemaMarkup"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 import Link from "next/link"
-
-export const metadata = generateMetadata({
-  title: "7 Best 6sense Alternatives & Competitors in 2026",
-  description: "Compare the 7 best 6sense alternatives for intent data, account identification, and predictive analytics. Find affordable ABM tools that deliver results without enterprise contracts starting at $50k+/yr.",
-  keywords: [
-    "6sense alternatives",
-    "6sense competitors",
-    "intent data platforms",
-    "account based marketing tools",
-    "predictive analytics alternatives",
-    "6sense vs competitors",
-    "affordable abm platforms",
-    "b2b intent data tools",
-    "buyer intent software",
-    "revenue intelligence platforms"
-  ],
-  canonical: "https://www.meetcursive.com/blog/6sense-alternatives-comparison",
-})
 
 const faqs = [
   {
@@ -57,6 +42,13 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
+      <StructuredData data={generateBlogPostSchema({
+        title: "7 Best 6sense Alternatives & Competitors in 2026",
+        description: "Compare the 7 best 6sense alternatives for intent data, account identification, and predictive analytics. Find affordable ABM tools that deliver results without enterprise contracts starting at $50k+/yr.",
+        author: "Adam Wolfe",
+        publishDate: "2026-02-06",
+        image: "https://www.meetcursive.com/cursive-logo.png",
+      })} />
       <ArticleSchema
         title="7 Best 6sense Alternatives & Competitors in 2026"
         description="Compare the 7 best 6sense alternatives for intent data, account identification, and predictive analytics."
@@ -71,7 +63,8 @@ export default function BlogPost() {
         ]}
       />
 
-      {/* Header */}
+      <HumanView>
+        {/* Header */}
       <section className="py-12 bg-white">
         <Container>
           <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
