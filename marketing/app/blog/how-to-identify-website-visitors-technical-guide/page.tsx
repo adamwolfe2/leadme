@@ -874,9 +874,9 @@ export default function BlogPost() {
               "First-party data collection gathers information directly from user interactions with consent",
               "Privacy-first approaches comply with GDPR and CCPA while maximizing identification rates"
             ]} />
-            <MachineLink href="/visitor-identification" label="Cursive Visitor Identification Solution" />
-            <MachineLink href="/integrations" label="Integration Options" />
-            <MachineLink href="/intent-audiences" label="Intent Data for Lead Prioritization" />
+            <MachineLink href="/visitor-identification">Cursive Visitor Identification Solution</MachineLink>
+            <MachineLink href="/integrations">Integration Options</MachineLink>
+            <MachineLink href="/intent-audiences">Intent Data for Lead Prioritization</MachineLink>
           </MachineSection>
         </MachineContent>
       </MachineView>
