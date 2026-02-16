@@ -80,11 +80,11 @@ export default async function DashboardLayout({
     redirect('/login')
   }
 
-  // Fetch user profile, admin status, and credits in parallel
+  // Fetch user profile and admin status in parallel
   const [userProfileResult, adminResult] = await Promise.all([
     supabase
       .from('users')
-      .select('*, workspaces(*, workspace_credits(balance))')
+      .select('*, workspaces(*)')
       .eq('auth_user_id', user.id)
       .single(),
     // Inline admin check to avoid redundant getSession() call in isAdmin()
@@ -118,7 +118,6 @@ export default async function DashboardLayout({
         favicon_url?: string | null
         primary_color?: string
       } | null
-      workspace_credits?: { balance: number }[] | null
     } | null
   } | null
 
@@ -128,8 +127,17 @@ export default async function DashboardLayout({
     redirect('/welcome')
   }
 
-  // Credits are now fetched in the join above — no separate query needed
-  const creditBalance = userProfile.workspaces?.workspace_credits?.[0]?.balance ?? 0
+  // Fetch workspace credits separately (RLS doesn't support join through workspaces)
+  let creditBalance = 0
+  if (userProfile.workspace_id) {
+    const { data: credits } = await supabase
+      .from('workspace_credits')
+      .select('balance')
+      .eq('workspace_id', userProfile.workspace_id)
+      .maybeSingle()
+
+    creditBalance = credits?.balance ?? 0
+  }
 
   const workspace = userProfile.workspaces as {
     name: string
