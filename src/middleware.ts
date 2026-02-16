@@ -182,28 +182,43 @@ export async function middleware(req: NextRequest) {
 
     // Protected routes require authentication.
     // If getSession() returned null but auth cookies exist in the request,
-    // let the request through — the page-level layout will re-attempt auth.
-    // This prevents redirect loops when token refresh intermittently fails
-    // in the middleware Edge runtime.
+    // clear corrupted cookies and redirect to login.
     if (!isPublicRoute && !user) {
-      const hasAuthCookies = req.cookies.getAll().some(
+      const authCookies = req.cookies.getAll().filter(
         c => c.name.startsWith('sb-') && c.name.includes('auth-token')
       )
+      const hasAuthCookies = authCookies.length > 0
+
       console.log('[Middleware] No user found, checking cookies:', { hasAuthCookies, pathname })
-      if (!hasAuthCookies) {
-        // No auth cookies at all — user is definitely not logged in
-        console.log('[Middleware] No auth cookies - redirecting to login')
-        if (isApiRoute) {
-          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-        }
+
+      if (hasAuthCookies) {
+        // Auth cookies exist but getSession() failed — they're corrupted
+        // Clear all Supabase auth cookies to force fresh login
+        console.log('[Middleware] Clearing corrupted auth cookies')
         const redirectUrl = new URL('/login', req.url)
         redirectUrl.searchParams.set('redirect', pathname)
-        return redirectWithCookies(redirectUrl)
+        const redirectResponse = NextResponse.redirect(redirectUrl)
+
+        // Clear all sb-* cookies
+        authCookies.forEach(cookie => {
+          redirectResponse.cookies.delete(cookie.name)
+          redirectResponse.cookies.set(cookie.name, '', {
+            maxAge: 0,
+            path: '/',
+          })
+        })
+
+        return redirectResponse
       }
-      // Auth cookies exist but getSession() failed — let page-level handle it.
-      // The dashboard layout has its own getSession() check and will redirect
-      // to /login if the session is truly invalid.
-      console.log('[Middleware] Auth cookies exist but no session - letting page handle it')
+
+      // No auth cookies at all — user is definitely not logged in
+      console.log('[Middleware] No auth cookies - redirecting to login')
+      if (isApiRoute) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
+      const redirectUrl = new URL('/login', req.url)
+      redirectUrl.searchParams.set('redirect', pathname)
+      return redirectWithCookies(redirectUrl)
     }
 
     // API routes require authentication (no auth cookies = definitely unauthorized)
