@@ -599,6 +599,7 @@ export function DailyLeadsView({
     setSelectedIds(new Set())
     setSelectionMode(false)
     queryClient.invalidateQueries({ queryKey: ['leads-week'] })
+    queryClient.invalidateQueries({ queryKey: ['leads-archive'] })
     queryClient.invalidateQueries({ queryKey: ['user-credits'] })
   }
 

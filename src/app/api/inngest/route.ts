@@ -164,5 +164,15 @@ export const { GET, POST, PUT } = serve({
 
     // Audience Labs Segment Puller (cron — pulls leads from AL Audiences API)
     functions.audienceLabSegmentPuller,
+
+    // Daily Lead Distribution (cron — distributes daily leads to users)
+    functions.distributeDailyLeads,
+
+    // Stale Lead Cleanup (nightly — removes AL-sourced leads older than 45 days)
+    functions.cleanupStaleLeads,
+
+    // Pixel Trial Drip (event-triggered email series) + daily trial expiry check
+    functions.pixelTrialDrip,
+    functions.checkPixelTrialExpiry,
   ],
 })

@@ -29,44 +29,32 @@ export default function PartnerOnboardingPage() {
         return
       }
 
-      // Create minimal workspace for partner (they don't need full workspace features)
-      const partnerWorkspaceSlug = `partner-${session.user.id.slice(0, 8)}`
+      const nameParts = fullName.trim().split(/\s+/)
+      const firstName = nameParts[0] || ''
+      const lastName = nameParts.slice(1).join(' ') || firstName
 
-      const { data: workspace, error: workspaceError } = await supabase
-        .from('workspaces')
-        .insert({
-          name: companyName || `${fullName}'s Workspace`,
-          slug: partnerWorkspaceSlug,
-          subdomain: partnerWorkspaceSlug,
-          industry_vertical: 'Partner',
-          onboarding_status: 'completed',
-        } as any)
-        .select()
-        .single() as { data: any; error: any }
+      const response = await fetch('/api/onboarding/setup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          role: 'partner',
+          firstName,
+          lastName,
+          email: session.user.email!,
+          companyName: companyName || `${fullName}'s Workspace`,
+          partnerType: 'data_provider',
+          primaryVerticals: 'general',
+          databaseSize: 'unknown',
+          linkedin: 'N/A',
+        }),
+      })
 
-      if (workspaceError || !workspace) {
-        throw workspaceError || new Error('Failed to create workspace')
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to complete onboarding')
       }
 
-      // Create partner user profile
-      const { error: userError } = await supabase.from('users').insert({
-        auth_user_id: session.user.id,
-        workspace_id: workspace.id,
-        email: session.user.email!,
-        full_name: fullName || session.user.user_metadata.full_name || null,
-        role: 'partner',
-        plan: 'free',
-        partner_approved: true, // Auto-approved for immediate upload access
-        active_subscription: false,
-      } as any)
-
-      if (userError) {
-        // Rollback workspace creation
-        await supabase.from('workspaces').delete().eq('id', workspace.id)
-        throw userError
-      }
-
-      // Redirect to partner dashboard (auto-approved)
+      // Redirect to partner dashboard
       router.push('/partner/dashboard')
       router.refresh()
     } catch (err: unknown) {
