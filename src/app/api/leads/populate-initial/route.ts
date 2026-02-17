@@ -7,6 +7,8 @@
  * This ensures users see leads right away instead of waiting for daily cron.
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { fetchLeadsFromSegment, type AudienceLabLead } from '@/lib/services/audiencelab.service'
@@ -158,7 +160,7 @@ export async function POST(req: NextRequest) {
     if (insertError) {
       console.error('[PopulateInitialLeads] Failed to insert leads:', insertError)
       return NextResponse.json(
-        { error: 'Failed to save leads', details: insertError.message },
+        { error: 'Failed to save leads' },
         { status: 500 }
       )
     }
@@ -174,7 +176,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error('[PopulateInitialLeads] Unexpected error:', error)
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

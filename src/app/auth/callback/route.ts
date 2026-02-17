@@ -2,6 +2,8 @@
 // Handles OAuth redirects from Supabase
 // Shows loading page while processing to improve UX
 
+export const runtime = 'edge'
+
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
