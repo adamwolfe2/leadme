@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { generateSalesEmail } from '@/lib/services/ai/claude.service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 /** Structure of the ai_analysis JSONB column on leads */
 interface LeadAiAnalysis {
@@ -126,7 +127,7 @@ export async function POST(req: NextRequest) {
     if (error.name === 'ZodError') {
       return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 })
     }
-    console.error('AI email generation error:', error)
+    safeError('AI email generation error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { qualifyLead, analyzeCompany } from '@/lib/services/ai/claude.service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import type { LeadContactData, LeadCompanyData } from '@/types'
 
 const qualifyLeadSchema = z.object({
@@ -129,7 +130,7 @@ export async function POST(req: NextRequest) {
     if (error.name === 'ZodError') {
       return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 })
     }
-    console.error('AI qualification error:', error)
+    safeError('AI qualification error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

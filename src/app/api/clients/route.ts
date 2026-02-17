@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const CreateClientSchema = z.object({
   client_name: z.string().min(1, 'Client name is required'),
@@ -91,12 +92,13 @@ export async function GET(req: NextRequest) {
     const { data, error } = await query
 
     if (error) {
+      safeError('[Clients API] Failed to fetch clients:', error)
       return NextResponse.json({ error: 'Failed to fetch clients' }, { status: 500 })
     }
 
     return NextResponse.json({ data })
   } catch (error) {
-    console.error('Get clients error:', error)
+    safeError('[Clients API] Get clients error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -136,12 +138,13 @@ export async function POST(req: NextRequest) {
           { status: 409 }
         )
       }
+      safeError('[Clients API] Failed to create client:', error)
       return NextResponse.json({ error: 'Failed to create client' }, { status: 500 })
     }
 
     return NextResponse.json({ data }, { status: 201 })
   } catch (error) {
-    console.error('Create client error:', error)
+    safeError('[Clients API] Create client error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

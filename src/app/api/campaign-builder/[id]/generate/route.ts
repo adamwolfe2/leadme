@@ -6,6 +6,7 @@
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { CampaignBuilderRepository } from '@/lib/repositories/campaign-builder.repository'
@@ -112,7 +113,7 @@ export async function POST(
       throw generationError
     }
   } catch (error) {
-    console.error('[Campaign Builder] Generate error:', error)
+    safeError('[Campaign Builder] Generate error:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

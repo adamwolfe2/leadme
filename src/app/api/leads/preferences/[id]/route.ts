@@ -3,6 +3,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { safeParseFloat } from '@/lib/utils/parse-number'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function PATCH(
   request: NextRequest,
@@ -68,12 +69,13 @@ export async function PATCH(
       .single()
 
     if (error) {
+      safeError('[Lead Preferences] Failed to update preference:', error)
       return NextResponse.json({ error: 'Failed to update preference' }, { status: 500 })
     }
 
     return NextResponse.json({ success: true, data: preference })
   } catch (error: any) {
-    console.error('Update lead preference error:', error)
+    safeError('[Lead Preferences] Update error:', error)
     return NextResponse.json({ error: 'Failed to update preference' }, { status: 500 })
   }
 }
@@ -111,12 +113,13 @@ export async function DELETE(
       .eq('workspace_id', user.workspace_id)
 
     if (error) {
+      safeError('[Lead Preferences] Failed to delete preference:', error)
       return NextResponse.json({ error: 'Failed to delete preference' }, { status: 500 })
     }
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error('Delete lead preference error:', error)
+    safeError('[Lead Preferences] Delete error:', error)
     return NextResponse.json({ error: 'Failed to delete preference' }, { status: 500 })
   }
 }

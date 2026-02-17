@@ -151,18 +151,15 @@ export async function middleware(req: NextRequest) {
     let authenticatedUser: { id: string; email?: string } | null = null
     if (!isPublicRoute) {
       try {
-        console.log('[Middleware] Checking auth for protected route:', pathname)
         // getSession() reads the session from cookies and refreshes if expired.
         // This is a local JWT check that only makes a network call when
         // the token needs refreshing.
         const { data: { session } } = await supabase.auth.getSession()
-        console.log('[Middleware] Session check result:', { hasSession: !!session, hasUser: !!session?.user })
         authenticatedUser = session?.user ? {
           id: session.user.id,
           email: session.user.email,
         } : null
       } catch (e) {
-        console.error('[Middleware] Auth session check FAILED:', e)
         safeError('[Middleware] Auth session check failed:', e)
         authenticatedUser = null
       }
@@ -185,8 +182,6 @@ export async function middleware(req: NextRequest) {
     // aggressive cookie clearing can worsen redirect loops. Let the fresh
     // login flow overwrite any stale cookies naturally.
     if (!isPublicRoute && !user) {
-      console.log('[Middleware] No session for protected route:', pathname)
-
       if (isApiRoute) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
       }
@@ -263,7 +258,7 @@ export async function middleware(req: NextRequest) {
       //   duration,
       //   ip: req.headers.get('x-forwarded-for') || 'unknown',
       // })
-      console.log('[Middleware] Slow request:', {
+      safeError('[Middleware] Slow request:', {
         method: req.method,
         pathname,
         duration,

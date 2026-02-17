@@ -9,6 +9,7 @@
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { CampaignBuilderRepository } from '@/lib/repositories/campaign-builder.repository'
@@ -116,7 +117,7 @@ export async function GET(
       campaign_name: draft.name,
     })
   } catch (error) {
-    console.error('[Campaign Builder] Export error:', error)
+    safeError('[Campaign Builder] Export error:', error)
     return NextResponse.json(
       { error: 'Failed to export campaign' },
       { status: 500 }
@@ -329,7 +330,7 @@ export async function POST(
       dashboard_url: 'https://send.meetcursive.com',
     })
   } catch (error) {
-    console.error('[Campaign Builder] EmailBison export error:', error)
+    safeError('[Campaign Builder] EmailBison export error:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

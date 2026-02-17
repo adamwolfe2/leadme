@@ -35,12 +35,13 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
 
     if (error) {
+      safeError('[Lead Preferences] Failed to fetch:', error)
       return NextResponse.json({ error: 'Failed to fetch preferences' }, { status: 500 })
     }
 
     return NextResponse.json({ success: true, data: preferences })
   } catch (error: any) {
-    safeError('Get lead preferences error:', error)
+    safeError('[Lead Preferences] Get error:', error)
     return NextResponse.json({ error: 'Failed to fetch preferences' }, { status: 500 })
   }
 }

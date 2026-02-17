@@ -530,8 +530,9 @@ export async function provisionCustomerPixel(params: {
   websiteUrl: string
   cursiveWebhookUrl?: string
 }): Promise<ALPixelCreateResponse> {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://leads.meetcursive.com'
   const webhookUrl = params.cursiveWebhookUrl ||
-    'https://leads.meetcursive.com/api/webhooks/audiencelab/superpixel'
+    `${baseUrl}/api/webhooks/audiencelab/superpixel`
 
   return createPixel({
     websiteName: params.websiteName,

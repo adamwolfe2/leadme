@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { sendEmail, sendBulkEmails, logSentEmail } from '@/lib/services/outreach/email-sender.service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const singleEmailSchema = z.object({
   lead_id: z.string().uuid().optional(),
@@ -153,6 +154,7 @@ export async function POST(req: NextRequest) {
     )
 
     if (!result.success) {
+      safeError('Email send failed:', result.error)
       return NextResponse.json({ error: result.error || 'Failed to send email' }, { status: 500 })
     }
 
@@ -164,7 +166,7 @@ export async function POST(req: NextRequest) {
     if (error.name === 'ZodError') {
       return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 })
     }
-    console.error('Email send error:', error)
+    safeError('Email send error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

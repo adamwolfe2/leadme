@@ -11,6 +11,7 @@ import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import { getErrorMessage } from '@/lib/utils/error-messages'
 import { STRIPE_CONFIG } from '@/lib/stripe/config'
+import { CREDIT_PACKAGES } from '@/lib/constants/credit-packages'
 import { z } from 'zod'
 import Stripe from 'stripe'
 
@@ -29,38 +30,11 @@ function getStripe(): Stripe {
   return stripeClient
 }
 
-// Credit package definitions
-const CREDIT_PACKAGES = [
-  {
-    id: 'starter',
-    name: 'Starter',
-    credits: 100,
-    price: 5000, // $50.00 in cents
-    pricePerCredit: 0.50,
-    popular: false,
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    credits: 500,
-    price: 20000, // $200.00 in cents
-    pricePerCredit: 0.40,
-    popular: true,
-    savings: '20% off',
-  },
-  {
-    id: 'enterprise',
-    name: 'Enterprise',
-    credits: 1000,
-    price: 35000, // $350.00 in cents
-    pricePerCredit: 0.35,
-    popular: false,
-    savings: '30% off',
-  },
-] as const
+// Valid package IDs derived from the shared constants
+const VALID_PACKAGE_IDS = CREDIT_PACKAGES.map(p => p.id) as [string, ...string[]]
 
 const checkoutSchema = z.object({
-  packageId: z.enum(['starter', 'pro', 'enterprise']),
+  packageId: z.enum(VALID_PACKAGE_IDS),
 })
 
 /**

@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { getCompanyEnrichmentService } from '@/lib/services/company-enrichment.service'
 import { checkRateLimit } from '@/lib/utils/rate-limit'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
 
 // Domain validation schema
@@ -77,7 +78,7 @@ export async function POST(request: NextRequest) {
       enrichedAt: result.enrichedAt,
     })
   } catch (error: any) {
-    console.error('[Company Enrichment POST] Error:', error)
+    safeError('[Company Enrichment POST] Error:', error)
     return NextResponse.json(
       { error: 'Failed to enrich company' },
       { status: 500 }
@@ -155,7 +156,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error: any) {
-    console.error('[Company Enrichment GET] Error:', error)
+    safeError('[Company Enrichment GET] Error:', error)
     return NextResponse.json(
       { error: 'Failed to lookup company' },
       { status: 500 }

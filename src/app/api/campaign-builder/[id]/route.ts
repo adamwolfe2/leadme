@@ -6,6 +6,7 @@
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { CampaignBuilderRepository } from '@/lib/repositories/campaign-builder.repository'
@@ -102,7 +103,7 @@ export async function GET(
 
     return NextResponse.json({ draft })
   } catch (error) {
-    console.error('[Campaign Builder] Get error:', error)
+    safeError('[Campaign Builder] Get error:', error)
     return NextResponse.json(
       { error: 'Failed to get campaign' },
       { status: 500 }
@@ -152,7 +153,7 @@ export async function PATCH(
 
     return NextResponse.json({ draft })
   } catch (error) {
-    console.error('[Campaign Builder] Update error:', error)
+    safeError('[Campaign Builder] Update error:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -206,7 +207,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('[Campaign Builder] Delete error:', error)
+    safeError('[Campaign Builder] Delete error:', error)
     return NextResponse.json(
       { error: 'Failed to delete campaign' },
       { status: 500 }

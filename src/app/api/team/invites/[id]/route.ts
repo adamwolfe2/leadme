@@ -7,6 +7,7 @@ import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, forbidden, notFound, success } from '@/lib/utils/api-error-handler'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -45,7 +46,7 @@ export async function DELETE(
       if (error.code === 'PGRST116') {
         return notFound('Invite not found or already processed')
       }
-      console.error('[Team Invite Delete] Database error:', error)
+      safeError('[Team Invite Delete] Database error:', error)
       throw new Error('Failed to cancel invite')
     }
 

@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export const runtime = 'edge'
 
@@ -104,7 +105,7 @@ export async function GET(req: NextRequest) {
       pixel: pixel ?? null,
     })
   } catch (err: any) {
-    console.error('[Visitors API]', err)
+    safeError('[Visitors API]', err)
     return NextResponse.json({ error: 'Failed to fetch visitors' }, { status: 500 })
   }
 }

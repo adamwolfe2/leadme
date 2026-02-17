@@ -42,6 +42,7 @@ export async function GET(request: NextRequest) {
       .single()
 
     if (error) {
+      safeError('[Webhooks] Failed to fetch settings:', error)
       return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 })
     }
 
@@ -107,6 +108,7 @@ export async function PATCH(request: NextRequest) {
       .eq('id', user.workspace_id)
 
     if (error) {
+      safeError('[Webhooks] Failed to update settings:', error)
       return NextResponse.json({ error: 'Failed to update settings' }, { status: 500 })
     }
 
@@ -147,6 +149,7 @@ export async function POST(request: NextRequest) {
       .eq('id', user.workspace_id)
 
     if (error) {
+      safeError('[Webhooks] Failed to regenerate secret:', error)
       return NextResponse.json({ error: 'Failed to regenerate secret' }, { status: 500 })
     }
 

@@ -12,6 +12,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { fetchLeadsFromSegment, type AudienceLabLead } from '@/lib/services/audiencelab.service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function POST(req: NextRequest) {
   try {
@@ -26,8 +27,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    console.log('[PopulateInitialLeads] Request from user:', session.user.id)
-
     // Get user profile with workspace and segment info
     const { data: userProfile, error: userError } = await supabase
       .from('users')
@@ -36,7 +35,7 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (userError || !userProfile) {
-      console.error('[PopulateInitialLeads] User not found:', userError)
+      safeError('[PopulateInitialLeads] User not found:', userError)
       return NextResponse.json({ error: 'User profile not found' }, { status: 404 })
     }
 
@@ -51,14 +50,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    console.log('[PopulateInitialLeads] User profile:', {
-      id: userProfile.id,
-      workspace_id: userProfile.workspace_id,
-      industry: userProfile.industry_segment,
-      location: userProfile.location_segment,
-      limit: userProfile.daily_lead_limit,
-    })
-
     // Check if user already received leads today (prevent multiple calls)
     const today = new Date().toISOString().split('T')[0]
     const { count: todayLeadsCount } = await supabase
@@ -69,7 +60,6 @@ export async function POST(req: NextRequest) {
       .lte('delivered_at', `${today}T23:59:59`)
 
     if (todayLeadsCount && todayLeadsCount >= userProfile.daily_lead_limit) {
-      console.log('[PopulateInitialLeads] User already received daily limit:', todayLeadsCount)
       return NextResponse.json({
         success: true,
         message: 'You have already received your daily leads',
@@ -87,7 +77,7 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (mappingError || !segmentMapping) {
-      console.error('[PopulateInitialLeads] No audience mapping found:', {
+      safeError('[PopulateInitialLeads] No audience mapping found:', {
         industry: userProfile.industry_segment,
         location: userProfile.location_segment,
         error: mappingError,
@@ -102,31 +92,22 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    console.log('[PopulateInitialLeads] Found audience mapping:', {
-      segment_id: segmentMapping.segment_id,
-      segment_name: segmentMapping.segment_name,
-    })
-
     // Determine how many leads to fetch (based on plan)
     const leadLimit = userProfile.daily_lead_limit || (userProfile.plan === 'free' ? 10 : 100)
 
     // Fetch leads from Audience Labs
-    console.log('[PopulateInitialLeads] Fetching leads from Audience Labs...')
     const leads = await fetchLeadsFromSegment(segmentMapping.segment_id, {
       page: 1,
       pageSize: leadLimit,
     })
 
     if (leads.length === 0) {
-      console.warn('[PopulateInitialLeads] No leads returned from audience')
       return NextResponse.json({
         success: true,
         message: 'No leads available in this audience at the moment',
         count: 0,
       })
     }
-
-    console.log('[PopulateInitialLeads] Fetched leads:', leads.length)
 
     // Transform and insert leads
     const leadsToInsert = leads.map((lead: AudienceLabLead) => ({
@@ -153,19 +134,17 @@ export async function POST(req: NextRequest) {
       },
     }))
 
-    const { error: insertError, count } = await supabase
+    const { error: insertError } = await supabase
       .from('leads')
       .insert(leadsToInsert)
 
     if (insertError) {
-      console.error('[PopulateInitialLeads] Failed to insert leads:', insertError)
+      safeError('[PopulateInitialLeads] Failed to insert leads:', insertError)
       return NextResponse.json(
         { error: 'Failed to save leads' },
         { status: 500 }
       )
     }
-
-    console.log('[PopulateInitialLeads] Successfully inserted leads:', count || leadsToInsert.length)
 
     return NextResponse.json({
       success: true,
@@ -174,7 +153,7 @@ export async function POST(req: NextRequest) {
       audience: segmentMapping.segment_name,
     })
   } catch (error: any) {
-    console.error('[PopulateInitialLeads] Unexpected error:', error)
+    safeError('[PopulateInitialLeads] Unexpected error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

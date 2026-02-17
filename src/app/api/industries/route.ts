@@ -5,6 +5,7 @@ export const runtime = 'edge'
 
 import { NextResponse } from 'next/server'
 import { INDUSTRY_CATEGORIES } from '@/lib/constants/industries'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface IndustryCategory {
   id: string
@@ -27,7 +28,7 @@ export async function GET() {
 
     return NextResponse.json(categories)
   } catch (error) {
-    console.error('Failed to fetch industries:', error)
+    safeError('Failed to fetch industries:', error)
     return NextResponse.json(
       { error: 'Failed to fetch industries' },
       { status: 500 }
