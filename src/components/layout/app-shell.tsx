@@ -257,7 +257,7 @@ const navigationItems: NavItemConfig[] = [
     ),
   },
   {
-    name: 'Services',
+    name: 'Upgrades',
     href: '/services',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

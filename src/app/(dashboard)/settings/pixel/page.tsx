@@ -3,7 +3,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useToast } from '@/lib/hooks/use-toast'
-import { PixelFeatureBanner } from '@/components/premium/PremiumFeatureBanner'
 
 interface PixelStatus {
   has_pixel: boolean
@@ -31,20 +30,6 @@ export default function PixelSettingsPage() {
   const [copied, setCopied] = useState(false)
   const [manualSnippet, setManualSnippet] = useState('')
   const [savingSnippet, setSavingSnippet] = useState(false)
-  const [requestDescription, setRequestDescription] = useState('')
-  const [submittingRequest, setSubmittingRequest] = useState(false)
-
-  // Check if workspace has pixel access
-  const { data: workspaceData } = useQuery({
-    queryKey: ['workspace', 'features'],
-    queryFn: async () => {
-      const response = await fetch('/api/workspace/features')
-      if (!response.ok) throw new Error('Failed to fetch workspace features')
-      return response.json()
-    },
-  })
-
-  const hasPixelAccess = workspaceData?.has_pixel_access ?? false
 
   const { data, isLoading } = useQuery<PixelStatus>({
     queryKey: ['pixel', 'status'],
@@ -53,7 +38,6 @@ export default function PixelSettingsPage() {
       if (!response.ok) throw new Error('Failed to fetch pixel status')
       return response.json()
     },
-    enabled: hasPixelAccess, // Only fetch if user has access
   })
 
   const provisionMutation = useMutation({
@@ -130,22 +114,6 @@ export default function PixelSettingsPage() {
     } finally {
       setSavingSnippet(false)
     }
-  }
-
-  // Show premium banner if no pixel access
-  if (workspaceData && !hasPixelAccess) {
-    return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-900">Pixel Tracking</h1>
-          <p className="mt-1 text-sm text-zinc-600">
-            Track your website visitors and convert them into leads
-          </p>
-        </div>
-
-        <PixelFeatureBanner />
-      </div>
-    )
   }
 
   if (isLoading) {
@@ -343,80 +311,34 @@ export default function PixelSettingsPage() {
     )
   }
 
-  // No pixel - show REQUEST form (premium feature)
-  const handleRequestPixel = async () => {
-    if (!websiteUrl) {
-      toast.error('Please enter your website URL')
-      return
-    }
-
-    try {
-      new URL(websiteUrl)
-    } catch {
-      toast.error('Please enter a valid URL (e.g. https://example.com)')
-      return
-    }
-
-    setSubmittingRequest(true)
-    try {
-      const response = await fetch('/api/features/request', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          feature_type: 'pixel',
-          request_title: `Pixel Installation Request for ${websiteName || new URL(websiteUrl).hostname}`,
-          request_description: requestDescription || `Please install a tracking pixel for ${websiteUrl}`,
-          request_data: {
-            website_url: websiteUrl,
-            website_name: websiteName,
-          },
-          priority: 'normal',
-        }),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Failed to submit request')
-      }
-
-      toast.success('Request submitted! Our team will contact you shortly.')
-      setWebsiteUrl('')
-      setWebsiteName('')
-      setRequestDescription('')
-      queryClient.invalidateQueries({ queryKey: ['pixel', 'status'] })
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to submit request')
-    } finally {
-      setSubmittingRequest(false)
-    }
-  }
-
+  // No pixel yet — show self-serve trial signup
   return (
     <div className="space-y-6">
-      {/* Premium Feature Badge */}
+      {/* Trial CTA */}
       <div className="rounded-xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 p-6">
         <div className="flex items-start gap-4">
           <div className="flex-shrink-0">
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
               <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
             </div>
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-zinc-900 mb-1">Premium Feature: Custom Pixel Installation</h3>
+            <h3 className="text-lg font-semibold text-zinc-900 mb-1">Start Your Free 14-Day Pixel Trial</h3>
             <p className="text-sm text-zinc-600">
-              Unlock advanced visitor tracking with a custom pixel installation. Our team will set up and configure your tracking pixel to identify anonymous visitors and convert them into qualified leads.
+              Install a tracking pixel on your website to identify anonymous visitors. No credit card required — try it free for 14 days.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Request Form */}
+      {/* Setup Form */}
       <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-zinc-900 mb-2">Request Pixel Installation</h2>
+        <h2 className="text-lg font-semibold text-zinc-900 mb-2">Set Up Your Pixel</h2>
         <p className="text-sm text-zinc-500 mb-6">
-          Submit your request below and our team will set up your tracking pixel within 24-48 hours.
+          Enter your website URL below and we will generate your tracking pixel instantly.
         </p>
 
         <div className="space-y-4 max-w-lg">
@@ -447,25 +369,12 @@ export default function PixelSettingsPage() {
             <p className="mt-1 text-xs text-zinc-500">Defaults to your domain name if left blank</p>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-2">
-              Additional Details <span className="text-zinc-400">(optional)</span>
-            </label>
-            <textarea
-              placeholder="Any specific requirements or questions?"
-              className="block w-full rounded-lg border-zinc-300 shadow-sm focus:border-primary focus:ring-primary"
-              rows={3}
-              value={requestDescription}
-              onChange={(e) => setRequestDescription(e.target.value)}
-            />
-          </div>
-
           <button
-            onClick={handleRequestPixel}
-            disabled={submittingRequest || !websiteUrl}
+            onClick={handleCreatePixel}
+            disabled={provisionMutation.isPending || !websiteUrl}
             className="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
           >
-            {submittingRequest ? 'Submitting Request...' : 'Request Pixel Installation'}
+            {provisionMutation.isPending ? 'Creating Pixel...' : 'Start Free Trial'}
           </button>
         </div>
       </div>
@@ -477,15 +386,21 @@ export default function PixelSettingsPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <div>
-            <h3 className="text-sm font-medium text-primary">What does the pixel do?</h3>
-            <p className="mt-1 text-sm text-zinc-600">
-              The Cursive tracking pixel identifies anonymous visitors on your website using first-party data.
-              When a visitor matches our identity graph, they become a lead in your dashboard with
-              verified contact information, company details, and more.
-            </p>
-            <p className="mt-2 text-sm text-zinc-600">
-              <strong>Need help?</strong> Use the chat widget in the bottom-right corner to speak with our team directly.
-            </p>
+            <h3 className="text-sm font-medium text-primary">How does the pixel work?</h3>
+            <ol className="mt-2 text-sm text-zinc-600 space-y-2">
+              <li className="flex gap-2">
+                <span className="font-semibold text-primary flex-shrink-0">1.</span>
+                Add a small code snippet to your website
+              </li>
+              <li className="flex gap-2">
+                <span className="font-semibold text-primary flex-shrink-0">2.</span>
+                The pixel identifies anonymous visitors using first-party data
+              </li>
+              <li className="flex gap-2">
+                <span className="font-semibold text-primary flex-shrink-0">3.</span>
+                Matched visitors appear as leads in your dashboard with verified contact info
+              </li>
+            </ol>
           </div>
         </div>
       </div>
