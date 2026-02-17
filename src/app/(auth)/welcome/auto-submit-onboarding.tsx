@@ -146,7 +146,26 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
           throw new Error(body.error || 'Failed to create workspace')
         }
 
-        // Success -- clear storage and redirect
+        // Success! Now immediately populate leads from Audience Labs
+        console.log('[AutoSubmit] Onboarding complete - fetching initial leads...')
+        try {
+          const populateResponse = await fetch('/api/leads/populate-initial', {
+            method: 'POST',
+          })
+
+          if (populateResponse.ok) {
+            const result = await populateResponse.json()
+            console.log('[AutoSubmit] Initial leads populated:', result.count, 'leads')
+          } else {
+            // Log error but don't block - they'll get leads tomorrow
+            console.warn('[AutoSubmit] Failed to populate initial leads (non-critical)')
+          }
+        } catch (populateError) {
+          // Non-critical error - leads will come tomorrow via cron
+          console.warn('[AutoSubmit] Error populating initial leads:', populateError)
+        }
+
+        // Clear storage and redirect to dashboard
         sessionStorage.removeItem('cursive_onboarding')
         router.push(isMarketplace ? '/marketplace' : '/dashboard')
       } catch (err: any) {
