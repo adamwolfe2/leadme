@@ -13,10 +13,10 @@ import { useRouter } from 'next/navigation'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   Calendar, TrendingUp, Zap, Download, Search,
-  Mail, Phone, Building2, MapPin, ArrowRight,
-  Crown, Sparkles, Star, Clock, CheckCircle2,
-  SlidersHorizontal, RefreshCw, ChevronRight,
-  Target, Users,
+  Mail, Phone, MapPin,
+  Crown, Sparkles, Star, CheckCircle2,
+  SlidersHorizontal, ChevronRight,
+  Target, Users, Square, CheckSquare, XCircle,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -102,6 +102,20 @@ function avatarColor(id: string) {
   return AVATAR_COLORS[id.charCodeAt(0) % AVATAR_COLORS.length]
 }
 
+function sourceLabel(source: string | null): { label: string; className: string } | null {
+  if (!source) return null
+  if (source === 'superpixel' || source.includes('superpixel')) {
+    return { label: 'Pixel', className: 'bg-sky-50 text-sky-600 border-sky-200' }
+  }
+  if (source.startsWith('audience_labs') || source.startsWith('audiencelab')) {
+    return { label: 'Daily', className: 'bg-violet-50 text-violet-600 border-violet-200' }
+  }
+  if (source === 'partner') {
+    return { label: 'Partner', className: 'bg-emerald-50 text-emerald-600 border-emerald-200' }
+  }
+  return null
+}
+
 // ─── CSV Export ────────────────────────────────────────────
 
 function exportToCSV(leads: Lead[], filename: string) {
@@ -159,10 +173,16 @@ function LeadCard({
   lead,
   onEnrich,
   onView,
+  selectionMode,
+  isSelected,
+  onToggleSelect,
 }: {
   lead: Lead
   onEnrich: (lead: Lead) => void
   onView: (id: string) => void
+  selectionMode?: boolean
+  isSelected?: boolean
+  onToggleSelect?: (id: string) => void
 }) {
   const name = lead.full_name || [lead.first_name, lead.last_name].filter(Boolean).join(' ') || 'Unknown Lead'
   const isEnriched = lead.enrichment_status === 'enriched'
@@ -170,12 +190,31 @@ function LeadCard({
   const label = intentLabel(lead.intent_score_calculated)
 
   return (
-    <div className="group bg-white rounded-xl border border-gray-200 p-5 hover:border-gray-300 hover:shadow-sm transition-all">
+    <div
+      className={cn(
+        'group bg-white rounded-xl border p-5 hover:shadow-sm transition-all cursor-pointer',
+        isSelected ? 'border-primary/50 bg-primary/5 ring-1 ring-primary/30' : 'border-gray-200 hover:border-gray-300',
+      )}
+      onClick={selectionMode ? () => onToggleSelect?.(lead.id) : undefined}
+    >
       <div className="flex items-start gap-3">
-        {/* Avatar */}
-        <div className={cn('h-9 w-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0', avatarColor(lead.id))}>
-          {getInitials(lead)}
-        </div>
+        {/* Avatar or checkbox */}
+        {selectionMode ? (
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onToggleSelect?.(lead.id) }}
+            className="h-9 w-9 flex items-center justify-center shrink-0"
+          >
+            {isSelected
+              ? <CheckSquare className="h-5 w-5 text-primary" />
+              : <Square className="h-5 w-5 text-gray-300 group-hover:text-gray-400" />
+            }
+          </button>
+        ) : (
+          <div className={cn('h-9 w-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0', avatarColor(lead.id))}>
+            {getInitials(lead)}
+          </div>
+        )}
 
         {/* Body */}
         <div className="flex-1 min-w-0">
@@ -240,12 +279,21 @@ function LeadCard({
 
           {/* Footer */}
           <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-gray-100">
-            <div className="flex items-center gap-2">
-              {isEnriched ? (
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {isEnriched && (
                 <span className="inline-flex items-center gap-1 text-[10px] bg-violet-50 text-violet-600 border border-violet-200 rounded-full px-2 py-0.5 font-medium">
                   <Zap className="h-2.5 w-2.5" /> Enriched
                 </span>
-              ) : (
+              )}
+              {(() => {
+                const src = sourceLabel(lead.source)
+                return src ? (
+                  <span className={cn('inline-flex items-center text-[10px] border rounded-full px-2 py-0.5 font-medium', src.className)}>
+                    {src.label}
+                  </span>
+                ) : null
+              })()}
+              {!isEnriched && !sourceLabel(lead.source) && (
                 <span className="text-[10px] text-gray-400">
                   {lead.delivered_at ? formatDistanceToNow(new Date(lead.delivered_at), { addSuffix: true }) : ''}
                 </span>
@@ -438,6 +486,10 @@ export function DailyLeadsView({
   const [search, setSearch] = useState('')
   const [enrichTarget, setEnrichTarget] = useState<Lead | null>(null)
   const [creditsRemaining, setCreditsRemaining] = useState(0)
+  const [selectionMode, setSelectionMode] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkEnriching, setBulkEnriching] = useState(false)
+  const [bulkEnrichProgress, setBulkEnrichProgress] = useState(0)
 
   // Fetch credits
   useQuery({
@@ -500,6 +552,60 @@ export function DailyLeadsView({
     setEnrichTarget(null)
   }
 
+  function toggleSelectionMode() {
+    setSelectionMode((prev) => !prev)
+    setSelectedIds(new Set())
+  }
+
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  function selectAll(leads: Lead[]) {
+    setSelectedIds(new Set(leads.map((l) => l.id)))
+  }
+
+  function clearSelection() {
+    setSelectedIds(new Set())
+  }
+
+  // Get current tab's visible leads for bulk operations
+  const currentTabLeads: Lead[] = tab === 'today' ? filteredToday : tab === 'week' ? weekLeads : []
+  const selectedLeads = currentTabLeads.filter((l) => selectedIds.has(l.id))
+  const selectedUnenriched = selectedLeads.filter((l) => l.enrichment_status !== 'enriched')
+
+  async function handleBulkEnrich() {
+    if (selectedUnenriched.length === 0 || bulkEnriching) return
+    setBulkEnriching(true)
+    setBulkEnrichProgress(0)
+
+    for (let i = 0; i < selectedUnenriched.length; i++) {
+      const lead = selectedUnenriched[i]
+      try {
+        await fetch(`/api/leads/${lead.id}/enrich`, { method: 'POST' })
+      } catch {
+        // continue on failure
+      }
+      setBulkEnrichProgress(i + 1)
+    }
+
+    setBulkEnriching(false)
+    setBulkEnrichProgress(0)
+    setSelectedIds(new Set())
+    setSelectionMode(false)
+    queryClient.invalidateQueries({ queryKey: ['leads-week'] })
+    queryClient.invalidateQueries({ queryKey: ['user-credits'] })
+  }
+
+  function handleBulkExport() {
+    exportToCSV(selectedLeads, `cursive-leads-selected-${new Date().toISOString().split('T')[0]}.csv`)
+  }
+
   const unenrichedToday = initialLeads.filter((l) => l.enrichment_status !== 'enriched').length
 
   return (
@@ -538,6 +644,18 @@ export function DailyLeadsView({
           >
             <Download className="h-3.5 w-3.5" />
             Export
+          </button>
+          <button
+            onClick={toggleSelectionMode}
+            className={cn(
+              'inline-flex items-center gap-1.5 text-sm rounded-lg px-3 py-2 transition-colors',
+              selectionMode
+                ? 'bg-primary text-white border border-primary hover:bg-primary/90'
+                : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
+            )}
+          >
+            <CheckSquare className="h-3.5 w-3.5" />
+            {selectionMode ? 'Done' : 'Select'}
           </button>
         </div>
       </div>
@@ -619,6 +737,51 @@ export function DailyLeadsView({
         </div>
       )}
 
+      {/* Bulk action bar */}
+      {selectionMode && (
+        <div className="rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 flex flex-wrap items-center gap-3">
+          <span className="text-sm font-medium text-primary">
+            {selectedIds.size} selected
+          </span>
+          <div className="flex items-center gap-2 ml-auto">
+            <button
+              onClick={() => selectAll(currentTabLeads)}
+              className="text-xs text-gray-600 border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white hover:bg-gray-50 transition-colors"
+            >
+              Select all {currentTabLeads.length}
+            </button>
+            {selectedIds.size > 0 && (
+              <>
+                <button
+                  onClick={clearSelection}
+                  className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
+                >
+                  <XCircle className="h-3.5 w-3.5" /> Clear
+                </button>
+                <button
+                  onClick={handleBulkExport}
+                  className="inline-flex items-center gap-1.5 text-xs text-gray-700 border border-gray-200 rounded-lg px-3 py-1.5 bg-white hover:bg-gray-50 transition-colors"
+                >
+                  <Download className="h-3 w-3" /> Export {selectedIds.size}
+                </button>
+                {selectedUnenriched.length > 0 && (
+                  <button
+                    onClick={handleBulkEnrich}
+                    disabled={bulkEnriching || creditsRemaining < selectedUnenriched.length}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-gradient-to-r from-violet-500 to-primary rounded-lg px-3 py-1.5 hover:opacity-90 transition-opacity disabled:opacity-50"
+                  >
+                    <Zap className="h-3 w-3" />
+                    {bulkEnriching
+                      ? `Enriching ${bulkEnrichProgress}/${selectedUnenriched.length}…`
+                      : `Enrich ${selectedUnenriched.length} (${selectedUnenriched.length} cr)`}
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Tabs */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center border-b border-gray-200 pb-0">
         <div className="flex gap-0">
@@ -690,7 +853,15 @@ export function DailyLeadsView({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {filteredToday.map((lead) => (
-              <LeadCard key={lead.id} lead={lead} onEnrich={handleEnrich} onView={handleView} />
+              <LeadCard
+                key={lead.id}
+                lead={lead}
+                onEnrich={handleEnrich}
+                onView={handleView}
+                selectionMode={selectionMode}
+                isSelected={selectedIds.has(lead.id)}
+                onToggleSelect={toggleSelect}
+              />
             ))}
           </div>
         )
@@ -720,7 +891,15 @@ export function DailyLeadsView({
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {weekLeads.map((lead: Lead) => (
-                <LeadCard key={lead.id} lead={lead} onEnrich={handleEnrich} onView={handleView} />
+                <LeadCard
+                  key={lead.id}
+                  lead={lead}
+                  onEnrich={handleEnrich}
+                  onView={handleView}
+                  selectionMode={selectionMode}
+                  isSelected={selectedIds.has(lead.id)}
+                  onToggleSelect={toggleSelect}
+                />
               ))}
             </div>
           </>
