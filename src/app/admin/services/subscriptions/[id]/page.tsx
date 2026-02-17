@@ -327,7 +327,7 @@ export default function AdminSubscriptionDetailPage() {
             {subscription.cancel_at_period_end && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
                 <p className="text-sm text-red-700">
-                  ⚠️ This subscription is set to cancel at the end of the billing period
+                  This subscription is set to cancel at the end of the billing period
                 </p>
               </div>
             )}

@@ -343,7 +343,7 @@ export default function BrandingSettingsPage() {
             </div>
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-zinc-900 mb-1">🎁 Premium White Label & Custom Domain</h3>
+            <h3 className="text-lg font-semibold text-zinc-900 mb-1">Premium White Label & Custom Domain</h3>
             <p className="text-sm text-zinc-600">
               Remove Cursive branding completely, add your own company name throughout the platform, and use your own custom domain for a fully white-labeled experience.
             </p>
@@ -429,7 +429,7 @@ function WhiteLabelRequestCards({ toast }: { toast: ReturnType<typeof useToast> 
             onClick={() => handleRequest('white_label', 'White Label Branding Request', 'Please set up white label branding for my workspace')}
             disabled={requesting === 'white_label'}
           >
-            {requesting === 'white_label' ? 'Requesting...' : '🎁 Request White Label'}
+            {requesting === 'white_label' ? 'Requesting...' : 'Request White Label'}
           </Button>
         </CardContent>
       </Card>
@@ -474,7 +474,7 @@ function WhiteLabelRequestCards({ toast }: { toast: ReturnType<typeof useToast> 
             onClick={() => handleRequest('custom_domain', 'Custom Domain Setup Request', 'Please help me set up a custom domain for my workspace')}
             disabled={requesting === 'custom_domain'}
           >
-            {requesting === 'custom_domain' ? 'Requesting...' : '🎁 Request Custom Domain'}
+            {requesting === 'custom_domain' ? 'Requesting...' : 'Request Custom Domain'}
           </Button>
         </CardContent>
       </Card>

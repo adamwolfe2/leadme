@@ -588,7 +588,7 @@ export default function BillingClient() {
                 <span className="text-foreground font-medium">Credits never expire.</span>
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                💡 One enriched lead with a direct phone number can be worth 10-100x the cost.
+                One enriched lead with a direct phone number can be worth 10-100x the cost.
               </p>
             </div>
           </div>

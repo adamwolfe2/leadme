@@ -174,7 +174,7 @@ export default function PixelSettingsPage() {
           <div className="rounded-xl border border-red-200 bg-red-50 p-5">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <p className="font-semibold text-red-900 text-base">Your pixel trial has ended 🔒</p>
+                <p className="font-semibold text-red-900 text-base">Your pixel trial has ended</p>
                 <p className="text-sm text-red-700 mt-1">
                   Your pixel on <strong>{data.pixel.domain}</strong> is paused. Upgrade to Pro to reactivate it and keep identifying visitors forever.
                 </p>
@@ -203,7 +203,7 @@ export default function PixelSettingsPage() {
                 <p className={`font-semibold text-base ${
                   daysLeft <= 3 ? 'text-red-900' : daysLeft <= 7 ? 'text-amber-900' : 'text-blue-900'
                 }`}>
-                  {daysLeft === 0 ? '⚠️ Trial ends today' : daysLeft === 1 ? '⚠️ 1 day left in trial' : `⏱ ${daysLeft} days left in your free trial`}
+                  {daysLeft === 0 ? 'Trial ends today' : daysLeft === 1 ? '1 day left in trial' : `${daysLeft} days left in your free trial`}
                 </p>
                 <p className={`text-sm mt-1 ${
                   daysLeft <= 3 ? 'text-red-700' : daysLeft <= 7 ? 'text-amber-700' : 'text-blue-700'
@@ -404,7 +404,7 @@ export default function PixelSettingsPage() {
             </div>
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-zinc-900 mb-1">🎁 Premium Feature: Custom Pixel Installation</h3>
+            <h3 className="text-lg font-semibold text-zinc-900 mb-1">Premium Feature: Custom Pixel Installation</h3>
             <p className="text-sm text-zinc-600">
               Unlock advanced visitor tracking with a custom pixel installation. Our team will set up and configure your tracking pixel to identify anonymous visitors and convert them into qualified leads.
             </p>
@@ -465,7 +465,7 @@ export default function PixelSettingsPage() {
             disabled={submittingRequest || !websiteUrl}
             className="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
           >
-            {submittingRequest ? 'Submitting Request...' : '🎁 Request Pixel Installation'}
+            {submittingRequest ? 'Submitting Request...' : 'Request Pixel Installation'}
           </button>
         </div>
       </div>
@@ -484,7 +484,7 @@ export default function PixelSettingsPage() {
               verified contact information, company details, and more.
             </p>
             <p className="mt-2 text-sm text-zinc-600">
-              <strong>💬 Need help?</strong> Use the chat widget in the bottom-right corner to speak with our team directly.
+              <strong>Need help?</strong> Use the chat widget in the bottom-right corner to speak with our team directly.
             </p>
           </div>
         </div>

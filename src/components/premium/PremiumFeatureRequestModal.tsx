@@ -8,6 +8,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import { Mail, Phone, MessageSquare } from 'lucide-react'
 import type { FeatureType, ContactPreference } from '@/types/premium'
 import { PREMIUM_FEATURES } from '@/types/premium'
 
@@ -211,9 +212,9 @@ export function PremiumFeatureRequestModal({
             </label>
             <div className="space-y-2">
               {[
-                { value: 'email', label: 'Email me', icon: '📧' },
-                { value: 'call', label: 'Schedule a call', icon: '📞' },
-                { value: 'slack', label: 'Slack message (if connected)', icon: '💬' },
+                { value: 'email', label: 'Email me', icon: 'mail' },
+                { value: 'call', label: 'Schedule a call', icon: 'phone' },
+                { value: 'slack', label: 'Slack message (if connected)', icon: 'message' },
               ].map((option) => (
                 <label
                   key={option.value}
@@ -232,7 +233,11 @@ export function PremiumFeatureRequestModal({
                     }
                     className="h-4 w-4 text-primary focus:ring-primary"
                   />
-                  <span className="text-lg">{option.icon}</span>
+                  <span className="text-lg">
+                    {option.icon === 'mail' && <Mail className="h-5 w-5 text-zinc-500" />}
+                    {option.icon === 'phone' && <Phone className="h-5 w-5 text-zinc-500" />}
+                    {option.icon === 'message' && <MessageSquare className="h-5 w-5 text-zinc-500" />}
+                  </span>
                   <span className="text-sm font-medium text-zinc-700">
                     {option.label}
                   </span>

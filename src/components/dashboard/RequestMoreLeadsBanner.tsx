@@ -100,7 +100,7 @@ export function RequestMoreLeadsBanner({ currentLeads, leadLimit, workspaceName 
       </div>
       <div className="flex-1">
         <h3 className={`text-lg font-bold mb-1 ${isAtLimit ? 'text-red-900' : 'text-amber-900'}`}>
-          {isAtLimit ? '🚨 Lead Limit Reached!' : '⚠️ Approaching Lead Limit'}
+          {isAtLimit ? 'Lead Limit Reached!' : 'Approaching Lead Limit'}
         </h3>
         <p className={`text-sm mb-3 ${isAtLimit ? 'text-red-700' : 'text-amber-700'}`}>
           {isAtLimit

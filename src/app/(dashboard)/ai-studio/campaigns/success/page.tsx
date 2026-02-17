@@ -117,7 +117,7 @@ export default function CampaignSuccessPage() {
 
           {/* Success Message */}
           <h1 className="text-3xl font-bold text-gray-900 mb-3">
-            Campaign Created Successfully! 🎉
+            Campaign Created Successfully!
           </h1>
           <p className="text-lg text-gray-600 mb-8">
             Your Meta ads campaign is being set up and will launch within 24-48 hours.

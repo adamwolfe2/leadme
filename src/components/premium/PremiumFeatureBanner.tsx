@@ -5,16 +5,17 @@
  * Shows an upsell banner for locked premium features
  */
 
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import { PremiumFeatureRequestModal } from './PremiumFeatureRequestModal'
+import { Lock, Target, Palette, BarChart3, Mail } from 'lucide-react'
 import type { FeatureType } from '@/types/premium'
 
 interface PremiumFeatureBannerProps {
   feature: FeatureType
   title: string
   description: string
-  icon?: string
+  icon?: ReactNode
   benefits?: string[]
   className?: string
 }
@@ -23,7 +24,7 @@ export function PremiumFeatureBanner({
   feature,
   title,
   description,
-  icon = '🔒',
+  icon = <Lock className="h-8 w-8 text-primary" />,
   benefits = [],
   className = '',
 }: PremiumFeatureBannerProps) {
@@ -47,7 +48,7 @@ export function PremiumFeatureBanner({
           <div className="flex items-start gap-4">
             {/* Icon */}
             <div className="flex-shrink-0">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-4xl">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
                 {icon}
               </div>
             </div>
@@ -123,7 +124,7 @@ export function PixelFeatureBanner({ className }: { className?: string }) {
       feature="pixel"
       title="Website Visitor Tracking"
       description="Track your own website visitors and automatically convert them into enriched leads with contact information."
-      icon="🎯"
+      icon={<Target className="h-8 w-8 text-primary" />}
       benefits={[
         'Track unlimited website visitors in real-time',
         'Identify anonymous visitors with 40%+ match rate',
@@ -142,7 +143,7 @@ export function WhitelabelFeatureBanner({ className }: { className?: string }) {
       feature="whitelabel"
       title="White-Label Branding"
       description="Remove Cursive branding and present the platform as your own with custom colors, logo, and domain."
-      icon="🎨"
+      icon={<Palette className="h-8 w-8 text-primary" />}
       benefits={[
         'Remove all "Powered by Cursive" branding',
         'Custom colors matching your brand identity',
@@ -161,7 +162,7 @@ export function ExtraDataFeatureBanner({ className }: { className?: string }) {
       feature="extra_data"
       title="Premium Audience Data"
       description="Access 10x more leads from premium data sources with advanced filtering and targeting options."
-      icon="📊"
+      icon={<BarChart3 className="h-8 w-8 text-primary" />}
       benefits={[
         '10x higher monthly lead capacity',
         'Premium B2B data sources and partnerships',
@@ -180,7 +181,7 @@ export function OutboundFeatureBanner({ className }: { className?: string }) {
       feature="outbound"
       title="Automated Outbound Campaigns"
       description="Send personalized email sequences to your leads with AI-powered personalization and reply detection."
-      icon="📧"
+      icon={<Mail className="h-8 w-8 text-primary" />}
       benefits={[
         'Multi-step email sequences (3-7 touches)',
         'AI-powered personalization per lead',

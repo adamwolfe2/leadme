@@ -35,7 +35,9 @@ export function UploadedLeadsTable({ leads }: UploadedLeadsTableProps) {
     return (
       <div className="glass-card p-12 text-center rounded-lg border">
         <div className="max-w-sm mx-auto space-y-3">
-          <div className="text-4xl">📊</div>
+          <div className="flex items-center justify-center h-12 w-12 mx-auto rounded-full bg-muted">
+            <svg className="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3v18h18M7 16v-4m4 4V8m4 8v-6m4 6V6" /></svg>
+          </div>
           <h3 className="text-lg font-semibold">No leads uploaded yet</h3>
           <p className="text-sm text-muted-foreground">
             Upload your first CSV to start earning commissions from lead sales

@@ -145,7 +145,7 @@ export function DeliveryCreateForm({ subscriptions }: DeliveryCreateFormProps) {
               return (
                 <option key={sub.id} value={sub.id}>
                   {workspace?.name || 'Unknown'} - {tier?.name || 'Unknown Tier'} ({user?.email})
-                  {!sub.onboarding_completed && ' - ⚠️ Onboarding Incomplete'}
+                  {!sub.onboarding_completed && ' - Onboarding Incomplete'}
                 </option>
               )
             })}

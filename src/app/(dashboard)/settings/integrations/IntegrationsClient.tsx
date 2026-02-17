@@ -843,7 +843,7 @@ export default function IntegrationsClient() {
             </div>
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-zinc-900 mb-1">🎁 Premium CRM Integrations</h3>
+            <h3 className="text-lg font-semibold text-zinc-900 mb-1">Premium CRM Integrations</h3>
             <p className="text-sm text-zinc-600">
               Connect your favorite CRM and sync leads automatically. Our team will set up bi-directional sync, custom field mapping, and automation workflows tailored to your needs.
             </p>

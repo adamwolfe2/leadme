@@ -17,8 +17,19 @@ import {
   Users, Mail, ArrowRight, ArrowLeft, CheckCircle2,
   Sparkles, Target, Building2, MapPin, Briefcase,
   Zap, DollarSign, Clock, MessageSquare, Globe,
-  ChevronRight, Star, Eye,
+  ChevronRight, Star, Eye, Calendar, ClipboardList, Leaf,
 } from 'lucide-react'
+
+const ICON_MAP: Record<string, React.ReactNode> = {
+  calendar: <Calendar className="h-5 w-5" />,
+  dollar: <DollarSign className="h-5 w-5" />,
+  clipboard: <ClipboardList className="h-5 w-5" />,
+  sprout: <Leaf className="h-5 w-5" />,
+  sparkles: <Sparkles className="h-5 w-5" />,
+  eye: <Eye className="h-5 w-5" />,
+  target: <Target className="h-5 w-5" />,
+  zap: <Zap className="h-5 w-5" />,
+}
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/design-system'
@@ -60,17 +71,17 @@ const BUDGET_RANGES = [
 ]
 
 const CAMPAIGN_GOALS = [
-  { value: 'book_demos', label: 'Book Demo Calls', icon: '📅', desc: 'Fill your calendar with qualified sales conversations' },
-  { value: 'close_sales', label: 'Close Sales Directly', icon: '💰', desc: 'Drive revenue from cold outreach' },
-  { value: 'grow_list', label: 'Grow Email List', icon: '📋', desc: 'Build a warm, opt-in audience for long-term nurture' },
-  { value: 'nurture', label: 'Nurture Pipeline', icon: '🌱', desc: 'Stay top-of-mind until prospects are ready to buy' },
-  { value: 'other', label: 'Something else', icon: '✨', desc: "Tell us — we'll figure it out together" },
+  { value: 'book_demos', label: 'Book Demo Calls', icon: 'calendar', desc: 'Fill your calendar with qualified sales conversations' },
+  { value: 'close_sales', label: 'Close Sales Directly', icon: 'dollar', desc: 'Drive revenue from cold outreach' },
+  { value: 'grow_list', label: 'Grow Email List', icon: 'clipboard', desc: 'Build a warm, opt-in audience for long-term nurture' },
+  { value: 'nurture', label: 'Nurture Pipeline', icon: 'sprout', desc: 'Stay top-of-mind until prospects are ready to buy' },
+  { value: 'other', label: 'Something else', icon: 'sparkles', desc: "Tell us — we'll figure it out together" },
 ]
 
 const AUDIENCE_SOURCES = [
-  { value: 'website_visitors', label: 'My Website Visitors', icon: '👁️', desc: 'People your pixel already identified on your site' },
-  { value: 'custom_audience', label: 'Build a Custom List', icon: '🎯', desc: 'We build a fresh, targeted list from the AL database' },
-  { value: 'both', label: 'Both', icon: '⚡', desc: 'Website visitors + custom prospecting list' },
+  { value: 'website_visitors', label: 'My Website Visitors', icon: 'eye', desc: 'People your pixel already identified on your site' },
+  { value: 'custom_audience', label: 'Build a Custom List', icon: 'target', desc: 'We build a fresh, targeted list from our database' },
+  { value: 'both', label: 'Both', icon: 'zap', desc: 'Website visitors + custom prospecting list' },
 ]
 
 const MESSAGE_TONES = [
@@ -198,7 +209,7 @@ function SuccessScreen({ flow, onReset }: { flow: FlowType; onReset: () => void 
       </div>
       <div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          {flow === 'audience' ? "You're on the list! 🎯" : "Campaign request sent! 🚀"}
+          {flow === 'audience' ? "You're on the list!" : "Campaign request sent!"}
         </h2>
         <p className="text-gray-500">
           {flow === 'audience'
@@ -445,8 +456,8 @@ function AudienceWizard({
             <SectionHeader icon={Target} title="What kind of audience do you want?" />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
-                { value: 'lookalike', label: 'Lookalike Audience', icon: '🎯', desc: 'Mirror my best visitors / customers — find people just like them' },
-                { value: 'audience', label: 'Custom List Build', icon: '🗂️', desc: 'Build a fresh targeted list based on my ICP from scratch' },
+                { value: 'lookalike', label: 'Lookalike Audience', icon: 'target', desc: 'Mirror my best visitors / customers — find people just like them' },
+                { value: 'audience', label: 'Custom List Build', icon: 'clipboard', desc: 'Build a fresh targeted list based on my ICP from scratch' },
               ].map((t) => (
                 <button
                   key={t.value}
@@ -459,7 +470,7 @@ function AudienceWizard({
                       : 'border-gray-200 hover:border-gray-300'
                   )}
                 >
-                  <div className="text-2xl mb-2">{t.icon}</div>
+                  <div className="text-primary mb-2">{ICON_MAP[t.icon] || t.icon}</div>
                   <div className="font-semibold text-gray-900 text-sm mb-1">{t.label}</div>
                   <div className="text-xs text-gray-500">{t.desc}</div>
                 </button>
@@ -771,7 +782,7 @@ function CampaignWizard({
                       : 'border-gray-200 hover:border-gray-300'
                   )}
                 >
-                  <span className="text-xl">{g.icon}</span>
+                  <span className="text-primary">{ICON_MAP[g.icon] || g.icon}</span>
                   <div className="font-semibold text-sm text-gray-900 mt-1">{g.label}</div>
                   <div className="text-xs text-gray-500 mt-0.5">{g.desc}</div>
                 </button>
@@ -793,7 +804,7 @@ function CampaignWizard({
                         : 'border-gray-200 hover:border-gray-300'
                     )}
                   >
-                    <span className="text-xl">{a.icon}</span>
+                    <span className="text-primary">{ICON_MAP[a.icon] || a.icon}</span>
                     <div className="font-semibold text-sm text-gray-900 mt-1">{a.label}</div>
                     <div className="text-xs text-gray-500 mt-0.5">{a.desc}</div>
                   </button>
