@@ -137,7 +137,7 @@ export function EnhancedContactsTable({
   // Get seniority badge color
   const getSeniorityColor = (seniority?: string) => {
     const colors: Record<string, string> = {
-      'C-Level': 'bg-purple-100 text-purple-700 border-purple-200',
+      'C-Level': 'bg-blue-100 text-blue-700 border-blue-200',
       'VP': 'bg-indigo-100 text-indigo-700 border-indigo-200',
       'Director': 'bg-blue-100 text-blue-700 border-blue-200',
       'Manager': 'bg-teal-100 text-teal-700 border-teal-200',

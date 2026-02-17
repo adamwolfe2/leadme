@@ -608,7 +608,7 @@ export function CampaignCompletedEmail({
                 width: '25%',
               }}
             >
-              <div style={{ fontSize: '20px', fontWeight: 600, color: '#8b5cf6' }}>
+              <div style={{ fontSize: '20px', fontWeight: 600, color: '#007AFF' }}>
                 {stats.replied}
               </div>
               <div style={{ fontSize: '11px', color: '#6b7280' }}>Replies</div>

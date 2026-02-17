@@ -134,14 +134,14 @@ export default function BillingClient() {
 
       {/* Value prop strip for free users */}
       {!isPro && (
-        <div className="rounded-xl bg-gradient-to-r from-violet-50 via-primary/5 to-blue-50 border border-primary/20 p-5">
+        <div className="rounded-xl bg-gradient-to-r from-blue-50 via-primary/5 to-blue-50 border border-primary/20 p-5">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <div className="flex-1">
               <h2 className="text-base font-bold text-gray-900 mb-1">
                 One enriched lead can close a $10k deal.
               </h2>
               <p className="text-sm text-gray-600 max-w-xl">
-                You&apos;re getting free leads every day from Audience Labs. Upgrading adds phone numbers, emails, LinkedIn profiles, and 100 leads/day — so your team can close, not just browse.
+                You&apos;re getting free leads every day. Upgrading adds phone numbers, emails, LinkedIn profiles, and 100 leads/day — so your team can close, not just browse.
               </p>
               <div className="flex flex-wrap gap-3 mt-3">
                 <div className="flex items-center gap-1.5 text-xs text-gray-700 bg-white border border-gray-200 rounded-lg px-2.5 py-1.5">

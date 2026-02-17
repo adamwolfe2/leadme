@@ -1,6 +1,6 @@
 /**
  * Daily Leads Dashboard
- * Shows leads delivered daily from Audience Labs
+ * Shows leads delivered daily
  */
 
 import { createClient } from '@/lib/supabase/server'

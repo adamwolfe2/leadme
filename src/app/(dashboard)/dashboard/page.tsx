@@ -372,7 +372,7 @@ export default async function DashboardPage({
                       href={`/crm/leads/${lead.id}`}
                       className="flex items-center gap-3 p-3 rounded-lg border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all group"
                     >
-                      <div className="h-8 w-8 rounded-full bg-violet-100 flex items-center justify-center text-xs font-bold text-violet-700 shrink-0">
+                      <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-700 shrink-0">
                         {displayName.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -381,7 +381,7 @@ export default async function DashboardPage({
                       </div>
                       <div className="flex items-center gap-1.5 shrink-0">
                         {isEnriched && (
-                          <span className="text-[10px] bg-violet-50 text-violet-600 border border-violet-200 rounded-full px-1.5 py-0.5 font-medium">
+                          <span className="text-[10px] bg-blue-50 text-blue-600 border border-blue-200 rounded-full px-1.5 py-0.5 font-medium">
                             Enriched
                           </span>
                         )}
@@ -418,7 +418,7 @@ export default async function DashboardPage({
                 </div>
                 <div className="mt-1 h-1.5 bg-gray-100 rounded-full overflow-hidden mb-4">
                   <div
-                    className="h-full bg-gradient-to-r from-violet-500 to-primary rounded-full transition-all"
+                    className="h-full bg-gradient-to-r from-blue-500 to-primary rounded-full transition-all"
                     style={{ width: `${(checklistProgress / checklistTotal) * 100}%` }}
                   />
                 </div>
@@ -476,15 +476,15 @@ export default async function DashboardPage({
                   </div>
                   <ArrowRight className="h-3.5 w-3.5 text-gray-300 group-hover:text-primary transition-colors" />
                 </Link>
-                <Link href="/activate" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-violet-50 transition-colors group border border-violet-100">
-                  <div className="p-1.5 rounded-lg bg-violet-100 group-hover:bg-violet-200 transition-colors">
-                    <Rocket className="h-3.5 w-3.5 text-violet-600" />
+                <Link href="/activate" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-blue-50 transition-colors group border border-blue-100">
+                  <div className="p-1.5 rounded-lg bg-blue-100 group-hover:bg-blue-200 transition-colors">
+                    <Rocket className="h-3.5 w-3.5 text-blue-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-violet-700">Activate</p>
-                    <p className="text-xs text-violet-500">Audiences + campaigns</p>
+                    <p className="text-sm font-medium text-blue-700">Activate</p>
+                    <p className="text-xs text-blue-500">Audiences + campaigns</p>
                   </div>
-                  <ArrowRight className="h-3.5 w-3.5 text-violet-300 group-hover:text-violet-600 transition-colors" />
+                  <ArrowRight className="h-3.5 w-3.5 text-blue-300 group-hover:text-blue-600 transition-colors" />
                 </Link>
                 <Link href="/my-leads/preferences" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 transition-colors group">
                   <div className="p-1.5 rounded-lg bg-gray-100 group-hover:bg-gray-200 transition-colors">
@@ -515,7 +515,7 @@ export default async function DashboardPage({
                         {event.type === 'delivery' ? (
                           <div className="h-2 w-2 rounded-full bg-primary" />
                         ) : (
-                          <div className="h-2 w-2 rounded-full bg-violet-400" />
+                          <div className="h-2 w-2 rounded-full bg-blue-400" />
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -527,7 +527,7 @@ export default async function DashboardPage({
                           <p className="text-xs text-gray-700 truncate">
                             <span className="font-medium">{event.leadName}</span>
                             {event.company && <span className="text-gray-400"> · {event.company}</span>}
-                            <span className="text-violet-600 ml-1">enriched</span>
+                            <span className="text-blue-600 ml-1">enriched</span>
                           </p>
                         )}
                         <p className="text-[10px] text-gray-400 mt-0.5">
@@ -544,7 +544,7 @@ export default async function DashboardPage({
           {/* Plan + upgrade CTA */}
           {isFree && (
             <AnimatedSection delay={0.25}>
-              <div className="rounded-xl bg-gradient-to-br from-violet-50 to-primary/5 border border-primary/20 p-5">
+              <div className="rounded-xl bg-gradient-to-br from-blue-50 to-primary/5 border border-primary/20 p-5">
                 <div className="flex items-center gap-2 mb-2">
                   <Crown className="h-4 w-4 text-primary" />
                   <span className="text-sm font-semibold text-gray-900">Free Plan</span>

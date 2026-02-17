@@ -263,7 +263,7 @@ function FlowSelector({ onSelect, stats }: { onSelect: (f: FlowType) => void; st
               </span>
             )}
             {stats.enriched > 0 && (
-              <span className="inline-flex items-center gap-1.5 text-sm bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-3 py-1">
+              <span className="inline-flex items-center gap-1.5 text-sm bg-blue-50 text-blue-700 border border-blue-200 rounded-full px-3 py-1">
                 <Zap className="h-3.5 w-3.5" />
                 {stats.enriched} enriched leads
               </span>
@@ -313,8 +313,8 @@ function FlowSelector({ onSelect, stats }: { onSelect: (f: FlowType) => void; st
           className="group text-left bg-white rounded-2xl border-2 border-gray-200 p-7 hover:border-primary hover:shadow-lg transition-all duration-200"
         >
           <div className="flex items-start justify-between mb-5">
-            <div className="p-3 rounded-xl bg-violet-50 group-hover:bg-primary/10 transition-colors">
-              <Mail className="h-7 w-7 text-violet-600 group-hover:text-primary transition-colors" />
+            <div className="p-3 rounded-xl bg-blue-50 group-hover:bg-primary/10 transition-colors">
+              <Mail className="h-7 w-7 text-blue-600 group-hover:text-primary transition-colors" />
             </div>
             <ChevronRight className="h-5 w-5 text-gray-300 group-hover:text-primary group-hover:translate-x-1 transition-all" />
           </div>
@@ -335,7 +335,7 @@ function FlowSelector({ onSelect, stats }: { onSelect: (f: FlowType) => void; st
             ))}
           </div>
           <div className="mt-5 pt-5 border-t border-gray-100">
-            <Badge className="bg-violet-50 text-violet-700 border border-violet-200 text-xs">
+            <Badge className="bg-blue-50 text-blue-700 border border-blue-200 text-xs">
               Starting at $500 / mo
             </Badge>
           </div>
@@ -744,8 +744,8 @@ function CampaignWizard({
           <ArrowLeft className="h-4 w-4" /> Back to options
         </button>
         <div className="flex items-center gap-3 mb-4">
-          <div className="p-2.5 rounded-xl bg-violet-50">
-            <Mail className="h-5 w-5 text-violet-600" />
+          <div className="p-2.5 rounded-xl bg-blue-50">
+            <Mail className="h-5 w-5 text-blue-600" />
           </div>
           <h2 className="text-xl font-bold text-gray-900">Outbound Campaign Launcher</h2>
         </div>
@@ -1002,7 +1002,7 @@ function CampaignWizard({
           <Button
             onClick={handleSubmit}
             disabled={submitting || !canAdvance}
-            className="bg-gradient-to-r from-violet-600 to-primary hover:opacity-90 text-white gap-2"
+            className="bg-gradient-to-r from-blue-600 to-primary hover:opacity-90 text-white gap-2"
           >
             {submitting ? 'Submitting...' : (
               <><Sparkles className="h-4 w-4" /> Launch Campaign Request</>

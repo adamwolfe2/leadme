@@ -291,7 +291,7 @@ function generateLeadEmailHtml(data: {
         <style>
           body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 8px 8px 0 0; }
+          .header { background: linear-gradient(135deg, #007AFF 0%, #0056CC 100%); color: white; padding: 30px; border-radius: 8px 8px 0 0; }
           .content { background: white; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px; }
           .intent-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
           .intent-hot { background: #fee2e2; color: #991b1b; }
@@ -301,7 +301,7 @@ function generateLeadEmailHtml(data: {
           .info-item { padding: 15px; background: #f9fafb; border-radius: 6px; }
           .label { font-size: 12px; color: #6b7280; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; }
           .value { font-size: 16px; color: #111827; font-weight: 500; }
-          .button { display: inline-block; padding: 12px 24px; background: #667eea; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; margin-top: 20px; }
+          .button { display: inline-block; padding: 12px 24px; background: #007AFF; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; margin-top: 20px; }
           .signals { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px; }
         </style>
       </head>
@@ -339,7 +339,7 @@ function generateLeadEmailHtml(data: {
               <div style="background: #f3f4f6; padding: 20px; border-radius: 6px;">
                 <p style="margin: 0 0 8px;"><strong>${contactData.primary_contact.full_name}</strong></p>
                 <p style="margin: 0 0 8px; color: #6b7280;">${contactData.primary_contact.title || 'N/A'}</p>
-                ${contactData.primary_contact.email ? `<p style="margin: 0; color: #667eea;"><a href="mailto:${contactData.primary_contact.email}" style="color: #667eea; text-decoration: none;">${contactData.primary_contact.email}</a></p>` : ''}
+                ${contactData.primary_contact.email ? `<p style="margin: 0; color: #007AFF;"><a href="mailto:${contactData.primary_contact.email}" style="color: #007AFF; text-decoration: none;">${contactData.primary_contact.email}</a></p>` : ''}
               </div>
             ` : ''}
 

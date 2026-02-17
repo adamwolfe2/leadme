@@ -90,7 +90,7 @@ function getInitials(lead: Lead) {
 }
 
 const AVATAR_COLORS = [
-  'bg-violet-100 text-violet-700',
+  'bg-blue-100 text-blue-700',
   'bg-blue-100 text-blue-700',
   'bg-emerald-100 text-emerald-700',
   'bg-orange-100 text-orange-700',
@@ -108,7 +108,7 @@ function sourceLabel(source: string | null): { label: string; className: string 
     return { label: 'Pixel', className: 'bg-sky-50 text-sky-600 border-sky-200' }
   }
   if (source.startsWith('audience_labs') || source.startsWith('audiencelab')) {
-    return { label: 'Daily', className: 'bg-violet-50 text-violet-600 border-violet-200' }
+    return { label: 'Daily', className: 'bg-blue-50 text-blue-600 border-blue-200' }
   }
   if (source === 'partner') {
     return { label: 'Partner', className: 'bg-emerald-50 text-emerald-600 border-emerald-200' }
@@ -281,7 +281,7 @@ function LeadCard({
           <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-gray-100">
             <div className="flex items-center gap-1.5 flex-wrap">
               {isEnriched && (
-                <span className="inline-flex items-center gap-1 text-[10px] bg-violet-50 text-violet-600 border border-violet-200 rounded-full px-2 py-0.5 font-medium">
+                <span className="inline-flex items-center gap-1 text-[10px] bg-blue-50 text-blue-600 border border-blue-200 rounded-full px-2 py-0.5 font-medium">
                   <Zap className="h-2.5 w-2.5" /> Enriched
                 </span>
               )}
@@ -304,7 +304,7 @@ function LeadCard({
               {!isEnriched && (
                 <button
                   onClick={() => onEnrich(lead)}
-                  className="inline-flex items-center gap-1 text-xs bg-gradient-to-r from-violet-500 to-primary text-white rounded-full px-2.5 py-1 font-medium hover:opacity-90 transition-opacity"
+                  className="inline-flex items-center gap-1 text-xs bg-gradient-to-r from-blue-500 to-primary text-white rounded-full px-2.5 py-1 font-medium hover:opacity-90 transition-opacity"
                 >
                   <Zap className="h-2.5 w-2.5" /> Enrich
                 </button>
@@ -693,7 +693,7 @@ export function DailyLeadsView({
 
       {/* Upgrade banner */}
       {isFree && (
-        <div className="rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 to-violet-50 p-5">
+        <div className="rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 to-blue-50 p-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-primary/10">
@@ -719,17 +719,17 @@ export function DailyLeadsView({
 
       {/* Unenriched call to action */}
       {unenrichedToday > 0 && !isFree && (
-        <div className="rounded-xl border border-violet-100 bg-violet-50/60 px-5 py-3.5 flex items-center justify-between gap-4">
+        <div className="rounded-xl border border-blue-100 bg-blue-50/60 px-5 py-3.5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <Zap className="h-4 w-4 text-violet-600 shrink-0" />
-            <p className="text-sm text-violet-800">
-              <strong>{unenrichedToday} leads</strong> today haven&apos;t been enriched — fill in their email, phone, and LinkedIn. <span className="text-violet-600">1 credit each.</span>
+            <Zap className="h-4 w-4 text-blue-600 shrink-0" />
+            <p className="text-sm text-blue-800">
+              <strong>{unenrichedToday} leads</strong> today haven&apos;t been enriched — fill in their email, phone, and LinkedIn. <span className="text-blue-600">1 credit each.</span>
             </p>
           </div>
           {creditsRemaining <= 3 && (
             <a
               href="/settings/billing"
-              className="shrink-0 text-xs font-semibold text-violet-700 border border-violet-300 rounded-lg px-3 py-1.5 hover:bg-violet-100 transition-colors"
+              className="shrink-0 text-xs font-semibold text-blue-700 border border-blue-300 rounded-lg px-3 py-1.5 hover:bg-blue-100 transition-colors"
             >
               Get Credits
             </a>
@@ -768,7 +768,7 @@ export function DailyLeadsView({
                   <button
                     onClick={handleBulkEnrich}
                     disabled={bulkEnriching || creditsRemaining < selectedUnenriched.length}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-gradient-to-r from-violet-500 to-primary rounded-lg px-3 py-1.5 hover:opacity-90 transition-opacity disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-gradient-to-r from-blue-500 to-primary rounded-lg px-3 py-1.5 hover:opacity-90 transition-opacity disabled:opacity-50"
                   >
                     <Zap className="h-3 w-3" />
                     {bulkEnriching
@@ -846,7 +846,7 @@ export function DailyLeadsView({
             </h3>
             <p className="text-sm text-gray-400 max-w-xs mx-auto">
               {todayCount === 0
-                ? `Your daily batch of ${dailyLimit} scored leads from Audience Labs will be ready soon.`
+                ? `Your daily batch of ${dailyLimit} scored leads will be ready soon.`
                 : 'Try clearing your search or filter.'}
             </p>
           </div>

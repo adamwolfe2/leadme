@@ -319,7 +319,7 @@ export default function PixelSettingsPage() {
               No installation snippet on file yet.
               {hasInstallUrl
                 ? ' Use the Install Guide above to get your snippet, then paste it here.'
-                : ' Paste your AudienceLab pixel snippet below to save it for reference.'}
+                : ' Paste your pixel snippet below to save it for reference.'}
             </p>
 
             <textarea

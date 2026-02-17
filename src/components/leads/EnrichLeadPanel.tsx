@@ -204,7 +204,7 @@ export function EnrichLeadPanel({
                   Fields to fill in
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  We&apos;ll search Audience Labs&apos; database to find any missing information.
+                  We&apos;ll search our verified contact database to find any missing information.
                 </p>
               </div>
 
@@ -354,7 +354,7 @@ export function EnrichLeadPanel({
               </div>
               <p className="font-medium text-foreground">No new data found</p>
               <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                This lead wasn&apos;t found in the Audience Labs database. 1 credit was used.
+                This lead wasn&apos;t found in our database. 1 credit was used.
               </p>
             </div>
           )}

@@ -331,7 +331,7 @@ export default function LeadDatabasePage() {
             <strong>3. Pull:</strong> Add leads to your workspace (costs credits)
           </p>
           <p className="text-xs mt-4">
-            💡 Leads are pulled from Audience Labs&apos; 280M+ verified contact database with
+            Leads are pulled from our 280M+ verified contact database with
             deliverability scoring
           </p>
         </CardContent>

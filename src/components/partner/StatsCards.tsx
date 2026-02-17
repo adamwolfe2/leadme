@@ -50,7 +50,7 @@ export function StatsCards({ analytics, credits }: StatsCardsProps) {
       value: `$${(credits?.balance || 0).toFixed(2)}`,
       icon: TrendingUp,
       description: 'Available for withdrawal',
-      color: 'text-purple-500',
+      color: 'text-blue-500',
     },
   ]
 

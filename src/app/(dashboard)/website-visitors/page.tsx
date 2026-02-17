@@ -105,7 +105,7 @@ function getInitials(lead: VisitorLead): string {
 
 function getAvatarColor(id: string): string {
   const colors = [
-    'bg-violet-100 text-violet-700',
+    'bg-blue-100 text-blue-700',
     'bg-blue-100 text-blue-700',
     'bg-emerald-100 text-emerald-700',
     'bg-orange-100 text-orange-700',
@@ -261,7 +261,7 @@ function VisitorCard({
                   <ExternalLink className="h-2.5 w-2.5 shrink-0" />
                 </a>
               )}
-              <span className="inline-flex items-center gap-1 text-[10px] bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-2 py-0.5 mt-0.5">
+              <span className="inline-flex items-center gap-1 text-[10px] bg-blue-50 text-blue-700 border border-blue-200 rounded-full px-2 py-0.5 mt-0.5">
                 <Zap className="h-2.5 w-2.5" /> Enriched
               </span>
             </div>
@@ -297,7 +297,7 @@ function VisitorCard({
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-7 px-3 text-xs gap-1 border-violet-200 text-violet-700 hover:bg-violet-50"
+                  className="h-7 px-3 text-xs gap-1 border-blue-200 text-blue-700 hover:bg-blue-50"
                   onClick={() => onEnrich(lead)}
                 >
                   <Zap className="h-3 w-3" />
@@ -570,14 +570,14 @@ export default function WebsiteVisitorsPage() {
 
       {/* No pixel setup */}
       {!isLoading && !pixel && (
-        <div className="rounded-xl border border-violet-200 bg-gradient-to-br from-violet-50 to-primary/5 p-6">
+        <div className="rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-primary/5 p-6">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
             <div>
-              <p className="font-semibold text-violet-900 flex items-center gap-2">
+              <p className="font-semibold text-blue-900 flex items-center gap-2">
                 <Sparkles className="h-4 w-4" />
                 Start your free 14-day pixel trial
               </p>
-              <p className="text-sm text-violet-700 mt-1">
+              <p className="text-sm text-blue-700 mt-1">
                 Install the SuperPixel to identify who&apos;s visiting your website and turn anonymous traffic into named leads.
               </p>
             </div>
@@ -622,7 +622,7 @@ export default function WebsiteVisitorsPage() {
                 label="Enriched"
                 value={(stats?.enriched ?? 0).toLocaleString()}
                 sub={`${stats?.match_rate ?? 0}% match rate`}
-                iconClass="bg-violet-100"
+                iconClass="bg-blue-100"
               />
               <StatCard
                 icon={TrendingUp}
@@ -684,7 +684,7 @@ export default function WebsiteVisitorsPage() {
 
       {/* Upsell strip — if they have enrichable visitors */}
       {!isLoading && stats && stats.total > 0 && stats.enriched < stats.total && (
-        <div className="rounded-xl border border-violet-100 bg-gradient-to-r from-violet-50 to-primary/5 px-5 py-4">
+        <div className="rounded-xl border border-blue-100 bg-gradient-to-r from-blue-50 to-primary/5 px-5 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-primary/10">

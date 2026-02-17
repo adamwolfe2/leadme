@@ -104,7 +104,7 @@ export function useLeadStatusBreakdown() {
   // Define status colors matching your existing design
   const statusColors: Record<string, string> = {
     new: '#007aff', // cursive blue
-    contacted: '#8b5cf6', // violet-500
+    contacted: '#3b82f6', // blue-500
     qualified: '#10b981', // emerald-500
     negotiation: '#f59e0b', // amber-500
     hot: '#ef4444', // red-500

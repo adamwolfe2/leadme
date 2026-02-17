@@ -158,12 +158,12 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
               const isPixel = src === 'superpixel' || src.includes('superpixel')
               const isDaily = src.startsWith('audience_labs') || src.startsWith('audiencelab')
               if (isPixel) return <Badge variant="outline" className="text-sky-600 border-sky-200 bg-sky-50 text-[10px]">Pixel</Badge>
-              if (isDaily) return <Badge variant="outline" className="text-violet-600 border-violet-200 bg-violet-50 text-[10px]">Daily</Badge>
+              if (isDaily) return <Badge variant="outline" className="text-blue-600 border-blue-200 bg-blue-50 text-[10px]">Daily</Badge>
               return null
             })()}
 
             <Button
-              className="gap-2 bg-gradient-to-r from-violet-500 to-primary hover:opacity-90 text-white shadow-sm"
+              className="gap-2 bg-primary hover:bg-primary/90 text-white shadow-sm"
               onClick={() => setShowEnrichPanel(true)}
             >
               <Zap className="h-4 w-4" />

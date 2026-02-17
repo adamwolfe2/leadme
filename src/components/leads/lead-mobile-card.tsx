@@ -19,7 +19,7 @@ const statusColors: Record<string, string> = {
   contacted: 'bg-yellow-100 text-yellow-800',
   qualified: 'bg-green-100 text-green-800',
   unqualified: 'bg-gray-100 text-gray-800',
-  nurture: 'bg-purple-100 text-purple-800',
+  nurture: 'bg-blue-100 text-blue-800',
 }
 
 export function LeadMobileCard({ lead, onClick }: LeadMobileCardProps) {

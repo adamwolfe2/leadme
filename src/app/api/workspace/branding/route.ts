@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
     return success({
       branding: {
         primary_color: branding.primary_color || '#3b82f6',
-        secondary_color: branding.secondary_color || '#8b5cf6',
+        secondary_color: branding.secondary_color || '#3b82f6',
         accent_color: branding.accent_color || null,
         logo_url: branding.logo_url || null,
       },

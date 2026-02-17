@@ -26,7 +26,7 @@ const LOADING_PAGE = `
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #007AFF 0%, #0056CC 100%);
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -48,7 +48,7 @@ const LOADING_PAGE = `
       justify-content: center;
       font-size: 2.5rem;
       font-weight: bold;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #007AFF 0%, #0056CC 100%);
       color: white;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       animation: pulse 2s ease-in-out infinite;

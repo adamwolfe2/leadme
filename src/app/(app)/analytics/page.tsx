@@ -252,7 +252,7 @@ export default function AnalyticsPage() {
                   <p className="text-sm text-muted-foreground mt-1">Database</p>
                 </div>
                 <div className="text-center p-4 border rounded-lg">
-                  <div className="text-2xl font-bold text-purple-600">
+                  <div className="text-2xl font-bold text-blue-600">
                     {stats?.leads_by_source?.marketplace || 0}
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">Marketplace</p>
@@ -409,7 +409,7 @@ export default function AnalyticsPage() {
                         </div>
                         <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-purple-600"
+                            className="h-full bg-blue-600"
                             style={{
                               width: `${(leadQuality.completeness.has_company / leadQuality.total_leads) * 100}%`,
                             }}

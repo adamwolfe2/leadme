@@ -374,7 +374,7 @@ const DONUT_COLORS = [
   'hsl(var(--warning))',
   'hsl(var(--destructive))',
   'hsl(var(--info))',
-  '#8b5cf6',
+  '#3b82f6',
   '#ec4899',
   '#06b6d4',
 ]

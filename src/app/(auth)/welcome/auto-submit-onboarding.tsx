@@ -147,7 +147,7 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
         }
 
         // Fire both post-onboarding tasks in parallel (non-blocking):
-        // 1. Populate initial leads from Audience Labs immediately
+        // 1. Populate initial leads immediately
         // 2. Auto-provision their SuperPixel so website visitor tracking is ready
         console.log('[AutoSubmit] Onboarding complete — launching background setup...')
         const email = onboardingData.email || ''

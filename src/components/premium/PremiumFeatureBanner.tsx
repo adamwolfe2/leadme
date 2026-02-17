@@ -121,7 +121,7 @@ export function PixelFeatureBanner({ className }: { className?: string }) {
   return (
     <PremiumFeatureBanner
       feature="pixel"
-      title="AudienceLab Pixel Tracking"
+      title="Website Visitor Tracking"
       description="Track your own website visitors and automatically convert them into enriched leads with contact information."
       icon="🎯"
       benefits={[

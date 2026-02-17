@@ -11,7 +11,7 @@ import { useToast } from '@/lib/hooks/use-toast'
 import { WhitelabelFeatureBanner } from '@/components/premium/PremiumFeatureBanner'
 
 const DEFAULT_PRIMARY = '#3b82f6'
-const DEFAULT_SECONDARY = '#8b5cf6'
+const DEFAULT_SECONDARY = '#3b82f6'
 const DEFAULT_ACCENT = '#f59e0b'
 
 function ColorSwatch({ color, label }: { color: string; label: string }) {
@@ -201,7 +201,7 @@ export default function BrandingSettingsPage() {
                   id="secondary_color"
                   value={secondaryColor}
                   onChange={(e) => handleChange(setSecondaryColor)(e.target.value)}
-                  placeholder="#8b5cf6"
+                  placeholder="#3b82f6"
                   className="max-w-32 font-mono text-sm"
                   maxLength={7}
                 />

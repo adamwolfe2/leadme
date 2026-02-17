@@ -72,7 +72,7 @@ const ACTIVITY_COLORS: Record<string, string> = {
   email_sent: 'bg-blue-100 text-blue-600',
   email_opened: 'bg-green-100 text-green-600',
   email_clicked: 'bg-emerald-100 text-emerald-600',
-  email_replied: 'bg-purple-100 text-purple-600',
+  email_replied: 'bg-blue-100 text-blue-600',
   call: 'bg-amber-100 text-amber-600',
   meeting: 'bg-indigo-100 text-indigo-600',
   note: 'bg-gray-100 text-gray-600',

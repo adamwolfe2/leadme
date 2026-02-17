@@ -23,8 +23,8 @@ export function UpsellBanner({ creditsBalance, totalSpend }: UpsellBannerProps) 
         message: 'You\'ve spent over $2,000 on credits. Cursive Outbound gives you done-for-you campaigns with unlimited leads for $2,500/mo.',
         cta: 'Learn About Outbound',
         href: '/services#outbound',
-        color: 'from-purple-500/10 to-blue-500/10 border-purple-200',
-        iconColor: 'text-purple-600',
+        color: 'from-blue-500/10 to-blue-500/10 border-blue-200',
+        iconColor: 'text-blue-600',
       }
     }
     if (totalSpend > 500) {
