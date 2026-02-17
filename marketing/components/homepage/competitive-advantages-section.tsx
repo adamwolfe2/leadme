@@ -71,7 +71,7 @@ export function CompetitiveAdvantagesSection() {
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Why Teams Choose
             </h2>
-            <p className="font-cursive text-5xl lg:text-6xl text-gray-500 mb-6">
+            <p className="font-cursive text-6xl lg:text-7xl text-gray-500 mb-6">
               Cursive
             </p>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">

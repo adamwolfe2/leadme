@@ -90,7 +90,7 @@ export default function ServicesPage() {
           >
             <h1 className="text-5xl lg:text-6xl font-light text-gray-900 mb-6">
               Pick Your
-              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+              <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
                 Growth Model
               </span>
             </h1>
@@ -128,8 +128,8 @@ export default function ServicesPage() {
                   Perfect for teams with existing outbound
                 </div>
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                  <span className="font-cursive text-5xl lg:text-6xl text-gray-500">Cursive</span> Data
-                  <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+                  <span className="font-cursive text-6xl lg:text-7xl text-gray-500">Cursive</span> Data
+                  <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
                     Monthly Lead Lists
                   </span>
                 </h2>
@@ -263,8 +263,8 @@ export default function ServicesPage() {
                   Most Popular
                 </div>
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                  <span className="font-cursive text-5xl lg:text-6xl text-gray-500">Cursive</span> Outbound
-                  <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+                  <span className="font-cursive text-6xl lg:text-7xl text-gray-500">Cursive</span> Outbound
+                  <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
                     Done-For-You Campaigns
                   </span>
                 </h2>
@@ -338,8 +338,8 @@ export default function ServicesPage() {
                   Full-stack solution
                 </div>
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                  <span className="font-cursive text-5xl lg:text-6xl text-gray-500">Cursive</span> Pipeline
-                  <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+                  <span className="font-cursive text-6xl lg:text-7xl text-gray-500">Cursive</span> Pipeline
+                  <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
                     AI SDR + Pipeline Management
                   </span>
                 </h2>
@@ -444,7 +444,7 @@ export default function ServicesPage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Power-Ups
-              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+              <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
                 & Add-Ons
               </span>
             </h2>
@@ -567,7 +567,7 @@ export default function ServicesPage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Compare
-              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+              <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
                 Plans
               </span>
             </h2>

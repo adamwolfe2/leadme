@@ -375,7 +375,7 @@ export function HumanHomePage() {
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-2">
               Everything You Need to
             </h2>
-            <p className="font-cursive text-5xl lg:text-6xl text-gray-500">
+            <p className="font-cursive text-6xl lg:text-7xl text-gray-500">
               Scale Outbound
             </p>
           </div>

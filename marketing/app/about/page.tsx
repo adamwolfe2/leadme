@@ -32,7 +32,7 @@ export default function AboutPage() {
           >
             <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
               We Got Tired of Bad Lead Data
-              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+              <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
                 So We Built Something Better
               </span>
             </h1>
@@ -77,7 +77,7 @@ export default function AboutPage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Our Mission
-              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+              <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
                 Make Lead Gen Effortless
               </span>
             </h2>
@@ -165,7 +165,7 @@ export default function AboutPage() {
 
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900">
                   Our Philosophy
-                  <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+                  <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
                     Recursive Intelligence
                   </span>
                 </h2>
@@ -281,7 +281,7 @@ export default function AboutPage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Our
-              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+              <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
                 Values
               </span>
             </h2>
@@ -344,7 +344,7 @@ export default function AboutPage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Who
-              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+              <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
                 We Are
               </span>
             </h2>
@@ -373,7 +373,7 @@ export default function AboutPage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Our Technology
-              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+              <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
                 Approach
               </span>
             </h2>
@@ -443,7 +443,7 @@ export default function AboutPage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Remote-First
-              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+              <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
                 Culture
               </span>
             </h2>
@@ -490,7 +490,7 @@ export default function AboutPage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Customer
-              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+              <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
                 Success
               </span>
             </h2>
