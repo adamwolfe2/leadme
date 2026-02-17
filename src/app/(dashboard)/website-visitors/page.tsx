@@ -690,22 +690,22 @@ export default function WebsiteVisitorsPage() {
                 icon: Users,
                 title: 'Lookalike Audiences',
                 desc: 'Build ad audiences that mirror your best visitors. Target people just like them on Facebook, Google, and LinkedIn.',
-                href: '/settings/billing',
-                cta: 'Unlock',
+                href: '/activate?flow=audience',
+                cta: 'Build Audience →',
               },
               {
                 icon: Mail,
                 title: 'Outbound on Autopilot',
                 desc: 'We run personalised email campaigns to your identified visitors on your behalf — you just close the deals.',
-                href: '/campaigns',
-                cta: 'See Campaigns',
+                href: '/activate?flow=campaign',
+                cta: 'Launch Campaign →',
               },
               {
                 icon: Zap,
                 title: '1,000 Enrichments/Day',
                 desc: 'Fill in every missing field on every new visitor automatically — email, phone, company, LinkedIn.',
                 href: '/settings/billing',
-                cta: 'Upgrade',
+                cta: 'Upgrade →',
               },
             ].map((item) => (
               <div key={item.title} className="rounded-lg border border-gray-100 bg-gray-50 p-4">
