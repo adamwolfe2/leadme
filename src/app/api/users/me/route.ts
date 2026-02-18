@@ -5,10 +5,24 @@
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, success, validationError } from '@/lib/utils/api-error-handler'
 import { DAILY_CREDIT_LIMITS } from '@/lib/services/credit.service'
+
+const notificationPreferencesSchema = z.object({
+  new_leads: z.boolean().optional(),
+  daily_digest: z.boolean().optional(),
+  weekly_report: z.boolean().optional(),
+  query_updates: z.boolean().optional(),
+  credit_alerts: z.boolean().optional(),
+  email_notifications: z.boolean().optional(),
+  lead_delivery_email: z.boolean().optional(),
+  slack_notifications: z.boolean().optional(),
+  webhook_delivery: z.boolean().optional(),
+  digest_time: z.string().optional(),
+}).passthrough()
 
 // Generate a unique referral code
 function generateReferralCode(): string {
@@ -128,7 +142,11 @@ export async function PATCH(request: NextRequest) {
     }
 
     if (notification_preferences !== undefined) {
-      updates.notification_preferences = notification_preferences
+      const parsed = notificationPreferencesSchema.safeParse(notification_preferences)
+      if (!parsed.success) {
+        return validationError('Invalid notification preferences format')
+      }
+      updates.notification_preferences = parsed.data
     }
 
     // 4. Check if there's anything to update

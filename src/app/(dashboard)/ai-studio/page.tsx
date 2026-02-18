@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import NextImage from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { GradientCard, GradientButton } from '@/components/ui/gradient-card'
@@ -283,7 +284,7 @@ export default function AIStudioPage() {
 
             {screenshot && (
               <div className="rounded-lg overflow-hidden border border-border">
-                <img src={screenshot} alt="Website preview" className="w-full" />
+                <NextImage src={screenshot} alt="Website preview" className="w-full" width={800} height={450} unoptimized />
               </div>
             )}
           </div>
@@ -325,10 +326,13 @@ export default function AIStudioPage() {
                 >
                   <div className="flex items-start gap-3 mb-4">
                     {workspace.logo_url ? (
-                      <img
+                      <NextImage
                         src={workspace.logo_url}
                         alt={workspace.name}
+                        width={48}
+                        height={48}
                         className="h-12 w-12 rounded-lg object-contain bg-background border border-border p-2"
+                        unoptimized
                       />
                     ) : (
                       <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">

@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useToast } from '@/lib/hooks/use-toast'
@@ -194,29 +194,6 @@ export default function IntegrationsClient() {
 
   const user = userData?.data
 
-  // Save custom webhook mutation
-  const saveCustomWebhookMutation = useMutation({
-    mutationFn: async (webhookUrl: string) => {
-      const response = await fetch('/api/integrations/webhook', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ webhook_url: webhookUrl }),
-      })
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Failed to save webhook')
-      }
-      return response.json()
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user', 'me'] })
-      toast.success('Custom webhook saved successfully!')
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to save webhook')
-    },
-  })
-
   // Generate API key mutation
   const generateApiKeyMutation = useMutation({
     mutationFn: async () => {
@@ -250,12 +227,14 @@ export default function IntegrationsClient() {
   })
 
   // Sync webhook settings into local state when data loads
-  if (webhookData && !webhookSettingsLoaded) {
-    setCustomWebhookUrl(webhookData.webhook_url || '')
-    setWebhookEnabled(webhookData.webhook_enabled)
-    setWebhookEvents(webhookData.webhook_events || ['lead.created'])
-    setWebhookSettingsLoaded(true)
-  }
+  useEffect(() => {
+    if (webhookData && !webhookSettingsLoaded) {
+      setCustomWebhookUrl(webhookData.webhook_url || '')
+      setWebhookEnabled(webhookData.webhook_enabled)
+      setWebhookEvents(webhookData.webhook_events || ['lead.created'])
+      setWebhookSettingsLoaded(true)
+    }
+  }, [webhookData, webhookSettingsLoaded])
 
   // Update webhook settings mutation (POST)
   const updateWebhookMutation = useMutation({
@@ -381,20 +360,6 @@ export default function IntegrationsClient() {
         ? prev.filter((e) => e !== eventKey)
         : [...prev, eventKey]
     )
-  }
-
-  const handleSaveCustomWebhook = () => {
-    if (!customWebhookUrl) {
-      toast.error('Please enter a webhook URL')
-      return
-    }
-
-    try {
-      new URL(customWebhookUrl)
-      saveCustomWebhookMutation.mutate(customWebhookUrl)
-    } catch {
-      toast.error('Please enter a valid URL')
-    }
   }
 
   if (isLoading) {
