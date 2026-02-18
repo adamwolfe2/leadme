@@ -32,6 +32,7 @@ interface VisitorLead {
   email: string | null
   phone: string | null
   company_name: string | null
+  company_domain: string | null
   job_title: string | null
   city: string | null
   state: string | null
@@ -854,7 +855,7 @@ export default function WebsiteVisitorsPage() {
             email: enrichTarget.email,
             phone: enrichTarget.phone,
             company_name: enrichTarget.company_name,
-            company_domain: null,
+            company_domain: enrichTarget.company_domain,
             job_title: enrichTarget.job_title,
             city: enrichTarget.city,
             state: enrichTarget.state,

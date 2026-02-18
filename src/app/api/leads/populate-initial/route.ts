@@ -7,8 +7,6 @@
  * This ensures users see leads right away instead of waiting for daily cron.
  */
 
-export const runtime = 'edge'
-
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { fetchLeadsFromSegment, type AudienceLabLead } from '@/lib/services/audiencelab.service'

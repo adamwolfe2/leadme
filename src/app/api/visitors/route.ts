@@ -11,8 +11,6 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
-export const runtime = 'edge'
-
 export async function GET(req: NextRequest) {
   try {
     const supabase = await createClient()
@@ -45,7 +43,7 @@ export async function GET(req: NextRequest) {
     let query = adminSupabase
       .from('leads')
       .select(
-        'id, first_name, last_name, full_name, email, phone, company_name, job_title, city, state, country, intent_score_calculated, enrichment_status, created_at, source, linkedin_url',
+        'id, first_name, last_name, full_name, email, phone, company_name, company_domain, job_title, city, state, country, intent_score_calculated, enrichment_status, created_at, source, linkedin_url',
         { count: 'exact' }
       )
       .eq('workspace_id', profile.workspace_id)
