@@ -296,6 +296,57 @@ const blogPosts = [
     date: '2026-02-04',
     category: 'Strategy',
   },
+  // Educational "What Is" posts
+  {
+    title: 'What Is Demand Generation? Complete Guide for B2B Marketers (2026)',
+    description: 'Demand generation is the process of creating awareness and interest in your product among your target audience. Learn the strategies, channels, and metrics that drive pipeline.',
+    url: '/blog/what-is-demand-generation',
+    date: '2026-02-18',
+    category: 'Guide',
+  },
+  {
+    title: 'What Is Sales Intelligence? Complete Guide for B2B Teams (2026)',
+    description: 'Sales intelligence is the collection and analysis of data about prospects and customers to improve sales effectiveness. Learn how modern tools turn raw data into pipeline.',
+    url: '/blog/what-is-sales-intelligence',
+    date: '2026-02-18',
+    category: 'Guide',
+  },
+  {
+    title: 'What Is Buyer Intent? How Intent Data Drives B2B Pipeline (2026)',
+    description: 'Buyer intent data reveals which companies and individuals are actively researching solutions like yours. Learn how to use intent signals to prioritize outreach and close more deals.',
+    url: '/blog/what-is-buyer-intent',
+    date: '2026-02-18',
+    category: 'Guide',
+  },
+  // AI / WebMCP posts
+  {
+    title: 'AI Agents Are Replacing the Buyer Journey: What B2B Teams Need to Know',
+    description: 'AI agents are transforming how B2B buyers research and evaluate vendors. Learn how to position your company to be discovered and recommended by AI decision-makers.',
+    url: '/blog/ai-agents-replacing-buyer-journey',
+    date: '2026-02-18',
+    category: 'Strategy',
+  },
+  {
+    title: 'What Is WebMCP? The New Protocol Making B2B SaaS AI-Agent-Ready',
+    description: 'WebMCP (Web Model Context Protocol) lets AI agents interact directly with web applications. Learn what it is, how it works, and why B2B SaaS companies need to support it now.',
+    url: '/blog/what-is-webmcp-guide',
+    date: '2026-02-18',
+    category: 'Guide',
+  },
+  {
+    title: 'How to Make Your B2B SaaS AI-Agent-Ready with WebMCP',
+    description: 'Step-by-step guide to implementing WebMCP in your B2B SaaS product. Make your platform discoverable and usable by AI agents before your competitors do.',
+    url: '/blog/webmcp-implementation-guide-b2b-saas',
+    date: '2026-02-18',
+    category: 'Guide',
+  },
+  {
+    title: 'AI-Agent-Ready Lead Generation: How WebMCP Changes B2B Prospecting',
+    description: 'WebMCP enables AI agents to autonomously research, qualify, and engage prospects. Learn how forward-thinking B2B teams are building AI-agent-native workflows into their GTM motion.',
+    url: '/blog/webmcp-ai-agent-ready-lead-generation',
+    date: '2026-02-18',
+    category: 'Strategy',
+  },
 ]
 
 function escapeXml(str: string): string {
