@@ -54,13 +54,6 @@ const blogPosts = [
     category: 'Comparison',
   },
   {
-    title: 'Best Datashopper Alternatives: 7 B2B Data Providers Compared (2026)',
-    description: 'Compare the best alternatives to Datashopper for B2B data, visitor identification, and AI outreach automation.',
-    url: '/blog/datashopper-alternative',
-    date: '2026-02-18',
-    category: 'Comparison',
-  },
-  {
     title: 'Best Lusha Alternatives: 7 B2B Contact Data Tools Compared (2026)',
     description: 'Compare the best Lusha alternatives with higher match rates, no per-user credit limits, and built-in outreach automation.',
     url: '/blog/lusha-alternative',
@@ -92,13 +85,6 @@ const blogPosts = [
     title: 'Best Seamless.AI Alternatives: 7 B2B Data Platforms Compared (2026)',
     description: 'Compare the best Seamless.AI alternatives for real-time B2B data enrichment, visitor identification, and AI outreach.',
     url: '/blog/seamless-ai-alternative',
-    date: '2026-02-18',
-    category: 'Comparison',
-  },
-  {
-    title: 'Best AudienceLab Alternatives: Cursive vs AudienceLab (2026)',
-    description: 'How Cursive compares to AudienceLab — full pipeline activation (visitor ID + outreach) vs raw data infrastructure.',
-    url: '/blog/audiencelab-alternative',
     date: '2026-02-18',
     category: 'Comparison',
   },

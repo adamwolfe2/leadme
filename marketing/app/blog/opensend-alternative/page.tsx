@@ -38,7 +38,7 @@ const faqs = [
   },
   {
     question: "How does Cursive's visitor identification work compared to Opensend?",
-    answer: "Both Cursive and Opensend use identity graph technology to match anonymous website visitors to known contact records. Cursive's identity graph is powered by AudienceLab infrastructure with 280M US consumer profiles and 140M+ business profiles, achieving a 70% person-level match rate -- consistently higher than alternatives in independent benchmarks. Critically, Cursive goes beyond identification: once a visitor is identified, it automatically overlays their behavioral intent signals, scores them by likelihood to convert, and triggers personalized AI-generated outreach across email, LinkedIn, SMS, and direct mail within minutes."
+    answer: "Both Cursive and Opensend use identity graph technology to match anonymous website visitors to known contact records. Cursive's identity graph draws on 280M US consumer profiles and 140M+ business profiles, achieving a 70% person-level match rate -- consistently higher than alternatives in independent benchmarks. Critically, Cursive goes beyond identification: once a visitor is identified, it automatically overlays their behavioral intent signals, scores them by likelihood to convert, and triggers personalized AI-generated outreach across email, LinkedIn, SMS, and direct mail within minutes."
   }
 ]
 
@@ -754,7 +754,7 @@ export default function BlogPost() {
               posts={[
                 { slug: "cognism-alternative", title: "7 Best Cognism Alternatives & Competitors in 2026" },
                 { slug: "seamless-ai-alternative", title: "7 Best Seamless.AI Alternatives & Competitors in 2026" },
-                { slug: "audiencelab-alternative", title: "Best AudienceLab Alternatives & Competitors in 2026" },
+                { slug: "hunter-io-alternative", title: "7 Best Hunter.io Alternatives & Competitors in 2026" },
               ]}
             />
           </Container>
@@ -814,7 +814,7 @@ export default function BlogPost() {
               <MachineLink key="platform" href="/platform">Cursive Platform Overview</MachineLink>,
               <MachineLink key="pricing" href="/pricing">Cursive Pricing</MachineLink>,
               <MachineLink key="seamless" href="/blog/seamless-ai-alternative">Seamless.AI Alternative</MachineLink>,
-              <MachineLink key="audiencelab" href="/blog/audiencelab-alternative">AudienceLab Alternative</MachineLink>,
+              <MachineLink key="hunter" href="/blog/hunter-io-alternative">Hunter.io Alternative</MachineLink>,
             ]} />
           </MachineSection>
         </MachineContent>

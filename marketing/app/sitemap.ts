@@ -104,13 +104,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/smartlead-alternative',
     '/blog/clay-alternative',
     // New competitor alternative pages (created Feb 2026)
-    '/blog/datashopper-alternative',
     '/blog/lusha-alternative',
     '/blog/cognism-alternative',
     '/blog/salesintel-alternative',
     '/blog/hunter-io-alternative',
     '/blog/seamless-ai-alternative',
-    '/blog/audiencelab-alternative',
     '/blog/opensend-alternative',
     // Existing "cursive vs" pages
     '/blog/cursive-vs-rb2b',

@@ -942,11 +942,11 @@ export default function BlogPost() {
               <h2 className="text-2xl font-bold mb-6">Related Comparisons</h2>
               <div className="grid md:grid-cols-2 gap-4">
                 <Link
-                  href="/blog/datashopper-alternative"
+                  href="/blog/clearbit-alternatives-comparison"
                   className="block bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow border border-gray-200"
                 >
-                  <h3 className="font-bold mb-2">Datashopper Alternatives</h3>
-                  <p className="text-sm text-gray-600">7 B2B data providers compared for 2026</p>
+                  <h3 className="font-bold mb-2">Clearbit Alternatives</h3>
+                  <p className="text-sm text-gray-600">7 B2B data enrichment providers compared for 2026</p>
                 </Link>
                 <Link
                   href="/blog/apollo-vs-cursive"
@@ -1180,7 +1180,7 @@ export default function BlogPost() {
 
           <MachineSection title="Related Resources">
             <MachineList items={[
-              { label: "Datashopper Alternatives", href: "/blog/datashopper-alternative", description: "7 B2B data providers compared for 2026" },
+              { label: "Clearbit Alternatives", href: "/blog/clearbit-alternatives-comparison", description: "7 B2B data enrichment providers compared for 2026" },
               { label: "Apollo vs Cursive", href: "/blog/apollo-vs-cursive", description: "Detailed comparison of features, data quality, and pricing" },
               { label: "ZoomInfo vs Cursive Comparison", href: "/blog/zoominfo-vs-cursive-comparison", description: "Enterprise data coverage vs full-stack intent platform" },
               { label: "Apollo Alternatives Comparison", href: "/blog/apollo-alternatives-comparison", description: "8 B2B data and prospecting platforms compared" },
