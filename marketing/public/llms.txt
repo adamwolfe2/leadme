@@ -344,6 +344,12 @@ Cursive implements the WebMCP (Web Model Context Protocol) standard, exposing st
 
 ---
 
+## RSS Feed
+
+- **Blog RSS Feed**: https://www.meetcursive.com/feed.xml — Subscribe to all Cursive blog posts, comparisons, and guides in RSS 2.0 format.
+
+---
+
 ## API
 
 - **Structured product info (JSON)**: https://meetcursive.com/api/ai-info
@@ -379,6 +385,6 @@ This site includes JSON-LD structured data on all key pages:
 
 ---
 
-**Last Updated**: 2026-02-18 (Session 3)
+**Last Updated**: 2026-02-18 (Session 4)
 **Format**: llms.txt (optimized for AI discovery and citation)
 **Learn more about llms.txt**: https://llmstxt.org

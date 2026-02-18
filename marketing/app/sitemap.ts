@@ -158,6 +158,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/intent-data-providers-comparison',
     '/blog/how-to-identify-anonymous-website-visitors',
     '/blog/best-ai-sdr-tools-2026',
+    '/blog/what-is-demand-generation',
+    '/blog/what-is-sales-intelligence',
+    '/blog/what-is-buyer-intent',
     // AI/WebMCP posts
     '/blog/ai-agents-replacing-buyer-journey',
     '/blog/webmcp-ai-agent-ready-lead-generation',
