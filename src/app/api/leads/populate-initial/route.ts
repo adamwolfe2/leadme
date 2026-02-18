@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
       .gte('delivered_at', `${today}T00:00:00`)
       .lte('delivered_at', `${today}T23:59:59`)
 
-    if (todayLeadsCount && todayLeadsCount >= userProfile.daily_lead_limit) {
+    if (todayLeadsCount && todayLeadsCount >= (userProfile.daily_lead_limit || 10)) {
       return NextResponse.json({
         success: true,
         message: 'You have already received your daily leads',

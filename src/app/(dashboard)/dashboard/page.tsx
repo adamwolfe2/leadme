@@ -247,14 +247,18 @@ export default async function DashboardPage({
 
       {/* Pixel trial banner */}
       {isOnTrial && trialDaysLeft !== null && (
-        <div className={`rounded-xl border p-4 flex items-center justify-between gap-4 ${
+        <div className={`rounded-xl border p-5 flex items-center justify-between gap-4 ${
           trialDaysLeft <= 3 ? 'bg-red-50 border-red-200' : trialDaysLeft <= 7 ? 'bg-amber-50 border-amber-200' : 'bg-blue-50 border-blue-200'
         }`}>
           <div className="flex items-center gap-3">
-            <Target className={`h-5 w-5 shrink-0 ${trialDaysLeft <= 3 ? 'text-red-600' : trialDaysLeft <= 7 ? 'text-amber-600' : 'text-blue-600'}`} />
+            <Target className={`h-6 w-6 shrink-0 ${trialDaysLeft <= 3 ? 'text-red-600' : trialDaysLeft <= 7 ? 'text-amber-600' : 'text-blue-600'}`} />
             <div>
-              <p className={`font-semibold text-sm ${trialDaysLeft <= 3 ? 'text-red-900' : trialDaysLeft <= 7 ? 'text-amber-900' : 'text-blue-900'}`}>
-                {trialDaysLeft === 0 ? 'Pixel trial expires today!' : `Pixel trial: ${trialDaysLeft} day${trialDaysLeft === 1 ? '' : 's'} left`}
+              <p className={`font-semibold text-sm mb-1 ${trialDaysLeft <= 3 ? 'text-red-900' : trialDaysLeft <= 7 ? 'text-amber-900' : 'text-blue-900'}`}>
+                {trialDaysLeft === 0
+                  ? 'Pixel trial ends today!'
+                  : trialDaysLeft === 1
+                  ? 'Pixel trial ends tomorrow'
+                  : `${trialDaysLeft} days remaining in your free pixel trial`}
               </p>
               <p className={`text-xs ${trialDaysLeft <= 3 ? 'text-red-700' : trialDaysLeft <= 7 ? 'text-amber-700' : 'text-blue-700'}`}>
                 {pixel?.visitor_count_total ? `${pixel.visitor_count_total} visitors identified so far · ` : ''}
@@ -264,7 +268,7 @@ export default async function DashboardPage({
           </div>
           <Link
             href="/settings/billing"
-            className={`shrink-0 text-sm font-semibold rounded-lg px-3 py-1.5 transition-colors text-white ${
+            className={`shrink-0 text-sm font-semibold rounded-lg px-4 py-2 transition-colors text-white ${
               trialDaysLeft <= 3 ? 'bg-red-600 hover:bg-red-700' : trialDaysLeft <= 7 ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700'
             }`}
           >
@@ -351,7 +355,10 @@ export default async function DashboardPage({
 
             {recentLeads.length > 0 ? (
               <div className="space-y-2">
-                {recentLeads.map((lead: any) => {
+                {recentLeads.filter((lead: any) => {
+                  const name = lead.full_name || [lead.first_name, lead.last_name].filter(Boolean).join(' ')
+                  return name && name.trim().length > 1
+                }).map((lead: any) => {
                   const displayName = sanitizeName(lead.full_name)
                     || sanitizeName([lead.first_name, lead.last_name].filter(Boolean).join(' '))
                     || sanitizeCompanyName(lead.company_name)

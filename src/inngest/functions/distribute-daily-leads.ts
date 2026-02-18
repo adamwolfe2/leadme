@@ -11,6 +11,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { fetchLeadsFromSegment, type AudienceLabLead } from '@/lib/services/audiencelab.service'
 import { syncLeadsToGHL } from '@/lib/services/ghl.service'
 import { sendEmail } from '@/lib/email/service'
+import { meetsQualityBar } from '@/lib/services/lead-quality.service'
 
 /**
  * Score a lead based on data completeness.
@@ -206,7 +207,8 @@ export const distributeDailyLeads = inngest.createFunction(
                 },
               }
             })
-            .filter(Boolean)
+            .filter((lead): lead is NonNullable<typeof lead> => lead !== null)
+            .filter((lead) => meetsQualityBar(lead).passes)
 
           if (leadsToInsert.length === 0) {
             console.log('[DailyLeads] All leads were duplicates for user:', user.id)

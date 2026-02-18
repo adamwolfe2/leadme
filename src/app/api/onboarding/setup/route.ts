@@ -392,6 +392,28 @@ export async function POST(request: NextRequest) {
     // Build the response FIRST, then fire non-blocking side effects
     const response = NextResponse.json({ workspace_id: workspace.id })
 
+    // Non-blocking logo fetch from email domain (fire-and-forget)
+    const GENERIC_DOMAINS = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com', 'protonmail.com', 'mail.com', 'live.com', 'msn.com']
+    const emailDomain = validated.email.split('@')[1]?.toLowerCase()
+    if (emailDomain && !GENERIC_DOMAINS.includes(emailDomain)) {
+      Promise.resolve().then(async () => {
+        try {
+          const { getCompanyEnrichmentService } = await import('@/lib/services/company-enrichment.service')
+          const enrichmentService = getCompanyEnrichmentService()
+          const logoUrl = await enrichmentService.fetchLogo(emailDomain)
+          if (logoUrl) {
+            await admin
+              .from('workspaces')
+              .update({ branding: { logo_url: logoUrl } })
+              .eq('id', workspace.id)
+            safeError('[Onboarding] Logo fetched and saved:', { domain: emailDomain, logoUrl })
+          }
+        } catch (logoError) {
+          safeError('[Onboarding] Logo fetch failed (non-fatal):', logoError instanceof Error ? logoError.message : logoError)
+        }
+      })
+    }
+
     // Non-blocking Slack notification (fire-and-forget)
     const slackMetadata = validated.role === 'business'
       ? {
