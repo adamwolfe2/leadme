@@ -495,7 +495,7 @@ export default async function DashboardPage({
                 ? { label: 'Enrich your first lead', desc: 'Reveal verified email, phone & LinkedIn — it\u2019s free.', href: '/leads', icon: <Sparkles className="h-5 w-5 text-blue-600" />, color: 'border-blue-200 bg-blue-50' }
                 : !hasPixel
                 ? { label: 'Install tracking pixel', desc: 'Identify anonymous website visitors in real-time.', href: '/settings/pixel', icon: <Eye className="h-5 w-5 text-violet-600" />, color: 'border-violet-200 bg-violet-50' }
-                : enrichedCount > 0 && !hasPixel
+                : !hasActivated
                 ? { label: 'Activate outreach', desc: 'Build a lookalike audience or launch managed outbound.', href: '/activate', icon: <Rocket className="h-5 w-5 text-green-600" />, color: 'border-green-200 bg-green-50' }
                 : null
 

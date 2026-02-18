@@ -70,13 +70,23 @@ export async function POST(
       return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
     }
 
-    // Prevent double-charge: if already enriched, return existing data without charging
+    // Prevent double-charge: if already enriched or previously failed, don't charge again
     if (lead.enrichment_status === 'enriched') {
       return NextResponse.json({
         success: true,
         message: 'Lead is already enriched',
         fields_added: [],
         already_enriched: true,
+        credits_used: 0,
+        credits_remaining: creditsRemaining,
+      })
+    }
+
+    if (lead.enrichment_status === 'failed') {
+      return NextResponse.json({
+        success: false,
+        message: 'No additional data available for this lead',
+        fields_added: [],
         credits_used: 0,
         credits_remaining: creditsRemaining,
       })
@@ -109,6 +119,12 @@ export async function POST(
         user_id: userProfile.id,
         amount: ENRICH_CREDIT_COST,
       })
+
+      // Mark lead as enrichment_failed to prevent repeated charges
+      await adminSupabase
+        .from('leads')
+        .update({ enrichment_status: 'failed' })
+        .eq('id', leadId)
 
       return NextResponse.json({
         success: false,
