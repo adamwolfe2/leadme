@@ -76,9 +76,11 @@ export default function SecuritySettingsPage() {
       if (response.ok) {
         toast.success('Signed out successfully')
         router.push('/login')
+      } else {
+        toast.error('Failed to sign out — please try again')
       }
-    } catch (error) {
-      toast.error('Failed to sign out')
+    } catch {
+      toast.error('Failed to sign out — check your connection')
     }
   }
 

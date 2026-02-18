@@ -12,7 +12,7 @@
 
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   Users, Mail, ArrowRight, ArrowLeft, CheckCircle2,
   Sparkles, Target, Building2, MapPin, Briefcase,
@@ -1029,6 +1029,7 @@ function CampaignWizard({
 
 export default function ActivatePage() {
   const searchParams = useSearchParams()
+  const queryClient = useQueryClient()
   const initialFlow = (searchParams.get('flow') as FlowType) ?? null
   const [flow, setFlow] = useState<FlowType>(initialFlow)
   const [done, setDone] = useState(false)
@@ -1078,7 +1079,7 @@ export default function ActivatePage() {
       <div className="py-6">
         <AudienceWizard
           onBack={() => setFlow(null)}
-          onSuccess={() => setDone(true)}
+          onSuccess={() => { setDone(true); queryClient.invalidateQueries({ queryKey: ['visitors-stats'] }) }}
           defaultEmail={defaultEmail}
           defaultName={defaultName}
         />
@@ -1090,7 +1091,7 @@ export default function ActivatePage() {
     <div className="py-6">
       <CampaignWizard
         onBack={() => setFlow(null)}
-        onSuccess={() => setDone(true)}
+        onSuccess={() => { setDone(true); queryClient.invalidateQueries({ queryKey: ['visitors-stats'] }) }}
         defaultEmail={defaultEmail}
         defaultName={defaultName}
       />

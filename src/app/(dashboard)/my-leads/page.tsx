@@ -49,7 +49,7 @@ export default async function MyLeadsPage() {
     .select('id, target_industries, target_sic_codes, target_states, target_cities, is_active')
     .eq('user_id', userProfile.id)
     .eq('workspace_id', userProfile.workspace_id)
-    .single()
+    .maybeSingle()
 
   const targeting = targetingData as UserTargeting | null
 

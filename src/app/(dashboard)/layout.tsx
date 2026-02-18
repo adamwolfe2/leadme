@@ -94,7 +94,7 @@ export default async function DashboardLayout({
           .select('id')
           .eq('email', user.email)
           .eq('is_active', true)
-          .single()
+          .maybeSingle()
           .then(({ data }) => !!data)
       : Promise.resolve(false),
   ])

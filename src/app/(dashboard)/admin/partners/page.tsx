@@ -18,7 +18,7 @@ export default async function AdminPartnersPage() {
     .select('id')
     .eq('email', user.email as string)
     .eq('is_active', true)
-    .single() as { data: any; error: any }
+    .maybeSingle() as { data: any; error: any }
 
   if (!admin) redirect('/dashboard')
 
