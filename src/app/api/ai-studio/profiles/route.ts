@@ -3,7 +3,6 @@
  * GET /api/ai-studio/profiles - List customer profiles for a workspace
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'

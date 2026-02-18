@@ -1,6 +1,5 @@
 // Topic Search API Route
 
-export const runtime = 'edge'
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { TopicSearchService } from '@/lib/services/topic-search.service'

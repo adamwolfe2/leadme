@@ -8,7 +8,6 @@ import { CRMLeadRepository } from '@/lib/repositories/crm-lead.repository'
 import { z } from 'zod'
 
 // Use edge runtime
-export const runtime = 'edge'
 
 const createLeadSchema = z.object({
   email: z.string().email(),

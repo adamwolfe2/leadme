@@ -1,7 +1,6 @@
 // AI Audit Submission API Route
 // Public endpoint for AI Readiness Audit form submissions (no auth required)
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'

@@ -6,7 +6,6 @@
  * Requires authenticated user with workspace access.
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'

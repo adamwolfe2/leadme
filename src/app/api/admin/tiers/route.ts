@@ -5,7 +5,6 @@
  * PATCH /api/admin/tiers/override - Set tier overrides for workspace
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'

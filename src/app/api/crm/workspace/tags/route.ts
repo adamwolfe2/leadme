@@ -7,7 +7,6 @@
  * Create a new tag
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'

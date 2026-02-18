@@ -6,7 +6,6 @@
  * POST - Push directly to EmailBison via API (creates campaign, adds sequence steps)
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'

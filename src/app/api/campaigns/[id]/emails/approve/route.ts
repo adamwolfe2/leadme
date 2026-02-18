@@ -1,7 +1,6 @@
 // Campaign Emails Approve API Routes
 // POST /api/campaigns/[id]/emails/approve - Bulk approve emails
 
-export const runtime = 'edge'
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'

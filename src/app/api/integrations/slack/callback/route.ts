@@ -6,7 +6,6 @@
  * Exchanges the authorization code for an incoming webhook URL and stores it.
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'

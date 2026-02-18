@@ -1,7 +1,6 @@
 // Waitlist API Route
 // Public endpoint for waitlist email signups (no auth required)
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'

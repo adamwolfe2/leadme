@@ -6,7 +6,6 @@
  * User clicks "Connect Slack" -> redirected here -> redirected to Slack OAuth.
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'

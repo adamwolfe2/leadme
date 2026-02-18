@@ -1,7 +1,6 @@
 // Industry Categories API
 // Returns list of industry categories for partner upload wizard
 
-export const runtime = 'edge'
 
 import { NextResponse } from 'next/server'
 import { INDUSTRY_CATEGORIES } from '@/lib/constants/industries'

@@ -2,7 +2,6 @@
 // GET /api/leads/tags - Get all tags
 // POST /api/leads/tags - Create a new tag
 
-export const runtime = 'edge'
 
 import { NextRequest } from 'next/server'
 import { z } from 'zod'

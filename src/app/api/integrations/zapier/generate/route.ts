@@ -6,7 +6,6 @@
  * Zapier's "Webhooks by Zapier" trigger. Requires Pro plan.
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'

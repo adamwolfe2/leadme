@@ -126,16 +126,22 @@ export async function POST(req: NextRequest) {
         })
       }
 
-      // Update workspace
-      await supabase
-        .from('workspaces')
-        .update({
-          subscription_cancel_at: subscription.cancel_at
-            ? new Date(subscription.cancel_at * 1000).toISOString()
-            : null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', workspace.id)
+      // Update workspace + sync cancel state to users table
+      await Promise.all([
+        supabase
+          .from('workspaces')
+          .update({
+            subscription_cancel_at: subscription.cancel_at
+              ? new Date(subscription.cancel_at * 1000).toISOString()
+              : null,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', workspace.id),
+        supabase
+          .from('users')
+          .update({ cancel_at_period_end: true })
+          .eq('workspace_id', workspace.id),
+      ])
 
       return NextResponse.json({
         success: true,
@@ -148,14 +154,20 @@ export async function POST(req: NextRequest) {
       // Resume subscription
       subscription = await resumeSubscription(workspace.stripe_subscription_id)
 
-      // Update workspace
-      await supabase
-        .from('workspaces')
-        .update({
-          subscription_cancel_at: null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', workspace.id)
+      // Update workspace + sync cancel state to users table
+      await Promise.all([
+        supabase
+          .from('workspaces')
+          .update({
+            subscription_cancel_at: null,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', workspace.id),
+        supabase
+          .from('users')
+          .update({ cancel_at_period_end: false })
+          .eq('workspace_id', workspace.id),
+      ])
 
       return NextResponse.json({
         success: true,

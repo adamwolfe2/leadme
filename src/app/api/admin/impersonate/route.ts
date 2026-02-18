@@ -4,7 +4,6 @@
  * DELETE /api/admin/impersonate - End impersonation session
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'

@@ -1,4 +1,3 @@
-export const runtime = 'edge'
 
 /**
  * Admin Premium Request Approval API

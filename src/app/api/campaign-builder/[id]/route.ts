@@ -3,7 +3,6 @@
  * Get, Update, Delete specific campaign draft
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'

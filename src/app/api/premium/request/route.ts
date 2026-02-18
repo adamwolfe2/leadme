@@ -1,4 +1,3 @@
-export const runtime = 'edge'
 
 /**
  * Premium Feature Request API

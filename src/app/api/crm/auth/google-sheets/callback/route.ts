@@ -6,7 +6,6 @@
  * in the crm_connections table for use by GoogleSheetsService.
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'

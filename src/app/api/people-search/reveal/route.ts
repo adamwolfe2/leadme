@@ -1,7 +1,6 @@
 // Email Reveal API
 // POST /api/people-search/reveal - Reveal email (costs 1 credit)
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { protectRoute, consumeCredits, applyProtectionHeaders, PROTECTION_PRESETS } from '@/lib/middleware/api-protection'

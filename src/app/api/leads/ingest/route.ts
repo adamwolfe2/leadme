@@ -11,7 +11,6 @@
  * Automatically enriches and routes leads to matching clients.
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'

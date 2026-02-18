@@ -1,7 +1,6 @@
 // Campaign Review API Routes
 // Submit campaign for review and complete reviews
 
-export const runtime = 'edge'
 
 import { type NextRequest } from 'next/server'
 import { CampaignRepository } from '@/lib/repositories/campaign.repository'

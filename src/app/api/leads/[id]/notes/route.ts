@@ -2,7 +2,6 @@
 // GET /api/leads/[id]/notes - Get notes for a lead
 // POST /api/leads/[id]/notes - Create a note for a lead
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'

@@ -3,7 +3,6 @@
  * GET /api/crm/connections - List active CRM connections for the workspace
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'

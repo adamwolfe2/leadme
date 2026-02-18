@@ -4,7 +4,6 @@
  * Sends email with link to full onboarding form
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'

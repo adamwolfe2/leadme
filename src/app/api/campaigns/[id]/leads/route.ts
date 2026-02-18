@@ -1,7 +1,6 @@
 // Campaign Leads API Routes
 // Manage leads within a campaign
 
-export const runtime = 'edge'
 
 import { type NextRequest } from 'next/server'
 import { CampaignRepository } from '@/lib/repositories/campaign.repository'

@@ -1,7 +1,6 @@
 // Admin API: Manually Trigger Lead Generation
 // Used for testing and manual runs
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 

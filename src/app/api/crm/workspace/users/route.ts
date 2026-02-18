@@ -4,7 +4,6 @@
  * Fetch all users in the current workspace for assignment dropdowns
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'

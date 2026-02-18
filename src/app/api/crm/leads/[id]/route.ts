@@ -8,7 +8,6 @@ import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 
 // Use edge runtime
-export const runtime = 'edge'
 
 const updateLeadSchema = z.object({
   email: z.string().email().optional(),

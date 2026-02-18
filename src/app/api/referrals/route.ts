@@ -1,7 +1,6 @@
 // Referrals API
 // Get referral stats and manage referral codes
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'

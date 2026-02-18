@@ -1,7 +1,6 @@
 // Partner Registration API
 // POST /api/partner/register - Create new partner account
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'

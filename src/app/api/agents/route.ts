@@ -1,7 +1,6 @@
 // Agents API Routes
 // List all agents and create new agents
 
-export const runtime = 'edge'
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { AgentRepository } from '@/lib/repositories/agent.repository'

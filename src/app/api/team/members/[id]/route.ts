@@ -2,7 +2,6 @@
 // PATCH /api/team/members/[id] - Update member role
 // DELETE /api/team/members/[id] - Remove member from workspace
 
-export const runtime = 'edge'
 
 import { NextRequest } from 'next/server'
 import { z } from 'zod'

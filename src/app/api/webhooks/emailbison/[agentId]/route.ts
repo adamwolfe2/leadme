@@ -1,7 +1,6 @@
 // EmailBison Webhook Handler
 // Receives webhook events from EmailBison and processes them
 
-export const runtime = 'edge'
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'

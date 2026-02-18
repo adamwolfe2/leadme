@@ -3,7 +3,6 @@
  * Provides metrics for email and webhook delivery rates
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'

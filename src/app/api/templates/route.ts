@@ -1,7 +1,6 @@
 // Templates API Routes
 // List all templates and create new templates
 
-export const runtime = 'edge'
 
 import { type NextRequest } from 'next/server'
 import { TemplateRepository } from '@/lib/repositories/template.repository'

@@ -3,7 +3,6 @@
  * Admin endpoint to manually retry a failed operation
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { retryFailedOperation } from '@/lib/monitoring/failed-operations'

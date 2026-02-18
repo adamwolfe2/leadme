@@ -3,7 +3,6 @@
  * Import leads into a campaign from CSV, paste, or existing leads
  */
 
-export const runtime = 'edge'
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'

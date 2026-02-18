@@ -5,7 +5,6 @@
  * Manages webhook configuration for workspaces.
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'

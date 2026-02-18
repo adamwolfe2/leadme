@@ -1,7 +1,6 @@
 // Credit Purchase API
 // Creates Stripe checkout session for credit purchases
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'

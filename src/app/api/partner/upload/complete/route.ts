@@ -1,7 +1,6 @@
 // Partner Upload Completion - Triggers Background Processing
 // Called after file is uploaded to storage, triggers Inngest job
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'

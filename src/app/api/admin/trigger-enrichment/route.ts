@@ -1,7 +1,6 @@
 // Admin API: Manually Trigger Lead Enrichment
 // Used for testing and manual enrichment
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 

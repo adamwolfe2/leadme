@@ -3,7 +3,6 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 
-export const runtime = 'edge'
 
 const snippetSchema = z.object({
   snippet: z.string().min(1, 'Snippet is required').max(5000, 'Snippet too long'),

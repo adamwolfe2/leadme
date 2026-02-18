@@ -3,7 +3,6 @@
  * POST /api/ai/generate-email - Generate personalized email using Claude
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'

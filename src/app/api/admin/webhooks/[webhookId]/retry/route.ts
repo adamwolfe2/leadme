@@ -3,7 +3,6 @@
  * Allows admins to manually retry failed webhook processing
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth/admin'

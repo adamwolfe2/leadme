@@ -3,7 +3,6 @@
  * Tracking metrics and identity resolution rates
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'

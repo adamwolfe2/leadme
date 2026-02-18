@@ -5,7 +5,6 @@
  * Supported providers: salesforce, google_sheets, hubspot
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'

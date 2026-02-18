@@ -5,7 +5,6 @@
  * Receives voice call status updates and transcripts from Bland.ai.
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'

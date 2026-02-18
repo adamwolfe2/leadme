@@ -24,7 +24,6 @@ import {
   previewAudience,
 } from '@/lib/audiencelab/api-client'
 
-export const runtime = 'edge'
 
 export async function GET(request: NextRequest) {
   // Auth check — admin only (Edge-compatible cookie read)

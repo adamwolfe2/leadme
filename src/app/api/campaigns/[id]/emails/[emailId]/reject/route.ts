@@ -1,7 +1,6 @@
 // Campaign Email Reject API Route
 // POST /api/campaigns/[id]/emails/[emailId]/reject - Reject an email
 
-export const runtime = 'edge'
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'

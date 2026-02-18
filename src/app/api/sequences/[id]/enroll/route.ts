@@ -3,7 +3,6 @@
  * POST /api/sequences/[id]/enroll - Enroll leads in sequence
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'

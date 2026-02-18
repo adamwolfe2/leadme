@@ -3,7 +3,6 @@
  * POST /api/analytics/track - Track analytics events
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'

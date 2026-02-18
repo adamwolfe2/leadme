@@ -5,7 +5,6 @@
  * Handles OAuth callback from GoHighLevel and stores credentials.
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'

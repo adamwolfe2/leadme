@@ -1,7 +1,6 @@
 // API Key Generation Route
 // POST /api/integrations/api-key - Generate or regenerate an API key
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'

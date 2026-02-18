@@ -3,7 +3,6 @@
  * Manage user's saved filter presets
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'

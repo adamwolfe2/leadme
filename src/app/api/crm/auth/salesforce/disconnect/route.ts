@@ -6,7 +6,6 @@
  * from the crm_connections table.
  */
 
-export const runtime = 'edge'
 
 import { NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'

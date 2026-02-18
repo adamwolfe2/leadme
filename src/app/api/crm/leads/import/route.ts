@@ -9,7 +9,6 @@ import { CRMLeadRepository } from '@/lib/repositories/crm-lead.repository'
 import { z } from 'zod'
 
 // Use edge runtime for better performance
-export const runtime = 'edge'
 
 // CSV parsing for edge runtime (simple implementation)
 function parseCSV(text: string): Record<string, string>[] {

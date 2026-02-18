@@ -1,4 +1,3 @@
-export const runtime = 'edge'
 
 /**
  * User Targeting Preferences API

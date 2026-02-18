@@ -6,7 +6,6 @@
  * Stores credentials in crm_connections table for use by GoogleSheetsService.
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'

@@ -8,7 +8,6 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 
-export const runtime = 'edge'
 
 const updateStepSchema = z.object({
   name: z.string().min(1).max(100).optional(),

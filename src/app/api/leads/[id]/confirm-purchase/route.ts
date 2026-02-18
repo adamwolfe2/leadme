@@ -4,7 +4,6 @@
  * Called after successful Stripe payment to record purchase and credit partner
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'

@@ -1,7 +1,6 @@
 // CRM Leads Bulk Operations API
 // API endpoint for bulk operations on leads
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'

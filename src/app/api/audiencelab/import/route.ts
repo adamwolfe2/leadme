@@ -9,7 +9,6 @@
  * Requires authenticated user with workspace membership.
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'

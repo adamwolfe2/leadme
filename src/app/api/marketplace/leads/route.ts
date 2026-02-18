@@ -1,7 +1,6 @@
 // Marketplace Leads API
 // Browse and search marketplace leads with filters
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'

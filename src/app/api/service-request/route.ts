@@ -15,7 +15,6 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
 
-export const runtime = 'edge'
 
 const serviceRequestSchema = z.object({
   request_type: z.string().min(1).max(100),

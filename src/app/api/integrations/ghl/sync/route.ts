@@ -3,7 +3,6 @@
  * POST /api/integrations/ghl/sync - Sync leads to GHL
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'

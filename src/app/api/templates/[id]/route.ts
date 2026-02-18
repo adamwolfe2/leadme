@@ -1,7 +1,6 @@
 // Template Detail API Routes
 // Get, update, and delete a specific template
 
-export const runtime = 'edge'
 
 import { type NextRequest } from 'next/server'
 import { TemplateRepository } from '@/lib/repositories/template.repository'

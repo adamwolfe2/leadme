@@ -4,7 +4,6 @@
  * GET /api/admin/leads/search - Get search history
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin, getAdminContext, logAdminAction } from '@/lib/auth/admin'

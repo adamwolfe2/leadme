@@ -8,7 +8,6 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 
-export const runtime = 'edge'
 
 const enrollLeadsSchema = z.object({
   lead_ids: z.array(z.string().uuid()).min(1).max(1000),

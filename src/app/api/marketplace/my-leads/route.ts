@@ -1,7 +1,6 @@
 // My Purchased Leads API
 // Returns all leads purchased by the user's workspace in a flat list
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'

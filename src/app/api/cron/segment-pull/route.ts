@@ -31,7 +31,6 @@ import {
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
-export const runtime = 'edge'
 
 const LOG_PREFIX = '[AL Segment Pull Cron]'
 const MAX_RECORDS_PER_RUN = 500

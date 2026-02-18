@@ -5,7 +5,6 @@
  * Signs out the current user and clears session.
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'

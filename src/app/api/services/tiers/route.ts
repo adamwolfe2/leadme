@@ -1,4 +1,3 @@
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'

@@ -3,7 +3,6 @@
  * Manage daily sending limits for campaigns
  */
 
-export const runtime = 'edge'
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'

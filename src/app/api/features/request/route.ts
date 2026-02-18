@@ -11,7 +11,6 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
-export const runtime = 'edge'
 
 const requestSchema = z.object({
   feature_type: z.enum([

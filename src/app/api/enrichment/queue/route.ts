@@ -4,7 +4,6 @@
  * GET /api/enrichment/queue - Get enrichment queue status
  */
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
