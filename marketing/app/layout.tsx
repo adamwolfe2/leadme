@@ -49,6 +49,8 @@ export default function RootLayout({
         <link rel="preconnect" href="https://cal.com" />
         <link rel="dns-prefetch" href="https://leads.meetcursive.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        {/* RSS Feed discovery */}
+        <link rel="alternate" type="application/rss+xml" title="Cursive Blog" href="https://www.meetcursive.com/feed.xml" />
         {/* Google tag (gtag.js) */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-JZ9C4QKCX4"
