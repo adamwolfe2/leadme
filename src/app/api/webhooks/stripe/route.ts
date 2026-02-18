@@ -12,8 +12,6 @@ import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { STRIPE_CONFIG } from '@/lib/stripe/config'
 import { TIMEOUTS, getDaysFromNow } from '@/lib/constants/timeouts'
 
-export const runtime = 'edge'
-
 // Validation schemas for webhook metadata
 const creditPurchaseMetadataSchema = z.object({
   type: z.literal('credit_purchase'),
@@ -31,7 +29,7 @@ const leadPurchaseMetadataSchema = z.object({
   lead_count: z.string().regex(/^\d+$/, 'Invalid lead count format'),
 })
 
-// Lazy-load Stripe with Web Crypto provider for Edge runtime
+// Lazy-load Stripe
 let stripeClient: Stripe | null = null
 function getStripe(): Stripe {
   if (!stripeClient) {
@@ -40,7 +38,6 @@ function getStripe(): Stripe {
     }
     stripeClient = new Stripe(STRIPE_CONFIG.secretKey, {
       apiVersion: STRIPE_CONFIG.apiVersion as Stripe.LatestApiVersion,
-      httpClient: Stripe.createFetchHttpClient(),
     })
   }
   return stripeClient
@@ -258,13 +255,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verify webhook signature (async for Edge runtime Web Crypto compatibility)
+    // Verify webhook signature
     let event: Stripe.Event
 
     try {
-      const cryptoProvider = Stripe.createSubtleCryptoProvider()
-      event = await getStripe().webhooks.constructEventAsync(
-        body, signature, webhookSecret, undefined, cryptoProvider
+      event = getStripe().webhooks.constructEvent(
+        body, signature, webhookSecret
       )
     } catch (err) {
       safeError('[Stripe Webhook] Signature verification failed:', err)

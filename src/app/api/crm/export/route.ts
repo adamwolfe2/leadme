@@ -3,8 +3,6 @@
  * POST /api/crm/export - Export CRM leads to CSV or XLSX
  */
 
-export const runtime = 'edge'
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'

@@ -15,6 +15,33 @@ import {
 import { logger } from '@/lib/monitoring/logger'
 
 /**
+ * Update all users in a workspace to a given plan + credit limit.
+ * Called when subscription status changes to keep users.plan in sync.
+ */
+async function updateWorkspaceUserPlan(
+  workspaceId: string,
+  plan: 'free' | 'pro',
+  dailyCreditLimit: number
+) {
+  const supabase = createAdminClient()
+  const { error } = await supabase
+    .from('users')
+    .update({ plan, daily_credit_limit: dailyCreditLimit })
+    .eq('workspace_id', workspaceId)
+
+  if (error) {
+    logger.error('[Webhook] Failed to update workspace user plans', {
+      workspaceId,
+      plan,
+      error: error.message,
+    })
+    throw new Error(`Failed to update user plans: ${error.message}`)
+  }
+
+  logger.info('[Webhook] Updated workspace user plans', { workspaceId, plan, dailyCreditLimit })
+}
+
+/**
  * Get a service tier by ID using admin client (bypasses RLS).
  * Webhook handlers have no user auth context, so we can't use the repository
  * which relies on the SSR cookie-based client.
@@ -134,6 +161,11 @@ export async function handleSubscriptionCreated(subscription: Stripe.Subscriptio
       throw new Error(`Failed to create subscription record: ${upsertError.message}`)
     }
 
+    // Update users.plan to 'pro' for all workspace members
+    if (subscription.status === 'active' || subscription.status === 'trialing') {
+      await updateWorkspaceUserPlan(workspaceId, 'pro', 1000)
+    }
+
     // Send welcome email
     try {
       const emailInfo = await getWorkspaceEmailInfo(workspaceId)
@@ -251,6 +283,13 @@ export async function handleSubscriptionUpdated(subscription: Stripe.Subscriptio
       throw new Error(`Failed to update subscription: ${updateError.message}`)
     }
 
+    // Sync users.plan when subscription status changes
+    if (status === 'active' && existingSubscription.status !== 'active') {
+      await updateWorkspaceUserPlan(existingSubscription.workspace_id, 'pro', 1000)
+    } else if (status === 'cancelled') {
+      await updateWorkspaceUserPlan(existingSubscription.workspace_id, 'free', 3)
+    }
+
     // Send notification based on status change
     if (status === 'active' && existingSubscription.status !== 'active') {
       // Send activation email (payment success)
@@ -310,6 +349,18 @@ export async function handleSubscriptionDeleted(subscription: Stripe.Subscriptio
 
     if (updateError) {
       throw new Error(`Failed to cancel subscription: ${updateError.message}`)
+    }
+
+    // Downgrade all workspace users to free plan
+    // Look up workspace_id from the subscription record
+    const { data: cancelledSub } = await supabase
+      .from('service_subscriptions')
+      .select('workspace_id')
+      .eq('stripe_subscription_id', subscription.id)
+      .maybeSingle()
+
+    if (cancelledSub?.workspace_id) {
+      await updateWorkspaceUserPlan(cancelledSub.workspace_id, 'free', 3)
     }
 
     // Send cancellation confirmation email
@@ -438,6 +489,11 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Pr
 
     if (updateError) {
       throw new Error(`Failed to update subscription: ${updateError.message}`)
+    }
+
+    // Sync users.plan when payment recovers subscription to active
+    if (newStatus === 'active' && subscription.status === 'pending_payment') {
+      await updateWorkspaceUserPlan(subscription.workspace_id, 'pro', 1000)
     }
 
     // Send payment success email (only for recurring payments, not initial)

@@ -345,32 +345,34 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
 
             {/* Sidebar - Right 1/3 */}
             <div className="space-y-6">
-              {/* Lead Scores */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h3 className="text-sm font-medium text-gray-900 mb-4">Lead Scores</h3>
-                <div className="space-y-4">
-                  {lead.intent_score_calculated !== null && (
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm text-gray-600">Intent Score</span>
-                        <span className="text-sm font-medium">
-                          {lead.intent_score_calculated}%
-                        </span>
+              {/* Lead Scores — only show if at least one score exists */}
+              {(lead.intent_score_calculated !== null || lead.freshness_score !== null) && (
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <h3 className="text-sm font-medium text-gray-900 mb-4">Lead Scores</h3>
+                  <div className="space-y-4">
+                    {lead.intent_score_calculated !== null && (
+                      <div>
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm text-gray-600">Intent Score</span>
+                          <span className="text-sm font-medium">
+                            {lead.intent_score_calculated}%
+                          </span>
+                        </div>
+                        <ScoreProgress score={lead.intent_score_calculated ?? null} />
                       </div>
-                      <ScoreProgress score={lead.intent_score_calculated ?? null} />
-                    </div>
-                  )}
-                  {lead.freshness_score !== null && (
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm text-gray-600">Freshness Score</span>
-                        <span className="text-sm font-medium">{lead.freshness_score}%</span>
+                    )}
+                    {lead.freshness_score !== null && (
+                      <div>
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm text-gray-600">Freshness Score</span>
+                          <span className="text-sm font-medium">{lead.freshness_score}%</span>
+                        </div>
+                        <ScoreProgress score={lead.freshness_score ?? null} />
                       </div>
-                      <ScoreProgress score={lead.freshness_score ?? null} />
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Assignment */}
               {lead.assigned_user && (

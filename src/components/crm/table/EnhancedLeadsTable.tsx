@@ -409,8 +409,11 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
               </TableRow>
             ) : paginatedLeads.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="h-32 text-center text-gray-500 text-sm">
-                  No leads found matching your filters.
+                <TableCell colSpan={9} className="py-12 text-center">
+                  <p className="text-sm font-medium text-gray-900">No leads found</p>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Try adjusting your filters, or check your daily leads for new matches.
+                  </p>
                 </TableCell>
               </TableRow>
             ) : (
