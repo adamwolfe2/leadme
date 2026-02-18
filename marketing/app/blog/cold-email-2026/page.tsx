@@ -7,6 +7,13 @@ import { StructuredData } from "@/components/seo/structured-data"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
+
+const relatedPosts = [
+  { title: "Best AI SDR Tools for 2026", description: "9 AI SDR platforms ranked and compared with pricing.", href: "/blog/best-ai-sdr-tools-2026" },
+  { title: "Cursive vs Instantly: $1k/mo Full Stack vs Email-Only", description: "Compare AI outreach platforms for cold email in 2026.", href: "/blog/cursive-vs-instantly" },
+  { title: "AI SDR vs Human BDR: Which Drives More Pipeline?", description: "Cost, speed, and results compared for 2026.", href: "/blog/ai-sdr-vs-human-bdr" },
+]
 
 export default function BlogPost() {
   return (
@@ -420,6 +427,7 @@ export default function BlogPost() {
       </section>
 
       {/* CTA Section */}
+      <SimpleRelatedPosts posts={relatedPosts} />
       <DashboardCTA
         headline="Want to Put This"
         subheadline="Into Practice?"

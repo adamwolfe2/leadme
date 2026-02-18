@@ -7,6 +7,13 @@ import { StructuredData } from "@/components/seo/structured-data"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
+
+const relatedPosts = [
+  { title: "WebMCP and AI-Agent-Ready Lead Generation", description: "Why AI-agent-ready lead gen is the next frontier for B2B teams.", href: "/blog/webmcp-ai-agent-ready-lead-generation" },
+  { title: "WebMCP Implementation Guide for B2B SaaS", description: "Step-by-step implementation guide for the Model Context Protocol.", href: "/blog/webmcp-implementation-guide-b2b-saas" },
+  { title: "What Is Buyer Intent Data?", description: "The complete guide to intent signals for B2B lead generation.", href: "/blog/what-is-buyer-intent" },
+]
 
 export default function BlogPost() {
   return (
@@ -198,6 +205,7 @@ export default function BlogPost() {
         </section>
 
         {/* CTA Section */}
+        <SimpleRelatedPosts posts={relatedPosts} />
         <DashboardCTA
           headline="Ready to See Who's"
           subheadline="Visiting Your Site?"

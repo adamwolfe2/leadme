@@ -7,6 +7,13 @@ import { StructuredData } from "@/components/seo/structured-data"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
+
+const relatedPosts = [
+  { title: "Best AI SDR Tools for 2026", description: "9 AI SDR platforms ranked and compared with pricing.", href: "/blog/best-ai-sdr-tools-2026" },
+  { title: "What Is Buyer Intent Data?", description: "The complete guide to first-party and third-party intent signals.", href: "/blog/what-is-buyer-intent" },
+  { title: "What Is WebMCP?", description: "How the Model Context Protocol is changing AI-powered lead generation.", href: "/blog/what-is-webmcp-guide" },
+]
 
 export default function BlogPost() {
   return (
@@ -213,6 +220,7 @@ export default function BlogPost() {
       </section>
 
       {/* CTA Section */}
+      <SimpleRelatedPosts posts={relatedPosts} />
       <DashboardCTA
         headline="Your Visitors Are Already"
         subheadline="Sending Agents"

@@ -9,6 +9,7 @@ import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 
 const faqs = [
   {
@@ -39,6 +40,12 @@ const faqs = [
     question: "Can I use a Lusha alternative for automated outreach?",
     answer: "Yes, Cursive includes built-in AI-powered outreach automation as part of the platform. Unlike Lusha which is purely a data tool requiring you to use separate sequencing software, Cursive combines the data layer with an AI SDR that automatically sends personalized emails, LinkedIn connection requests and messages, SMS messages, and direct mail. The outreach is triggered by visitor behavior and intent signals, so contacts are reached at the right moment with contextually relevant messaging."
   }
+]
+
+const relatedPosts = [
+  { title: "Best B2B Data Providers in 2026", description: "10 platforms compared for data coverage, pricing, and use cases.", href: "/blog/best-b2b-data-providers-2026" },
+  { title: "Best Cognism Alternatives", description: "Compare Cognism vs top B2B data providers with better US coverage.", href: "/blog/cognism-alternative" },
+  { title: "Best SalesIntel Alternatives", description: "Human-verified B2B contact data alternatives compared.", href: "/blog/salesintel-alternative" },
 ]
 
 export default function BlogPost() {
@@ -986,6 +993,7 @@ export default function BlogPost() {
             </div>
           </Container>
         </section>
+        <SimpleRelatedPosts posts={relatedPosts} />
       </HumanView>
 
       <MachineView>

@@ -6,6 +6,13 @@ import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, Eye, Database, Shield, Zap, Users, CheckCircle, XCircle } from "lucide-react"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
+
+const relatedPosts = [
+  { title: "Best Website Visitor Identification Software 2026", description: "8 tools ranked by ID rate, pricing, and CRM integrations.", href: "/blog/best-website-visitor-identification-software" },
+  { title: "Visitor Identification Platform", description: "See how Cursive identifies 70% of your anonymous B2B website visitors.", href: "/visitor-identification" },
+  { title: "Best RB2B Alternatives", description: "7 visitor ID tools compared with features and pricing.", href: "/blog/rb2b-alternative" },
+]
 
 export default function HowToIdentifyAnonymousVisitors() {
   return (
@@ -467,6 +474,7 @@ export default function HowToIdentifyAnonymousVisitors() {
           </Container>
         </section>
 
+        <SimpleRelatedPosts posts={relatedPosts} />
         <DashboardCTA />
       </HumanView>
 

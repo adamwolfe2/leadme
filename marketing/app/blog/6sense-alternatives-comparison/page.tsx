@@ -10,6 +10,7 @@ import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { ArticleSchema, BreadcrumbSchema } from "@/components/schema/SchemaMarkup"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 import Link from "next/link"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 
 const faqs = [
   {
@@ -36,6 +37,12 @@ const faqs = [
     question: "How does 6sense compare to Demandbase?",
     answer: "6sense and Demandbase are the two dominant enterprise ABM platforms. 6sense is generally stronger in predictive analytics, intent data aggregation, and buying stage prediction. Demandbase has deeper advertising capabilities and a broader feature set including website personalization. Both charge $50,000 or more annually and require significant implementation resources. For teams that find both too expensive, Cursive provides many of the same core identification and engagement capabilities at a fraction of the cost."
   }
+]
+
+const relatedPosts = [
+  { title: "Cursive vs 6sense: $1k/mo vs $50k-$200k/yr", description: "Full comparison of Cursive and 6sense for B2B revenue intelligence.", href: "/blog/cursive-vs-6sense" },
+  { title: "6sense vs Cursive: Intent Data Compared", description: "The 6sense-first perspective on this head-to-head comparison.", href: "/blog/6sense-vs-cursive-comparison" },
+  { title: "Intent Data Providers Compared", description: "8 intent data platforms ranked by signal volume and pricing.", href: "/blog/intent-data-providers-comparison" },
 ]
 
 export default function BlogPost() {
@@ -1121,6 +1128,7 @@ export default function BlogPost() {
           </div>
         </Container>
       </section>
+        <SimpleRelatedPosts posts={relatedPosts} />
       </HumanView>
 
       <MachineView>

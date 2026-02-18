@@ -6,6 +6,7 @@ import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, Bot, Zap, Target, BarChart3, CheckCircle, Star } from "lucide-react"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 
 const tools = [
   {
@@ -197,6 +198,12 @@ const tools = [
     rating: 4.3,
     category: "Enrichment + Workflow Automation",
   },
+]
+
+const relatedPosts = [
+  { title: "AI SDR vs Human BDR: Which Drives More Pipeline?", description: "Cost, speed, personalization, and results compared for 2026.", href: "/blog/ai-sdr-vs-human-bdr" },
+  { title: "Cursive vs Apollo: Visitor ID vs Cold Database", description: "Compare intent-driven warm outreach vs cold prospecting.", href: "/blog/cursive-vs-apollo" },
+  { title: "Best B2B Data Providers in 2026", description: "10 platforms compared for data coverage, pricing, and use cases.", href: "/blog/best-b2b-data-providers-2026" },
 ]
 
 export default function BestAiSdrTools2026() {
@@ -464,6 +471,7 @@ export default function BestAiSdrTools2026() {
           </Container>
         </section>
 
+        <SimpleRelatedPosts posts={relatedPosts} />
         <DashboardCTA />
       </HumanView>
 

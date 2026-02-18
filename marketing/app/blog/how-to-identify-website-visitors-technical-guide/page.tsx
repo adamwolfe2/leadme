@@ -8,6 +8,13 @@ import Link from "next/link"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
+
+const relatedPosts = [
+  { title: "How to Identify Anonymous Website Visitors", description: "The complete non-technical guide with tool recommendations.", href: "/blog/how-to-identify-anonymous-website-visitors" },
+  { title: "Best Website Visitor Identification Software 2026", description: "8 tools ranked by ID rate, pricing, and CRM integrations.", href: "/blog/best-website-visitor-identification-software" },
+  { title: "What Is Website Visitor Identification?", description: "Everything you need to know about deanonymizing web traffic.", href: "/what-is-website-visitor-identification" },
+]
 
 export default function BlogPost() {
   const faqs = [
@@ -817,6 +824,7 @@ export default function BlogPost() {
       </section>
 
       {/* CTA Section */}
+      <SimpleRelatedPosts posts={relatedPosts} />
       <DashboardCTA
         headline="Want to Put This"
         subheadline="Into Practice?"

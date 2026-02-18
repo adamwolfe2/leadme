@@ -8,6 +8,12 @@ import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
+const relatedPosts = [
+  { title: "What Is WebMCP?", description: "The complete guide to the Model Context Protocol for B2B.", href: "/blog/what-is-webmcp-guide" },
+  { title: "WebMCP and AI-Agent-Ready Lead Generation", description: "Why AI-agent-ready lead gen is the next frontier for B2B teams.", href: "/blog/webmcp-ai-agent-ready-lead-generation" },
+  { title: "Visitor Identification Platform", description: "Identify 70% of anonymous visitors and automate warm outreach.", href: "/visitor-identification" },
+]
+
 export default function BlogPost() {
   return (
     <main>
@@ -310,6 +316,7 @@ understand pipeline attribution and optimize spend.
 
             <pre><code>{`// app/api/ai-info/route.ts
 import { NextResponse } from "next/server"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 
 export async function GET() {
   return NextResponse.json({
@@ -500,6 +507,7 @@ return {
       </section>
 
       {/* CTA Section */}
+      <SimpleRelatedPosts posts={relatedPosts} />
       <DashboardCTA
         headline="See WebMCP"
         subheadline="In Action"

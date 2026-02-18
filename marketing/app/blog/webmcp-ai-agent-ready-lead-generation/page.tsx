@@ -5,6 +5,7 @@ import { Metadata } from "next"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 
 export const metadata: Metadata = {
   title: "First AI-Agent-Ready Lead Gen Platform | Cursive",
@@ -43,6 +44,12 @@ export const metadata: Metadata = {
     follow: true,
   },
 }
+
+const relatedPosts = [
+  { title: "WebMCP Implementation Guide for B2B SaaS", description: "How to implement Model Context Protocol for AI-powered lead generation.", href: "/blog/webmcp-implementation-guide-b2b-saas" },
+  { title: "What Is WebMCP?", description: "The complete guide to the Model Context Protocol for B2B.", href: "/blog/what-is-webmcp-guide" },
+  { title: "AI Agents Replacing the Buyer Journey", description: "How AI agents are changing how B2B buyers research and buy.", href: "/blog/ai-agents-replacing-buyer-journey" },
+]
 
 export default function BlogPost() {
   return (
@@ -287,6 +294,7 @@ export default function BlogPost() {
       </section>
 
       {/* CTA Section */}
+      <SimpleRelatedPosts posts={relatedPosts} />
       <DashboardCTA
         headline="Ready to See Who's"
         subheadline="Visiting Your Site?"

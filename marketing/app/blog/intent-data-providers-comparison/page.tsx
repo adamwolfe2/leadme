@@ -9,6 +9,7 @@ import { generateFAQSchema } from "@/lib/seo/structured-data"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 
 const faqs = [
   {
@@ -39,6 +40,12 @@ const faqs = [
     question: 'Is Bombora or 6sense better for intent data?',
     answer: 'Bombora is a pure intent data provider — the largest third-party B2B intent network, feeding data to many platforms. 6sense is a full ABM platform incorporating Bombora intent data. 6sense is more comprehensive but costs $50,000-$200,000/year. Cursive offers comparable intent signal volume at $1,000/month with activation built in.',
   },
+]
+
+const relatedPosts = [
+  { title: "What Is Buyer Intent Data?", description: "The complete guide to first-party and third-party intent signals.", href: "/blog/what-is-buyer-intent" },
+  { title: "Best 6sense Alternatives", description: "7 ABM platforms compared at a fraction of the enterprise cost.", href: "/blog/6sense-alternatives-comparison" },
+  { title: "Cursive vs 6sense: $1k/mo vs $50k-$200k/yr", description: "Full comparison on intent data, ABM, pricing, and setup time.", href: "/blog/cursive-vs-6sense" },
 ]
 
 export default function BlogPost() {
@@ -486,6 +493,7 @@ export default function BlogPost() {
           </Container>
         </section>
 
+        <SimpleRelatedPosts posts={relatedPosts} />
         <DashboardCTA />
       </HumanView>
 

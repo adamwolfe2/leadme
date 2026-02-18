@@ -9,6 +9,7 @@ import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 import Link from "next/link"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 
 const faqs = [
   {
@@ -39,6 +40,12 @@ const faqs = [
     question: "How does Cursive compare to SalesIntel for B2B prospecting?",
     answer: "SalesIntel and Cursive serve different strategic approaches to pipeline generation. SalesIntel is a human-verified contact database that you actively search to build prospect lists for cold outreach. Cursive identifies people who are already showing buying intent -- either by visiting your website (70% person-level identification rate) or by matching against 450B+ behavioral intent signals -- and then automates personalized multi-channel outreach to them. Cursive's 220M+ consumer and 140M+ business profile database rivals SalesIntel on scale, and while Cursive's data is not human-verified in the same way, its real-time identification approach and intent-driven targeting delivers higher engagement rates than traditional cold prospecting from a static database. For teams who want automated pipeline generation rather than manual prospecting, Cursive delivers substantially more value."
   }
+]
+
+const relatedPosts = [
+  { title: "Best B2B Data Providers in 2026", description: "10 platforms compared for data coverage, pricing, and use cases.", href: "/blog/best-b2b-data-providers-2026" },
+  { title: "Best Lusha Alternatives", description: "B2B contact data alternatives with higher match rates.", href: "/blog/lusha-alternative" },
+  { title: "Best Hunter.io Alternatives", description: "Email finder tools with phone numbers and outreach automation.", href: "/blog/hunter-io-alternative" },
 ]
 
 export default function BlogPost() {
@@ -911,6 +918,7 @@ export default function BlogPost() {
         </section>
 
         {/* CTA Section */}
+        <SimpleRelatedPosts posts={relatedPosts} />
         <DashboardCTA
           headline="Ready to Replace"
           subheadline="SalesIntel?"

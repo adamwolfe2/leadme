@@ -6,6 +6,13 @@ import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, Database, Users, Zap, Target, BarChart2, Search } from "lucide-react"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
+
+const relatedPosts = [
+  { title: "What Is Demand Generation?", description: "How demand generation turns market awareness into qualified pipeline.", href: "/blog/what-is-demand-generation" },
+  { title: "Best B2B Data Providers in 2026", description: "10 platforms compared for data coverage, pricing, and use cases.", href: "/blog/best-b2b-data-providers-2026" },
+  { title: "What Is Revenue Intelligence?", description: "How AI and data analysis power smarter revenue decisions.", href: "/blog/what-is-revenue-intelligence" },
+]
 
 export default function WhatIsSalesIntelligence() {
   return (
@@ -333,6 +340,7 @@ export default function WhatIsSalesIntelligence() {
               </div>
 
               {/* CTA */}
+              <SimpleRelatedPosts posts={relatedPosts} />
               <DashboardCTA
                 title="Turn Anonymous Visitors Into Sales Intelligence"
                 description="Cursive identifies 70% of your website visitors by name and email, enriches them with firmographic data and intent signals, and pushes them directly into your CRM. No more guessing who visited your site."

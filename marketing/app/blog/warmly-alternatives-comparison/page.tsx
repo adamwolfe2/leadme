@@ -9,6 +9,7 @@ import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { ArticleSchema, BreadcrumbSchema } from "@/components/schema/SchemaMarkup"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 
 const faqs = [
   {
@@ -35,6 +36,12 @@ const faqs = [
     question: "How does Warmly compare to RB2B for visitor identification?",
     answer: "Both Warmly and RB2B offer person-level visitor identification, but they differ in scope and pricing. RB2B is simpler and more focused, delivering visitor IDs primarily through Slack notifications with a free tier available. Warmly offers more features including CRM integrations, chat capabilities, and basic orchestration, but at a higher price point starting at $700 per month. For teams that want visitor identification combined with automated outreach, Cursive provides both capabilities in one platform."
   }
+]
+
+const relatedPosts = [
+  { title: "Cursive vs Warmly: 70% vs 40% ID Rate", description: "Head-to-head comparison of identification rates, pricing, and outreach.", href: "/blog/cursive-vs-warmly" },
+  { title: "Best Website Visitor Identification Software 2026", description: "8 tools ranked by ID rate, pricing, and CRM integrations.", href: "/blog/best-website-visitor-identification-software" },
+  { title: "Visitor Identification Platform", description: "See how Cursive identifies 70% of your anonymous B2B website visitors.", href: "/visitor-identification" },
 ]
 
 export default function BlogPost() {
@@ -1109,6 +1116,7 @@ export default function BlogPost() {
           </div>
         </Container>
       </section>
+        <SimpleRelatedPosts posts={relatedPosts} />
       </HumanView>
 
       <MachineView>

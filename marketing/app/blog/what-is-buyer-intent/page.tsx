@@ -6,6 +6,13 @@ import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, Zap, Eye, Globe, RefreshCw, Target, AlertCircle } from "lucide-react"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
+
+const relatedPosts = [
+  { title: "Intent Data Providers Compared", description: "8 intent data platforms ranked by signal volume and pricing.", href: "/blog/intent-data-providers-comparison" },
+  { title: "Intent Audiences", description: "Pre-built intent audience segments across 8 high-value verticals.", href: "/intent-audiences" },
+  { title: "Best B2B Data Providers in 2026", description: "10 platforms compared for data coverage, pricing, and use cases.", href: "/blog/best-b2b-data-providers-2026" },
+]
 
 export default function WhatIsBuyerIntent() {
   return (
@@ -405,6 +412,7 @@ export default function WhatIsBuyerIntent() {
               </div>
 
               {/* CTA */}
+              <SimpleRelatedPosts posts={relatedPosts} />
               <DashboardCTA
                 title="Act on Buyer Intent Before Competitors Do"
                 description="Cursive combines website visitor identification (70% ID rate) with 450B+ intent signals refreshed weekly. See which prospects are actively in-market right now — and reach them before they book a demo with a competitor."

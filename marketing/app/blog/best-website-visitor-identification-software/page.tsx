@@ -9,6 +9,7 @@ import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 
 const faqs = [
   {
@@ -43,6 +44,12 @@ const faqs = [
     question: "How long does it take to set up visitor identification software?",
     answer: "Most visitor identification tools deploy in under 30 minutes. The technical setup involves adding a JavaScript snippet to your website — similar to installing Google Analytics. Once the pixel fires, identification begins immediately. Cursive typically shows first identified visitors within hours of installation. The more complex part of setup is configuring what happens after identification: CRM routing rules, outreach sequences, notification preferences, and sales team workflows. Cursive's managed service includes full setup and ongoing optimization, while self-serve customers can be live and seeing identified visitors within the same day."
   },
+]
+
+const relatedPosts = [
+  { title: "How to Identify Anonymous Website Visitors", description: "Step-by-step guide using IP resolution, fingerprinting, and identity matching.", href: "/blog/how-to-identify-anonymous-website-visitors" },
+  { title: "Best RB2B Alternatives", description: "7 visitor identification tools compared with ID rates and pricing.", href: "/blog/rb2b-alternative" },
+  { title: "Cursive vs Warmly: 70% vs 40% ID Rate", description: "Detailed comparison of the two leading visitor ID platforms.", href: "/blog/cursive-vs-warmly" },
 ]
 
 export default function BlogPost() {
@@ -1051,6 +1058,7 @@ export default function BlogPost() {
           </Container>
         </section>
 
+        <SimpleRelatedPosts posts={relatedPosts} />
         <DashboardCTA />
       </HumanView>
 

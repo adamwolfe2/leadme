@@ -45,6 +45,12 @@ const faqs = [
   }
 ]
 
+const relatedPosts = [
+  { title: "Best 6sense Alternatives", description: "7 ABM platforms compared at a fraction of the enterprise cost.", href: "/blog/6sense-alternatives-comparison" },
+  { title: "Cursive vs Demandbase: $1k/mo vs $50k+/yr", description: "Full ABM stack comparison — features, pricing, and use cases.", href: "/blog/cursive-vs-demandbase" },
+  { title: "Intent Data Providers Compared", description: "8 platforms ranked by signal volume, update frequency, and pricing.", href: "/blog/intent-data-providers-comparison" },
+]
+
 export default function BlogPost() {
   return (
     <main>
@@ -927,6 +933,7 @@ export default function BlogPost() {
                     <strong>Set up your replacement tool(s).</strong> For Cursive, install the{" "}
                     <Link href="/pixel" className="text-blue-600 hover:underline">tracking pixel</Link> (5 minutes),
                     import your target account list, configure ICP filters in the{" "}
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
                     <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link>,
                     and set up AI outreach sequences. Total setup time: a few hours versus Demandbase&apos;s 4-8 weeks.
                   </div>
@@ -1080,6 +1087,7 @@ export default function BlogPost() {
           </div>
         </Container>
       </section>
+        <SimpleRelatedPosts posts={relatedPosts} />
       </HumanView>
 
       <MachineView>

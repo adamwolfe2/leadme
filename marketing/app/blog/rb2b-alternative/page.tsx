@@ -9,6 +9,7 @@ import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 
 const faqs = [
   {
@@ -43,6 +44,12 @@ const faqs = [
     question: "What is the best free RB2B alternative?",
     answer: "Leadfeeder offers a limited free plan, but it only provides company-level identification with basic analytics. For person-level identification, most tools require a paid plan. Cursive offers a free AI audit that shows you exactly which visitors you are missing and what pipeline you could generate, so you can evaluate ROI before committing."
   }
+]
+
+const relatedPosts = [
+  { title: "Cursive vs RB2B: 70% vs 50-60% ID Rate", description: "Head-to-head comparison of features, pricing, and identification rates.", href: "/blog/cursive-vs-rb2b" },
+  { title: "Best Website Visitor Identification Software 2026", description: "8 tools ranked by ID rate, pricing, and CRM integrations.", href: "/blog/best-website-visitor-identification-software" },
+  { title: "Visitor Identification Platform", description: "See how Cursive identifies 70% of your anonymous B2B website visitors.", href: "/visitor-identification" },
 ]
 
 export default function BlogPost() {
@@ -1024,6 +1031,7 @@ export default function BlogPost() {
           </div>
         </Container>
       </section>
+        <SimpleRelatedPosts posts={relatedPosts} />
       </HumanView>
 
       <MachineView>

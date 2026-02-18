@@ -6,6 +6,13 @@ import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, TrendingUp, Target, BarChart2, Zap } from "lucide-react"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
+
+const relatedPosts = [
+  { title: "What Is Sales Intelligence?", description: "How sales intelligence data powers modern B2B prospecting.", href: "/blog/what-is-sales-intelligence" },
+  { title: "Best AI SDR Tools for 2026", description: "9 AI SDR platforms ranked and compared with pricing.", href: "/blog/best-ai-sdr-tools-2026" },
+  { title: "Visitor Identification Platform", description: "Turn anonymous website traffic into identified leads and pipeline.", href: "/visitor-identification" },
+]
 
 export default function WhatIsDemandGeneration() {
   return (
@@ -330,6 +337,7 @@ export default function WhatIsDemandGeneration() {
               </div>
 
               {/* CTA */}
+              <SimpleRelatedPosts posts={relatedPosts} />
               <DashboardCTA
                 title="See Which Demand Gen Visitors Are Actually In-Market"
                 description="Cursive identifies 70% of anonymous website visitors — including everyone who reads your blog, watches your webinars, and browses your pricing page. Start seeing names and emails behind your demand gen traffic."

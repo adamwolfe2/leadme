@@ -9,6 +9,7 @@ import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 import Link from "next/link"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 
 const faqs = [
   {
@@ -43,6 +44,12 @@ const faqs = [
     question: "Can I migrate from Clay to Cursive?",
     answer: "Yes. You can export your enriched data from Clay as CSV files and import them into Cursive. Cursive will re-enrich the data with its own providers and layer on intent signals from website visitor tracking. Most teams complete migration within a week and find that Cursive's built-in enrichment covers 90% of what they were using Clay for, at lower cost."
   }
+]
+
+const relatedPosts = [
+  { title: "Best B2B Data Providers in 2026", description: "10 platforms compared for data coverage, pricing, and use cases.", href: "/blog/best-b2b-data-providers-2026" },
+  { title: "Cursive vs Apollo: Visitor ID vs Cold Database", description: "Compare warm visitor outreach vs cold prospecting approaches.", href: "/blog/cursive-vs-apollo" },
+  { title: "Best AI SDR Tools for 2026", description: "9 platforms ranked for intent data, visitor ID, and AI outreach.", href: "/blog/best-ai-sdr-tools-2026" },
 ]
 
 export default function BlogPost() {
@@ -1031,6 +1038,7 @@ export default function BlogPost() {
           </div>
         </Container>
       </section>
+        <SimpleRelatedPosts posts={relatedPosts} />
       </HumanView>
 
       <MachineView>

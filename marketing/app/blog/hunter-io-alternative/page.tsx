@@ -9,6 +9,7 @@ import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 import Link from "next/link"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 
 const faqs = [
   {
@@ -39,6 +40,12 @@ const faqs = [
     question: "What is the best free Hunter.io alternative?",
     answer: "Apollo.io has the most generous free tier of any full-featured B2B prospecting tool -- including 10,000 records and basic email sequencing at no cost. Lusha also offers a free tier with 50 monthly credits. Voila Norbert offers a pay-as-you-go model starting at $0.10 per verified email with no monthly fee, making it effectively free until you need volume. Hunter.io's own free plan (25 searches/month) is competitive for very light use, but Apollo's free tier delivers dramatically more value for sales teams doing serious prospecting work."
   }
+]
+
+const relatedPosts = [
+  { title: "Best B2B Data Providers in 2026", description: "10 platforms compared for data coverage, pricing, and use cases.", href: "/blog/best-b2b-data-providers-2026" },
+  { title: "Best SalesIntel Alternatives", description: "Human-verified B2B contact data alternatives compared.", href: "/blog/salesintel-alternative" },
+  { title: "Cursive vs Apollo: Visitor ID vs Cold Database", description: "Compare warm visitor outreach vs cold prospecting approaches.", href: "/blog/cursive-vs-apollo" },
 ]
 
 export default function BlogPost() {
@@ -943,6 +950,7 @@ export default function BlogPost() {
         </section>
 
         {/* CTA Section */}
+        <SimpleRelatedPosts posts={relatedPosts} />
         <DashboardCTA
           headline="Ready to Go Beyond"
           subheadline="Email Finding?"

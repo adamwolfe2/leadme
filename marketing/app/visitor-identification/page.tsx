@@ -495,7 +495,9 @@ export default function VisitorIdentificationPage() {
                   { title: "ZoomInfo vs Cursive", href: "/blog/zoominfo-vs-cursive-comparison", description: "Data enrichment and identification compared" },
                   { title: "Apollo vs Cursive", href: "/blog/apollo-vs-cursive-comparison", description: "Prospecting and outbound tools compared" },
                   { title: "6sense vs Cursive", href: "/blog/6sense-vs-cursive-comparison", description: "Intent data platforms side-by-side" },
-                  { title: "Visitor Tracking Guide", href: "/blog/visitor-tracking", description: "Technical deep-dive on website visitor tracking" },
+                  { title: "Cursive vs Warmly", href: "/blog/cursive-vs-warmly", description: "70% vs 40% ID rate, $1k vs $3.5k/mo compared" },
+                  { title: "Cursive vs 6sense", href: "/blog/cursive-vs-6sense", description: "$1k/mo all-in vs $50k-$200k/yr enterprise" },
+                  { title: "How to Identify Anonymous Visitors", href: "/blog/how-to-identify-anonymous-website-visitors", description: "Complete guide with tool recommendations" },
                 ].map((comparison, i) => (
                   <Link
                     key={i}

@@ -9,6 +9,7 @@ import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 
 const faqs = [
   {
@@ -39,6 +40,12 @@ const faqs = [
     question: "What is the difference between ZoomInfo and Apollo for B2B data?",
     answer: "ZoomInfo and Apollo are both B2B data and sales intelligence platforms, but they serve different markets. ZoomInfo is the enterprise standard with the largest database, deepest org chart data, and the most advanced intent signals — but it costs $15,000-$40,000+ annually and requires rigid contracts. Apollo.io is designed for growth-stage teams with a much lower price point ($49-$99/user/month), a solid 270M+ contact database, built-in email sequencing, and a generous free tier. For teams that don't need ZoomInfo's enterprise depth, Apollo provides 80% of the value at 10% of the cost. Neither platform offers individual-level website visitor identification, which is where Cursive's unique value lies."
   },
+]
+
+const relatedPosts = [
+  { title: "Best Website Visitor Identification Software 2026", description: "8 tools ranked by ID rate, pricing, and CRM integrations.", href: "/blog/best-website-visitor-identification-software" },
+  { title: "Intent Data Providers Compared", description: "8 intent data platforms ranked by signal volume and pricing.", href: "/blog/intent-data-providers-comparison" },
+  { title: "Best AI SDR Tools for 2026", description: "9 AI SDR platforms ranked and compared with pricing.", href: "/blog/best-ai-sdr-tools-2026" },
 ]
 
 export default function BlogPost() {
@@ -933,6 +940,7 @@ export default function BlogPost() {
           </Container>
         </section>
 
+        <SimpleRelatedPosts posts={relatedPosts} />
         <DashboardCTA />
       </HumanView>
 

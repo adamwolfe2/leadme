@@ -8,6 +8,13 @@ import { StructuredData } from "@/components/seo/structured-data"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
+
+const relatedPosts = [
+  { title: "Best AI SDR Tools for 2026", description: "9 AI SDR platforms ranked and compared with pricing.", href: "/blog/best-ai-sdr-tools-2026" },
+  { title: "ICP Targeting Guide", description: "Define and reach your ideal customer profile for B2B outbound.", href: "/blog/icp-targeting-guide" },
+  { title: "Visitor Identification Platform", description: "Identify 70% of anonymous visitors and automate warm outreach.", href: "/visitor-identification" },
+]
 
 export default function BlogPost() {
   return (
@@ -547,6 +554,7 @@ export default function BlogPost() {
       </section>
 
       {/* CTA Section */}
+      <SimpleRelatedPosts posts={relatedPosts} />
       <DashboardCTA
         headline="Ready to Scale"
         subheadline="Without Sacrificing Quality?"

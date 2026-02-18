@@ -9,6 +9,7 @@ import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 
 const faqs = [
   {
@@ -35,6 +36,12 @@ const faqs = [
     question: "How does Cursive compare to Datashopper for B2B data?",
     answer: "Cursive goes significantly further than Datashopper. Where Datashopper provides static bulk contact lists, Cursive offers 220M+ consumer profiles and 140M+ business profiles with real-time updates, 450B+ monthly intent signals across 30,000+ categories to identify active buyers, website visitor identification at 70% person-level match rates, AI-powered multi-channel outreach (email, LinkedIn, SMS, direct mail), 200+ CRM integrations, and 95%+ email deliverability. Pricing starts at $1,000/month for managed services or $0.60/lead self-serve."
   }
+]
+
+const relatedPosts = [
+  { title: "Best B2B Data Providers in 2026", description: "10 platforms compared for data coverage, pricing, and use cases.", href: "/blog/best-b2b-data-providers-2026" },
+  { title: "Cursive vs Apollo: 70% Visitor ID vs Cold Contact Database", description: "Compare Cursive and Apollo for B2B prospecting and outreach.", href: "/blog/cursive-vs-apollo" },
+  { title: "Audience Builder", description: "Build custom B2B audiences from 220M+ profiles and 450B+ intent signals.", href: "/audience-builder" },
 ]
 
 export default function BlogPost() {
@@ -967,6 +974,7 @@ export default function BlogPost() {
             </div>
           </Container>
         </section>
+        <SimpleRelatedPosts posts={relatedPosts} />
       </HumanView>
 
       <MachineView>
