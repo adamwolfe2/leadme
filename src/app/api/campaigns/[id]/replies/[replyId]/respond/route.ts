@@ -13,9 +13,6 @@ interface RouteContext {
   params: Promise<{ id: string; replyId: string }>
 }
 
-// Mock flag for development
-const USE_MOCKS = !process.env.EMAILBISON_API_KEY
-
 const respondSchema = z.object({
   subject: z.string().min(1).max(500).optional(),
   body_text: z.string().min(1),
@@ -85,40 +82,27 @@ export async function POST(request: NextRequest, context: RouteContext) {
     // Generate HTML from text if not provided
     const responseHtml = body_html || `<p>${body_text.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>')}</p>`
 
-    // Send response via EmailBison or mock
-    let sendResult: { success: boolean; message_id: string; sent_at: string }
-
-    if (USE_MOCKS) {
-      sendResult = {
-        success: true,
-        message_id: `mock-response-${Date.now()}`,
-        sent_at: new Date().toISOString(),
-      }
-    } else {
-      const apiKey = process.env.EMAILBISON_API_KEY
-      if (!apiKey) {
-        return NextResponse.json(
-          { error: 'Email sending not configured' },
-          { status: 500 }
-        )
-      }
-
-      const client = new EmailBisonClient({
-        apiKey,
-        baseUrl: process.env.EMAILBISON_API_URL,
-      })
-
-      const lead = reply.lead as { email: string; first_name: string; last_name: string }
-
-      sendResult = await client.sendEmail({
-        to_email: reply.from_email,
-        to_name: reply.from_name || undefined,
-        subject: responseSubject,
-        body_html: responseHtml,
-        body_text: body_text,
-        reply_to: reply.emailbison_reply_id ? undefined : undefined,
-      })
+    // Send response via EmailBison
+    const apiKey = process.env.EMAILBISON_API_KEY
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'Email sending not configured' },
+        { status: 500 }
+      )
     }
+
+    const client = new EmailBisonClient({
+      apiKey,
+      baseUrl: process.env.EMAILBISON_API_URL,
+    })
+
+    const sendResult: { success: boolean; message_id: string; sent_at: string } = await client.sendEmail({
+      to_email: reply.from_email,
+      to_name: reply.from_name || undefined,
+      subject: responseSubject,
+      body_html: responseHtml,
+      body_text: body_text,
+    })
 
     // Create email_sends record for the response
     const lead = reply.lead as { id: string }

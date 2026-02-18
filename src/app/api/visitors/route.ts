@@ -61,22 +61,49 @@ export async function GET(req: NextRequest) {
     const { data: visitors, count, error } = await query
     if (error) throw error
 
-    // Aggregate stats for the same time range (all pixel leads, unfiltered)
-    const { data: statsData } = await adminSupabase
-      .from('leads')
-      .select('enrichment_status, intent_score_calculated, created_at')
-      .eq('workspace_id', profile.workspace_id)
-      .or('source.ilike.%pixel%,source.ilike.%superpixel%')
-      .gte('created_at', since)
-
-    const allLeads = statsData ?? []
-    const enrichedCount = allLeads.filter((l) => l.enrichment_status === 'enriched').length
-    const scores = allLeads.map((l) => l.intent_score_calculated).filter((s): s is number => s !== null)
-    const avgScore = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0
-
-    // This week count
+    // Aggregate stats via parallel count queries — avoids loading all rows into memory
     const weekAgo = new Date(Date.now() - 7 * 86_400_000).toISOString()
-    const thisWeek = allLeads.filter((l) => l.created_at >= weekAgo).length
+
+    const [
+      { count: totalCount },
+      { count: enrichedCount },
+      { count: thisWeekCount },
+      { data: scoreData },
+    ] = await Promise.all([
+      adminSupabase
+        .from('leads')
+        .select('*', { count: 'exact', head: true })
+        .eq('workspace_id', profile.workspace_id)
+        .or('source.ilike.%pixel%,source.ilike.%superpixel%')
+        .gte('created_at', since),
+      adminSupabase
+        .from('leads')
+        .select('*', { count: 'exact', head: true })
+        .eq('workspace_id', profile.workspace_id)
+        .or('source.ilike.%pixel%,source.ilike.%superpixel%')
+        .gte('created_at', since)
+        .eq('enrichment_status', 'enriched'),
+      adminSupabase
+        .from('leads')
+        .select('*', { count: 'exact', head: true })
+        .eq('workspace_id', profile.workspace_id)
+        .or('source.ilike.%pixel%,source.ilike.%superpixel%')
+        .gte('created_at', weekAgo),
+      adminSupabase
+        .from('leads')
+        .select('intent_score_calculated')
+        .eq('workspace_id', profile.workspace_id)
+        .or('source.ilike.%pixel%,source.ilike.%superpixel%')
+        .gte('created_at', since)
+        .not('intent_score_calculated', 'is', null)
+        .limit(1000),
+    ])
+
+    const scores = (scoreData ?? []).map((l) => l.intent_score_calculated).filter((s): s is number => s !== null)
+    const avgScore = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0
+    const total = totalCount ?? 0
+    const enriched = enrichedCount ?? 0
+    const thisWeek = thisWeekCount ?? 0
 
     // Pixel trial info
     const { data: pixel } = await adminSupabase
@@ -94,11 +121,11 @@ export async function GET(req: NextRequest) {
         pages: Math.ceil((count ?? 0) / limit),
       },
       stats: {
-        total: allLeads.length,
+        total,
         this_week: thisWeek,
-        enriched: enrichedCount,
+        enriched,
         avg_score: avgScore,
-        match_rate: allLeads.length > 0 ? Math.round((enrichedCount / allLeads.length) * 100) : 0,
+        match_rate: total > 0 ? Math.round((enriched / total) * 100) : 0,
       },
       pixel: pixel ?? null,
     })

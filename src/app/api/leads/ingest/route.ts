@@ -209,6 +209,20 @@ async function createLeadFromPush(
   leadData: z.infer<typeof LeadPushSchema>,
   request: IngestRequest
 ): Promise<string> {
+  // Deduplication: if a lead with the same email already exists in this workspace, skip insertion
+  if (leadData.email) {
+    const { data: existing } = await supabase
+      .from('leads')
+      .select('id')
+      .eq('workspace_id', workspaceId)
+      .eq('email', leadData.email)
+      .maybeSingle()
+
+    if (existing) {
+      return existing.id
+    }
+  }
+
   const { data, error } = await supabase
     .from('leads')
     .insert({
