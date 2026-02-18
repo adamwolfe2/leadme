@@ -69,7 +69,7 @@ export const distributeDailyLeads = inngest.createFunction(
 
     for (const user of users) {
       try {
-        await step.run(`distribute-leads-${user.id}`, async () => {
+        const result = await step.run(`distribute-leads-${user.id}`, async () => {
           console.log('[DailyLeads] Processing user:', {
             id: user.id,
             email: user.email,
@@ -229,18 +229,27 @@ export const distributeDailyLeads = inngest.createFunction(
             count: leadsToInsert.length,
           })
 
-          // Send email notification
+          // Return data needed for notification/GHL steps
+          return {
+            inserted: leadsToInsert.length,
+            leads,
+          }
+        })
+
+        // Send email notification as a separate top-level step
+        if (result && result.inserted > 0) {
           await step.run(`send-notification-${user.id}`, async () => {
             const firstName = user.full_name?.split(' ')[0] || 'there'
             const dashboardUrl = 'https://leads.meetcursive.com/leads'
-            const previewLeads = leads.slice(0, 3)
+            const leadCount = result.inserted
+            const previewLeads = result.leads.slice(0, 3)
             const previewList = previewLeads
               .map((l: AudienceLabLead) => `<li style="padding:6px 0;border-bottom:1px solid #f0f0f0;">${[l.FIRST_NAME, l.LAST_NAME].filter(Boolean).join(' ') || 'New Lead'}${l.COMPANY_NAME ? ` · <span style="color:#6b7280">${l.COMPANY_NAME}</span>` : ''}</li>`)
               .join('')
 
             await sendEmail({
               to: user.email,
-              subject: `${leads.length} new lead${leads.length === 1 ? '' : 's'} delivered — ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
+              subject: `${leadCount} new lead${leadCount === 1 ? '' : 's'} delivered — ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
               html: `
 <!DOCTYPE html>
 <html>
@@ -248,7 +257,7 @@ export const distributeDailyLeads = inngest.createFunction(
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f9fafb;padding:0;margin:0;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
   <div style="background:linear-gradient(135deg,#007AFF,#0056CC);padding:28px 32px;">
-    <h1 style="color:#fff;margin:0;font-size:22px;font-weight:700;">${leads.length} fresh lead${leads.length === 1 ? '' : 's'} ready, ${firstName}!</h1>
+    <h1 style="color:#fff;margin:0;font-size:22px;font-weight:700;">${leadCount} fresh lead${leadCount === 1 ? '' : 's'} ready, ${firstName}!</h1>
     <p style="color:rgba(255,255,255,0.85);margin:6px 0 0;font-size:14px;">Your daily batch just landed — scored, verified, and waiting for you.</p>
   </div>
   <div style="padding:24px 32px;">
@@ -256,20 +265,20 @@ export const distributeDailyLeads = inngest.createFunction(
     <p style="font-size:13px;color:#6b7280;margin:0 0 10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Today's leads include</p>
     <ul style="list-style:none;margin:0 0 20px;padding:0;font-size:14px;color:#374151;">
       ${previewList}
-      ${leads.length > 3 ? `<li style="padding:6px 0;color:#007AFF;font-size:13px;">+ ${leads.length - 3} more lead${leads.length - 3 === 1 ? '' : 's'}...</li>` : ''}
+      ${leadCount > 3 ? `<li style="padding:6px 0;color:#007AFF;font-size:13px;">+ ${leadCount - 3} more lead${leadCount - 3 === 1 ? '' : 's'}...</li>` : ''}
     </ul>
     ` : ''}
     <a href="${dashboardUrl}" style="display:inline-block;background:linear-gradient(135deg,#007AFF,#0056CC);color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:600;font-size:14px;">View My Leads</a>
     <p style="font-size:12px;color:#9ca3af;margin:20px 0 0;">Each lead can be enriched with phone, email, and LinkedIn for 1 credit.</p>
   </div>
   <div style="background:#f9fafb;padding:16px 32px;border-top:1px solid #e5e7eb;">
-    <p style="font-size:12px;color:#9ca3af;margin:0;">You receive ${leads.length} leads daily based on your industry and location targeting.</p>
+    <p style="font-size:12px;color:#9ca3af;margin:0;">You receive ${leadCount} leads daily based on your industry and location targeting.</p>
     <p style="font-size:12px;color:#9ca3af;margin:4px 0 0;"><a href="https://leads.meetcursive.com/my-leads/preferences" style="color:#007AFF;">Update preferences</a> · <a href="https://leads.meetcursive.com/activate" style="color:#007AFF;">Activate a campaign</a></p>
   </div>
 </div>
 </body>
 </html>`,
-              text: `${leads.length} fresh leads delivered, ${firstName}!\n\nView them at: ${dashboardUrl}\n\n${previewLeads.map((l: AudienceLabLead) => `- ${[l.FIRST_NAME, l.LAST_NAME].filter(Boolean).join(' ')}${l.COMPANY_NAME ? ` (${l.COMPANY_NAME})` : ''}`).join('\n')}\n\nEach lead can be enriched with full contact details for 1 credit.`,
+              text: `${leadCount} fresh leads delivered, ${firstName}!\n\nView them at: ${dashboardUrl}\n\n${previewLeads.map((l: AudienceLabLead) => `- ${[l.FIRST_NAME, l.LAST_NAME].filter(Boolean).join(' ')}${l.COMPANY_NAME ? ` (${l.COMPANY_NAME})` : ''}`).join('\n')}\n\nEach lead can be enriched with full contact details for 1 credit.`,
               tags: [{ name: 'type', value: 'daily-leads' }],
             })
 
@@ -279,7 +288,7 @@ export const distributeDailyLeads = inngest.createFunction(
           // Sync to GHL if user has CRM enabled
           if (user.ghl_sub_account_id) {
             await step.run(`sync-to-ghl-${user.id}`, async () => {
-              const ghlLeads = leads.map((lead: AudienceLabLead) => ({
+              const ghlLeads = result.leads.map((lead: AudienceLabLead) => ({
                 firstName: lead.FIRST_NAME,
                 lastName: lead.LAST_NAME,
                 email: lead.BUSINESS_VERIFIED_EMAILS?.[0] || lead.BUSINESS_EMAIL,
@@ -301,9 +310,9 @@ export const distributeDailyLeads = inngest.createFunction(
               })
             })
           }
+        }
 
-          successCount++
-        })
+        successCount++
       } catch (error) {
         console.error('[DailyLeads] Failed to process user:', {
           userId: user.id,

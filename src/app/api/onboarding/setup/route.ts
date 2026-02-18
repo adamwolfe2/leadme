@@ -223,7 +223,7 @@ export async function POST(request: NextRequest) {
           subdomain: slug,
           industry_vertical: validated.industry,
           allowed_industries: [validated.industry],
-          allowed_regions: validated.targetLocations ? [validated.targetLocations] : ['US'],
+          allowed_regions: validated.targetLocations ? parseTargetLocations(validated.targetLocations) : ['US'],
           onboarding_status: 'completed',
         }
       : {
