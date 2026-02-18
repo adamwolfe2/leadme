@@ -1,13 +1,13 @@
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "6sense vs Cursive: Complete Comparison (2026) | Cursive",
-  description: "Compare 6sense and Cursive for visitor identification, intent data, and automated outreach. Discover which platform delivers better ROI for your B2B sales team.",
+  title: "6sense vs Cursive: $50k-$200k/yr vs $1k/mo — Intent Data Compared (2026) | Cursive",
+  description: "6sense costs $50,000-$200,000/year with multi-year contracts. Cursive delivers intent data, visitor identification, and AI SDR for $1,000/month with no commitment. Full comparison inside.",
   keywords: "6sense vs cursive, 6sense alternative, visitor identification comparison, intent data platforms, abm platform comparison, cursive vs 6sense, 6sense pricing, cursive pricing, b2b intent data, account based marketing",
 
   openGraph: {
-    title: "6sense vs Cursive: Complete Comparison (2026) | Cursive",
-    description: "Compare 6sense and Cursive for visitor identification, intent data, and automated outreach. Discover which platform delivers better ROI for your B2B sales team.",
+    title: "6sense vs Cursive: $50k-$200k/yr vs $1k/mo — Intent Data Compared (2026) | Cursive",
+    description: "6sense costs $50,000-$200,000/year with multi-year contracts. Cursive delivers intent data, visitor identification, and AI SDR for $1,000/month with no commitment. Full comparison inside.",
     type: "article",
     url: "https://www.meetcursive.com/blog/6sense-vs-cursive-comparison",
     siteName: "Cursive",
@@ -22,8 +22,8 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "6sense vs Cursive: Complete Comparison (2026) | Cursive",
-    description: "Compare 6sense and Cursive for visitor identification, intent data, and automated outreach. Discover which platform delivers better ROI for your B2B sales team.",
+    title: "6sense vs Cursive: $50k-$200k/yr vs $1k/mo — Intent Data Compared (2026) | Cursive",
+    description: "6sense costs $50,000-$200,000/year with multi-year contracts. Cursive delivers intent data, visitor identification, and AI SDR for $1,000/month with no commitment.",
     images: ["https://www.meetcursive.com/og-image.png"],
     creator: "@meetcursive",
   },

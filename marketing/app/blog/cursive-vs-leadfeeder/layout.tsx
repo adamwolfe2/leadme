@@ -1,13 +1,13 @@
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Cursive vs Leadfeeder: Person-Level vs Company-Level ID (2026) | Cursive",
-  description: "Leadfeeder identifies companies visiting your site. Cursive identifies the actual people. Compare these two fundamentally different approaches to website visitor identification and find out which delivers more pipeline.",
+  title: "Cursive vs Leadfeeder: Person vs Company ID, $1k vs $139/mo (2026) | Cursive",
+  description: "Leadfeeder identifies the company but not the person. Cursive reveals the actual individual — name, email, LinkedIn — at 70% ID rate. Compare approaches, pricing, and pipeline impact.",
   keywords: "cursive vs leadfeeder, leadfeeder alternative, leadfeeder competitor, person level identification, company level identification, website visitor identification, leadfeeder pricing, leadfeeder review, b2b visitor tracking, best leadfeeder alternative 2026",
 
   openGraph: {
-    title: "Cursive vs Leadfeeder: Person-Level vs Company-Level ID (2026) | Cursive",
-    description: "Leadfeeder identifies companies visiting your site. Cursive identifies the actual people. Compare these two fundamentally different approaches to website visitor identification.",
+    title: "Cursive vs Leadfeeder: Person vs Company ID, $1k vs $139/mo (2026) | Cursive",
+    description: "Leadfeeder identifies the company but not the person. Cursive reveals the actual individual — name, email, LinkedIn — at 70% ID rate. Compare approaches, pricing, and pipeline impact.",
     type: "article",
     url: "https://www.meetcursive.com/blog/cursive-vs-leadfeeder",
     siteName: "Cursive",
@@ -22,8 +22,8 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "Cursive vs Leadfeeder: Person-Level vs Company-Level ID (2026) | Cursive",
-    description: "Leadfeeder identifies companies visiting your site. Cursive identifies the actual people. Compare these two fundamentally different approaches to website visitor identification.",
+    title: "Cursive vs Leadfeeder: Person vs Company ID, $1k vs $139/mo (2026) | Cursive",
+    description: "Leadfeeder identifies the company but not the person. Cursive reveals the actual individual — name, email, LinkedIn — at 70% ID rate. Compare approaches and pricing.",
     images: ["https://www.meetcursive.com/og-image.png"],
     creator: "@meetcursive",
   },

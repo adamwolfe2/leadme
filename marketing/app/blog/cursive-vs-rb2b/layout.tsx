@@ -1,13 +1,13 @@
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Cursive vs RB2B: Which Visitor ID Tool is Better? (2026) | Cursive",
-  description: "An in-depth comparison of Cursive and RB2B for B2B visitor identification. Compare match rates, outreach capabilities, pricing, and total cost of ownership to find the right tool for your team.",
+  title: "Cursive vs RB2B: 70% vs 50-60% ID Rate — Full Comparison (2026) | Cursive",
+  description: "Cursive identifies 70% of US B2B visitors vs RB2B's 50-60%. Plus Cursive adds AI outreach, intent data, and direct mail — not just identification. Compare features and pricing inside.",
   keywords: "cursive vs rb2b, rb2b alternative, rb2b competitor, visitor identification tools, website visitor identification, b2b visitor tracking, person-level identification, rb2b pricing, rb2b review, best visitor id tool 2026",
 
   openGraph: {
-    title: "Cursive vs RB2B: Which Visitor ID Tool is Better? (2026) | Cursive",
-    description: "An in-depth comparison of Cursive and RB2B for B2B visitor identification. Compare match rates, outreach capabilities, pricing, and total cost of ownership.",
+    title: "Cursive vs RB2B: 70% vs 50-60% ID Rate — Full Comparison (2026) | Cursive",
+    description: "Cursive identifies 70% of US B2B visitors vs RB2B's 50-60%. Plus Cursive adds AI outreach, intent data, and direct mail — not just identification. Compare features and pricing.",
     type: "article",
     url: "https://www.meetcursive.com/blog/cursive-vs-rb2b",
     siteName: "Cursive",
@@ -22,8 +22,8 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "Cursive vs RB2B: Which Visitor ID Tool is Better? (2026) | Cursive",
-    description: "An in-depth comparison of Cursive and RB2B for B2B visitor identification. Compare match rates, outreach capabilities, pricing, and total cost of ownership.",
+    title: "Cursive vs RB2B: 70% vs 50-60% ID Rate — Full Comparison (2026) | Cursive",
+    description: "Cursive identifies 70% of US B2B visitors vs RB2B's 50-60%. Plus Cursive adds AI outreach, intent data, and direct mail — not just identification.",
     images: ["https://www.meetcursive.com/og-image.png"],
     creator: "@meetcursive",
   },
