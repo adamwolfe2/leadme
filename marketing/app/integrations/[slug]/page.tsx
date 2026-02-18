@@ -27,15 +27,15 @@ export async function generateMetadata({
   if (!integration) return {}
 
   return {
-    title: `Cursive + ${integration.name} Integration | Connect Your Data`,
-    description: `Connect Cursive visitor identification data with ${integration.name}. ${integration.whyCursive}`,
+    title: `${integration.name} Visitor Identification Integration — Push Identified Leads Directly | Cursive`,
+    description: `Identify 70% of anonymous visitors to your site and push them directly into ${integration.name}. ${integration.whyCursive}`,
     keywords: integration.keywords,
     alternates: {
       canonical: `https://www.meetcursive.com/integrations/${integration.slug}`,
     },
     openGraph: {
-      title: `Cursive + ${integration.name} Integration`,
-      description: `Connect Cursive visitor data with ${integration.name}. Setup guide, workflows, and data mapping.`,
+      title: `${integration.name} Visitor Identification Integration | Cursive`,
+      description: `Identify 70% of anonymous visitors and push enriched lead records directly into ${integration.name}. Setup guide, workflows, and data mapping.`,
       type: "article",
     },
   }
