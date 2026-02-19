@@ -1,26 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import {
   CheckCircle2,
   ArrowRight,
   Play,
-  Star,
-  Zap,
   Shield,
-  Target,
   TrendingUp,
   Clock,
   Users,
   Database,
-  Eye,
-  BarChart3,
-  Phone,
-  Mail,
   Globe,
   ChevronDown,
   ChevronUp,
@@ -684,6 +674,102 @@ export default function SuperPixelPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION 8.5 — INTERACTIVE DEMO
+      ───────────────────────────────────────────────────────────── */}
+      <section className="bg-[#F8F9FA] py-20">
+        <Container>
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-blue-100 text-blue-700 mb-4">
+                See It In Action
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                This Is What You&apos;ll Receive for Every Matched Visitor
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                A real enriched lead record — delivered to your CRM, inbox, or platform in minutes.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+              {/* Sample Lead Card */}
+              <div className="bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden">
+                <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex items-center justify-between">
+                  <span className="text-white font-semibold text-sm uppercase tracking-wide">Sample Lead Record</span>
+                  <span className="bg-green-400 text-green-900 text-xs font-bold px-2.5 py-1 rounded-full">🔴 High Intent</span>
+                </div>
+                <div className="p-6 space-y-4">
+                  <div>
+                    <p className="text-2xl font-bold text-gray-900">James Sullivan</p>
+                    <p className="text-gray-500 text-sm mt-0.5">VP of Sales · Meridian Technology Group</p>
+                  </div>
+                  <div className="border-t border-gray-100 pt-4 space-y-3">
+                    {[
+                      { label: "Email", value: "j.sullivan@meridiantech.com", verified: true },
+                      { label: "Mobile", value: "+1 (512) 847-2391", verified: true },
+                      { label: "Company", value: "Meridian Technology Group" },
+                      { label: "Page Visited", value: "/pricing" },
+                      { label: "Visit Time", value: "Today at 2:14 PM CST" },
+                      { label: "Intent Score", value: "High (7-day spike detected)" },
+                    ].map((row) => (
+                      <div key={row.label} className="flex items-center gap-4">
+                        <span className="text-sm text-gray-500 w-28 flex-shrink-0">{row.label}</span>
+                        <span className="text-sm text-gray-900 font-medium flex-1">{row.value}</span>
+                        {row.verified && (
+                          <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="px-6 pb-5">
+                  <p className="text-xs text-gray-400 text-center">* Sample record — actual data fields vary by match quality</p>
+                </div>
+              </div>
+
+              {/* Pipeline steps */}
+              <div>
+                <h3 className="font-semibold text-gray-900 text-lg mb-6">
+                  From Anonymous Visitor to Contactable Lead in 5 Steps
+                </h3>
+                <div className="space-y-0">
+                  {[
+                    { step: "1", label: "Visitor lands on your site", detail: "Pixel fires instantly — no delay, no lag" },
+                    { step: "2", label: "Identity resolution begins", detail: "UID2 + IP geo-framing + device matching" },
+                    { step: "3", label: "NCOA verification", detail: "Address and contact freshness confirmed against 30-day refresh cycle" },
+                    { step: "4", label: "Intent scoring applied", detail: "60B+ daily signals — 7-day behavioral baseline deviation checked" },
+                    { step: "5", label: "Lead delivered to your stack", detail: "To your CRM, inbox, dialer, or API — in real time" },
+                  ].map((item, i) => (
+                    <div key={item.step} className="flex gap-4">
+                      <div className="flex flex-col items-center">
+                        <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
+                          {item.step}
+                        </div>
+                        {i < 4 && <div className="w-px h-8 bg-blue-200 my-1" />}
+                      </div>
+                      <div className="pb-5">
+                        <p className="font-semibold text-gray-900 text-sm">{item.label}</p>
+                        <p className="text-gray-500 text-sm mt-0.5">{item.detail}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <a
+                  href={CAL_LINK}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors duration-200 text-sm mt-2"
+                >
+                  See It Running on Your Website <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
             </div>
           </div>
         </Container>
