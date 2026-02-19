@@ -24,7 +24,7 @@ const realEstateFAQs = [
   },
   {
     question: 'What CRM integrations work best for real estate with Cursive?',
-    answer: 'Cursive integrates with HubSpot, Salesforce, and Pipedrive, which are widely used across commercial real estate brokerage and investment firms. For teams using real estate-specific CRMs, Cursive's webhook support enables integration with platforms like Buildout, ClientLook, and others so identified prospects flow seamlessly into existing deal management workflows.',
+    answer: "Cursive integrates with HubSpot, Salesforce, and Pipedrive, which are widely used across commercial real estate brokerage and investment firms. For teams using real estate-specific CRMs, Cursive's webhook support enables integration with platforms like Buildout, ClientLook, and others so identified prospects flow seamlessly into existing deal management workflows.",
   },
   {
     question: "How does Cursive's direct mail work for real estate outreach?",

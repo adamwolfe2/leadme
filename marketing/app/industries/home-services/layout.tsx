@@ -20,7 +20,7 @@ const homeServicesFAQs = [
   },
   {
     question: "How do home services franchises use Cursive's lead generation?",
-    answer: 'Home services franchise brands deploy Cursive across franchisee websites to identify commercial clients researching services in each local market, feeding identified leads directly into each location's CRM for immediate follow-up. At the corporate level, franchise brands use Cursive to benchmark lead generation performance across locations and identify best practices for franchisee success.',
+    answer: "Home services franchise brands deploy Cursive across franchisee websites to identify commercial clients researching services in each local market, feeding identified leads directly into each location's CRM for immediate follow-up. At the corporate level, franchise brands use Cursive to benchmark lead generation performance across locations and identify best practices for franchisee success.",
   },
   {
     question: "How does Cursive's direct mail work for home services outreach?",

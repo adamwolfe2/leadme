@@ -35,7 +35,7 @@ const buyerIntentFAQs = [
   },
   {
     question: 'How accurate is intent data?',
-    answer: 'Intent data accuracy varies significantly by provider and data type. First-party intent data (your own website) is highly accurate because it directly records real interactions with your brand — though it requires website visitor identification to associate activity with specific people. Third-party intent data ranges from 60-80% accurate depending on the provider's data sources and methodology. Account-level intent (company X is researching topic Y) is more reliable than person-level intent. Weekly-refreshed intent data is significantly more accurate than monthly data because buying windows open and close quickly. Cursive refreshes intent signals weekly and achieves 70% person-level identification rates, making its intent data among the most accurate available.',
+    answer: "Intent data accuracy varies significantly by provider and data type. First-party intent data (your own website) is highly accurate because it directly records real interactions with your brand — though it requires website visitor identification to associate activity with specific people. Third-party intent data ranges from 60-80% accurate depending on the provider's data sources and methodology. Account-level intent (company X is researching topic Y) is more reliable than person-level intent. Weekly-refreshed intent data is significantly more accurate than monthly data because buying windows open and close quickly. Cursive refreshes intent signals weekly and achieves 70% person-level identification rates, making its intent data among the most accurate available.",
   },
   {
     question: 'How long does a buying window last?',

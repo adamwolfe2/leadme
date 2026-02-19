@@ -27,8 +27,8 @@ const mediaAdvertisingFAQs = [
     answer: 'Cursive identifies the companies and ad buyers visiting your media platform by matching their digital behavior to its proprietary identity graph, revealing advertiser names, contact information, and the specific ad products or placements they reviewed. Media sales teams use this intelligence to reach out with hyper-relevant proposals that reference the exact inventory or audience segments the advertiser was researching.',
   },
   {
-    question: 'How does Cursive's visitor identification help media publishers monetize traffic?',
-    answer: 'Media publishers use Cursive to identify the brands and agencies visiting their site and reading their content — traffic that represents a self-selected pool of potential advertising partners already engaged with the publication's audience. By converting this anonymous traffic into identified prospects at a 70% identification rate, publishers can build a proactive advertiser outreach program that dramatically expands their addressable revenue base.',
+    question: "How does Cursive's visitor identification help media publishers monetize traffic?",
+    answer: "Media publishers use Cursive to identify the brands and agencies visiting their site and reading their content — traffic that represents a self-selected pool of potential advertising partners already engaged with the publication's audience. By converting this anonymous traffic into identified prospects at a 70% identification rate, publishers can build a proactive advertiser outreach program that dramatically expands their addressable revenue base.",
   },
   {
     question: 'What CRM integrations work best for media companies with Cursive?',

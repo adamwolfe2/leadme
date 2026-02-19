@@ -20,7 +20,7 @@ const financialServicesFAQs = [
   },
   {
     question: 'How do financial advisors use visitor identification?',
-    answer: 'Financial advisors and RIAs use Cursive to see which business owners, plan sponsors, and corporate finance teams are visiting their website and what services they are exploring. This insight allows advisors to reach out with timely, relevant messaging that speaks directly to the prospect's area of interest, dramatically shortening the sales cycle.',
+    answer: "Financial advisors and RIAs use Cursive to see which business owners, plan sponsors, and corporate finance teams are visiting their website and what services they are exploring. This insight allows advisors to reach out with timely, relevant messaging that speaks directly to the prospect's area of interest, dramatically shortening the sales cycle.",
   },
   {
     question: 'What intent signals indicate someone is looking for financial services?',
