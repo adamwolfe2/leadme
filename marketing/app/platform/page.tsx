@@ -231,7 +231,7 @@ export default function PlatformPage() {
               className="order-1 lg:order-2"
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm mb-6">
-                500M+ Verified Contacts
+                420M+ Verified Contacts
               </div>
               <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 People Search
@@ -240,7 +240,7 @@ export default function PlatformPage() {
                 </span>
               </h2>
               <p className="text-xl text-gray-600 mb-6">
-                Search 500M+ verified B2B contacts by name, company, title, location, industry, and more.
+                Search 420M+ verified B2B contacts by name, company, title, location, industry, and more.
               </p>
 
               <div className="space-y-4 mb-8">
@@ -686,7 +686,7 @@ export default function PlatformPage() {
           {
             label: "People Search",
             href: "https://leads.meetcursive.com/people-search",
-            description: "Search 500M+ verified B2B contacts with real-time email verification and LinkedIn enrichment"
+            description: "Search 420M+ verified B2B contacts with real-time email verification and LinkedIn enrichment"
           },
           {
             label: "Lead Marketplace",
@@ -717,7 +717,7 @@ export default function PlatformPage() {
       </MachineSection>
 
       {/* People Search Details */}
-      <MachineSection title="People Search - 500M+ Contacts">
+      <MachineSection title="People Search - 420M+ Contacts">
         <p className="text-gray-700 mb-4">
           Search verified B2B contacts by name, company, title, location, industry, and more with real-time validation.
         </p>

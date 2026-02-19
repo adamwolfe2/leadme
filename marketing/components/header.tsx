@@ -108,6 +108,18 @@ const navLinks: NavLink[] = [
         description: "Our mission and team",
         icon: BookOpen,
       },
+      {
+        href: "/faq",
+        label: "FAQ",
+        description: "Answers to common questions",
+        icon: FileText,
+      },
+      {
+        href: "/demos",
+        label: "Demos",
+        description: "See Cursive in action",
+        icon: BarChart3,
+      },
     ],
   },
 ]

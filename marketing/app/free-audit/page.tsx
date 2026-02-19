@@ -99,7 +99,7 @@ export default function FreeAuditPage() {
       </section>
 
       {/* Form Section */}
-      <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
+      <section id="form" className="py-16 bg-gradient-to-b from-gray-50 to-white">
         <Container>
           <div className="max-w-2xl mx-auto">
             <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 md:p-12">
@@ -131,11 +131,6 @@ export default function FreeAuditPage() {
               <p className="text-sm text-gray-500 mb-4">
                 Trusted by leading B2B companies to identify and convert website visitors
               </p>
-              <div className="flex justify-center items-center gap-8 opacity-40">
-                <div className="text-2xl font-light text-gray-400">Stripe</div>
-                <div className="text-2xl font-light text-gray-400">Shopify</div>
-                <div className="text-2xl font-light text-gray-400">HubSpot</div>
-              </div>
             </div>
           </div>
         </Container>

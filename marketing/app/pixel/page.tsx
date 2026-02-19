@@ -424,7 +424,7 @@ export default function PixelPage() {
                     Cold Outreach to New Prospects
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    Browse and buy leads from our database of 50,000+ verified B2B contacts. Perfect for proactive outbound when you need to reach people who haven't found you yet.
+                    Browse and buy leads from our database of 420M+ verified B2B contacts. Perfect for proactive outbound when you need to reach people who haven't found you yet.
                   </p>
                   <div className="space-y-3 mb-6">
                     {[
