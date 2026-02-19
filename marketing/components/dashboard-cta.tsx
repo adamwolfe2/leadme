@@ -6,20 +6,20 @@ import { motion } from "framer-motion"
 import { DashboardPreview } from "@/components/dashboard-preview"
 
 interface DashboardCTAProps {
-  headline: string
-  subheadline: string
-  description: string
+  headline?: string
+  subheadline?: string
+  description?: string
   ctaText?: string
   ctaUrl?: string
 }
 
 export function DashboardCTA({
-  headline,
-  subheadline,
-  description,
+  headline = "Stop Guessing. Start Converting.",
+  subheadline = "your pipeline starts here",
+  description = "Identify 70% of your anonymous website visitors and turn them into pipeline — automatically.",
   ctaText = "Book Your Free AI Audit Now",
   ctaUrl = "https://cal.com/cursive/30min",
-}: DashboardCTAProps) {
+}: DashboardCTAProps = {}) {
   return (
     <section className="relative py-32 bg-white overflow-hidden">
       <Container>
