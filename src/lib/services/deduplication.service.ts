@@ -379,6 +379,129 @@ export async function batchCheckDuplicates(
 }
 
 /**
+ * Workspace-scoped deduplication for lead delivery paths
+ * (daily distribution, onboarding, API ingest)
+ *
+ * Checks for duplicates by:
+ * 1. Exact email match within workspace
+ * 2. Name + company match within workspace (catches same person with different email)
+ */
+export async function checkWorkspaceDuplicates(
+  workspaceId: string,
+  candidates: Array<{
+    email: string | null
+    first_name: string | null
+    last_name: string | null
+    company_name: string | null
+    company_domain: string | null
+  }>
+): Promise<Set<number>> {
+  const supabase = createAdminClient()
+  const duplicateIndices = new Set<number>()
+
+  // Collect all candidate emails and name+company combos
+  const candidateEmails = candidates
+    .map((c) => c.email?.toLowerCase().trim())
+    .filter((e): e is string => !!e)
+
+  // Step 1: Email dedup (batch query)
+  const existingEmails = new Set<string>()
+  if (candidateEmails.length > 0) {
+    // Query in chunks of 100
+    for (let i = 0; i < candidateEmails.length; i += 100) {
+      const chunk = candidateEmails.slice(i, i + 100)
+      const { data: existing } = await supabase
+        .from('leads')
+        .select('email')
+        .eq('workspace_id', workspaceId)
+        .in('email', chunk)
+
+      for (const row of existing || []) {
+        if (row.email) existingEmails.add(row.email.toLowerCase())
+      }
+    }
+  }
+
+  // Mark email duplicates
+  for (let i = 0; i < candidates.length; i++) {
+    const email = candidates[i].email?.toLowerCase().trim()
+    if (email && existingEmails.has(email)) {
+      duplicateIndices.add(i)
+    }
+  }
+
+  // Step 2: Name + company dedup for remaining candidates
+  // Only check candidates not already flagged as email duplicates
+  const nameCompanyCandidates = candidates
+    .map((c, i) => ({ ...c, index: i }))
+    .filter((c) => !duplicateIndices.has(c.index))
+    .filter((c) => c.first_name && c.last_name && c.company_name)
+
+  if (nameCompanyCandidates.length > 0) {
+    // Build a set of "first|last|company" keys from existing workspace leads
+    // We query by company_name first (smaller result set), then match name
+    const uniqueCompanies = [...new Set(
+      nameCompanyCandidates
+        .map((c) => c.company_name!.toLowerCase().trim())
+        .filter(Boolean)
+    )]
+
+    const existingNameCompanyKeys = new Set<string>()
+    for (let i = 0; i < uniqueCompanies.length; i += 50) {
+      const chunk = uniqueCompanies.slice(i, i + 50)
+      const { data: existing } = await supabase
+        .from('leads')
+        .select('first_name, last_name, company_name')
+        .eq('workspace_id', workspaceId)
+        .in('company_name', chunk)
+
+      for (const row of existing || []) {
+        if (row.first_name && row.last_name && row.company_name) {
+          const key = `${row.first_name.toLowerCase().trim()}|${row.last_name.toLowerCase().trim()}|${row.company_name.toLowerCase().trim()}`
+          existingNameCompanyKeys.add(key)
+        }
+      }
+    }
+
+    // Check candidates against existing name+company keys
+    for (const candidate of nameCompanyCandidates) {
+      const key = `${candidate.first_name!.toLowerCase().trim()}|${candidate.last_name!.toLowerCase().trim()}|${candidate.company_name!.toLowerCase().trim()}`
+      if (existingNameCompanyKeys.has(key)) {
+        duplicateIndices.add(candidate.index)
+      }
+    }
+  }
+
+  // Step 3: Intra-batch dedup (catch duplicates within the same batch)
+  const seenEmails = new Set<string>()
+  const seenNameCompany = new Set<string>()
+  for (let i = 0; i < candidates.length; i++) {
+    if (duplicateIndices.has(i)) continue
+
+    const email = candidates[i].email?.toLowerCase().trim()
+    if (email) {
+      if (seenEmails.has(email)) {
+        duplicateIndices.add(i)
+        continue
+      }
+      seenEmails.add(email)
+    }
+
+    const { first_name, last_name, company_name } = candidates[i]
+    if (first_name && last_name && company_name) {
+      const key = `${first_name.toLowerCase().trim()}|${last_name.toLowerCase().trim()}|${company_name.toLowerCase().trim()}`
+      if (seenNameCompany.has(key)) {
+        duplicateIndices.add(i)
+        continue
+      }
+      seenNameCompany.add(key)
+    }
+  }
+
+  return duplicateIndices
+}
+
+/**
  * Get deduplication stats for a partner
  */
 export async function getPartnerDuplicateStats(partnerId: string): Promise<{

@@ -12,6 +12,7 @@ import { fetchLeadsFromSegment, type AudienceLabLead } from '@/lib/services/audi
 import { syncLeadsToGHL } from '@/lib/services/ghl.service'
 import { sendEmail } from '@/lib/email/service'
 import { meetsQualityBar } from '@/lib/services/lead-quality.service'
+import { checkWorkspaceDuplicates } from '@/lib/services/deduplication.service'
 
 /**
  * Score a lead based on data completeness.
@@ -128,28 +129,10 @@ export const distributeDailyLeads = inngest.createFunction(
 
           const leads = qualityLeads
 
-          // Dedup: check for existing leads with same email in this workspace
-          const leadEmails = leads
-            .map((l: AudienceLabLead) => l.BUSINESS_VERIFIED_EMAILS?.[0] || l.BUSINESS_EMAIL || l.PERSONAL_VERIFIED_EMAILS?.[0])
-            .filter(Boolean)
-
-          let existingEmails = new Set<string>()
-          if (leadEmails.length > 0) {
-            const { data: existing } = await supabase
-              .from('leads')
-              .select('email')
-              .eq('workspace_id', user.workspace_id)
-              .in('email', leadEmails)
-
-            existingEmails = new Set((existing || []).map(e => e.email).filter(Boolean))
-          }
-
-          // Save leads to database (map UPPERCASE fields to lowercase)
-          const leadsToInsert = leads
+          // Map leads to insert format first, then run dedup
+          const mappedLeads = leads
             .map((lead: AudienceLabLead) => {
               const email = lead.BUSINESS_VERIFIED_EMAILS?.[0] || lead.BUSINESS_EMAIL || lead.PERSONAL_VERIFIED_EMAILS?.[0] || null
-              // Skip duplicate emails
-              if (email && existingEmails.has(email)) return null
               return {
                 workspace_id: user.workspace_id,
                 first_name: lead.FIRST_NAME || null,
@@ -177,8 +160,21 @@ export const distributeDailyLeads = inngest.createFunction(
                 },
               }
             })
-            .filter((lead): lead is NonNullable<typeof lead> => lead !== null)
             .filter((lead) => meetsQualityBar(lead).passes)
+
+          // Workspace-scoped dedup: checks email + name+company combos + intra-batch
+          const duplicateIndices = await checkWorkspaceDuplicates(
+            user.workspace_id!,
+            mappedLeads.map((l) => ({
+              email: l.email,
+              first_name: l.first_name,
+              last_name: l.last_name,
+              company_name: l.company_name,
+              company_domain: l.company_domain,
+            }))
+          )
+
+          const leadsToInsert = mappedLeads.filter((_, i) => !duplicateIndices.has(i))
 
           if (leadsToInsert.length === 0) {
             return

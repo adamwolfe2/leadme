@@ -210,17 +210,33 @@ async function createLeadFromPush(
   leadData: z.infer<typeof LeadPushSchema>,
   request: IngestRequest
 ): Promise<string> {
-  // Deduplication: if a lead with the same email already exists in this workspace, skip insertion
+  // Deduplication: check email and name+company within workspace
   if (leadData.email) {
     const { data: existing } = await supabase
       .from('leads')
       .select('id')
       .eq('workspace_id', workspaceId)
-      .eq('email', leadData.email)
+      .eq('email', leadData.email.toLowerCase().trim())
       .maybeSingle()
 
     if (existing) {
       return existing.id
+    }
+  }
+
+  // Secondary dedup: same first_name + last_name + company_name
+  if (leadData.first_name && leadData.last_name && leadData.company_name) {
+    const { data: nameMatch } = await supabase
+      .from('leads')
+      .select('id')
+      .eq('workspace_id', workspaceId)
+      .ilike('first_name', leadData.first_name.trim())
+      .ilike('last_name', leadData.last_name.trim())
+      .ilike('company_name', leadData.company_name.trim())
+      .maybeSingle()
+
+    if (nameMatch) {
+      return nameMatch.id
     }
   }
 

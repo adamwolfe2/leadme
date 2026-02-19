@@ -63,18 +63,22 @@ export function TargetingPreferencesForm({
     initialData?.is_active ?? true
   )
 
-  // Live segment lookup — debounced check when industry or state changes
+  // Live segment lookup — debounced check for all industry+state combinations
   const [segmentStatus, setSegmentStatus] = useState<'idle' | 'checking' | 'found' | 'not_found'>('idle')
   const [liveSegmentName, setLiveSegmentName] = useState<string | null>(null)
+  const [coverageResults, setCoverageResults] = useState<Array<{
+    industry: string
+    state: string
+    has_segment: boolean
+    segment_name: string | null
+  }>>([])
   const segmentCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
-    const primaryIndustry = industries[0]
-    const primaryState = states[0]
-
-    if (!primaryIndustry || !primaryState) {
+    if (industries.length === 0 || states.length === 0) {
       setSegmentStatus('idle')
       setLiveSegmentName(null)
+      setCoverageResults([])
       return
     }
 
@@ -84,14 +88,32 @@ export function TargetingPreferencesForm({
     if (segmentCheckTimer.current) clearTimeout(segmentCheckTimer.current)
     segmentCheckTimer.current = setTimeout(async () => {
       try {
-        const res = await fetch(
-          `/api/leads/segment-check?industry=${encodeURIComponent(primaryIndustry)}&location=${encodeURIComponent(primaryState)}`
+        // Check all combinations (cap at first 3 industries x first 5 states to avoid excessive calls)
+        const checks = industries.slice(0, 3).flatMap((ind) =>
+          states.slice(0, 5).map((st) => ({ industry: ind, state: st }))
         )
-        if (!res.ok) { setSegmentStatus('idle'); return }
-        const data = await res.json()
-        if (data.has_segment) {
+
+        const results = await Promise.all(
+          checks.map(async ({ industry, state }) => {
+            try {
+              const res = await fetch(
+                `/api/leads/segment-check?industry=${encodeURIComponent(industry)}&location=${encodeURIComponent(state)}`
+              )
+              if (!res.ok) return { industry, state, has_segment: false, segment_name: null }
+              const data = await res.json()
+              return { industry, state, has_segment: data.has_segment, segment_name: data.segment_name ?? null }
+            } catch {
+              return { industry, state, has_segment: false, segment_name: null }
+            }
+          })
+        )
+
+        setCoverageResults(results)
+
+        const matched = results.filter((r) => r.has_segment)
+        if (matched.length > 0) {
           setSegmentStatus('found')
-          setLiveSegmentName(data.segment_name)
+          setLiveSegmentName(matched[0].segment_name)
         } else {
           setSegmentStatus('not_found')
           setLiveSegmentName(null)
@@ -280,33 +302,65 @@ export function TargetingPreferencesForm({
 
           {/* Live segment coverage indicator */}
           {industries.length > 0 && states.length > 0 && (
-            <div className="mt-3">
+            <div className="mt-3 space-y-2">
               {segmentStatus === 'checking' && (
                 <div className="flex items-center gap-2 text-xs text-zinc-400">
                   <span className="h-3 w-3 border-2 border-zinc-300 border-t-primary rounded-full animate-spin" />
                   Checking audience coverage...
                 </div>
               )}
-              {segmentStatus === 'found' && (
-                <div className="flex items-center gap-2 text-xs text-green-600 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
-                  <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>
-                    Audience matched: <strong>{liveSegmentName}</strong>
-                  </span>
-                </div>
-              )}
-              {segmentStatus === 'not_found' && (
-                <div className="flex items-center gap-2 text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-                  <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>
-                    No audience segment for {industries[0]} in {states[0]} yet — our team will set one up after you save.
-                  </span>
-                </div>
-              )}
+              {segmentStatus !== 'checking' && segmentStatus !== 'idle' && coverageResults.length > 0 && (() => {
+                const matched = coverageResults.filter((r) => r.has_segment)
+                const total = coverageResults.length
+                return (
+                  <>
+                    <div className={cn(
+                      'flex items-center gap-2 text-xs rounded-lg px-3 py-2 border',
+                      matched.length > 0
+                        ? 'text-green-600 bg-green-50 border-green-200'
+                        : 'text-amber-600 bg-amber-50 border-amber-200'
+                    )}>
+                      {matched.length > 0 ? (
+                        <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      ) : (
+                        <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      )}
+                      <span>
+                        {matched.length > 0
+                          ? `${matched.length} of ${total} combination${total > 1 ? 's' : ''} have live audience data`
+                          : `No audience segments found yet — our team will set them up after you save.`}
+                      </span>
+                    </div>
+                    {/* Show individual coverage breakdown when multiple combos */}
+                    {total > 1 && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                        {coverageResults.map((r) => (
+                          <div
+                            key={`${r.industry}-${r.state}`}
+                            className={cn(
+                              'flex items-center gap-1.5 text-[11px] rounded px-2 py-1',
+                              r.has_segment ? 'text-green-700 bg-green-50' : 'text-zinc-400 bg-zinc-50'
+                            )}
+                          >
+                            <span className={cn(
+                              'h-1.5 w-1.5 rounded-full shrink-0',
+                              r.has_segment ? 'bg-green-500' : 'bg-zinc-300'
+                            )} />
+                            <span className="truncate">
+                              {r.industry} · {r.state.toUpperCase()}
+                              {r.segment_name && <span className="text-green-600 ml-1">— {r.segment_name}</span>}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )
+              })()}
             </div>
           )}
         </div>

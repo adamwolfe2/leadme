@@ -12,6 +12,7 @@ import { createClient } from '@/lib/supabase/server'
 import { fetchLeadsFromSegment, type AudienceLabLead } from '@/lib/services/audiencelab.service'
 import { meetsQualityBar } from '@/lib/services/lead-quality.service'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { checkWorkspaceDuplicates } from '@/lib/services/deduplication.service'
 
 export async function POST(req: NextRequest) {
   try {
@@ -204,32 +205,23 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    // Dedup: check existing emails in this workspace to prevent duplicate delivery
-    const candidateEmails = leadsToInsert
-      .map((l) => l.email)
-      .filter((e): e is string => !!e)
+    // Workspace-scoped dedup: checks email + name+company combos + intra-batch
+    const duplicateIndices = await checkWorkspaceDuplicates(
+      userProfile.workspace_id!,
+      leadsToInsert.map((l) => ({
+        email: l.email,
+        first_name: l.first_name || null,
+        last_name: l.last_name || null,
+        company_name: l.company_name || null,
+        company_domain: l.metadata?.domain || null,
+      }))
+    )
 
-    let existingEmails = new Set<string>()
-    if (candidateEmails.length > 0) {
-      const { data: existing } = await supabase
-        .from('leads')
-        .select('email')
-        .eq('workspace_id', userProfile.workspace_id)
-        .in('email', candidateEmails)
-
-      existingEmails = new Set(
-        (existing || []).map((e: { email: string | null }) => e.email).filter(Boolean) as string[]
-      )
-    }
-
-    const dedupedLeads = leadsToInsert.filter((lead) => {
-      if (lead.email && existingEmails.has(lead.email)) return false
-      return true
-    })
+    const dedupedLeads = leadsToInsert.filter((_, i) => !duplicateIndices.has(i))
 
     const dedupCount = leadsToInsert.length - dedupedLeads.length
     if (dedupCount > 0) {
-      safeError(`[PopulateInitialLeads] Deduped ${dedupCount} leads already in workspace`, {
+      safeError(`[PopulateInitialLeads] Deduped ${dedupCount} leads (email + name+company) in workspace`, {
         workspace_id: userProfile.workspace_id,
       })
     }
