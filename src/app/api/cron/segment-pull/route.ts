@@ -28,6 +28,11 @@ import {
   type ALEnrichedProfile,
   type ALAudienceFilter,
 } from '@/lib/audiencelab/api-client'
+import {
+  normalizeALPayload,
+  isLeadWorthy,
+  isVerifiedEmail,
+} from '@/lib/audiencelab/field-map'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
@@ -51,9 +56,6 @@ function parseCSV(val: unknown): string[] {
 }
 
 export async function GET(request: NextRequest) {
-  // Disabled — marketplace leads use admin/partner upload, not auto-pull
-  return NextResponse.json({ skipped: true, reason: 'Disabled — marketplace leads use admin/partner upload' })
-
   // Auth: Vercel Cron sends CRON_SECRET automatically
   const authHeader = request.headers.get('authorization')
   const cronSecret = process.env.CRON_SECRET
@@ -288,7 +290,8 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * Insert a single lead from an AL audience record (UPPER_CASE fields).
+ * Insert a single lead from an AL audience record, applying the full quality gate.
+ * Uses normalizeALPayload + isLeadWorthy — same pipeline as the superpixel webhook.
  */
 async function insertLeadFromRecord(
   supabase: ReturnType<typeof createAdminClient>,
@@ -296,27 +299,38 @@ async function insertLeadFromRecord(
   workspaceId: string,
   combo: TargetingCombo
 ): Promise<'inserted' | 'skipped'> {
-  const personalEmails = parseCSV(record.PERSONAL_EMAILS)
-  const businessEmails = parseCSV(record.BUSINESS_EMAIL)
-  const email = personalEmails[0] || businessEmails[0]
+  // Normalize using the canonical field-map (handles UPPER_CASE AL fields)
+  const normalized = normalizeALPayload(record as Record<string, any>)
 
+  const email = normalized.primary_email
   if (!email) return 'skipped'
+
+  // Quality gate: verified email + proper first+last name + deliverability score ≥ 60
+  const worthy = isLeadWorthy({
+    eventType: 'segment_pull',
+    deliverabilityScore: normalized.deliverability_score,
+    hasVerifiedEmail: isVerifiedEmail(normalized.email_validation_status),
+    hasBusinessEmail: normalized.business_emails.length > 0,
+    hasPhone: normalized.phones.length > 0,
+    hasName: !!(normalized.first_name && normalized.last_name),
+    hasCompany: !!normalized.company_name?.trim(),
+  })
+
+  if (!worthy) return 'skipped'
 
   // Dedupe: email per workspace
   const { data: existing } = await supabase
     .from('leads')
     .select('id')
     .eq('workspace_id', workspaceId)
-    .eq('email', email.toLowerCase())
+    .eq('email', email)
     .limit(1)
     .maybeSingle()
 
   if (existing) return 'skipped'
 
-  const firstName = record.FIRST_NAME || ''
-  const lastName = record.LAST_NAME || ''
-  const fullName = [firstName, lastName].filter(Boolean).join(' ')
-  const phones = parseCSV(record.PERSONAL_PHONE || record.MOBILE_PHONE || record.DIRECT_NUMBER)
+  const phones = normalized.phones
+  const fullName = [normalized.first_name, normalized.last_name].filter(Boolean).join(' ')
 
   const { error } = await supabase
     .from('leads')
@@ -325,37 +339,37 @@ async function insertLeadFromRecord(
       source: 'audiencelab_pull',
       enrichment_status: 'enriched' as const,
       status: 'new',
-      first_name: firstName || null,
-      last_name: lastName || null,
+      first_name: normalized.first_name,
+      last_name: normalized.last_name,
       full_name: fullName || null,
-      email: email.toLowerCase(),
+      email,
       phone: phones[0] || null,
-      company_name: record.COMPANY_NAME || null,
-      company_industry: record.COMPANY_INDUSTRY || combo.industries[0] || null,
-      company_domain: record.COMPANY_DOMAIN || null,
-      city: record.PERSONAL_CITY || record.COMPANY_CITY || null,
-      state: record.PERSONAL_STATE || record.COMPANY_STATE || null,
-      state_code: record.PERSONAL_STATE || record.COMPANY_STATE || null,
+      company_name: normalized.company_name || null,
+      company_industry: normalized.company_industry || combo.industries[0] || null,
+      company_domain: normalized.company_domain || null,
+      city: normalized.city || null,
+      state: normalized.state || null,
+      state_code: normalized.state || null,
       country: 'US',
       country_code: 'US',
-      postal_code: record.PERSONAL_ZIP || record.COMPANY_ZIP || null,
-      job_title: record.JOB_TITLE || null,
-      lead_score: 60,
-      intent_score_calculated: 50,
+      postal_code: normalized.zip || null,
+      job_title: normalized.job_title || null,
+      lead_score: normalized.deliverability_score,
+      intent_score_calculated: normalized.deliverability_score,
       freshness_score: 100,
       has_email: true,
       has_phone: phones.length > 0,
-      validated: false,
+      validated: isVerifiedEmail(normalized.email_validation_status),
       enrichment_method: 'audiencelab_pull',
       tags: ['audiencelab', 'segment-pull', ...(combo.industries.map(i => i.toLowerCase()))],
       company_data: {
-        name: record.COMPANY_NAME || null,
-        industry: record.COMPANY_INDUSTRY || combo.industries[0] || null,
-        domain: record.COMPANY_DOMAIN || null,
+        name: normalized.company_name || null,
+        industry: normalized.company_industry || combo.industries[0] || null,
+        domain: normalized.company_domain || null,
       },
       company_location: {
-        city: record.PERSONAL_CITY || record.COMPANY_CITY || null,
-        state: record.PERSONAL_STATE || record.COMPANY_STATE || null,
+        city: normalized.city || null,
+        state: normalized.state || null,
         country: 'US',
       },
     })
