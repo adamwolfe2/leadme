@@ -139,7 +139,7 @@ const tools = [
     rank: 7,
     name: "Reply.io",
     tagline: "AI-Powered Sales Automation",
-    description: "Reply.io combines a prospect database, email/LinkedIn sequences, and AI writing assistance. A mid-market alternative to Apollo with strong automation and a focus on multi-channel sequences.",
+    description: "Reply.io combines a prospect database, email/LinkedIn sequences, and AI writing assistance. A mid-market alternative to Apollo with strong automation and a focus on multi-channel sequences. Looking for a Reply.io alternative? See how Cursive compares.",
     pricing: "$59–$299/month",
     bestFor: "Mid-market teams wanting multi-channel sales automation",
     highlights: [

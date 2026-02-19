@@ -113,6 +113,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/opensend-alternative',
     '/blog/datashopper-alternative',
     '/blog/audiencelab-alternative',
+    // New competitor alternative pages (created Feb 19 2026)
+    '/blog/bombora-alternative',
+    '/blog/leadiq-alternative',
+    '/blog/overloop-alternative',
+    '/blog/snov-io-alternative',
+    '/blog/reply-io-alternative',
+    '/blog/klenty-alternative',
     // Existing "cursive vs" pages
     '/blog/cursive-vs-rb2b',
     '/blog/cursive-vs-leadfeeder',

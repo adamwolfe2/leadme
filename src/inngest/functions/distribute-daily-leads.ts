@@ -205,43 +205,107 @@ export const distributeDailyLeads = inngest.createFunction(
             const firstName = user.full_name?.split(' ')[0] || 'there'
             const dashboardUrl = 'https://leads.meetcursive.com/leads'
             const leadCount = result.inserted
-            const previewLeads = result.leads.slice(0, 3)
-            const previewList = previewLeads
-              .map((l: AudienceLabLead) => `<li style="padding:6px 0;border-bottom:1px solid #f0f0f0;">${[l.FIRST_NAME, l.LAST_NAME].filter(Boolean).join(' ') || 'New Lead'}${l.COMPANY_NAME ? ` · <span style="color:#6b7280">${l.COMPANY_NAME}</span>` : ''}</li>`)
-              .join('')
+            const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
+
+            // Show top 5 leads as cards
+            const previewLeads = result.leads.slice(0, 5)
+
+            // Build lead cards (each lead is a mini-card with name, title, company, source badge)
+            const leadCards = previewLeads.map((l: AudienceLabLead) => {
+              const fullName = [l.FIRST_NAME, l.LAST_NAME].filter(Boolean).join(' ') || 'New Lead'
+              const title = l.JOB_TITLE || l.HEADLINE || null
+              const company = l.COMPANY_NAME || null
+              const hasEmail = !!(l.BUSINESS_VERIFIED_EMAILS?.[0] || l.BUSINESS_EMAIL || l.PERSONAL_VERIFIED_EMAILS?.[0])
+
+              return `
+<div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:10px;padding:16px 18px;margin-bottom:10px;">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+    <div style="flex:1;min-width:0;">
+      <p style="margin:0 0 2px;font-size:15px;font-weight:600;color:#111111;line-height:1.3;">${fullName}</p>
+      ${title ? `<p style="margin:0 0 4px;font-size:13px;color:#6b7280;line-height:1.4;">${title}</p>` : ''}
+      ${company ? `<p style="margin:0;font-size:13px;color:#374151;font-weight:500;">${company}</p>` : ''}
+    </div>
+    <span style="flex-shrink:0;margin-left:12px;display:inline-block;background:#ede9fe;color:#6d28d9;font-size:11px;font-weight:600;letter-spacing:0.04em;padding:3px 8px;border-radius:999px;white-space:nowrap;">Daily Lead</span>
+  </div>
+  ${hasEmail ? `<p style="margin:8px 0 0;font-size:12px;color:#10b981;font-weight:500;">&#10003; Verified email available</p>` : ''}
+</div>`
+            }).join('')
+
+            const remainingCount = leadCount - previewLeads.length
 
             await sendEmail({
               to: user.email,
-              subject: `${leadCount} new lead${leadCount === 1 ? '' : 's'} delivered — ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
-              html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f9fafb;padding:0;margin:0;">
-<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
-  <div style="background:linear-gradient(135deg,#007AFF,#0056CC);padding:28px 32px;">
-    <h1 style="color:#fff;margin:0;font-size:22px;font-weight:700;">${leadCount} fresh lead${leadCount === 1 ? '' : 's'} ready, ${firstName}!</h1>
-    <p style="color:rgba(255,255,255,0.85);margin:6px 0 0;font-size:14px;">Your daily batch just landed — scored, verified, and waiting for you.</p>
-  </div>
-  <div style="padding:24px 32px;">
-    ${previewLeads.length > 0 ? `
-    <p style="font-size:13px;color:#6b7280;margin:0 0 10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Today's leads include</p>
-    <ul style="list-style:none;margin:0 0 20px;padding:0;font-size:14px;color:#374151;">
-      ${previewList}
-      ${leadCount > 3 ? `<li style="padding:6px 0;color:#007AFF;font-size:13px;">+ ${leadCount - 3} more lead${leadCount - 3 === 1 ? '' : 's'}...</li>` : ''}
-    </ul>
-    ` : ''}
-    <a href="${dashboardUrl}" style="display:inline-block;background:linear-gradient(135deg,#007AFF,#0056CC);color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:600;font-size:14px;">View My Leads</a>
-    <p style="font-size:12px;color:#9ca3af;margin:20px 0 0;">Each lead can be enriched with phone, email, and LinkedIn for 1 credit.</p>
-  </div>
-  <div style="background:#f9fafb;padding:16px 32px;border-top:1px solid #e5e7eb;">
-    <p style="font-size:12px;color:#9ca3af;margin:0;">You receive ${leadCount} leads daily based on your industry and location targeting.</p>
-    <p style="font-size:12px;color:#9ca3af;margin:4px 0 0;"><a href="https://leads.meetcursive.com/my-leads/preferences" style="color:#007AFF;">Update preferences</a> · <a href="https://leads.meetcursive.com/activate" style="color:#007AFF;">Activate a campaign</a></p>
-  </div>
-</div>
+              subject: `Your ${leadCount} new lead${leadCount === 1 ? '' : 's'} ${leadCount === 1 ? 'is' : 'are'} ready — ${today}`,
+              html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Your new leads are ready</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0;padding:0;background:#f4f4f5;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:580px;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background:#6366f1;border-radius:12px 12px 0 0;padding:32px 36px 28px;">
+              <p style="margin:0 0 12px;font-size:13px;font-weight:700;letter-spacing:0.1em;color:rgba(255,255,255,0.7);text-transform:uppercase;">Cursive</p>
+              <h1 style="margin:0 0 8px;font-size:26px;font-weight:700;color:#ffffff;line-height:1.25;">Your ${leadCount} new lead${leadCount === 1 ? '' : 's'} ${leadCount === 1 ? 'is' : 'are'} ready</h1>
+              <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.82);line-height:1.5;">Hi ${firstName} — your daily batch just landed, scored, and verified. Here's a preview of who's waiting for you.</p>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="background:#ffffff;padding:28px 36px 24px;">
+
+              <!-- Section label -->
+              <p style="margin:0 0 14px;font-size:11px;font-weight:700;color:#9ca3af;letter-spacing:0.08em;text-transform:uppercase;">Today's top leads</p>
+
+              <!-- Lead cards -->
+              ${leadCards}
+
+              ${remainingCount > 0 ? `
+              <p style="margin:4px 0 24px;font-size:13px;color:#6366f1;font-weight:500;">+ ${remainingCount} more lead${remainingCount === 1 ? '' : 's'} in your dashboard</p>
+              ` : '<div style="height:20px;"></div>'}
+
+              <!-- CTA -->
+              <table cellpadding="0" cellspacing="0" role="presentation">
+                <tr>
+                  <td style="border-radius:8px;background:#6366f1;">
+                    <a href="${dashboardUrl}" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:8px;letter-spacing:0.01em;">View All Leads &rarr;</a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:20px 0 0;font-size:12px;color:#9ca3af;line-height:1.6;">Each lead can be enriched with verified phone, email, and LinkedIn for 1 credit.</p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background:#f9fafb;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px;padding:18px 36px;">
+              <p style="margin:0 0 6px;font-size:12px;color:#9ca3af;line-height:1.6;">
+                You receive leads daily based on your industry and location targeting.
+                <a href="https://leads.meetcursive.com/settings" style="color:#6366f1;text-decoration:none;">Update preferences</a>
+              </p>
+              <p style="margin:0;font-size:12px;color:#d1d5db;">
+                &copy; ${new Date().getFullYear()} Cursive &middot; <a href="https://leads.meetcursive.com/settings/notifications" style="color:#d1d5db;text-decoration:none;">Manage email notifications</a>
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>`,
-              text: `${leadCount} fresh leads delivered, ${firstName}!\n\nView them at: ${dashboardUrl}\n\n${previewLeads.map((l: AudienceLabLead) => `- ${[l.FIRST_NAME, l.LAST_NAME].filter(Boolean).join(' ')}${l.COMPANY_NAME ? ` (${l.COMPANY_NAME})` : ''}`).join('\n')}\n\nEach lead can be enriched with full contact details for 1 credit.`,
+              text: `Your ${leadCount} new lead${leadCount === 1 ? '' : 's'} ${leadCount === 1 ? 'is' : 'are'} ready — ${today}\n\nHi ${firstName},\n\nYour daily batch just landed. Here's a preview:\n\n${previewLeads.map((l: AudienceLabLead) => `- ${[l.FIRST_NAME, l.LAST_NAME].filter(Boolean).join(' ') || 'New Lead'}${l.JOB_TITLE || l.HEADLINE ? `, ${l.JOB_TITLE || l.HEADLINE}` : ''}${l.COMPANY_NAME ? ` at ${l.COMPANY_NAME}` : ''}`).join('\n')}${remainingCount > 0 ? `\n+ ${remainingCount} more leads` : ''}\n\nView all your leads: ${dashboardUrl}\n\nEach lead can be enriched with verified contact details for 1 credit.\n\n---\nCursive · Manage notifications: https://leads.meetcursive.com/settings/notifications`,
               tags: [{ name: 'type', value: 'daily-leads' }],
             })
 

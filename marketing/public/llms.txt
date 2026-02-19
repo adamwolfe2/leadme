@@ -136,6 +136,16 @@ These pages explain key concepts in B2B lead generation and marketing automation
 - **Seamless.AI Alternative**: https://meetcursive.com/blog/seamless-ai-alternative — 7 Seamless.AI alternatives compared for B2B contact data, real-time enrichment, and AI-powered outreach.
 - **Opensend Alternative**: https://meetcursive.com/blog/opensend-alternative — 7 Opensend alternatives at 70% ID rate with full outreach automation included.
 
+### Sales Engagement & Outreach Alternatives
+- **Reply.io Alternative**: https://meetcursive.com/blog/reply-io-alternative — Why teams are switching from Reply.io to Cursive for AI-powered outbound with warm visitor leads.
+- **Klenty Alternative**: https://meetcursive.com/blog/klenty-alternative — How Cursive replaces Klenty with intent-based lead identification and done-for-you campaigns.
+- **Overloop Alternative**: https://meetcursive.com/blog/overloop-alternative — Cursive vs Overloop: visitor identification vs cold email sequences.
+- **Snov.io Alternative**: https://meetcursive.com/blog/snov-io-alternative — Why Cursive's 95%+ verified data and AI outreach beats Snov.io for B2B prospecting.
+
+### Intent Data & Prospecting Alternatives
+- **Bombora Alternative**: https://meetcursive.com/blog/bombora-alternative — Cursive vs Bombora: person-level visitor ID at $1k/mo vs $25k+/yr enterprise intent data.
+- **LeadIQ Alternative**: https://meetcursive.com/blog/leadiq-alternative — How Cursive's warm visitor leads outperform LeadIQ's cold contact lookup for B2B sales.
+
 ### Competitor Roundups
 - **6sense Alternatives**: https://meetcursive.com/blog/6sense-alternatives-comparison — 7 ABM platforms compared as 6sense alternatives at a fraction of the cost.
 - **Apollo Alternatives**: https://meetcursive.com/blog/apollo-alternatives-comparison — 7 prospecting platforms compared as Apollo.io alternatives.
@@ -405,6 +415,6 @@ This site includes JSON-LD structured data on all key pages:
 
 ---
 
-**Last Updated**: 2026-02-18 (Session 5)
+**Last Updated**: 2026-02-19 (Session 6)
 **Format**: llms.txt (optimized for AI discovery and citation)
 **Learn more about llms.txt**: https://llmstxt.org

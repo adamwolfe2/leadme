@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useToast } from '@/lib/hooks/use-toast'
 
 interface PixelStatus {
@@ -22,12 +22,47 @@ interface PixelStatus {
   recent_events: number
 }
 
+interface VerifyResult {
+  verified: boolean
+  lastEventAt: string | null
+  eventCount: number
+  pixelId: string | null
+}
+
+function formatRelativeTime(isoString: string): string {
+  const diff = Date.now() - new Date(isoString).getTime()
+  const minutes = Math.floor(diff / 60_000)
+  const hours = Math.floor(diff / 3_600_000)
+  const days = Math.floor(diff / 86_400_000)
+  if (minutes < 1) return 'just now'
+  if (minutes < 60) return `${minutes}m ago`
+  if (hours < 24) return `${hours}h ago`
+  return `${days}d ago`
+}
+
 export default function PixelSettingsPage() {
   const toast = useToast()
   const queryClient = useQueryClient()
   const [websiteUrl, setWebsiteUrl] = useState('')
   const [websiteName, setWebsiteName] = useState('')
   const [copied, setCopied] = useState(false)
+  const [verifying, setVerifying] = useState(false)
+  const [verifyResult, setVerifyResult] = useState<VerifyResult | null>(null)
+
+  const handleVerifyInstallation = useCallback(async () => {
+    setVerifying(true)
+    setVerifyResult(null)
+    try {
+      const response = await fetch('/api/pixel/verify')
+      if (!response.ok) throw new Error('Verification request failed')
+      const result: VerifyResult = await response.json()
+      setVerifyResult(result)
+    } catch {
+      toast.error('Could not reach the verification service — please try again.')
+    } finally {
+      setVerifying(false)
+    }
+  }, [toast])
 
   const { data, isLoading } = useQuery<PixelStatus>({
     queryKey: ['pixel', 'status'],
@@ -214,8 +249,8 @@ export default function PixelSettingsPage() {
             </div>
           </div>
 
-          {hasInstallUrl && (
-            <div className="mt-4 pt-4 border-t border-zinc-100">
+          <div className="mt-4 pt-4 border-t border-zinc-100 flex flex-wrap items-center gap-3">
+            {hasInstallUrl && (
               <a
                 href={data.pixel.install_url!}
                 target="_blank"
@@ -227,6 +262,52 @@ export default function PixelSettingsPage() {
                 </svg>
                 Open Install Guide
               </a>
+            )}
+
+            <button
+              onClick={handleVerifyInstallation}
+              disabled={verifying}
+              className="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {verifying ? (
+                <>
+                  <svg className="h-4 w-4 animate-spin text-zinc-400" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                  </svg>
+                  Checking...
+                </>
+              ) : (
+                <>
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Verify Installation
+                </>
+              )}
+            </button>
+          </div>
+
+          {verifyResult !== null && (
+            <div className={`mt-3 flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium ${
+              verifyResult.verified
+                ? 'bg-green-50 text-green-800 border border-green-200'
+                : 'bg-red-50 text-red-800 border border-red-200'
+            }`}>
+              {verifyResult.verified ? (
+                <>
+                  <span className="text-green-600">&#10003;</span>
+                  Pixel Active —{' '}
+                  {verifyResult.lastEventAt
+                    ? `last event ${formatRelativeTime(verifyResult.lastEventAt)}`
+                    : `${verifyResult.eventCount} event${verifyResult.eventCount === 1 ? '' : 's'} in the last 7 days`}
+                </>
+              ) : (
+                <>
+                  <span className="text-red-600">&#10007;</span>
+                  No events detected — check installation
+                </>
+              )}
             </div>
           )}
         </div>

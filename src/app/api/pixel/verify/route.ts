@@ -1,0 +1,98 @@
+import { NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
+
+/**
+ * GET /api/pixel/verify
+ *
+ * Checks whether the workspace's pixel has received any events in the last 7 days.
+ * Returns verification status, last event timestamp, event count, and pixel ID.
+ */
+export async function GET() {
+  try {
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Resolve workspace_id for this user
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('workspace_id')
+      .eq('auth_user_id', user.id)
+      .single()
+
+    if (userError || !userData?.workspace_id) {
+      return NextResponse.json({ error: 'No workspace found' }, { status: 400 })
+    }
+
+    // Get the pixel for this workspace (RLS enforces isolation)
+    const { data: pixel, error: pixelError } = await supabase
+      .from('audiencelab_pixels')
+      .select('pixel_id')
+      .eq('workspace_id', userData.workspace_id)
+      .maybeSingle()
+
+    if (pixelError) {
+      safeError('[API] Pixel verify — failed to fetch pixel:', pixelError)
+    }
+
+    if (!pixel) {
+      return NextResponse.json({
+        verified: false,
+        lastEventAt: null,
+        eventCount: 0,
+        pixelId: null,
+      })
+    }
+
+    // Check for events in the last 7 days
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+
+    const { count, error: countError } = await supabase
+      .from('audiencelab_events')
+      .select('*', { count: 'exact', head: true })
+      .eq('pixel_id', pixel.pixel_id)
+      .gte('received_at', sevenDaysAgo)
+
+    if (countError) {
+      safeError('[API] Pixel verify — failed to count events:', countError)
+    }
+
+    const eventCount = count ?? 0
+
+    // Fetch the most recent event timestamp (only if there are events)
+    let lastEventAt: string | null = null
+    if (eventCount > 0) {
+      const { data: latestEvent, error: latestError } = await supabase
+        .from('audiencelab_events')
+        .select('received_at')
+        .eq('pixel_id', pixel.pixel_id)
+        .gte('received_at', sevenDaysAgo)
+        .order('received_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+
+      if (latestError) {
+        safeError('[API] Pixel verify — failed to fetch latest event:', latestError)
+      } else {
+        lastEventAt = latestEvent?.received_at ?? null
+      }
+    }
+
+    return NextResponse.json({
+      verified: eventCount > 0,
+      lastEventAt,
+      eventCount,
+      pixelId: pixel.pixel_id,
+    })
+  } catch (error) {
+    safeError('[API] Pixel verify error:', error)
+    return NextResponse.json(
+      { error: 'Failed to verify pixel installation' },
+      { status: 500 }
+    )
+  }
+}
