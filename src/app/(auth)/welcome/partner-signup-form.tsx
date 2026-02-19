@@ -243,7 +243,7 @@ export function PartnerSignupForm({ vslAnswers, onSubmit, onBack, error }: Partn
 
               <p className="text-xs text-muted-foreground text-center">
                 Partner questions?{' '}
-                <a href="mailto:hey@meetcursive.com" className="text-primary hover:underline">hey@meetcursive.com</a>
+                <a href="mailto:hello@meetcursive.com" className="text-primary hover:underline">hello@meetcursive.com</a>
               </p>
             </motion.form>
           </motion.div>

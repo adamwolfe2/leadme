@@ -21,7 +21,7 @@ export function OrganizationSchema() {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'Customer Support',
-      email: 'hey@meetcursive.com',
+      email: 'hello@meetcursive.com',
     },
   }
 

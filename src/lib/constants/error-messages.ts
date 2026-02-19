@@ -65,7 +65,7 @@ export const ERROR_MESSAGES = {
   }),
   PARTNER_NOT_APPROVED: {
     message: 'Your partner account is pending approval.',
-    help: 'Please contact support@meetcursive.com for assistance.',
+    help: 'Please contact hello@meetcursive.com for assistance.',
     action: 'contact_support',
   },
 

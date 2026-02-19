@@ -76,7 +76,7 @@ export function OnboardingSuccess({ userType, email, isMarketplace }: Onboarding
           <motion.div variants={staggerItemVariants} className="space-y-4">
             <p className="text-sm text-muted-foreground">
               Didn&apos;t receive the email? Check your spam folder or{' '}
-              <a href="mailto:hey@meetcursive.com" className="text-primary hover:underline">
+              <a href="mailto:hello@meetcursive.com" className="text-primary hover:underline">
                 contact support
               </a>
             </p>

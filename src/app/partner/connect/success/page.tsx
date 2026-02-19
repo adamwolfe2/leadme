@@ -162,7 +162,7 @@ function PartnerConnectSuccessContent() {
                 Try Again
               </Button>
               <a
-                href="mailto:support@meetcursive.com"
+                href="mailto:hello@meetcursive.com"
                 className="px-8 py-3 border-2 border-zinc-900 text-zinc-900 font-semibold rounded-lg hover:bg-zinc-50 transition-colors inline-block"
               >
                 Contact Support

@@ -227,7 +227,7 @@ export function BusinessSignupForm({ vslAnswers, onSubmit, onBack, error }: Busi
 
               <p className="text-xs text-muted-foreground text-center">
                 Questions?{' '}
-                <a href="mailto:hey@meetcursive.com" className="text-primary hover:underline">hey@meetcursive.com</a>
+                <a href="mailto:hello@meetcursive.com" className="text-primary hover:underline">hello@meetcursive.com</a>
               </p>
             </motion.form>
           </motion.div>

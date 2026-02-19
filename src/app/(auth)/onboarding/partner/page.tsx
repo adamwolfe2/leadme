@@ -161,8 +161,8 @@ export default function PartnerOnboardingPage() {
         {/* Footer */}
         <p className="text-center text-sm text-zinc-500 mt-6">
           Questions about partnership?{' '}
-          <a href="mailto:hey@meetcursive.com" className="text-emerald-600 hover:underline">
-            hey@meetcursive.com
+          <a href="mailto:hello@meetcursive.com" className="text-emerald-600 hover:underline">
+            hello@meetcursive.com
           </a>
         </p>
 

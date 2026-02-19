@@ -192,8 +192,8 @@ export default function RoleSelectionPage() {
         {/* Footer */}
         <p className="text-center text-sm text-zinc-500 mt-8">
           Questions?{' '}
-          <a href="mailto:hey@meetcursive.com" className="text-primary hover:underline">
-            hey@meetcursive.com
+          <a href="mailto:hello@meetcursive.com" className="text-primary hover:underline">
+            hello@meetcursive.com
           </a>
         </p>
       </div>

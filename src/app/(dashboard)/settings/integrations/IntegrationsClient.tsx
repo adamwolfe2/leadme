@@ -787,10 +787,10 @@ export default function IntegrationsClient() {
             </pre>
             <p className="text-sm text-zinc-500 mt-3">
               Need help? Contact <a
-                href="mailto:support@meetcursive.com"
+                href="mailto:hello@meetcursive.com"
                 className="text-primary hover:text-primary/90 font-medium"
               >
-                support@meetcursive.com
+                hello@meetcursive.com
               </a> for integration assistance.
             </p>
           </div>

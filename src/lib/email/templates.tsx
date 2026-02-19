@@ -811,7 +811,7 @@ export function PartnerApprovedEmail({
       </div>
 
       <Text style={{ color: '#6b7280', fontSize: '12px' }}>
-        Questions? Check out our partner documentation or contact our support team at hey@meetcursive.com
+        Questions? Check out our partner documentation or contact our support team at hello@meetcursive.com
       </Text>
     </EmailLayout>
   )

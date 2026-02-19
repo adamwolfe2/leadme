@@ -65,7 +65,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-lg font-semibold text-gray-900 mt-8 mb-3">9. Contact</h2>
             <p>
-              For privacy inquiries, contact us at support@meetcursive.com.
+              For privacy inquiries, contact us at hello@meetcursive.com.
             </p>
           </section>
         </div>
