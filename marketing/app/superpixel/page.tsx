@@ -27,8 +27,8 @@ const faqs = [
     answer: "0.05% — verified against millions of records. Industry average for derivative-based data is 20%+.",
   },
   {
-    question: "Can I run V4 alongside my existing pixel?",
-    answer: "Yes. V4 runs alongside V3 simultaneously on the same site with no conflicts.",
+    question: "Can I run the Super Pixel alongside my existing pixel?",
+    answer: "Yes. The Super Pixel runs alongside other pixels simultaneously on the same site with no conflicts.",
   },
   {
     question: "How do I get leads into my CRM?",
@@ -41,7 +41,7 @@ const faqs = [
 ]
 
 const superPixelFeatures = [
-  "V4 Pixel installation & setup",
+  "Super Pixel installation & setup",
   "Verified business email on every match",
   "Verified mobile number on every match",
   "Company name, industry & description",
@@ -79,7 +79,7 @@ export default function SuperPixelPage() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#007AFF] opacity-75" />
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-[#007AFF]" />
                   </span>
-                  Introducing Super Pixel V4 — Our Most Advanced Model Yet
+                  Introducing the Cursive Super Pixel — Our Most Advanced Model Yet
                 </div>
 
                 <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6 leading-tight">
@@ -90,7 +90,7 @@ export default function SuperPixelPage() {
                 </h1>
 
                 <p className="text-xl text-gray-600 mb-4 max-w-3xl mx-auto">
-                  The Super Pixel V4 is the only visitor identification engine built on a{" "}
+                  The Super Pixel is the only visitor identification engine built on a{" "}
                   <strong className="text-gray-900 font-semibold">proprietary identity graph</strong> — not resold middleman data.
                   It delivers verified leads with name, email, mobile, company, and intent score within minutes of every visit.
                 </p>
@@ -373,7 +373,7 @@ export default function SuperPixelPage() {
                   {
                     step: "2",
                     title: "We Install & Configure",
-                    desc: "Our team installs the V4 Pixel, configures CRM sync, sets up bot/internal traffic filters, and connects your chosen integrations.",
+                    desc: "Our team installs the Super Pixel, configures CRM sync, sets up bot/internal traffic filters, and connects your chosen integrations.",
                     icon: Zap,
                   },
                   {
@@ -608,7 +608,7 @@ export default function SuperPixelPage() {
           <DashboardCTA
             headline="Install the Super Pixel."
             subheadline="Start getting leads."
-            description="Book a call and we'll set up the V4 Super Pixel on your website within 48 hours. Start seeing verified, enriched, intent-scored visitors flowing into your CRM automatically."
+            description="Book a call and we'll set up the Super Pixel on your website within 48 hours. Start seeing verified, enriched, intent-scored visitors flowing into your CRM automatically."
             ctaText="Book Your Free Demo Call"
             ctaUrl={CAL_LINK}
           />
@@ -632,7 +632,7 @@ export default function SuperPixelPage() {
                     <span className="text-white font-semibold text-sm uppercase tracking-wide block">
                       New Lead Identified
                     </span>
-                    <span className="text-blue-200 text-xs">Cursive Super Pixel V4</span>
+                    <span className="text-blue-200 text-xs">Cursive Super Pixel</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-400 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
@@ -705,9 +705,9 @@ export default function SuperPixelPage() {
       <MachineView>
         <MachineContent>
           <div className="mb-12 pb-6 border-b border-gray-200">
-            <h1 className="text-2xl font-bold mb-4">Cursive Super Pixel V4 — Visitor Identification & Lead Generation</h1>
+            <h1 className="text-2xl font-bold mb-4">Cursive Super Pixel — Visitor Identification & Lead Generation</h1>
             <p className="text-gray-700 leading-relaxed">
-              The Cursive Super Pixel V4 identifies anonymous website visitors and delivers enriched, verified lead records — including name, verified email, mobile number, company, and intent score — in real time. Built on a proprietary identity graph with direct data licensing, NCOA refresh every 30 days, and UID2 integration. Starting at $1,000/month flat. Setup in 24–48 hours.
+              The Cursive Super Pixel identifies anonymous website visitors and delivers enriched, verified lead records — including name, verified email, mobile number, company, and intent score — in real time. Built on a proprietary identity graph with direct data licensing, NCOA refresh every 30 days, and UID2 integration. Starting at $1,000/month flat. Setup in 24–48 hours.
             </p>
           </div>
 
