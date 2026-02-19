@@ -89,6 +89,33 @@ export async function requireAdmin(): Promise<{ id: string; email: string }> {
 }
 
 /**
+ * Require admin authentication using workspace role (owner/admin).
+ * Use this in SDR API routes — matches the layout's auth pattern via users.role,
+ * not the platform_admins table used by requireAdmin().
+ */
+export async function requireAdminRole(): Promise<{ id: string; email: string }> {
+  const supabase = await createClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user ?? null
+
+  if (!user?.id) {
+    throw new Error('Unauthorized: Admin access required')
+  }
+
+  const { data: userData } = await supabase
+    .from('users')
+    .select('id, email, role')
+    .eq('auth_user_id', user.id)
+    .single()
+
+  if (!userData || (userData.role !== 'owner' && userData.role !== 'admin')) {
+    throw new Error('Unauthorized: Admin access required')
+  }
+
+  return { id: userData.id, email: userData.email || user.email || '' }
+}
+
+/**
  * Get current admin's ID from platform_admins table
  */
 export async function getCurrentAdminId(): Promise<string | null> {

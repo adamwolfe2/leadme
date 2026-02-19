@@ -47,83 +47,43 @@ export default async function AdminLayout({
   return (
     <div className="min-h-screen bg-zinc-50">
       {/* Admin Header */}
-      <header className="sticky top-0 z-50 bg-zinc-900 text-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
+      <header className="sticky top-0 z-50 bg-white border-b border-zinc-200 shadow-sm">
+        <div className="max-w-[1400px] mx-auto px-6">
+          <div className="flex items-center justify-between h-14">
             <div className="flex items-center gap-6">
-              <Link href="/admin/dashboard" className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/90 text-white">
-                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+              <Link href="/admin/dashboard" className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 text-white">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                   </svg>
                 </div>
-                <span className="font-semibold">Cursive Admin</span>
+                <span className="text-sm font-semibold text-zinc-900">Cursive Admin</span>
               </Link>
 
-              <nav className="hidden md:flex items-center gap-4">
-                <Link
-                  href="/admin/dashboard"
-                  className="text-sm text-zinc-300 hover:text-white transition-colors"
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  href="/admin/accounts"
-                  className="text-sm text-zinc-300 hover:text-white transition-colors"
-                >
-                  Accounts
-                </Link>
-                <Link
-                  href="/admin/services/subscriptions"
-                  className="text-sm text-zinc-300 hover:text-white transition-colors"
-                >
-                  Services
-                </Link>
-                <Link
-                  href="/admin/waitlist"
-                  className="text-sm text-zinc-300 hover:text-white transition-colors"
-                >
-                  Waitlist
-                </Link>
-                <Link
-                  href="/admin/support"
-                  className="text-sm text-zinc-300 hover:text-white transition-colors"
-                >
-                  Support
-                </Link>
-                <Link
-                  href="/admin/requests"
-                  className="text-sm text-zinc-300 hover:text-white transition-colors"
-                >
-                  Requests
-                </Link>
-                <Link
-                  href="/admin/premium-requests"
-                  className="text-sm text-zinc-300 hover:text-white transition-colors"
-                >
-                  Premium
-                </Link>
-                <Link
-                  href="/admin/leads"
-                  className="text-sm text-zinc-300 hover:text-white transition-colors"
-                >
-                  Leads
-                </Link>
-                <Link
-                  href="/admin/analytics"
-                  className="text-sm text-zinc-300 hover:text-white transition-colors"
-                >
-                  Analytics
-                </Link>
-                <Link
-                  href="/admin/payouts"
-                  className="text-sm text-zinc-300 hover:text-white transition-colors"
-                >
-                  Payouts
-                </Link>
+              <nav className="hidden md:flex items-center gap-1">
+                {[
+                  { href: '/admin/dashboard', label: 'Dashboard' },
+                  { href: '/admin/accounts', label: 'Accounts' },
+                  { href: '/admin/services/subscriptions', label: 'Services' },
+                  { href: '/admin/waitlist', label: 'Waitlist' },
+                  { href: '/admin/support', label: 'Support' },
+                  { href: '/admin/requests', label: 'Requests' },
+                  { href: '/admin/premium-requests', label: 'Premium' },
+                  { href: '/admin/leads', label: 'Leads' },
+                  { href: '/admin/analytics', label: 'Analytics' },
+                  { href: '/admin/payouts', label: 'Payouts' },
+                ].map(({ href, label }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className="px-3 py-1.5 text-sm text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors"
+                  >
+                    {label}
+                  </Link>
+                ))}
                 <Link
                   href="/admin/sdr"
-                  className="text-sm text-zinc-300 hover:text-white transition-colors flex items-center"
+                  className="px-3 py-1.5 text-sm text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors flex items-center"
                 >
                   AI SDR
                   {needsApprovalCount > 0 && (
@@ -135,11 +95,11 @@ export default async function AdminLayout({
               </nav>
             </div>
 
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-zinc-400">{adminEmail}</span>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-zinc-400 hidden lg:block">{adminEmail}</span>
               <Link
                 href="/dashboard"
-                className="text-sm text-zinc-300 hover:text-white transition-colors"
+                className="px-3 py-1.5 text-xs font-medium text-zinc-600 hover:text-zinc-900 border border-zinc-200 rounded-md hover:bg-zinc-50 transition-colors"
               >
                 Exit Admin
               </Link>

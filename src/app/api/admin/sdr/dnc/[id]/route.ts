@@ -1,7 +1,7 @@
 export const runtime = 'nodejs'
 
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth/admin'
+import { requireAdminRole as requireAdmin } from '@/lib/auth/admin'
 import { DncRepository } from '@/lib/repositories/dnc.repository'
 import { safeError } from '@/lib/utils/log-sanitizer'
 

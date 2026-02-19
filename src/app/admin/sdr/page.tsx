@@ -1,17 +1,10 @@
 export const dynamic = 'force-dynamic'
 
-import { redirect } from 'next/navigation'
-import { requireAdmin, getAllWorkspaces } from '@/lib/auth/admin'
+import { getAllWorkspaces } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { SdrLandingClient } from './SdrLandingClient'
 
 export default async function SdrPage() {
-  try {
-    await requireAdmin()
-  } catch {
-    redirect('/dashboard?error=admin_required')
-  }
-
   const supabase = createAdminClient()
   const result = await getAllWorkspaces({ limit: 200 })
   const workspaces = result.workspaces || []

@@ -1,7 +1,5 @@
 export const dynamic = 'force-dynamic'
 
-import { redirect } from 'next/navigation'
-import { requireAdmin } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { SdrConfigRepository } from '@/lib/repositories/sdr-config.repository'
 import { ConfigWizard } from './ConfigWizard'
@@ -11,12 +9,6 @@ export default async function SdrConfigPage({
 }: {
   params: Promise<{ workspaceId: string }>
 }) {
-  try {
-    await requireAdmin()
-  } catch {
-    redirect('/dashboard?error=admin_required')
-  }
-
   const { workspaceId } = await params
 
   const supabase = createAdminClient()

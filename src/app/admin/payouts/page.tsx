@@ -82,19 +82,20 @@ export default function AdminPayoutsPage() {
   }, [])
 
   useEffect(() => {
-    fetchPayouts()
-  }, [statusFilter])
+    if (authChecked && isAdmin) fetchPayouts()
+  }, [statusFilter, authChecked, isAdmin])
 
   const fetchPayouts = async () => {
     setLoading(true)
     try {
       const url = `/api/admin/payouts?status=${statusFilter}`
       const response = await fetch(url)
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
       const data = await response.json()
 
       if (data.success) {
-        setPayouts(data.payouts)
-        setTotals(data.totals)
+        setPayouts(data.payouts || [])
+        setTotals(data.totals || { pending_amount: 0, approved_amount: 0, completed_amount: 0, rejected_amount: 0 })
       }
     } catch (error) {
       console.error('Failed to fetch payouts:', error)
