@@ -129,7 +129,7 @@ export default function FreeAuditPage() {
             {/* Trust Indicators */}
             <div className="mt-12 text-center">
               <p className="text-sm text-gray-500 mb-4">
-                Trusted by leading B2B companies to identify and convert website visitors
+                Trusted by 200+ B2B teams to identify and convert website visitors
               </p>
             </div>
           </div>

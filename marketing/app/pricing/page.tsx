@@ -16,12 +16,13 @@ export default function PricingPage() {
   const [activeTab, setActiveTab] = useState<'marketplace' | 'services'>('services')
 
   // Product Schema for SEO
+  const baseUrl = 'https://www.meetcursive.com'
   const productSchema = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Product",
-        "@id": "https://www.meetcursive.com/pricing#cursive-data",
+        "@id": `${baseUrl}/pricing#cursive-data`,
         "name": "Cursive Data",
         "description": "Verified B2B contacts delivered monthly. Custom targeting based on your ICP with 95%+ email deliverability.",
         "brand": {
@@ -39,7 +40,7 @@ export default function PricingPage() {
       },
       {
         "@type": "Product",
-        "@id": "https://www.meetcursive.com/pricing#cursive-outbound",
+        "@id": `${baseUrl}/pricing#cursive-outbound`,
         "name": "Cursive Outbound",
         "description": "Done-for-you email campaigns with AI-powered personalization, email infrastructure setup, and campaign optimization.",
         "brand": {
@@ -61,7 +62,7 @@ export default function PricingPage() {
       },
       {
         "@type": "Product",
-        "@id": "https://www.meetcursive.com/pricing#cursive-pipeline",
+        "@id": `${baseUrl}/pricing#cursive-pipeline`,
         "name": "Cursive Pipeline",
         "description": "Full-stack AI SDR solution with multi-channel campaigns, unlimited lead enrichment, and dedicated success manager.",
         "brand": {
@@ -83,7 +84,7 @@ export default function PricingPage() {
       },
       {
         "@type": "Product",
-        "@id": "https://www.meetcursive.com/pricing#marketplace-starter",
+        "@id": `${baseUrl}/pricing#marketplace-starter`,
         "name": "Cursive Marketplace - Starter",
         "description": "100 self-serve lead credits for on-demand B2B prospecting.",
         "brand": {

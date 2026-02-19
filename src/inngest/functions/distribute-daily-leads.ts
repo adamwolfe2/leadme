@@ -41,8 +41,6 @@ export const distributeDailyLeads = inngest.createFunction(
 
     // Step 1: Fetch all active users
     const users = await step.run('fetch-active-users', async () => {
-      console.log('[DailyLeads] Fetching active users...')
-
       const { data, error } = await supabase
         .from('users')
         .select('id, email, full_name, workspace_id, plan, daily_lead_limit, industry_segment, location_segment, ghl_sub_account_id')
@@ -50,16 +48,13 @@ export const distributeDailyLeads = inngest.createFunction(
         .not('workspace_id', 'is', null)
 
       if (error) {
-        console.error('[DailyLeads] Failed to fetch users:', error)
         throw new Error(`Failed to fetch users: ${error.message}`)
       }
 
-      console.log('[DailyLeads] Found active users:', data.length)
       return data
     })
 
     if (!users || users.length === 0) {
-      console.log('[DailyLeads] No active users found')
       return { processed: 0, success: 0, failed: 0 }
     }
 
@@ -70,15 +65,8 @@ export const distributeDailyLeads = inngest.createFunction(
     for (const user of users) {
       try {
         const result = await step.run(`distribute-leads-${user.id}`, async () => {
-          console.log('[DailyLeads] Processing user:', {
-            id: user.id,
-            email: user.email,
-            plan: user.plan,
-          })
-
           // Skip users without industry/location configured
           if (!user.industry_segment || !user.location_segment) {
-            console.warn('[DailyLeads] User missing segment data:', user.id)
             return
           }
 
@@ -95,11 +83,6 @@ export const distributeDailyLeads = inngest.createFunction(
             .lte('delivered_at', `${today}T23:59:59`)
 
           if (todayCount && todayCount >= dailyLimit) {
-            console.log('[DailyLeads] User already received daily limit today:', {
-              userId: user.id,
-              todayCount,
-              dailyLimit,
-            })
             return
           }
 
@@ -114,11 +97,6 @@ export const distributeDailyLeads = inngest.createFunction(
             .single()
 
           if (mappingError || !segmentMapping) {
-            console.warn('[DailyLeads] No audience mapping for user:', {
-              userId: user.id,
-              industry: user.industry_segment,
-              location: user.location_segment,
-            })
             return
           }
 
@@ -130,7 +108,6 @@ export const distributeDailyLeads = inngest.createFunction(
           })
 
           if (rawLeads.length === 0) {
-            console.log('[DailyLeads] No new leads for user:', user.id)
             return
           }
 
@@ -146,17 +123,10 @@ export const distributeDailyLeads = inngest.createFunction(
             .map((s: { lead: AudienceLabLead }) => s.lead)
 
           if (qualityLeads.length === 0) {
-            console.log('[DailyLeads] No quality leads for user:', user.id)
             return
           }
 
           const leads = qualityLeads
-
-          console.log('[DailyLeads] Selected quality leads:', {
-            userId: user.id,
-            fetched: rawLeads.length,
-            qualified: leads.length,
-          })
 
           // Dedup: check for existing leads with same email in this workspace
           const leadEmails = leads
@@ -211,7 +181,6 @@ export const distributeDailyLeads = inngest.createFunction(
             .filter((lead) => meetsQualityBar(lead).passes)
 
           if (leadsToInsert.length === 0) {
-            console.log('[DailyLeads] All leads were duplicates for user:', user.id)
             return
           }
 
@@ -220,14 +189,8 @@ export const distributeDailyLeads = inngest.createFunction(
             .insert(leadsToInsert)
 
           if (insertError) {
-            console.error('[DailyLeads] Failed to insert leads:', insertError)
             throw new Error(`Failed to insert leads: ${insertError.message}`)
           }
-
-          console.log('[DailyLeads] Leads saved to database:', {
-            userId: user.id,
-            count: leadsToInsert.length,
-          })
 
           // Return data needed for notification/GHL steps
           return {
@@ -282,7 +245,6 @@ export const distributeDailyLeads = inngest.createFunction(
               tags: [{ name: 'type', value: 'daily-leads' }],
             })
 
-            console.log('[DailyLeads] Email sent to:', user.email)
           })
 
           // Sync to GHL if user has CRM enabled
@@ -303,30 +265,15 @@ export const distributeDailyLeads = inngest.createFunction(
                 ['cursive-daily-lead', user.industry_segment]
               )
 
-              console.log('[DailyLeads] Synced to GHL:', {
-                userId: user.id,
-                synced,
-                total: ghlLeads.length,
-              })
             })
           }
         }
 
         successCount++
-      } catch (error) {
-        console.error('[DailyLeads] Failed to process user:', {
-          userId: user.id,
-          error,
-        })
+      } catch {
         failedCount++
       }
     }
-
-    console.log('[DailyLeads] Distribution complete:', {
-      total: users.length,
-      success: successCount,
-      failed: failedCount,
-    })
 
     return {
       processed: users.length,

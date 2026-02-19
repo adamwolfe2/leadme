@@ -113,8 +113,8 @@ function IntegrationCard({ integration, toast }: { integration: { name: string; 
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-semibold text-zinc-900">{integration.name}</h3>
             {integration.premium && (
-              <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary border border-primary/20">
-                Premium
+              <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-yellow-50 text-yellow-700 border border-yellow-200">
+                Coming Soon
               </span>
             )}
           </div>
