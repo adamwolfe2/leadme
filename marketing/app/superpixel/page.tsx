@@ -20,11 +20,11 @@ const faqs = [
   },
   {
     question: "Where does your data come from?",
-    answer: "We license directly from primary data providers and maintain our own proprietary identity graph. We are not a reseller. We do not buy derivatives. Our data is refreshed via NCOA every 30 days and email-verified at 10–15M records per day.",
+    answer: "We go straight to the source — licensing directly from primary data providers and maintaining our own proprietary identity graph. Our data is refreshed via NCOA every 30 days and email-verified at 10–15M records per day.",
   },
   {
     question: "What's the bounce rate on your emails?",
-    answer: "0.05% — verified against millions of records. Industry average for derivative-based data is 20%+.",
+    answer: "0.05% — verified against millions of records. Industry average for low-quality, diluted data is 20%+. The difference is sourcing.",
   },
   {
     question: "Can I run the Super Pixel alongside my existing pixel?",
@@ -91,7 +91,7 @@ export default function SuperPixelPage() {
 
                 <p className="text-xl text-gray-600 mb-4 max-w-3xl mx-auto">
                   The Super Pixel is the only visitor identification engine built on a{" "}
-                  <strong className="text-gray-900 font-semibold">proprietary identity graph</strong> — not resold middleman data.
+                  <strong className="text-gray-900 font-semibold">proprietary identity graph sourced directly from primary providers</strong>.
                   It delivers verified leads with name, email, mobile, company, and intent score within minutes of every visit.
                 </p>
                 <p className="text-base text-gray-500 mb-8 max-w-2xl mx-auto">
@@ -283,13 +283,13 @@ export default function SuperPixelPage() {
                   The Technology
                 </span>
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                  Not a Reseller Product.
+                  Cheap Data Costs More.
                   <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
-                    A Proprietary Engine.
+                    Ours Comes From the Source.
                   </span>
                 </h2>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                  Every other pixel tool is buying derivative data from the same 3–4 middlemen. We own our identity graph. Here's why that matters.
+                  Diluted data that&apos;s passed through multiple hands bounces, wastes budget, and erodes your sender reputation. We go straight to the source — and own the infrastructure to prove it.
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
@@ -297,12 +297,12 @@ export default function SuperPixelPage() {
                   {
                     icon: Shield,
                     title: "Proprietary Identity Graph",
-                    desc: "Not sourced from a reseller — not a derivative. We built and own our identity graph. No competitor can replicate this overnight.",
+                    desc: "We built and own our identity graph outright — sourced from the same primary providers others can't access directly. No competitor can replicate this overnight.",
                   },
                   {
                     icon: Database,
-                    title: "Direct Licensing — No Derivatives",
-                    desc: "We go directly to primary data providers. Every time data passes through another reseller it decays. Ours doesn't.",
+                    title: "Primary Source Licensing",
+                    desc: "We license directly from primary data providers. Data that passes through multiple hands decays — ours doesn't. That's why our bounce rate is 0.05% while the industry sits at 20%+.",
                   },
                   {
                     icon: Globe,
@@ -725,7 +725,7 @@ export default function SuperPixelPage() {
 
           <MachineSection title="Technology Differentiators">
             <MachineList items={[
-              "Proprietary identity graph — not a reseller, not a derivative",
+              "Proprietary identity graph sourced directly from primary providers",
               "Direct licensing with primary data providers",
               "UID2 integration — the only universal identifier across US websites",
               "NCOA address verification refreshed every 30 days",
