@@ -1,6 +1,7 @@
+export const runtime = 'nodejs'
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest) {
 
     const { range } = parseResult.data
 
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     // Calculate date range
     const now = new Date()

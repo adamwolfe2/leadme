@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { NavBar } from '@/components/nav-bar'
 import { useToast } from '@/lib/hooks/use-toast'
 
 interface RoutingRule {
@@ -183,7 +182,6 @@ export default function AdminDashboard() {
 
   return (
     <>
-      <NavBar />
       <div className="min-h-screen bg-white">
         <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Page Header */}
@@ -419,7 +417,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
-
     </>
   )
 }

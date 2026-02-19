@@ -62,30 +62,44 @@ export async function getCurrentAdminEmail(): Promise<string | null> {
 
 /**
  * Require admin authentication
- * Throws if not authenticated as admin
- * Returns admin info (id, email) for audit logging
+ * Checks platform_admins table first, then falls back to users.role (owner/admin).
+ * This ensures both legacy platform_admins and role-based admins can access all routes.
  */
 export async function requireAdmin(): Promise<{ id: string; email: string }> {
   const supabase = await createClient()
   const { data: { session } } = await supabase.auth.getSession()
   const user = session?.user ?? null
 
-  if (!user?.email) {
+  if (!user?.id) {
     throw new Error('Unauthorized: Admin access required')
   }
 
-  const { data: admin } = await supabase
-    .from('platform_admins')
-    .select('id, email')
-    .eq('email', user.email)
-    .eq('is_active', true)
+  // Check platform_admins table first (legacy path)
+  if (user.email) {
+    const { data: admin } = await supabase
+      .from('platform_admins')
+      .select('id, email')
+      .eq('email', user.email)
+      .eq('is_active', true)
+      .single()
+
+    if (admin) {
+      return { id: admin.id, email: admin.email ?? user.email }
+    }
+  }
+
+  // Fall back to users.role check (owner/admin)
+  const { data: userData } = await supabase
+    .from('users')
+    .select('id, email, role')
+    .eq('auth_user_id', user.id)
     .single()
 
-  if (!admin) {
+  if (!userData || (userData.role !== 'owner' && userData.role !== 'admin')) {
     throw new Error('Unauthorized: Admin access required')
   }
 
-  return { id: admin.id, email: admin.email ?? user.email }
+  return { id: userData.id, email: userData.email || user.email || '' }
 }
 
 /**

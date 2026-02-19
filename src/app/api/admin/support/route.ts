@@ -1,3 +1,4 @@
+export const runtime = 'nodejs'
 
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -6,21 +7,40 @@ import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET() {
   try {
-    // SECURITY: Verify platform admin authorization
     await requireAdmin()
 
-    // Fetch all support messages using admin client
     const adminSupabase = createAdminClient()
-    const { data, error } = await adminSupabase
+    const { data: messages, error } = await adminSupabase
       .from('support_messages')
-      .select('id, user_id, workspace_id, subject, message, status, priority, category, created_at, updated_at')
+      .select('id, user_id, workspace_id, subject, message, status, priority, category, admin_notes, created_at, updated_at')
       .order('created_at', { ascending: false })
 
     if (error) {
       throw new Error(error.message)
     }
 
-    return NextResponse.json({ messages: data })
+    // Enrich with user email/name from users table
+    const userIds = [...new Set((messages || []).map(m => m.user_id).filter(Boolean))]
+    let userMap: Record<string, { email: string; full_name?: string }> = {}
+    if (userIds.length > 0) {
+      const { data: users } = await adminSupabase
+        .from('users')
+        .select('auth_user_id, email, full_name')
+        .in('auth_user_id', userIds)
+      for (const u of (users || [])) {
+        userMap[u.auth_user_id] = { email: u.email || '', full_name: u.full_name }
+      }
+    }
+
+    const enriched = (messages || []).map(m => ({
+      ...m,
+      name: userMap[m.user_id]?.full_name || userMap[m.user_id]?.email?.split('@')[0] || 'Unknown',
+      email: userMap[m.user_id]?.email || '',
+      source: m.category || 'contact',
+      admin_notes: m.admin_notes ?? null,
+    }))
+
+    return NextResponse.json({ messages: enriched })
   } catch (error) {
     safeError('[Admin] Support messages fetch error:', error)
     return NextResponse.json(
