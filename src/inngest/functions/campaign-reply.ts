@@ -6,6 +6,8 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import Anthropic from '@anthropic-ai/sdk'
 import { quickClassify, type IntentCategory, type SuggestedAction } from '@/lib/services/ai/intent'
 import { sendEmail } from '@/lib/services/outreach/email-sender.service'
+import { SdrConfigRepository } from '@/lib/repositories/sdr-config.repository'
+import { DncRepository } from '@/lib/repositories/dnc.repository'
 
 const CAL_BOOKING_URL = process.env.CAL_BOOKING_URL || 'https://cal.com/cursive/30min'
 const OUTREACH_FROM_EMAIL = process.env.OUTREACH_FROM_EMAIL || 'team@meetcursive.com'
@@ -179,8 +181,47 @@ export const processReply = inngest.createFunction(
       })
     }
 
-    // Step 5: Auto-send reply for high-intent responses
-    if (suggestedResponse && shouldAutoSend(classification)) {
+    // Step 5: Route draft — DNC check, trigger phrases, OOO skip, HiL queue
+    const routeResult = await step.run('route-draft', async () => {
+      const supabase = createAdminClient()
+      const config = await new SdrConfigRepository().findByWorkspace(reply.workspace_id)
+
+      // 1. DNC check
+      if (config?.do_not_contact_enabled) {
+        const blocked = await new DncRepository().isBlocked(reply.workspace_id, reply.from_email)
+        if (blocked) {
+          await supabase.from('email_replies').update({ draft_status: 'skipped' }).eq('id', reply.id)
+          return { send: false, reason: 'dnc' }
+        }
+      }
+
+      // 2. Trigger phrase check (if configured, body must match at least one)
+      if (config?.trigger_phrases && config.trigger_phrases.length > 0) {
+        const lower = (reply.body_text || '').toLowerCase()
+        const match = config.trigger_phrases.some((p) => lower.includes(p.toLowerCase()))
+        if (!match) {
+          await supabase.from('email_replies').update({ draft_status: 'skipped' }).eq('id', reply.id)
+          return { send: false, reason: 'no_trigger_match' }
+        }
+      }
+
+      // 3. OOO skip
+      if (classification.sentiment === 'out_of_office') {
+        await supabase.from('email_replies').update({ draft_status: 'skipped' }).eq('id', reply.id)
+        return { send: false, reason: 'out_of_office' }
+      }
+
+      // 4. Human-in-the-loop → queue for admin approval
+      if (config?.human_in_the_loop && suggestedResponse) {
+        await supabase.from('email_replies').update({ draft_status: 'needs_approval' }).eq('id', reply.id)
+        return { send: false, reason: 'needs_approval' }
+      }
+
+      return { send: true, config }
+    })
+
+    // Step 6: Auto-send reply for high-intent responses (only when HiL is off)
+    if (routeResult.send && suggestedResponse && shouldAutoSend(classification)) {
       await step.run('send-auto-reply', async () => {
         // Append booking link to the Claude-generated body
         const bodyWithCTA = `${suggestedResponse!.body}\n\n---\nBook a time that works for you: ${CAL_BOOKING_URL}`
@@ -200,6 +241,7 @@ export const processReply = inngest.createFunction(
           await supabase
             .from('email_replies')
             .update({
+              draft_status: 'sent',
               suggested_response_metadata: {
                 ...(typeof reply.suggested_response_metadata === 'object' ? reply.suggested_response_metadata as object : {}),
                 auto_sent: result.success,

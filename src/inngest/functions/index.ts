@@ -207,3 +207,6 @@ export { cleanupStaleLeads } from './cleanup-stale-leads'
 
 // Pixel Trial Drip (event-triggered 6-email series) + daily trial expiry check
 export { pixelTrialDrip, checkPixelTrialExpiry } from './pixel-trial-drip'
+
+// AI SDR Follow-up Cron (9am CT weekdays)
+export { sdrFollowupCron } from './sdr-followup'

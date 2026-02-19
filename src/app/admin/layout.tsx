@@ -9,6 +9,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { getUserWithRole } from '@/lib/auth/roles'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,6 +33,16 @@ export default async function AdminLayout({
   }
 
   const adminEmail = userWithRole.email || session.user.email || 'Admin'
+
+  let needsApprovalCount = 0
+  try {
+    const adminClient = createAdminClient()
+    const { count } = await adminClient
+      .from('email_replies')
+      .select('id', { count: 'exact', head: true })
+      .eq('draft_status', 'needs_approval')
+    needsApprovalCount = count || 0
+  } catch { /* non-fatal */ }
 
   return (
     <div className="min-h-screen bg-zinc-50">
@@ -109,6 +120,17 @@ export default async function AdminLayout({
                   className="text-sm text-zinc-300 hover:text-white transition-colors"
                 >
                   Payouts
+                </Link>
+                <Link
+                  href="/admin/sdr"
+                  className="text-sm text-zinc-300 hover:text-white transition-colors flex items-center"
+                >
+                  AI SDR
+                  {needsApprovalCount > 0 && (
+                    <span className="ml-1.5 inline-flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                      {needsApprovalCount > 9 ? '9+' : needsApprovalCount}
+                    </span>
+                  )}
                 </Link>
               </nav>
             </div>

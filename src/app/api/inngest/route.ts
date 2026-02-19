@@ -174,5 +174,8 @@ export const { GET, POST, PUT } = serve({
     // Pixel Trial Drip (event-triggered email series) + daily trial expiry check
     functions.pixelTrialDrip,
     functions.checkPixelTrialExpiry,
+
+    // AI SDR Follow-up Cron
+    functions.sdrFollowupCron,
   ],
 })
