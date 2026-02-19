@@ -360,6 +360,10 @@ async function insertLeadFromRecord(
       has_email: true,
       has_phone: phones.length > 0,
       validated: isVerifiedEmail(normalized.email_validation_status),
+      // Marketplace fields — verified email already confirmed by quality gate above
+      is_marketplace_listed: true,
+      marketplace_status: 'available',
+      verification_status: 'valid',
       enrichment_method: 'audiencelab_pull',
       tags: ['audiencelab', 'segment-pull', ...(combo.industries.map(i => i.toLowerCase()))],
       company_data: {

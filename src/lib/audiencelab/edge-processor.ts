@@ -356,7 +356,7 @@ export async function processEventInline(
                 city: normalized.city,
                 state: normalized.state,
               } : null,
-              source: 'audiencelab',
+              source,
               enrichment_status: 'enriched',
               delivery_status: 'pending',
               hash_key: dedupResult.hashKey,
