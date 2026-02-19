@@ -786,12 +786,12 @@ export default function IntegrationsClient() {
   -H "Content-Type: application/json"`}
             </pre>
             <p className="text-sm text-zinc-500 mt-3">
-              <a
-                href="/docs/api"
+              Need help? Contact <a
+                href="mailto:support@meetcursive.com"
                 className="text-primary hover:text-primary/90 font-medium"
               >
-                View API Documentation →
-              </a>
+                support@meetcursive.com
+              </a> for integration assistance.
             </p>
           </div>
         )}
@@ -817,7 +817,12 @@ export default function IntegrationsClient() {
       </div>
 
       <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-zinc-900 mb-6">CRM & Other Integrations</h2>
+        <div className="flex items-center gap-3 mb-6">
+          <h2 className="text-lg font-semibold text-zinc-900">CRM & Other Integrations</h2>
+          <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-yellow-50 text-yellow-700 border border-yellow-200">
+            Coming Soon
+          </span>
+        </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[
