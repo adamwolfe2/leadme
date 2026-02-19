@@ -6,7 +6,7 @@ import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import {
   ArrowRight, CheckCircle2, Shield, Database, Globe, Clock, Users, TrendingUp,
-  ChevronDown, ChevronUp, Zap, BarChart3, Layers
+  ChevronDown, ChevronUp, Zap, BarChart3, Layers, X
 } from "lucide-react"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
@@ -57,6 +57,7 @@ const superPixelFeatures = [
 
 export default function SuperPixelPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [showLeadModal, setShowLeadModal] = useState(false)
 
   return (
     <>
@@ -133,19 +134,25 @@ export default function SuperPixelPage() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start max-w-5xl mx-auto">
-                {/* Sample Lead Card */}
+                {/* Sample Lead Card — click to expand */}
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
-                  className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden"
+                  onClick={() => setShowLeadModal(true)}
+                  className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden cursor-pointer hover:shadow-2xl transition-shadow duration-300 group"
                 >
                   <div className="bg-[#007AFF] px-6 py-4 flex items-center justify-between">
                     <span className="text-white font-semibold text-sm uppercase tracking-wide">
                       Sample Lead Record
                     </span>
-                    <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                      🔴 High Intent
+                    {/* Live Visitor badge — pulsing green gradient */}
+                    <span className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-400 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+                      </span>
+                      Live Visitor
                     </span>
                   </div>
                   <div className="p-6 space-y-4">
@@ -155,8 +162,8 @@ export default function SuperPixelPage() {
                     </div>
                     <div className="border-t border-gray-100 pt-4 space-y-3">
                       {[
-                        { label: "Email", value: "j.sullivan@meridiantech.com", verified: true },
-                        { label: "Mobile", value: "+1 (512) 847-2391", verified: true },
+                        { label: "Email", value: "j.sullivan@meridiantech.com" },
+                        { label: "Mobile", value: "+1 (512) 847-2391" },
                         { label: "Company", value: "Meridian Technology Group" },
                         { label: "Page Visited", value: "/pricing" },
                         { label: "Visit Time", value: "Today at 2:14 PM CST" },
@@ -165,15 +172,14 @@ export default function SuperPixelPage() {
                         <div key={row.label} className="flex items-center gap-4">
                           <span className="text-sm text-gray-500 w-28 flex-shrink-0">{row.label}</span>
                           <span className="text-sm text-gray-900 font-medium flex-1">{row.value}</span>
-                          {row.verified && (
-                            <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
-                          )}
+                          <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
                         </div>
                       ))}
                     </div>
                   </div>
-                  <div className="px-6 pb-5">
-                    <p className="text-xs text-gray-400 text-center">* Sample record — actual fields vary by match quality</p>
+                  <div className="px-6 pb-5 flex items-center justify-between">
+                    <p className="text-xs text-gray-400">* Sample record — actual fields vary by match quality</p>
+                    <span className="text-xs text-[#007AFF] font-medium group-hover:underline">View full record →</span>
                   </div>
                 </motion.div>
 
@@ -597,6 +603,91 @@ export default function SuperPixelPage() {
             ctaText="Book Your Free Demo Call"
             ctaUrl={CAL_LINK}
           />
+
+          {/* ── LEAD RECORD MODAL ───────────────────────────────── */}
+          {showLeadModal && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+              onClick={() => setShowLeadModal(false)}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden w-full max-w-lg"
+              >
+                {/* Modal header */}
+                <div className="bg-[#007AFF] px-6 py-4 flex items-center justify-between">
+                  <div>
+                    <span className="text-white font-semibold text-sm uppercase tracking-wide block">
+                      New Lead Identified
+                    </span>
+                    <span className="text-blue-200 text-xs">Cursive Super Pixel V4</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-400 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+                      </span>
+                      Live Visitor
+                    </span>
+                    <button
+                      onClick={() => setShowLeadModal(false)}
+                      className="text-white/70 hover:text-white transition-colors"
+                      aria-label="Close"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Modal body */}
+                <div className="p-6 space-y-4">
+                  <div>
+                    <p className="text-2xl font-semibold text-gray-900">James Sullivan</p>
+                    <p className="text-gray-500 text-sm mt-0.5">VP of Sales · Meridian Technology Group</p>
+                  </div>
+                  <div className="border-t border-gray-100 pt-4 space-y-3">
+                    {[
+                      { label: "Email", value: "j.sullivan@meridiantech.com" },
+                      { label: "Mobile", value: "+1 (512) 847-2391" },
+                      { label: "Company", value: "Meridian Technology Group" },
+                      { label: "Job Title", value: "VP of Sales" },
+                      { label: "Location", value: "Austin, TX" },
+                      { label: "Company Size", value: "51–200 employees" },
+                      { label: "Industry", value: "B2B SaaS / Technology" },
+                      { label: "LinkedIn", value: "linkedin.com/in/james-sullivan" },
+                      { label: "Page Visited", value: "/pricing" },
+                      { label: "Visit Time", value: "Today at 2:14 PM CST" },
+                      { label: "Intent Score", value: "High — 7-day spike detected" },
+                    ].map((row) => (
+                      <div key={row.label} className="flex items-center gap-4">
+                        <span className="text-sm text-gray-500 w-28 flex-shrink-0">{row.label}</span>
+                        <span className="text-sm text-gray-900 font-medium flex-1">{row.value}</span>
+                        <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Modal footer */}
+                <div className="px-6 pb-6">
+                  <p className="text-xs text-gray-400 mb-4 text-center">* Sample record — actual fields vary by match quality</p>
+                  <div className="flex gap-3">
+                    <Button size="sm" className="flex-1" href={CAL_LINK} target="_blank">
+                      Get These Leads
+                      <ArrowRight className="w-4 h-4" />
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => setShowLeadModal(false)}>
+                      Close
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
 
         </main>
       </HumanView>
