@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useToast } from '@/lib/hooks/use-toast'
+import { BookDemoButton } from '@/components/ui/cal-inline-booking'
 
 interface ServiceRequestBannerProps {
   title: string
@@ -102,14 +103,10 @@ export function ServiceRequestBanner({
             {submitMutation.isPending ? 'Submitting...' : ctaLabel}
           </button>
           {showBookCall && (
-            <a
-              href="https://cal.com/adamwolfe/cursive-ai-audit"
-              target="_blank"
-              rel="noopener noreferrer"
+            <BookDemoButton
+              label="Book a Call"
               className="text-sm font-medium text-primary hover:text-primary/80 transition-colors whitespace-nowrap"
-            >
-              Book a Call
-            </a>
+            />
           )}
         </div>
       </div>
@@ -150,14 +147,10 @@ export function ServiceRequestBanner({
               {submitMutation.isPending ? 'Submitting...' : ctaLabel}
             </button>
             {showBookCall && (
-              <a
-                href="https://cal.com/adamwolfe/cursive-ai-audit"
-                target="_blank"
-                rel="noopener noreferrer"
+              <BookDemoButton
+                label="Book a Call"
                 className="text-sm font-medium text-primary hover:text-primary/80 transition-colors whitespace-nowrap"
-              >
-                Book a Call
-              </a>
+              />
             )}
           </div>
         </div>
@@ -198,27 +191,10 @@ export function ServiceRequestBanner({
               {submitMutation.isPending ? 'Submitting...' : ctaLabel}
             </button>
             {showBookCall && (
-              <a
-                href="https://cal.com/adamwolfe/cursive-ai-audit"
-                target="_blank"
-                rel="noopener noreferrer"
+              <BookDemoButton
+                label="Book a Call"
                 className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-              >
-                Book a Call
-                <svg
-                  className="h-3.5 w-3.5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                  />
-                </svg>
-              </a>
+              />
             )}
           </div>
         </div>
@@ -259,14 +235,10 @@ function SuccessState({
           </p>
         </div>
         {showBookCall && (
-          <a
-            href="https://cal.com/adamwolfe/cursive-ai-audit"
-            target="_blank"
-            rel="noopener noreferrer"
+          <BookDemoButton
+            label="Book a Call"
             className="text-sm font-medium text-primary hover:text-primary/80 transition-colors whitespace-nowrap"
-          >
-            Book a Call
-          </a>
+          />
         )}
       </div>
     )
@@ -300,27 +272,10 @@ function SuccessState({
             </p>
           </div>
           {showBookCall && (
-            <a
-              href="https://cal.com/adamwolfe/cursive-ai-audit"
-              target="_blank"
-              rel="noopener noreferrer"
+            <BookDemoButton
+              label="Book a Call"
               className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors shadow-sm flex-shrink-0"
-            >
-              Book a Call
-              <svg
-                className="h-3.5 w-3.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                />
-              </svg>
-            </a>
+            />
           )}
         </div>
       </div>
@@ -355,27 +310,10 @@ function SuccessState({
           </p>
         </div>
         {showBookCall && (
-          <a
-            href="https://cal.com/adamwolfe/cursive-ai-audit"
-            target="_blank"
-            rel="noopener noreferrer"
+          <BookDemoButton
+            label="Book a Call"
             className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors shadow-sm flex-shrink-0"
-          >
-            Book a Call
-            <svg
-              className="h-3.5 w-3.5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-              />
-            </svg>
-          </a>
+          />
         )}
       </div>
     </div>

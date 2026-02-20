@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { RevenueCalculator } from '@/components/revenue-calculator/RevenueCalculator'
+import { BookDemoButton } from '@/components/ui/cal-inline-booking'
 
 export const metadata: Metadata = {
   title: "Cursive Super Pixel — See How Much Revenue You're Losing | Free Calculator",
@@ -169,14 +170,10 @@ export default function SuperPixelV2Page() {
           <a href="https://meetcursive.com" className="text-white font-bold text-lg tracking-tight">
             Cursive
           </a>
-          <a
-            href="https://cal.com/cursive/30min"
-            target="_blank"
-            rel="noopener noreferrer"
+          <BookDemoButton
+            label="Book a Demo"
             className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm rounded-lg transition-all"
-          >
-            Book a Demo
-          </a>
+          />
         </div>
       </nav>
 
@@ -492,14 +489,10 @@ export default function SuperPixelV2Page() {
                   </li>
                 ))}
               </ul>
-              <a
-                href="https://cal.com/cursive/30min"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-center py-3 px-6 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg transition-all"
-              >
-                Get Started
-              </a>
+              <BookDemoButton
+                label="Get Started"
+                className="block w-full text-center py-3 px-6 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg transition-all"
+              />
             </div>
 
             {/* Enterprise */}
@@ -522,14 +515,10 @@ export default function SuperPixelV2Page() {
                   </li>
                 ))}
               </ul>
-              <a
-                href="https://cal.com/cursive/30min"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-center py-3 px-6 bg-white/10 hover:bg-white/15 text-white font-semibold rounded-lg border border-white/15 transition-all"
-              >
-                Talk to Sales
-              </a>
+              <BookDemoButton
+                label="Talk to Sales"
+                className="block w-full text-center py-3 px-6 bg-white/10 hover:bg-white/15 text-white font-semibold rounded-lg border border-white/15 transition-all"
+              />
             </div>
           </div>
         </div>
@@ -566,14 +555,10 @@ export default function SuperPixelV2Page() {
             — no credit card, no commitment, just results.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="https://cal.com/cursive/30min"
-              target="_blank"
-              rel="noopener noreferrer"
+            <BookDemoButton
+              label="Book a Free Demo"
               className="px-10 py-4 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-lg rounded-lg transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-400/40"
-            >
-              Book a Free Demo
-            </a>
+            />
             <a
               href="https://leads.meetcursive.com/signup"
               className="px-10 py-4 bg-white/10 hover:bg-white/15 text-white font-semibold text-lg rounded-lg border border-white/15 transition-all"

@@ -254,7 +254,7 @@ export const demoNurtureSequence = inngest.createFunction(
         similarCompany: 'TechFlow',
         caseStudyResult: '3x demo bookings in 90 days',
         trialLink: 'https://app.meetcursive.com/signup',
-        implementationCallLink: 'https://cal.com/adamwolfe/implementation',
+        implementationCallLink: 'https://cal.com/gotdarrenhill/30min',
         personalNote: "I loved your idea about targeting visitors by industry—let's make it happen!",
       })
 
@@ -294,7 +294,7 @@ export const demoNurtureSequence = inngest.createFunction(
         demoOwnerEmail,
         caseStudyCompany: 'TechFlow',
         caseStudyLink: 'https://meetcursive.com/case-studies/techflow',
-        calendarLink: 'https://cal.com/adamwolfe/quick-call',
+        calendarLink: 'https://cal.com/gotdarrenhill/30min',
       })
 
       await sendSequenceEmail({
@@ -331,7 +331,7 @@ export const demoNurtureSequence = inngest.createFunction(
       const tokens = await buildEmailTokens(leadId, demoDate, demoTime, timezone, {
         demoOwner,
         demoOwnerEmail,
-        calendarLink: 'https://cal.com/adamwolfe/quick-call',
+        calendarLink: 'https://cal.com/gotdarrenhill/30min',
         checkBackLink: `https://app.meetcursive.com/check-back?lead=${leadId}`,
         unsubscribeLink: `https://app.meetcursive.com/unsubscribe?lead=${leadId}`,
       })
@@ -421,8 +421,8 @@ async function buildEmailTokens(
     demoOwnerTitle: 'Solutions Engineer',
     demoOwnerEmail: additional.demoOwnerEmail || 'demos@meetcursive.com',
     demoOwnerPhone: additional.demoOwnerPhone,
-    calendarLink: additional.calendarLink || 'https://cal.com/cursive/demo',
-    rescheduleLink: additional.rescheduleLink || 'https://cal.com/cursive/reschedule',
+    calendarLink: additional.calendarLink || 'https://cal.com/gotdarrenhill/30min',
+    rescheduleLink: additional.rescheduleLink || 'https://cal.com/gotdarrenhill/30min',
     meetingLink: additional.meetingLink || 'https://meet.google.com/demo',
     ...additional,
   }

@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { useToast } from '@/lib/hooks/use-toast'
 import Link from 'next/link'
+import { BookDemoButton } from '@/components/ui/cal-inline-booking'
 
 const SERVICE_TIERS = [
   { value: 'cursive-data', label: 'Cursive Data ($1k-3k/mo)' },
@@ -98,17 +99,10 @@ function ServiceRequestPageInner() {
             Thanks! We&apos;ll reach out within 24 hours to discuss your needs.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <a
-              href="https://cal.com/adamwolfe/cursive-ai-audit"
-              target="_blank"
-              rel="noopener noreferrer"
+            <BookDemoButton
+              label="Book a Call Now"
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
-            >
-              Book a Call Now
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-            </a>
+            />
             <Link
               href="/services"
               className="inline-flex items-center justify-center gap-2 rounded-lg border border-zinc-300 px-6 py-3 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"

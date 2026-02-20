@@ -48,7 +48,7 @@ export const URLS = {
   preferences: `${BASE_URL}/preferences`,
   dashboard: `${BASE_URL}/dashboard`,
   services: `${BASE_URL}/services`,
-  bookCall: 'https://cal.com/adamwolfe/cursive-ai-audit',
+  bookCall: 'https://cal.com/gotdarrenhill/30min',
   emailPreferences: `${BASE_URL}/settings/notifications`,
 } as const
 

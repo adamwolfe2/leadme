@@ -5,6 +5,7 @@ import { CredibilityBar } from './CredibilityBar'
 import { LeadCaptureForm } from './LeadCaptureForm'
 import { formatNumber } from '@/lib/superpixel-constants'
 import type { calculateScenarios } from '@/lib/superpixel-constants'
+import { BookDemoButton } from '@/components/ui/cal-inline-booking'
 
 interface Props {
   results: ReturnType<typeof calculateScenarios>
@@ -54,14 +55,10 @@ export function ResultsDashboard({ results, domain, monthlyVisitors, dealSize, i
 
       {/* CTA section */}
       <div className="space-y-4 text-center">
-        <a
-          href="https://cal.com/cursive/30min"
-          target="_blank"
-          rel="noopener noreferrer"
+        <BookDemoButton
+          label="Book a Free Demo — See It Running on Your Site"
           className="inline-block w-full sm:w-auto px-10 py-4 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-lg rounded-lg transition-all shadow-lg shadow-emerald-500/25"
-        >
-          Book a Free Demo &mdash; See It Running on Your Site
-        </a>
+        />
         <div className="pt-2">
           <p className="text-white/40 text-sm mb-3">Or get your full revenue report emailed to you:</p>
           <LeadCaptureForm
