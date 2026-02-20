@@ -58,7 +58,7 @@ export async function POST(
     // Get lead and verify not already sold
     const { data: lead, error: leadError } = await supabase
       .from('leads')
-      .select('id, business_name, industry, uploaded_by_partner_id, status')
+      .select('id, business_name, industry, uploaded_by_partner_id, status, marketplace_price')
       .eq('id', id)
       .single()
 
@@ -73,9 +73,13 @@ export async function POST(
       )
     }
 
+    // Use lead's marketplace price (fallback to $0.05 per lead)
+    const priceInDollars = lead.marketplace_price || 0.05
+    const amountInCents = Math.round(priceInDollars * 100)
+
     // Create Stripe payment intent
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: 2000, // $20.00
+      amount: amountInCents,
       currency: 'usd',
       automatic_payment_methods: { enabled: true },
       metadata: {

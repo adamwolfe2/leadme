@@ -10,6 +10,11 @@ import { createClient } from '@/lib/supabase/server'
 import { getStripeClient } from '@/lib/stripe/client'
 import { PartnerRepository } from '@/lib/db/repositories/partner.repository'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { z } from 'zod'
+
+const ConfirmPurchaseSchema = z.object({
+  paymentIntentId: z.string().min(1, 'Payment intent ID required'),
+})
 
 export async function POST(
   request: NextRequest,
@@ -30,14 +35,14 @@ export async function POST(
 
     const stripe = getStripeClient()
     const body = await request.json()
-    const { paymentIntentId } = body
-
-    if (!paymentIntentId) {
+    const parsed = ConfirmPurchaseSchema.safeParse(body)
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Payment intent ID required' },
+        { error: 'Validation error', details: parsed.error.flatten().fieldErrors },
         { status: 400 }
       )
     }
+    const { paymentIntentId } = parsed.data
 
     // Verify payment succeeded with Stripe
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId)
@@ -88,6 +93,14 @@ export async function POST(
       return NextResponse.json({ success: true, alreadyRecorded: true })
     }
 
+    // Use the actual Stripe payment amount (not hardcoded)
+    const purchasePrice = paymentIntent.amount / 100 // Stripe uses cents
+    const PARTNER_COMMISSION_RATE = 0.70
+    const partnerCommission = partnerId !== 'none'
+      ? Math.round(purchasePrice * PARTNER_COMMISSION_RATE * 100) / 100
+      : 0
+    const platformFee = Math.round((purchasePrice - partnerCommission) * 100) / 100
+
     // Record purchase using repository
     // This automatically credits the partner via credit_partner_for_sale() database function
     const partnerRepo = new PartnerRepository()
@@ -95,9 +108,9 @@ export async function POST(
       lead_id: leadId,
       buyer_user_id: buyerId,
       partner_id: partnerId !== 'none' ? partnerId : null,
-      purchase_price: 20.0,
-      partner_commission: 14.0, // 70% commission
-      platform_fee: 6.0, // 30% platform fee
+      purchase_price: purchasePrice,
+      partner_commission: partnerCommission,
+      platform_fee: platformFee,
       stripe_payment_intent_id: paymentIntentId,
     })
 
@@ -123,17 +136,17 @@ export async function POST(
       throw new Error('Lead not found')
     }
 
-    // Update lead: assign to buyer's workspace and mark as "new" in CRM
-    const { error: updateError } = await supabase
+    // Update lead: assign to buyer's workspace, guard against double-sell
+    const { error: updateError, count: updatedCount } = await supabase
       .from('leads')
       .update({
         workspace_id: buyer.workspace_id, // Assign to buyer's workspace
         status: 'new', // Set as new lead in CRM
         assigned_user_id: buyerId, // Assign to the purchaser
         sold_at: new Date().toISOString(),
-        // Preserve all other lead data
       })
       .eq('id', leadId)
+      .is('sold_at', null) // Guard: only update if not already sold
 
     if (updateError) {
       safeError('[Confirm Purchase] Failed to update lead:', updateError)
