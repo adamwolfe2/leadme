@@ -5,7 +5,7 @@ import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { checkRateLimit } from '@/lib/utils/rate-limit'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -90,7 +90,7 @@ export async function googleLoginAction(redirectTo: string = '/dashboard') {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
     || (origin ? `https://${origin.replace(/^https?:\/\//, '')}` : null)
 
-  safeError(`[Auth] Google OAuth: siteUrl=${siteUrl} NEXT_PUBLIC_SITE_URL=${process.env.NEXT_PUBLIC_SITE_URL || 'NOT SET'}`)
+  safeLog(`[Auth] Google OAuth: siteUrl=${siteUrl} NEXT_PUBLIC_SITE_URL=${process.env.NEXT_PUBLIC_SITE_URL || 'NOT SET'}`)
 
   if (!siteUrl) {
     safeError('[Auth] Google OAuth FAILED: no site URL available')
@@ -99,7 +99,7 @@ export async function googleLoginAction(redirectTo: string = '/dashboard') {
 
   const normalizedSiteUrl = siteUrl.replace(/\/+$/, '')
   const callbackUrl = `${normalizedSiteUrl}/auth/callback?next=${encodeURIComponent(redirectTo)}`
-  safeError('[Auth] Google OAuth callbackUrl:', callbackUrl)
+  safeLog('[Auth] Google OAuth callbackUrl:', callbackUrl)
 
   const supabase = await createClient()
 
@@ -116,7 +116,7 @@ export async function googleLoginAction(redirectTo: string = '/dashboard') {
   }
 
   if (data.url) {
-    safeError('[Auth] Google OAuth redirecting to:', data.url.substring(0, 80) + '...')
+    safeLog('[Auth] Google OAuth redirecting to:', data.url.substring(0, 80) + '...')
     redirect(data.url)
   }
 

@@ -16,13 +16,13 @@ export default function VerifyEmailPage() {
     // Check if user is already logged in
     const checkAuth = async () => {
       const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { user } } = await supabase.auth.getUser()
 
-      if (session) {
-        setEmail(session.user.email || null)
+      if (user) {
+        setEmail(user.email || null)
 
         // Check if email is already verified
-        if (session.user.email_confirmed_at) {
+        if (user.email_confirmed_at) {
           router.push('/welcome')
         }
       }

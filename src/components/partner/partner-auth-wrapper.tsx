@@ -13,13 +13,11 @@ export async function PartnerAuthWrapper({
   children: React.ReactNode
 }) {
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user: authUser } } = await supabase.auth.getUser()
 
-  if (!session?.user) {
+  if (!authUser) {
     redirect('/login?error=unauthorized')
   }
-
-  const authUser = session.user
 
   // Get user with role
   const user = await getUserWithRole(authUser)

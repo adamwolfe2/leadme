@@ -30,11 +30,11 @@ export interface EnrichmentHistoryEntry {
 
 export async function GET() {
   try {
-    // Auth: verify session
+    // Auth: verify user via JWT (server-side verification)
     const supabase = await createClient()
-    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { user } } = await supabase.auth.getUser()
 
-    if (!session?.user) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -42,7 +42,7 @@ export async function GET() {
     const { data: userData, error: userErr } = await supabase
       .from('users')
       .select('workspace_id')
-      .eq('auth_user_id', session.user.id)
+      .eq('auth_user_id', user.id)
       .maybeSingle()
 
     if (userErr || !userData?.workspace_id) {
