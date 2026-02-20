@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/server'
 import { PartnerRepository } from '@/lib/repositories/partner.repository'
 import { StatsCards } from '@/components/partner/StatsCards'
 import { UploadedLeadsTable } from '@/components/partner/UploadedLeadsTable'
+import { PartnerTierOverview } from '@/components/partner/PartnerTierOverview'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
@@ -45,6 +46,8 @@ export default async function PartnerDashboard() {
     partnerRepo.getPartnerUploadedLeads(user.id, 50, 0), // First 50 leads
   ])
 
+  const totalLeadsUploaded = analytics?.total_leads_uploaded || 0
+
   return (
     <div className="container mx-auto py-8 space-y-8 max-w-7xl">
       {/* Header */}
@@ -60,8 +63,11 @@ export default async function PartnerDashboard() {
         </Link>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats Cards (includes tier status card) */}
       <StatsCards analytics={analytics} credits={credits} />
+
+      {/* Partner Tier Breakdown */}
+      <PartnerTierOverview totalLeads={totalLeadsUploaded} />
 
       {/* Uploaded Leads Table */}
       <div className="space-y-4">

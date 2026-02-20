@@ -171,6 +171,67 @@ interface WebhookSettings {
   webhook_events: string[]
 }
 
+function ExportButton({ format, label }: { format: 'csv' | 'xlsx'; label: string }) {
+  const [exporting, setExporting] = useState(false)
+  const toast = useToast()
+
+  const handleExport = async () => {
+    setExporting(true)
+    try {
+      const res = await fetch('/api/crm/export', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ format }),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'Export failed' }))
+        throw new Error(err.error || 'Export failed')
+      }
+      // Download the file
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      const timestamp = new Date().toISOString().split('T')[0]
+      a.download = `crm-leads-${timestamp}.${format === 'csv' ? 'csv' : 'xlsx.json'}`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      toast.success(`${label} exported successfully!`)
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Export failed')
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  return (
+    <button
+      onClick={handleExport}
+      disabled={exporting}
+      className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-3 py-2 text-xs font-medium text-white hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      {exporting ? (
+        <>
+          <svg className="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+          </svg>
+          Exporting...
+        </>
+      ) : (
+        <>
+          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Export {label}
+        </>
+      )}
+    </button>
+  )
+}
+
 export default function IntegrationsClient() {
   const toast = useToast()
   const queryClient = useQueryClient()
@@ -798,7 +859,75 @@ export default function IntegrationsClient() {
         )}
       </div>
 
-      {/* Premium CRM & Other Integrations */}
+      {/* Data Export */}
+      <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex-1">
+            <h2 className="text-lg font-semibold text-zinc-900">Lead Export</h2>
+            <p className="text-sm text-zinc-600 mt-1">
+              Export your CRM leads to CSV, XLSX, or sync them to your favorite tools.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {/* CSV Export */}
+          <div className="rounded-xl border border-zinc-200 p-4 hover:border-primary/30 transition-colors">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                <svg className="h-5 w-5 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-semibold text-zinc-900">CSV Export</h3>
+                <p className="mt-1 text-xs text-zinc-500">Download all leads as a CSV file</p>
+              </div>
+            </div>
+            <div className="mt-4">
+              <ExportButton format="csv" label="CSV" />
+            </div>
+          </div>
+
+          {/* XLSX Export */}
+          <div className="rounded-xl border border-zinc-200 p-4 hover:border-primary/30 transition-colors">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                <svg className="h-5 w-5 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-semibold text-zinc-900">Excel Export</h3>
+                <p className="mt-1 text-xs text-zinc-500">Download all leads as an XLSX spreadsheet</p>
+              </div>
+            </div>
+            <div className="mt-4">
+              <ExportButton format="xlsx" label="XLSX" />
+            </div>
+          </div>
+
+          {/* Google Sheets */}
+          <div className="rounded-xl border border-zinc-200 p-4 hover:border-primary/30 transition-colors">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <IntegrationLogo name="google-sheets" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-semibold text-zinc-900">Google Sheets</h3>
+                <p className="mt-1 text-xs text-zinc-500">Sync leads to a Google Sheets spreadsheet</p>
+              </div>
+            </div>
+            <div className="mt-4">
+              <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                Coming Soon - Free
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Premium CRM Integrations */}
       <div className="rounded-xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 p-6">
         <div className="flex items-start gap-4">
           <div className="flex-shrink-0">

@@ -6,7 +6,7 @@ import Link from 'next/link'
 import {
   Users, TrendingUp, Crown, ArrowRight, Sparkles,
   Zap, Star, Target, CheckCircle2, Circle,
-  Calendar, Eye, Rocket, Settings2, Clock,
+  Calendar, Eye, Rocket, Settings2, Clock, Gift,
 } from 'lucide-react'
 import { sanitizeName, sanitizeCompanyName, sanitizeText } from '@/lib/utils/sanitize-text'
 import { DashboardAnimationWrapper, AnimatedSection } from '@/components/dashboard/dashboard-animation-wrapper'
@@ -595,6 +595,59 @@ export default async function DashboardPage({
               </div>
             </div>
           </AnimatedSection>
+
+          {/* Refer & Earn CTA */}
+          <AnimatedSection delay={0.23}>
+            <Link href="/marketplace/referrals" className="block rounded-xl bg-gradient-to-r from-violet-50 to-indigo-50 border border-violet-200 p-5 hover:shadow-sm transition-all group">
+              <div className="flex items-center gap-3 mb-1.5">
+                <div className="p-2 rounded-lg bg-violet-100 group-hover:bg-violet-200 transition-colors">
+                  <Gift className="h-4 w-4 text-violet-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-900">Refer & Earn</p>
+                  <p className="text-xs text-gray-500">Earn $50 in credits for each referral</p>
+                </div>
+              </div>
+              <span className="inline-flex items-center gap-1 text-xs font-medium text-violet-600">
+                Share your link <ArrowRight className="h-3 w-3" />
+              </span>
+            </Link>
+          </AnimatedSection>
+
+          {/* Lead Performance */}
+          {totalCount > 0 && (
+            <AnimatedSection delay={0.24}>
+              <div className="bg-white rounded-xl border border-gray-200 p-5">
+                <h3 className="font-semibold text-gray-900 text-sm mb-3 flex items-center gap-2">
+                  <TrendingUp className="h-3.5 w-3.5 text-gray-500" />
+                  Lead Performance
+                </h3>
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-gray-500">Enrichment Rate</span>
+                      <span className="font-medium text-gray-700">{Math.round((enrichedCount / totalCount) * 100)}%</span>
+                    </div>
+                    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${Math.min((enrichedCount / totalCount) * 100, 100)}%` }} />
+                    </div>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-500">Avg leads/day</span>
+                    <span className="font-medium text-gray-700">{(weekCount / Math.max(new Date().getDay() || 7, 1)).toFixed(1)}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-500">Total enriched</span>
+                    <span className="font-medium text-gray-700">{enrichedCount.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-500">Credits used today</span>
+                    <span className="font-medium text-gray-700">{creditLimit - creditsRemaining} of {creditLimit}</span>
+                  </div>
+                </div>
+              </div>
+            </AnimatedSection>
+          )}
 
           {/* Activity log */}
           {activityLog.length > 0 && (

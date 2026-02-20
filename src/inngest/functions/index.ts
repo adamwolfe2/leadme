@@ -208,5 +208,11 @@ export { cleanupStaleLeads } from './cleanup-stale-leads'
 // Pixel Trial Drip (event-triggered 6-email series) + daily trial expiry check
 export { pixelTrialDrip, checkPixelTrialExpiry } from './pixel-trial-drip'
 
+// Inactive user re-engagement
+export { inactiveUserReengagement } from './inactive-reengagement'
+
+// Abandoned onboarding recovery (daily — re-engages users who haven't finished setup)
+export { abandonedOnboardingRecovery } from './abandoned-onboarding'
+
 // AI SDR Follow-up Cron (9am CT weekdays)
 export { sdrFollowupCron } from './sdr-followup'
