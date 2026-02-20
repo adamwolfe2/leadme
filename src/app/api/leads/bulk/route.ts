@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
           p_lead_ids: lead_ids,
           p_new_status: status,
           p_user_id: user.id,
+          p_workspace_id: user.workspace_id,
           p_change_note: note,
         })
 
@@ -61,6 +62,7 @@ export async function POST(request: NextRequest) {
           p_lead_ids: lead_ids,
           p_assigned_to: assigned_to,
           p_assigned_by: user.id,
+          p_workspace_id: user.workspace_id,
         })
 
         if (error) {
@@ -78,6 +80,7 @@ export async function POST(request: NextRequest) {
           p_lead_ids: lead_ids,
           p_tag_ids: tag_ids,
           p_assigned_by: user.id,
+          p_workspace_id: user.workspace_id,
         })
 
         if (error) {
@@ -94,6 +97,7 @@ export async function POST(request: NextRequest) {
         const { data, error } = await supabase.rpc('bulk_remove_tags', {
           p_lead_ids: lead_ids,
           p_tag_ids: tag_ids,
+          p_workspace_id: user.workspace_id,
         })
 
         if (error) {
@@ -125,8 +129,11 @@ export async function POST(request: NextRequest) {
       }
 
       case 'export': {
-        // Export is handled separately via the export API
-        result = { affected: lead_ids.length, message: 'Export queued' }
+        // Return lead IDs for client-side export trigger via /api/leads/export
+        result = {
+          affected: lead_ids.length,
+          message: `Export ${lead_ids.length} leads via /api/leads/export`,
+        }
         break
       }
 
@@ -135,7 +142,7 @@ export async function POST(request: NextRequest) {
     }
 
     return success(result)
-  } catch (error: any) {
+  } catch (error) {
     return handleApiError(error)
   }
 }

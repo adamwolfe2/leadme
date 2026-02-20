@@ -6,7 +6,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
-import { handleApiError, unauthorized, success, badRequest } from '@/lib/utils/api-error-handler'
+import { handleApiError, unauthorized, success, badRequest  } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 import {
   createApiKey,
@@ -75,6 +75,14 @@ export async function POST(request: NextRequest) {
     const user = await getCurrentUser()
     if (!user) return unauthorized()
 
+    // Only owners and admins can create API keys (they grant programmatic workspace access)
+    if (user.role !== 'owner' && user.role !== 'admin') {
+      return NextResponse.json(
+        { error: 'Only workspace owners and admins can create API keys' },
+        { status: 403 }
+      )
+    }
+
     const body = await request.json()
     const validated = createSchema.parse(body)
 
@@ -118,6 +126,14 @@ export async function DELETE(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()
+
+    // Only owners and admins can revoke API keys
+    if (user.role !== 'owner' && user.role !== 'admin') {
+      return NextResponse.json(
+        { error: 'Only workspace owners and admins can revoke API keys' },
+        { status: 403 }
+      )
+    }
 
     const keyId = request.nextUrl.searchParams.get('key_id')
 

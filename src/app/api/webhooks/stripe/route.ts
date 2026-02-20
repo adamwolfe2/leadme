@@ -101,6 +101,19 @@ async function handleCreditPurchaseCompleted(session: Stripe.Checkout.Session): 
   safeLog(`[Stripe Webhook] Processing credit purchase: ${credit_purchase_id}`)
 
   const repo = new MarketplaceRepository()
+  const adminClient = createAdminClient()
+
+  // IDEMPOTENCY: Check if already completed before adding credits
+  const { data: existingPurchase } = await adminClient
+    .from('credit_purchases')
+    .select('id, status, completed_at')
+    .eq('id', credit_purchase_id)
+    .single()
+
+  if (existingPurchase?.status === 'completed') {
+    safeLog(`[Stripe Webhook] Credit purchase ${credit_purchase_id} already completed, skipping`)
+    return
+  }
 
   // Mark the credit purchase record as completed
   const completedPurchase = await repo.completeCreditPurchase(credit_purchase_id)
@@ -108,8 +121,7 @@ async function handleCreditPurchaseCompleted(session: Stripe.Checkout.Session): 
   // Add credits to the workspace
   await repo.addCredits(workspace_id, creditsAmount, 'purchase')
 
-  // Get the new balance using admin client (webhook has no user auth context)
-  const adminClient = createAdminClient()
+  // Get the new balance
   const { data: creditsData } = await adminClient
     .from('workspace_credits')
     .select('balance')
@@ -252,6 +264,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Missing stripe-signature header' },
         { status: 400 }
+      )
+    }
+
+    if (!webhookSecret) {
+      safeError('[Stripe Webhook] STRIPE_WEBHOOK_SECRET is not configured')
+      return NextResponse.json(
+        { error: 'Webhook not configured' },
+        { status: 500 }
       )
     }
 
