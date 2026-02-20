@@ -6,7 +6,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
-import { handleApiError, unauthorized, success, badRequest } from '@/lib/utils/api-error-handler'
+import { handleApiError, unauthorized, success, DatabaseError } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 import { getWorkspaceSendStats, updateWorkspaceDailyLimit } from '@/lib/services/campaign/send-limits.service'
 
@@ -63,7 +63,7 @@ export async function PATCH(request: NextRequest) {
     )
 
     if (!result.success) {
-      return badRequest(result.error || 'Failed to update limit')
+      throw new DatabaseError(result.error || 'Failed to update limit')
     }
 
     return success({

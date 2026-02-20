@@ -6,7 +6,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
-import { handleApiError, unauthorized, success, badRequest } from '@/lib/utils/api-error-handler'
+import { handleApiError, unauthorized, success, badRequest, DatabaseError } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 import {
   initializeOnboarding,
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
         )
 
         if (!result.success) {
-          return badRequest('Failed to skip step')
+          throw new DatabaseError('Failed to skip step')
         }
 
         return success({

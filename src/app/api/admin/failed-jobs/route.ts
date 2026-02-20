@@ -7,7 +7,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { requireAdmin } from '@/lib/auth/admin'
-import { handleApiError, unauthorized, success, badRequest } from '@/lib/utils/api-error-handler'
+import { handleApiError, unauthorized, success, badRequest, DatabaseError } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 import {
   getFailedJobs,
@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
         }
         const result = await resolveFailedJob(validated.job_id, user.id, validated.notes)
         if (!result.success) {
-          return badRequest('Failed to resolve job')
+          throw new DatabaseError('Failed to resolve job')
         }
         return success({
           message: 'Job resolved',
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
         }
         const result = await retryFailedJob(validated.job_id)
         if (!result.success) {
-          return badRequest('Failed to queue job for retry')
+          throw new DatabaseError('Failed to queue job for retry')
         }
         return success({
           message: 'Job queued for retry',

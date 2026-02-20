@@ -6,7 +6,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
-import { handleApiError, unauthorized, success, badRequest, notFound } from '@/lib/utils/api-error-handler'
+import { handleApiError, unauthorized, success, badRequest, notFound, DatabaseError } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 import {
   getIntegrations,
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (!result.success) {
-      return badRequest(result.error || 'Failed to save integration')
+      throw new DatabaseError(result.error || 'Failed to save integration')
     }
 
     return success({
@@ -151,7 +151,7 @@ export async function DELETE(request: NextRequest) {
     const result = await disconnectIntegration(user.workspace_id, provider)
 
     if (!result.success) {
-      return badRequest('Failed to disconnect integration')
+      throw new DatabaseError('Failed to disconnect integration')
     }
 
     return success({

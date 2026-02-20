@@ -177,7 +177,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
     if (updateError) {
       safeError('[Campaign Schedule] Update error:', updateError.message)
-      return badRequest('Failed to update campaign schedule')
+      return NextResponse.json({ error: 'Failed to update campaign schedule' }, { status: 500 })
     }
 
     // Handle respect_recipient_timezone in sequence_settings

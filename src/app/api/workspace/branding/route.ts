@@ -6,7 +6,7 @@
 
 import { type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
-import { handleApiError, unauthorized, success, badRequest } from '@/lib/utils/api-error-handler'
+import { handleApiError, unauthorized, success, DatabaseError } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
       .maybeSingle()
 
     if (error) {
-      return badRequest('Failed to fetch branding')
+      throw new DatabaseError('Failed to fetch branding')
     }
 
     const branding = (data?.branding as Record<string, unknown>) || {}
@@ -77,7 +77,7 @@ export async function PATCH(request: NextRequest) {
       .maybeSingle()
 
     if (fetchError) {
-      return badRequest('Failed to fetch current branding')
+      throw new DatabaseError('Failed to fetch current branding')
     }
 
     const currentBranding = (current?.branding as Record<string, unknown>) || {}
@@ -97,7 +97,7 @@ export async function PATCH(request: NextRequest) {
       .eq('id', user.workspace_id)
 
     if (updateError) {
-      return badRequest('Failed to update branding')
+      throw new DatabaseError('Failed to update branding')
     }
 
     return success({

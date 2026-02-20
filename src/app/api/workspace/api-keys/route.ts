@@ -6,7 +6,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
-import { handleApiError, unauthorized, success, badRequest  } from '@/lib/utils/api-error-handler'
+import { handleApiError, unauthorized, success, badRequest, DatabaseError } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 import {
   createApiKey,
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (!result.success) {
-      return badRequest(result.error || 'Failed to create API key')
+      throw new DatabaseError(result.error || 'Failed to create API key')
     }
 
     return success({
@@ -144,7 +144,7 @@ export async function DELETE(request: NextRequest) {
     const result = await revokeApiKey(user.workspace_id, keyId)
 
     if (!result.success) {
-      return badRequest('Failed to revoke API key')
+      throw new DatabaseError('Failed to revoke API key')
     }
 
     return success({
