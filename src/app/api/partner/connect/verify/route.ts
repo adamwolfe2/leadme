@@ -13,14 +13,14 @@ export async function GET(request: NextRequest) {
   try {
     // Verify the user is authenticated
     const user = await getCurrentUser()
-    if (\!user) {
+    if (!user) {
       return unauthorized()
     }
 
     const stripe = getStripeClient()
     const partnerId = request.nextUrl.searchParams.get("partner_id")
 
-    if (\!partnerId) {
+    if (!partnerId) {
       return NextResponse.json(
         { error: "Missing partner_id parameter" },
         { status: 400 }
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
       .eq("id", partnerId)
       .maybeSingle()
 
-    if (partnerError || \!partner) {
+    if (partnerError || !partner) {
       return NextResponse.json(
         { error: "Partner not found" },
         { status: 404 }
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify user owns this partner
-    if (partner.workspace_id \!== user.workspace_id) {
+    if (partner.workspace_id !== user.workspace_id) {
       safeError("[Verify Connect] Unauthorized access attempt:", {
         userId: user.id,
         partnerId,
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    if (\!partner.stripe_account_id) {
+    if (!partner.stripe_account_id) {
       return NextResponse.json({
         onboardingComplete: false,
         message: "Stripe account not connected",
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
       account.payouts_enabled
 
     // Only activate partner if Stripe confirms the account is fully onboarded
-    if (onboardingComplete && \!partner.stripe_onboarding_complete) {
+    if (onboardingComplete && !partner.stripe_onboarding_complete) {
       await supabase
         .from("partners")
         .update({
@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
     }
 
     // If onboarding is not complete, return status without activating
-    if (\!onboardingComplete) {
+    if (!onboardingComplete) {
       return NextResponse.json({
         onboardingComplete: false,
         accountId: partner.stripe_account_id,

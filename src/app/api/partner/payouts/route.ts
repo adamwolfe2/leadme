@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
         .eq("is_active", true)
         .maybeSingle()
 
-      if (\!partner) {
+      if (!partner) {
         return NextResponse.json({ error: "Invalid API key" }, { status: 401 })
       }
       partnerId = partner.id
@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
       .eq("is_active", true)
       .maybeSingle()
 
-    if (partnerError || \!partner) {
+    if (partnerError || !partner) {
       return NextResponse.json({ error: "Partner not found" }, { status: 404 })
     }
 
@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
         available_balance: Number(partner.available_balance || 0),
         lifetime_paid: lifetimePaid,
         payout_threshold: Number(partner.payout_threshold || 50),
-        stripe_connected: \!\!partner.stripe_account_id && partner.stripe_onboarding_complete,
+        stripe_connected: !!partner.stripe_account_id && partner.stripe_onboarding_complete,
       },
       payout_history: payoutHistory || [],
     })

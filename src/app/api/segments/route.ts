@@ -25,7 +25,7 @@ const segmentSchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser()
-    if (\!user) {
+    if (!user) {
       return unauthorized()
     }
 
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
       .eq('workspace_id', user.workspace_id)
       .order('created_at', { ascending: false })
 
-    if (status \!== 'all') {
+    if (status !== 'all') {
       query = query.eq('status', status)
     }
 
@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
-    if (\!user) {
+    if (!user) {
       return unauthorized()
     }
 

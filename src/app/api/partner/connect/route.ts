@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   try {
     // Verify the user is authenticated
     const user = await getCurrentUser()
-    if (\!user) {
+    if (!user) {
       return unauthorized()
     }
 
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       .eq('id', partnerId)
       .maybeSingle()
 
-    if (partnerError || \!partner) {
+    if (partnerError || !partner) {
       return NextResponse.json(
         { error: 'Partner not found' },
         { status: 404 }
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     let accountId = partner.stripe_account_id
 
     // Create Stripe Connect Express account if does not exist
-    if (\!accountId) {
+    if (!accountId) {
       const account = await stripe.accounts.create({
         type: 'express',
         email: partner.email,

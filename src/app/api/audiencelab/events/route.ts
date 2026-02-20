@@ -27,11 +27,11 @@ const QuerySchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser()
-    if (\!user) {
+    if (!user) {
       return unauthorized()
     }
 
-    if (\!user.workspace_id) {
+    if (!user.workspace_id) {
       return NextResponse.json({ error: 'No workspace' }, { status: 403 })
     }
 
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     // Parse query params
     const params = Object.fromEntries(request.nextUrl.searchParams)
     const parsed = QuerySchema.safeParse(params)
-    if (\!parsed.success) {
+    if (!parsed.success) {
       return NextResponse.json({ error: 'Invalid params', details: parsed.error.issues }, { status: 400 })
     }
 
