@@ -9,8 +9,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
-import { cookies } from 'next/headers'
-import { createServerClient } from '@supabase/ssr'
+import { createClient } from '@/lib/supabase/server'
+import { sanitizeCsvValue } from '@/lib/utils/csv-sanitizer'
 import { z } from 'zod'
 
 // CSV column validation schema
@@ -30,28 +30,7 @@ const csvRowSchema = z.object({
  * Get authenticated user from session
  */
 async function getAuthenticatedUser() {
-  const cookieStore = await cookies()
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet: any[]) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {
-            // Ignore - called from Server Component
-          }
-        },
-      },
-    }
-  )
+  const supabase = await createClient()
 
   const {
     data: { user: authUser },
@@ -95,7 +74,8 @@ function parseCSV(text: string): Record<string, string>[] {
 
     const record: Record<string, string> = {}
     headers.forEach((header, idx) => {
-      record[header] = values[idx]?.trim() || ''
+      // Sanitize CSV values to prevent formula injection (=, +, -, @)
+      record[header] = sanitizeCsvValue(values[idx]?.trim() || '')
     })
     records.push(record)
   }
