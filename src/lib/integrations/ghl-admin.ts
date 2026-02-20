@@ -14,6 +14,7 @@
  */
 
 import { fetchWithTimeout } from '@/lib/utils/retry'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // ============================================================================
 // CONFIGURATION
@@ -376,7 +377,7 @@ async function applySnapshotToLocation(
       }),
     })
   } catch (error) {
-    console.error('[GHL Admin] Failed to apply snapshot:', error)
+    safeError('[GHL Admin] Failed to apply snapshot:', error)
   }
 }
 

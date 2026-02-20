@@ -6,6 +6,7 @@
 
 import Anthropic from '@anthropic-ai/sdk'
 import type { CampaignDraft, GeneratedEmail } from '@/types/campaign-builder'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 let anthropic: Anthropic | null = null
 
@@ -55,7 +56,7 @@ export async function generateEmailSequence(
 
     return emails
   } catch (error) {
-    console.error('[AI Generator] Failed to generate sequence:', error)
+    safeError('[AI Generator] Failed to generate sequence:', error)
     throw error
   }
 }
@@ -176,7 +177,7 @@ function parseEmailSequenceResponse(response: string, expectedCount: number): Ge
     }
 
     if (emails.length !== expectedCount) {
-      console.warn(`Expected ${expectedCount} emails, got ${emails.length}`)
+      safeError(`Expected ${expectedCount} emails, got ${emails.length}`)
     }
 
     // Validate each email has required fields
@@ -188,8 +189,8 @@ function parseEmailSequenceResponse(response: string, expectedCount: number): Ge
 
     return emails
   } catch (error) {
-    console.error('[AI Generator] Failed to parse response:', error)
-    console.error('[AI Generator] Raw response:', response)
+    safeError('[AI Generator] Failed to parse response:', error)
+    safeError('[AI Generator] Raw response:', response)
     throw new Error('Failed to parse AI response. Please try again.')
   }
 }
@@ -251,7 +252,7 @@ Generate the improved email now. Return ONLY the JSON object, no other text.`
 
     return JSON.parse(jsonMatch[0]) as GeneratedEmail
   } catch (error) {
-    console.error('[AI Generator] Failed to regenerate email:', error)
+    safeError('[AI Generator] Failed to regenerate email:', error)
     throw new Error(`Failed to regenerate email: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }

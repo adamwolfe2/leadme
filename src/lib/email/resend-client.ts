@@ -4,6 +4,7 @@
  */
 
 import { Resend } from 'resend'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 let resendInstance: Resend | null = null
 
@@ -64,7 +65,7 @@ export async function sendEmail({
 
     return { success: true, data: result }
   } catch (error) {
-    console.error('[Email] Failed to send:', subject, error)
+    safeError('[Email] Failed to send:', { subject, error })
     return { success: false, error }
   }
 }

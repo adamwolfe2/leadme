@@ -12,6 +12,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { DatabaseError, ValidationError } from '@/types'
 import { createMatchingEngine } from './matching-engine.service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // ============================================================================
 // TYPES
@@ -562,7 +563,7 @@ export class UploadHandlerService {
       })
 
       if (companyError) {
-        console.error('[Upload] Failed to create company association:', companyError)
+        safeError('[Upload] Failed to create company association:', companyError)
       }
     }
 
@@ -601,7 +602,7 @@ export class UploadHandlerService {
     const { error: dedupeError } = await supabase.from('lead_dedupe_keys').upsert(dedupeData, { onConflict: 'lead_id' })
 
     if (dedupeError) {
-      console.error('[Upload] Failed to upsert dedupe keys:', dedupeError)
+      safeError('[Upload] Failed to upsert dedupe keys:', dedupeError)
     }
   }
 
@@ -617,7 +618,7 @@ export class UploadHandlerService {
       .eq('id', jobId)
 
     if (jobError) {
-      console.error('[Upload] Failed to update job status:', jobError)
+      safeError('[Upload] Failed to update job status:', jobError)
     }
   }
 

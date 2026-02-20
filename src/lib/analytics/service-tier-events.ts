@@ -36,6 +36,8 @@ export const SERVICE_TIER_EVENTS = {
   SUBSCRIPTION_UPGRADED: 'service_subscription_upgraded',
 } as const
 
+import { safeError } from '@/lib/utils/log-sanitizer'
+
 export type ServiceTierEvent = typeof SERVICE_TIER_EVENTS[keyof typeof SERVICE_TIER_EVENTS]
 
 // Event properties
@@ -93,7 +95,7 @@ export async function trackServiceTierEvent(
     })
   } catch (error) {
     // Silently fail - don't disrupt user experience
-    console.error('Analytics tracking error:', error)
+    safeError('Analytics tracking error:', error)
   }
 }
 

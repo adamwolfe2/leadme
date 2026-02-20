@@ -5,6 +5,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { User } from '@supabase/supabase-js'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export type UserRole = 'owner' | 'admin' | 'partner' | 'member'
 export type UserPlan = 'free' | 'starter' | 'pro' | 'enterprise'
@@ -32,7 +33,7 @@ export async function getUserWithRole(authUser: User): Promise<UserWithRole | nu
     .single()
 
   if (error || !user) {
-    console.error('[getUserWithRole] Failed to fetch user:', error)
+    safeError('[getUserWithRole] Failed to fetch user:', error)
     return null
   }
 
