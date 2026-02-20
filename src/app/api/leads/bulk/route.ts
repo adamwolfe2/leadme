@@ -7,7 +7,7 @@ import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
-import { handleApiError, unauthorized, success, badRequest } from '@/lib/utils/api-error-handler'
+import { handleApiError, unauthorized, forbidden, success, badRequest } from '@/lib/utils/api-error-handler'
 
 const bulkActionSchema = z.object({
   action: z.enum(['update_status', 'assign', 'add_tags', 'remove_tags', 'delete', 'export', 'archive', 'unarchive', 'tag', 'export_csv']),
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
       case 'delete': {
         // Check permission - only owners/admins can bulk delete
         if (user.role !== 'owner' && user.role !== 'admin') {
-          return badRequest('Only owners and admins can bulk delete leads')
+          return forbidden('Only owners and admins can bulk delete leads')
         }
 
         const { error } = await supabase
@@ -266,8 +266,10 @@ export async function POST(request: NextRequest) {
           throw new Error('Failed to fetch lead data for export')
         }
 
-        const rows = (assignmentsForExport || []).map((a: any) => {
-          const lead = a.leads || {}
+        type LeadExportRow = { [key: string]: string | null | undefined }
+        const rows = (assignmentsForExport || []).map((a) => {
+          // a.leads is a joined object (Supabase join returns single record for FK relation)
+          const lead = (a.leads as unknown as LeadExportRow) || {}
           const fullName =
             lead.full_name ||
             [lead.first_name, lead.last_name].filter(Boolean).join(' ') ||
