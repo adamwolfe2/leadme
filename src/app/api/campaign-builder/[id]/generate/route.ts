@@ -5,11 +5,11 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { CampaignBuilderRepository } from '@/lib/repositories/campaign-builder.repository'
 import { generateEmailSequence } from '@/lib/services/campaign-builder/ai-generator'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 const generateSchema = z.object({
   custom_prompt: z.string().optional(),
@@ -25,42 +25,20 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createClient()
     const { id } = await params
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
-    // Auth check
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
-    }
-
-    // Validate request
     const body = await req.json()
     const validated = generateSchema.parse(body)
 
-    // Get draft
     const repo = new CampaignBuilderRepository()
-    const draft = await repo.getById(id, userData.workspace_id)
+    const draft = await repo.getById(id, user.workspace_id)
 
     if (!draft) {
       return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
     }
 
-    // Check if already generated (unless regenerate flag is set)
     if (draft.generated_emails && !validated.regenerate) {
       return NextResponse.json({
         success: true,
@@ -70,7 +48,6 @@ export async function POST(
       })
     }
 
-    // Validate draft has minimum required fields
     if (!draft.company_name || !draft.problem_solved || !draft.primary_cta) {
       return NextResponse.json(
         {
@@ -85,47 +62,23 @@ export async function POST(
       )
     }
 
-    // Update status to 'generating'
-    await repo.updateStatus(id, userData.workspace_id, 'generating')
+    await repo.updateStatus(id, user.workspace_id, 'generating')
 
     try {
-      // Generate emails with AI
       const emails = await generateEmailSequence(draft, validated.custom_prompt)
-
-      // Save generated emails
-      const updatedDraft = await repo.saveGeneratedEmails(id, userData.workspace_id, emails, {
+      const updatedDraft = await repo.saveGeneratedEmails(id, user.workspace_id, emails, {
         prompt: validated.custom_prompt,
         model: 'claude-3-5-sonnet-20241022',
       })
 
-      return NextResponse.json({
-        success: true,
-        draft: updatedDraft,
-        emails,
-      })
+      return NextResponse.json({ success: true, draft: updatedDraft, emails })
     } catch (generationError) {
-      // Save error to draft
-      await repo.saveGeneratedEmails(id, userData.workspace_id, [], {
+      await repo.saveGeneratedEmails(id, user.workspace_id, [], {
         error: generationError instanceof Error ? generationError.message : 'Unknown error',
       })
-
       throw generationError
     }
   } catch (error) {
-    safeError('[Campaign Builder] Generate error:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      {
-        error: 'Failed to generate emails',
-      },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

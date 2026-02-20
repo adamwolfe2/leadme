@@ -8,8 +8,9 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-import { createServerClient } from '@supabase/ssr'
+import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { getStripeClient } from '@/lib/stripe/client'
 import type Stripe from 'stripe'
 import { z } from 'zod'
@@ -23,98 +24,17 @@ const checkoutSchema = z.object({
   companyName: z.string().optional(),
 })
 
-/**
- * Get authenticated user from session
- */
-async function getAuthenticatedUser() {
-  const cookieStore = await cookies()
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet: any[]) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {
-            // Ignore - called from Server Component
-          }
-        },
-      },
-    }
-  )
-
-  const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser()
-
-  if (!authUser) {
-    return null
-  }
-
-  // Get user with workspace
-  const { data: user } = await supabase
-    .from('users')
-    .select('id, workspace_id, email')
-    .eq('auth_user_id', authUser.id)
-    .maybeSingle()
-
-  return user
-}
-
 export async function POST(req: NextRequest) {
   try {
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
+
     const stripe = getStripeClient()
-    // Authenticate user
-    const user = await getAuthenticatedUser()
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      )
-    }
+    const supabase = await createClient()
 
     // Validate request body
     const body = await req.json()
-    const validation = checkoutSchema.safeParse(body)
-
-    if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.errors[0].message },
-        { status: 400 }
-      )
-    }
-
-    const { leadId, buyerEmail, buyerName, companyName } = validation.data
-
-    // Create admin Supabase client for database operations
-    const cookieStore = await cookies()
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll()
-          },
-          setAll(cookiesToSet: any[]) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-              )
-            } catch {
-              // Ignore
-            }
-          },
-        },
-      }
-    )
+    const { leadId, buyerEmail, buyerName, companyName } = checkoutSchema.parse(body)
 
     // Get lead details - ensure user has access to this lead
     const { data: lead, error: leadError } = await supabase
@@ -224,11 +144,7 @@ export async function POST(req: NextRequest) {
       sessionId: session.id,
       url: session.url,
     })
-  } catch (error: any) {
-    safeError('[Checkout] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to create checkout session' },
-      { status: 500 }
-    )
+  } catch (error) {
+    return handleApiError(error)
   }
 }

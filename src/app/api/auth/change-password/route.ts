@@ -7,11 +7,10 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-import { createServerClient } from '@supabase/ssr'
+import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
-import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Request validation schema
 const changePasswordSchema = z.object({
@@ -36,28 +35,7 @@ export async function POST(req: NextRequest) {
       return rateLimitResult
     }
 
-    const cookieStore = await cookies()
-
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll()
-          },
-          setAll(cookiesToSet: any[]) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-              )
-            } catch {
-              // Ignore
-            }
-          },
-        },
-      }
-    )
+    const supabase = await createClient()
 
     // Check authentication
     const {
@@ -114,7 +92,7 @@ export async function POST(req: NextRequest) {
       success: true,
       message: 'Password updated successfully',
     })
-  } catch (error: any) {
+  } catch (error) {
     safeError('[Change Password] Error:', error)
     return NextResponse.json(
       { error: 'Failed to change password' },

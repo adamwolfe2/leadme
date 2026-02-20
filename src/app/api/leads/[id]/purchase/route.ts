@@ -6,6 +6,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { unauthorized } from '@/lib/utils/api-error-handler'
 import { getStripeClient } from '@/lib/stripe/client'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -19,26 +21,12 @@ export async function POST(
     const stripe = getStripeClient()
     const supabase = await createClient()
 
-    // Get authenticated user
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-    if (!authUser) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
     // RATE LIMITING: Check purchase rate limit
     const rateLimitResult = await withRateLimit(request, 'marketplace-purchase')
     if (rateLimitResult) return rateLimitResult
-
-    // Get user profile with subscription check
-    const { data: user } = await supabase
-      .from('users')
-      .select('id, role, active_subscription, workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
 
     // Verify business user with active subscription
     if (!['owner', 'admin', 'member'].includes(user.role)) {

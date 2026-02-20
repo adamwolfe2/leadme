@@ -53,7 +53,7 @@ export async function GET(
 
     // 3. Return response
     return success(lead)
-  } catch (error: any) {
+  } catch (error) {
     return handleApiError(error)
   }
 }
@@ -81,7 +81,7 @@ export async function PUT(
 
     // 4. Return response
     return success(lead)
-  } catch (error: any) {
+  } catch (error) {
     return handleApiError(error)
   }
 }
@@ -105,7 +105,7 @@ export async function DELETE(
 
     // 3. Return response
     return success({ message: 'Lead deleted successfully' })
-  } catch (error: any) {
+  } catch (error) {
     return handleApiError(error)
   }
 }

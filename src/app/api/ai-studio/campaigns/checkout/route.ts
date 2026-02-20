@@ -1,10 +1,10 @@
-
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { getStripeClient } from '@/lib/stripe/client'
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 // Pricing configuration (amounts in cents)
 const TIER_PRICING: Record<string, { price: number; leads: number; name: string }> = {
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     // 1. Auth check
     const user = await getCurrentUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     // 2. Validate input
@@ -165,17 +165,6 @@ export async function POST(req: NextRequest) {
     })
   } catch (error) {
     safeError('[Campaign Checkout] Error:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Validation failed', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: 'Failed to create checkout session' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

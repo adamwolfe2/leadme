@@ -1,7 +1,7 @@
-
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth/admin'
+import { handleApiError } from '@/lib/utils/api-error-handler'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -97,17 +97,6 @@ ${validated.admin_notes ? `*Admin Notes:* ${validated.admin_notes}` : ''}
     })
   } catch (error) {
     safeError('Error updating feature request:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request data', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

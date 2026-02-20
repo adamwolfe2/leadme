@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
-import { getErrorMessage } from '@/lib/utils/error-messages'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 
 const querySchema = z.object({
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const { searchParams } = new URL(request.url)
@@ -50,17 +50,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ usage })
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid query parameters', details: error.errors },
-        { status: 400 }
-      )
-    }
-
     safeError('[Credit Usage] Error:', error)
-    return NextResponse.json(
-      { error: getErrorMessage(error) },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

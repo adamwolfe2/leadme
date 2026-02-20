@@ -1,27 +1,22 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { unauthorized } from '@/lib/utils/api-error-handler'
 
 
 export async function GET() {
   try {
-    const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const user = await getCurrentUser()
+    if (!user) {
+      return unauthorized()
     }
 
-    // Get workspace_id from users table
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (userError || !userData?.workspace_id) {
+    if (!user.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 400 })
     }
+
+    const supabase = await createClient()
 
     // SECURITY FIX: Use standard client instead of admin client to enforce RLS policies
     // This ensures users can only access their own workspace's pixel data
@@ -30,7 +25,7 @@ export async function GET() {
     const { data: pixel, error: pixelError } = await supabase
       .from('audiencelab_pixels')
       .select('pixel_id, domain, is_active, snippet, install_url, created_at, label, trial_ends_at, trial_status, visitor_count_total, visitor_count_identified')
-      .eq('workspace_id', userData.workspace_id)
+      .eq('workspace_id', user.workspace_id)
       .maybeSingle()
 
     if (pixelError) {

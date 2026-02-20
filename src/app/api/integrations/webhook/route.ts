@@ -7,10 +7,11 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { hmacSha256Hex } from '@/lib/utils/crypto'
-import { cookies } from 'next/headers'
-import { createServerClient } from '@supabase/ssr'
 import { z } from 'zod'
 
 // Request validation schemas
@@ -25,61 +26,14 @@ const testWebhookSchema = z.object({
 })
 
 /**
- * Get authenticated user from session
- */
-async function getAuthenticatedUser() {
-  const cookieStore = await cookies()
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet: any[]) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {
-            // Ignore
-          }
-        },
-      },
-    }
-  )
-
-  const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser()
-
-  if (!authUser) {
-    return { user: null, supabase }
-  }
-
-  const { data: user } = await supabase
-    .from('users')
-    .select('id, workspace_id, email')
-    .eq('auth_user_id', authUser.id)
-    .maybeSingle()
-
-  return { user, supabase }
-}
-
-/**
  * GET - Get current webhook settings
  */
 export async function GET(req: NextRequest) {
   try {
-    const { user, supabase } = await getAuthenticatedUser()
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      )
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
+
+    const supabase = await createClient()
 
     const { data: workspace, error } = await supabase
       .from('workspaces')
@@ -100,12 +54,8 @@ export async function GET(req: NextRequest) {
       webhook_enabled: workspace.webhook_enabled || false,
       webhook_events: workspace.webhook_events || ['lead.created'],
     })
-  } catch (error: any) {
-    safeError('[Webhook Settings] GET error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch webhook settings' },
-      { status: 500 }
-    )
+  } catch (error) {
+    return handleApiError(error)
   }
 }
 
@@ -114,13 +64,10 @@ export async function GET(req: NextRequest) {
  */
 export async function POST(req: NextRequest) {
   try {
-    const { user, supabase } = await getAuthenticatedUser()
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      )
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
+
+    const supabase = await createClient()
 
     const body = await req.json()
     const validation = updateWebhookSchema.safeParse(body)
@@ -201,12 +148,8 @@ export async function POST(req: NextRequest) {
         message: 'Webhook secret generated. Save it now - you won\'t see it again.',
       }),
     })
-  } catch (error: any) {
-    safeError('[Webhook Settings] POST error:', error)
-    return NextResponse.json(
-      { error: 'Failed to update webhook settings' },
-      { status: 500 }
-    )
+  } catch (error) {
+    return handleApiError(error)
   }
 }
 
@@ -215,13 +158,10 @@ export async function POST(req: NextRequest) {
  */
 export async function PUT(req: NextRequest) {
   try {
-    const { user, supabase } = await getAuthenticatedUser()
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      )
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
+
+    const supabase = await createClient()
 
     const body = await req.json()
     const validation = testWebhookSchema.safeParse(body)
@@ -300,12 +240,8 @@ export async function PUT(req: NextRequest) {
         message: 'Failed to connect to webhook endpoint',
       })
     }
-  } catch (error: any) {
-    safeError('[Webhook Settings] Test error:', error)
-    return NextResponse.json(
-      { error: 'Failed to test webhook' },
-      { status: 500 }
-    )
+  } catch (error) {
+    return handleApiError(error)
   }
 }
 
@@ -314,13 +250,10 @@ export async function PUT(req: NextRequest) {
  */
 export async function DELETE(req: NextRequest) {
   try {
-    const { user, supabase } = await getAuthenticatedUser()
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      )
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
+
+    const supabase = await createClient()
 
     // Generate new secret
     const newSecret = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => b.toString(16).padStart(2, '0')).join('')
@@ -347,11 +280,7 @@ export async function DELETE(req: NextRequest) {
       message: 'Webhook secret regenerated successfully. Save it now - you won\'t see it again.',
       warning: 'Update your webhook consumer with this new secret immediately to avoid delivery failures.',
     })
-  } catch (error: any) {
-    safeError('[Webhook Settings] DELETE error:', error)
-    return NextResponse.json(
-      { error: 'Failed to regenerate secret' },
-      { status: 500 }
-    )
+  } catch (error) {
+    return handleApiError(error)
   }
 }

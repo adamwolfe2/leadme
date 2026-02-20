@@ -1,0 +1,37 @@
+import { NextRequest, NextResponse } from 'next/server'
+
+const BASE_URL = 'https://api.similarweb.com/v1/website'
+const API_KEY = process.env.SIMILARWEB_API_KEY
+
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ slug: string[] }> }
+) {
+  if (!API_KEY) {
+    return NextResponse.json({ error: true, message: 'API key not configured' }, { status: 200 })
+  }
+
+  const { slug } = await params
+  const path = slug.join('/')
+  const searchParams = req.nextUrl.searchParams
+  const apiParams = new URLSearchParams(searchParams)
+  apiParams.set('api_key', API_KEY)
+
+  const url = `${BASE_URL}/${path}?${apiParams.toString()}`
+
+  try {
+    const res = await fetch(url, {
+      headers: { accept: 'application/json' },
+      next: { revalidate: 3600 },
+    })
+
+    if (!res.ok) {
+      return NextResponse.json({ error: true, status: res.status }, { status: 200 })
+    }
+
+    const data = await res.json()
+    return NextResponse.json(data)
+  } catch {
+    return NextResponse.json({ error: true }, { status: 200 })
+  }
+}

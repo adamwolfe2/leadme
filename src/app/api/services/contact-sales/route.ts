@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { createClient } from '@/lib/supabase/server'
 import { sendEmail, createEmailTemplate, EMAIL_CONFIG } from '@/lib/email/resend-client'
+import { handleApiError } from '@/lib/utils/api-error-handler'
 
 const contactSalesSchema = z.object({
   tier_slug: z.string(),
@@ -36,10 +36,6 @@ function escapeHtml(text: string): string {
  */
 export async function POST(request: NextRequest) {
   try {
-    // Optionally verify authentication (can be public or authenticated)
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
     // Parse and validate request body
     const body = await request.json()
     const validated = contactSalesSchema.parse(body)
@@ -176,17 +172,6 @@ ${validated.message}
       message: 'Thank you for your inquiry! Our team will contact you within 24 hours.'
     })
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 }
-      )
-    }
-
-    safeError('[API] Contact sales error:', error)
-    return NextResponse.json(
-      { error: 'Failed to submit inquiry. Please try again.' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

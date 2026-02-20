@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 
 const createTagSchema = z.object({
@@ -22,7 +23,7 @@ export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user || !user.workspace_id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const supabase = await createClient()
@@ -57,10 +58,7 @@ export async function GET(request: NextRequest) {
 
   } catch (error: any) {
     safeError('[Workspace Tags] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch workspace tags' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -68,7 +66,7 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user || !user.workspace_id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const body = await request.json()
@@ -79,17 +77,6 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     safeError('[Workspace Tags] Create Error:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: 'Failed to create tag' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

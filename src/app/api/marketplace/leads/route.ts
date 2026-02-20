@@ -1,10 +1,10 @@
 // Marketplace Leads API
 // Browse and search marketplace leads with filters
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import type { MarketplaceFilters, SeniorityLevel } from '@/types/database.types'
@@ -31,15 +31,10 @@ const filtersSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient()
-
-    // Auth check (server-verified)
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     // RATE LIMITING: Check browse rate limit (60 per minute per user)
@@ -94,7 +89,6 @@ export async function GET(request: NextRequest) {
     rawFilters.orderBy = searchParams.get('orderBy') || undefined
     rawFilters.orderDirection = searchParams.get('orderDirection') || undefined
 
-    // Validate with safeParse for structured error handling
     const parseResult = filtersSchema.safeParse(rawFilters)
 
     if (!parseResult.success) {
@@ -140,6 +134,6 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     safeError('Failed to browse leads:', error)
-    return NextResponse.json({ error: 'Failed to browse leads' }, { status: 500 })
+    return handleApiError(error)
   }
 }

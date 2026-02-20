@@ -122,7 +122,7 @@ export async function GET(request: NextRequest) {
       notification_preferences: userData.notification_preferences || null,
       api_key: userData.api_key || null,
     })
-  } catch (error: any) {
+  } catch (error) {
     return handleApiError(error)
   }
 }
@@ -140,12 +140,6 @@ export async function PATCH(request: NextRequest) {
     const validationResult = patchUserSchema.safeParse(body)
 
     if (!validationResult.success) {
-      if (validationResult.error instanceof z.ZodError) {
-        return NextResponse.json(
-          { error: 'Invalid request', details: validationResult.error.errors },
-          { status: 400 }
-        )
-      }
       return validationError('Invalid request data')
     }
 
@@ -206,7 +200,7 @@ export async function PATCH(request: NextRequest) {
       cancel_at_period_end: updated.cancel_at_period_end || false,
       notification_preferences: updated.notification_preferences || null,
     })
-  } catch (error: any) {
+  } catch (error) {
     return handleApiError(error)
   }
 }
@@ -224,12 +218,6 @@ export async function DELETE(request: NextRequest) {
     const validationResult = deleteUserSchema.safeParse(body)
 
     if (!validationResult.success) {
-      if (validationResult.error instanceof z.ZodError) {
-        return NextResponse.json(
-          { error: 'Invalid request', details: validationResult.error.errors },
-          { status: 400 }
-        )
-      }
       return validationError('Email confirmation is required to delete account')
     }
 
@@ -257,7 +245,7 @@ export async function DELETE(request: NextRequest) {
     await supabase.auth.signOut()
 
     return success({ message: 'Account deleted successfully' })
-  } catch (error: any) {
+  } catch (error) {
     return handleApiError(error)
   }
 }

@@ -3,11 +3,12 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getStripeClient } from '@/lib/stripe/client'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 const connectSchema = z.object({
   partnerId: z.string().uuid('Invalid partner ID'),
@@ -16,10 +17,9 @@ const connectSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     // Verify the user is authenticated
-    const supabaseAuth = await createClient()
-    const { data: { user } } = await supabaseAuth.auth.getUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const user = await getCurrentUser()
+    if (\!user) {
+      return unauthorized()
     }
 
     const stripe = getStripeClient()
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       .eq('id', partnerId)
       .maybeSingle()
 
-    if (partnerError || !partner) {
+    if (partnerError || \!partner) {
       return NextResponse.json(
         { error: 'Partner not found' },
         { status: 404 }
@@ -45,8 +45,8 @@ export async function POST(request: NextRequest) {
 
     let accountId = partner.stripe_account_id
 
-    // Create Stripe Connect Express account if doesn't exist
-    if (!accountId) {
+    // Create Stripe Connect Express account if does not exist
+    if (\!accountId) {
       const account = await stripe.accounts.create({
         type: 'express',
         email: partner.email,
@@ -91,22 +91,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error: any) {
     safeError('[Stripe Connect] Error:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        {
-          error: 'Validation error',
-          details: error.errors.map(e => e.message).join(', '),
-        },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      {
-        error: 'Failed to create Stripe Connect account',
-      },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

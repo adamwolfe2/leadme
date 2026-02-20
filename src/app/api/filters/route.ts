@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { getErrorMessage } from '@/lib/utils/error-messages'
 import { z } from 'zod'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 // Validation schemas
 const createFilterSchema = z.object({
@@ -154,18 +155,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ filter }, { status: 201 })
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-
     safeError('[Filters API] POST error:', error)
-    return NextResponse.json(
-      { error: getErrorMessage(error) },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -232,18 +223,8 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({ filter })
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-
     safeError('[Filters API] PATCH error:', error)
-    return NextResponse.json(
-      { error: getErrorMessage(error) },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 

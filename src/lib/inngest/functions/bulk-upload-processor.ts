@@ -235,6 +235,10 @@ export const importLeadFromAudienceLabs = inngest.createFunction(
       } as any)
     })
 
+    if (!routingResult?.destinationWorkspaceId) {
+      throw new Error(`[Bulk Upload] Lead routing failed: no destination workspace returned for workspace ${workspaceId}`)
+    }
+
     leadData.workspace_id = routingResult.destinationWorkspaceId
 
     // Generate fingerprint

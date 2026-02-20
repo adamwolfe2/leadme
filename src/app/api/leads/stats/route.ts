@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       intent_breakdown: intentBreakdown,
       platform_uploads: platformStats,
     })
-  } catch (error: any) {
+  } catch (error) {
     return handleApiError(error)
   }
 }

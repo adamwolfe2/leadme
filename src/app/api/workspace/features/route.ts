@@ -6,41 +6,22 @@
 
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET() {
   try {
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
+
     const supabase = await createClient()
-
-    // Get authenticated user
-    const {
-      data: { user: authUser },
-    } = await supabase.auth.getUser()
-
-    if (!authUser) {
-      return unauthorized()
-    }
-
-    // Get user's workspace
-    const { data: userProfile } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
-    if (!userProfile) {
-      return NextResponse.json(
-        { error: 'User profile not found' },
-        { status: 404 }
-      )
-    }
 
     // Get workspace premium features
     const { data: workspace, error } = await supabase
       .from('workspaces')
       .select('has_pixel_access, has_whitelabel_access, has_extra_data_access, has_outbound_access, premium_features_updated_at')
-      .eq('id', userProfile.workspace_id)
+      .eq('id', user.workspace_id)
       .maybeSingle()
 
     if (error) {
@@ -58,7 +39,7 @@ export async function GET() {
       has_outbound_access: workspace?.has_outbound_access ?? false,
       premium_features_updated_at: workspace?.premium_features_updated_at,
     })
-  } catch (error: any) {
+  } catch (error) {
     return handleApiError(error)
   }
 }

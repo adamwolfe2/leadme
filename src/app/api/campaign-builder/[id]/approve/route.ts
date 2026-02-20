@@ -5,9 +5,9 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { CampaignBuilderRepository } from '@/lib/repositories/campaign-builder.repository'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 /**
  * POST /api/campaign-builder/[id]/approve
@@ -18,38 +18,17 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createClient()
     const { id } = await params
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
-    // Auth check
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
-    }
-
-    // Get draft
     const repo = new CampaignBuilderRepository()
-    const draft = await repo.getById(id, userData.workspace_id)
+    const draft = await repo.getById(id, user.workspace_id)
 
     if (!draft) {
       return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
     }
 
-    // Validate campaign has generated emails
     if (!draft.generated_emails || draft.generated_emails.length === 0) {
       return NextResponse.json(
         { error: 'Campaign must have generated emails before approval' },
@@ -57,18 +36,10 @@ export async function POST(
       )
     }
 
-    // Approve campaign
-    const updatedDraft = await repo.approve(id, userData.workspace_id)
+    const updatedDraft = await repo.approve(id, user.workspace_id)
 
-    return NextResponse.json({
-      success: true,
-      draft: updatedDraft,
-    })
+    return NextResponse.json({ success: true, draft: updatedDraft })
   } catch (error) {
-    safeError('[Campaign Builder] Approve error:', error)
-    return NextResponse.json(
-      { error: 'Failed to approve campaign' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

@@ -7,6 +7,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { unauthorized } from '@/lib/utils/api-error-handler'
 import { getStripeClient } from '@/lib/stripe/client'
 import { PartnerRepository } from '@/lib/db/repositories/partner.repository'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -23,15 +25,8 @@ export async function POST(
   try {
     const { id: resolvedLeadId } = await params
 
-    // Authenticate user
-    const supabaseAuth = await createClient()
-    const { data: { user: authUser } } = await supabaseAuth.auth.getUser()
-    if (!authUser) {
-      return NextResponse.json(
-        { error: 'Not authenticated' },
-        { status: 401 }
-      )
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
     const stripe = getStripeClient()
     const body = await request.json()
@@ -67,13 +62,7 @@ export async function POST(
     }
 
     // Verify the authenticated user matches the buyer in the Stripe metadata
-    const { data: buyerProfile } = await supabaseAuth
-      .from('users')
-      .select('id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
-    if (!buyerProfile || buyerProfile.id !== buyerId) {
+    if (user.id !== buyerId) {
       return NextResponse.json(
         { error: 'Authenticated user does not match buyer' },
         { status: 403 }
@@ -114,33 +103,11 @@ export async function POST(
       stripe_payment_intent_id: paymentIntentId,
     })
 
-    // Get buyer's workspace to assign lead
-    const { data: buyer } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('id', buyerId)
-      .maybeSingle()
-
-    if (!buyer) {
-      throw new Error('Buyer not found')
-    }
-
-    // Get the lead data needed for existence check
-    const { data: leadData } = await supabase
-      .from('leads')
-      .select('id')
-      .eq('id', leadId)
-      .maybeSingle()
-
-    if (!leadData) {
-      throw new Error('Lead not found')
-    }
-
     // Update lead: assign to buyer's workspace, guard against double-sell
-    const { error: updateError, count: updatedCount } = await supabase
+    const { error: updateError } = await supabase
       .from('leads')
       .update({
-        workspace_id: buyer.workspace_id, // Assign to buyer's workspace
+        workspace_id: user.workspace_id, // Assign to buyer's workspace
         status: 'new', // Set as new lead in CRM
         assigned_user_id: buyerId, // Assign to the purchaser
         sold_at: new Date().toISOString(),

@@ -4,8 +4,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
 import { COMMISSION_CONFIG, calculateCommission } from '@/lib/services/commission.service'
 import { sendPurchaseConfirmationEmail } from '@/lib/email/service'
@@ -33,29 +34,17 @@ export async function POST(request: NextRequest) {
   let workspaceId: string | undefined
 
   try {
-    const supabase = await createClient()
-
-    // Auth check
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
-    // Get user's workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('id, workspace_id, full_name, email')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
+    if (!user.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
     }
 
-    workspaceId = userData.workspace_id
+    workspaceId = user.workspace_id
 
     // RATE LIMITING: Check purchase rate limit (10 per minute per user)
     const rateLimitResult = await withRateLimit(
@@ -87,30 +76,25 @@ export async function POST(request: NextRequest) {
         .from('api_idempotency_keys')
         .select('status, response_data, completed_at')
         .eq('idempotency_key', validated.idempotencyKey)
-        .eq('workspace_id', userData.workspace_id)
+        .eq('workspace_id', user.workspace_id)
         .eq('endpoint', '/api/marketplace/purchase')
         .maybeSingle()
 
       if (existingKey) {
-        // Request already processed - return cached response
         if (existingKey.status === 'completed' && existingKey.response_data) {
           return NextResponse.json(existingKey.response_data)
         }
 
-        // Request currently processing - return conflict
         if (existingKey.status === 'processing') {
           return NextResponse.json(
             { error: 'Request already in progress. Please try again shortly.' },
             { status: 409 }
           )
         }
-
-        // Request failed previously - allow retry (don't return early)
       } else {
-        // Create new idempotency key record
         await adminClient.from('api_idempotency_keys').insert({
           idempotency_key: validated.idempotencyKey,
-          workspace_id: userData.workspace_id,
+          workspace_id: user.workspace_id,
           endpoint: '/api/marketplace/purchase',
           status: 'processing',
         })
@@ -121,24 +105,21 @@ export async function POST(request: NextRequest) {
     const adminClient = createAdminClient()
 
     // RACE CONDITION FIX: Use atomic validation with row-level locks
-    // This prevents two users from purchasing the same lead simultaneously
-    // The database function uses SELECT FOR UPDATE to lock rows during validation
     let leads: any[]
     try {
       const { data: lockedLeads, error: lockError } = await adminClient.rpc(
         'validate_and_lock_leads_for_purchase',
         {
           p_lead_ids: validated.leadIds,
-          p_buyer_workspace_id: userData.workspace_id,
+          p_buyer_workspace_id: user.workspace_id,
         }
       )
 
       if (lockError) {
-        // Check for specific lock timeout or availability error
         if (lockError.message.includes('no longer available') || lockError.code === '55P03') {
           return NextResponse.json(
             { error: 'Some leads are no longer available for purchase. They may have just been purchased by another user.' },
-            { status: 409 } // 409 Conflict
+            { status: 409 }
           )
         }
         throw lockError
@@ -152,8 +133,6 @@ export async function POST(request: NextRequest) {
       }
 
       leads = lockedLeads
-      // At this point, the leads are locked for this transaction
-      // No other transaction can purchase them until we commit or rollback
     } catch (error: any) {
       safeError('Failed to validate and lock leads:', error)
       return NextResponse.json(
@@ -167,6 +146,8 @@ export async function POST(request: NextRequest) {
     const partnersMap = new Map<string, any>()
 
     if (uniquePartnerIds.length > 0) {
+      const { createClient } = await import('@/lib/supabase/server')
+      const supabase = await createClient()
       const { data: partners } = await supabase
         .from('partners')
         .select('id, verification_pass_rate, bonus_commission_rate, base_commission_rate')
@@ -184,8 +165,7 @@ export async function POST(request: NextRequest) {
     )
 
     if (validated.paymentMethod === 'credits') {
-      // Check credit balance
-      const credits = await repo.getWorkspaceCredits(userData.workspace_id)
+      const credits = await repo.getWorkspaceCredits(user.workspace_id)
       const balance = credits?.balance || 0
 
       if (balance < totalPrice) {
@@ -199,21 +179,18 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      // Create the purchase
       const purchase = await repo.createPurchase({
-        buyerWorkspaceId: userData.workspace_id,
-        buyerUserId: userData.id,
+        buyerWorkspaceId: user.workspace_id,
+        buyerUserId: user.id,
         leadIds: validated.leadIds,
         totalPrice,
         paymentMethod: 'credits',
         creditsUsed: totalPrice,
       })
 
-      // Add purchase items with commission calculations including bonuses
       const purchaseItems = leads.map((lead) => {
         const price = lead.marketplace_price || 0.05
 
-        // Calculate commission with bonuses if lead has a partner
         if (lead.partner_id && partnersMap.has(lead.partner_id)) {
           const partner = partnersMap.get(lead.partner_id)!
           const commissionCalc = calculateCommission({
@@ -240,7 +217,6 @@ export async function POST(request: NextRequest) {
           }
         }
 
-        // No partner = no commission
         return {
           leadId: lead.id,
           priceAtPurchase: price,
@@ -256,13 +232,11 @@ export async function POST(request: NextRequest) {
       await repo.addPurchaseItems(purchase.id, purchaseItems)
 
       // RACE CONDITION FIX: Use atomic function for credit deduction + lead marking + completion
-      // This prevents partial failures where credits are deducted but leads aren't marked sold
-      // All operations happen in a single database transaction (all-or-nothing)
       const { data: completionResult, error: completionError } = await adminClient.rpc(
         'complete_credit_lead_purchase',
         {
           p_purchase_id: purchase.id,
-          p_workspace_id: userData.workspace_id,
+          p_workspace_id: user.workspace_id,
           p_credit_amount: totalPrice,
         }
       )
@@ -283,16 +257,13 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      // Get the completed purchase for response
-      const completedPurchase = await repo.getPurchase(purchase.id, userData.workspace_id)
+      const completedPurchase = await repo.getPurchase(purchase.id, user.workspace_id)
       if (!completedPurchase) {
         throw new Error('Failed to retrieve completed purchase')
       }
 
-      // Get full lead details for the buyer
-      const purchasedLeads = await repo.getPurchasedLeads(purchase.id, userData.workspace_id)
+      const purchasedLeads = await repo.getPurchasedLeads(purchase.id, user.workspace_id)
 
-      // Queue purchase confirmation email via Inngest (with automatic retries)
       try {
         const { inngest } = await import('@/inngest/client')
         const downloadUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/marketplace/download/${purchase.id}`
@@ -302,8 +273,8 @@ export async function POST(request: NextRequest) {
           name: 'purchase/email.send',
           data: {
             purchaseId: purchase.id,
-            userEmail: userData.email || user.email!,
-            userName: userData.full_name || 'Valued Customer',
+            userEmail: user.email!,
+            userName: user.full_name || 'Valued Customer',
             downloadUrl,
             totalLeads: leads.length,
             totalPrice,
@@ -312,39 +283,38 @@ export async function POST(request: NextRequest) {
         })
       } catch (emailError) {
         safeError('[Purchase] Failed to queue confirmation email:', emailError)
-        // Don't fail the purchase if email queueing fails
-        // Inngest will retry automatically
       }
 
-      // Fire outbound webhook event: lead.purchased (once per purchased lead)
-      try {
-        const { inngest: inngestClient } = await import('@/inngest/client')
-        for (const lead of purchasedLeads) {
-          await inngestClient.send({
-            name: 'outbound-webhook/deliver',
-            data: {
-              workspace_id: userData.workspace_id,
-              event_type: 'lead.purchased',
-              payload: {
-                event: 'lead.purchased',
-                timestamp: new Date().toISOString(),
-                purchase_id: purchase.id,
-                lead: {
-                  id: lead.id,
-                  first_name: lead.first_name,
-                  last_name: lead.last_name,
-                  email: lead.email,
-                  phone: lead.phone,
-                  company_name: lead.company_name,
-                  company_industry: lead.company_industry,
+      if (purchasedLeads.length > 0) {
+        try {
+          const { inngest: inngestClient } = await import('@/inngest/client')
+          // Batch all webhook events in a single Inngest call instead of N separate calls
+          await inngestClient.send(
+            purchasedLeads.map((lead) => ({
+              name: 'outbound-webhook/deliver' as const,
+              data: {
+                workspace_id: user.workspace_id,
+                event_type: 'lead.purchased',
+                payload: {
+                  event: 'lead.purchased',
+                  timestamp: new Date().toISOString(),
+                  purchase_id: purchase.id,
+                  lead: {
+                    id: lead.id,
+                    first_name: lead.first_name,
+                    last_name: lead.last_name,
+                    email: lead.email,
+                    phone: lead.phone,
+                    company_name: lead.company_name,
+                    company_industry: lead.company_industry,
+                  },
                 },
               },
-            },
-          })
+            }))
+          )
+        } catch (webhookError) {
+          safeError('[Purchase] Failed to queue outbound webhook:', webhookError)
         }
-      } catch (webhookError) {
-        safeError('[Purchase] Failed to queue outbound webhook:', webhookError)
-        // Non-fatal — purchase already complete
       }
 
       const response = {
@@ -352,10 +322,9 @@ export async function POST(request: NextRequest) {
         purchase: completedPurchase,
         leads: purchasedLeads,
         totalPrice,
-        creditsRemaining: result.new_credit_balance, // From atomic function
+        creditsRemaining: result.new_credit_balance,
       }
 
-      // Update idempotency key with successful response
       if (validated.idempotencyKey) {
         const adminClient = createAdminClient()
         await adminClient
@@ -366,7 +335,7 @@ export async function POST(request: NextRequest) {
             completed_at: new Date().toISOString(),
           })
           .eq('idempotency_key', validated.idempotencyKey)
-          .eq('workspace_id', userData.workspace_id)
+          .eq('workspace_id', user.workspace_id)
       }
 
       return NextResponse.json(response)
@@ -375,21 +344,18 @@ export async function POST(request: NextRequest) {
       const stripe = getStripeClient()
       const adminClient = createAdminClient()
 
-      // Create pending purchase record
       const purchase = await repo.createPurchase({
-        buyerWorkspaceId: userData.workspace_id,
-        buyerUserId: userData.id,
+        buyerWorkspaceId: user.workspace_id,
+        buyerUserId: user.id,
         leadIds: validated.leadIds,
         totalPrice,
         paymentMethod: 'stripe',
         creditsUsed: 0,
       } as any)
 
-      // Add purchase items with commission calculations including bonuses
       const purchaseItems = leads.map((lead) => {
         const price = lead.marketplace_price || 0.05
 
-        // Calculate commission with bonuses if lead has a partner
         if (lead.partner_id && partnersMap.has(lead.partner_id)) {
           const partner = partnersMap.get(lead.partner_id)!
           const commissionCalc = calculateCommission({
@@ -416,7 +382,6 @@ export async function POST(request: NextRequest) {
           }
         }
 
-        // No partner = no commission
         return {
           leadId: lead.id,
           priceAtPurchase: price,
@@ -431,10 +396,8 @@ export async function POST(request: NextRequest) {
 
       await repo.addPurchaseItems(purchase.id, purchaseItems)
 
-      // Get app URL for redirect
       const origin = request.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
-      // Create Stripe checkout session
       const session = await stripe.checkout.sessions.create({
         mode: 'payment',
         payment_method_types: ['card'],
@@ -446,7 +409,7 @@ export async function POST(request: NextRequest) {
                 name: `Lead Purchase (${leads.length} leads)`,
                 description: `Purchase of ${leads.length} marketplace leads`,
               },
-              unit_amount: Math.round(totalPrice * 100), // Convert to cents
+              unit_amount: Math.round(totalPrice * 100),
             },
             quantity: 1,
           },
@@ -454,15 +417,14 @@ export async function POST(request: NextRequest) {
         metadata: {
           type: 'lead_purchase',
           purchase_id: purchase.id,
-          workspace_id: userData.workspace_id,
-          user_id: userData.id,
+          workspace_id: user.workspace_id,
+          user_id: user.id,
           lead_count: String(leads.length),
         },
         success_url: `${origin}/marketplace/history?success=true&purchase=${purchase.id}`,
         cancel_url: `${origin}/marketplace?canceled=true`,
       })
 
-      // Store Stripe session ID on purchase
       await adminClient
         .from('marketplace_purchases')
         .update({
@@ -478,7 +440,6 @@ export async function POST(request: NextRequest) {
         leadCount: leads.length,
       }
 
-      // Update idempotency key with Stripe session info
       if (validated.idempotencyKey) {
         const adminClient = createAdminClient()
         await adminClient
@@ -489,7 +450,7 @@ export async function POST(request: NextRequest) {
             completed_at: new Date().toISOString(),
           })
           .eq('idempotency_key', validated.idempotencyKey)
-          .eq('workspace_id', userData.workspace_id)
+          .eq('workspace_id', user.workspace_id)
       }
 
       return NextResponse.json(response)
@@ -497,7 +458,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     safeError('Failed to process purchase:', error)
 
-    // Mark idempotency key as failed to allow retry
     if (idempotencyKey && workspaceId) {
       try {
         const adminClient = createAdminClient()
@@ -514,39 +474,23 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json(
-      { error: 'Failed to process purchase' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
 // Get purchase details
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient()
-
-    // Auth check
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
-    // Get user data with workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('id, workspace_id, full_name, email')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
+    if (!user.workspace_id) {
       return NextResponse.json({ error: 'User workspace not found' }, { status: 403 })
     }
 
-    // Validate query params with Zod
     const queryResult = purchaseQuerySchema.safeParse({
       purchaseId: request.nextUrl.searchParams.get('purchaseId'),
     })
@@ -561,14 +505,13 @@ export async function GET(request: NextRequest) {
     const { purchaseId } = queryResult.data
 
     const repo = new MarketplaceRepository()
-    // SECURITY: Validate purchase belongs to user's workspace
-    const purchase = await repo.getPurchase(purchaseId, userData.workspace_id)
+    const purchase = await repo.getPurchase(purchaseId, user.workspace_id)
 
     if (!purchase) {
       return NextResponse.json({ error: 'Purchase not found' }, { status: 404 })
     }
 
-    const leads = await repo.getPurchasedLeads(purchaseId, userData.workspace_id)
+    const leads = await repo.getPurchasedLeads(purchaseId, user.workspace_id)
 
     return NextResponse.json({
       purchase,
@@ -576,9 +519,6 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     safeError('Failed to get purchase:', error)
-    return NextResponse.json(
-      { error: 'Failed to get purchase' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

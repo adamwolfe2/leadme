@@ -14,6 +14,7 @@ import { fetchLeadsFromSegment, type AudienceLabLead } from '@/lib/services/audi
 import { meetsQualityBar } from '@/lib/services/lead-quality.service'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { checkWorkspaceDuplicates, logDedupRejections } from '@/lib/services/deduplication.service'
+import { handleApiError } from '@/lib/utils/api-error-handler'
 
 export async function POST(req: NextRequest) {
   try {
@@ -262,11 +263,8 @@ export async function POST(req: NextRequest) {
       deduped: dedupCount,
       audience: segmentMapping.segment_name,
     })
-  } catch (error: any) {
+  } catch (error) {
     safeError('[PopulateInitialLeads] Unexpected error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

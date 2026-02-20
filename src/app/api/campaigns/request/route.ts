@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -38,9 +39,7 @@ export async function POST(request: NextRequest) {
   try {
     // 1. Auth check
     const user = await getCurrentUser()
-    if (!user || !user.workspace_id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    if (!user) return unauthorized()
 
     // 2. Validate input
     const body = await request.json()
@@ -83,7 +82,7 @@ export async function POST(request: NextRequest) {
       .select('id, workspace_id, status, company_name, contact_name, contact_email, target_industry, campaign_goal, timeline, created_at')
       .maybeSingle()
 
-    if (error) {
+    if (error || !campaignRequest) {
       safeError('[Campaign Request] Database error:', error)
       return NextResponse.json(
         { error: 'Failed to create campaign request' },
@@ -98,19 +97,7 @@ export async function POST(request: NextRequest) {
       success: true,
       data: campaignRequest,
     })
-  } catch (error: any) {
-    safeError('[Campaign Request] Error:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: 'Failed to submit campaign request' },
-      { status: 500 }
-    )
+  } catch (error) {
+    return handleApiError(error)
   }
 }

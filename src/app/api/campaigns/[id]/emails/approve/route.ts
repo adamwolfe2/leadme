@@ -6,6 +6,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { logger } from '@/lib/monitoring/logger'
 import { inngest } from '@/inngest/client'
 
@@ -20,9 +21,7 @@ const approveSchema = z.object({
 export async function POST(request: NextRequest, context: RouteContext) {
   try {
     const user = await getCurrentUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    if (!user) return unauthorized()
 
     const { id: campaignId } = await context.params
     const body = await request.json()
@@ -108,13 +107,6 @@ export async function POST(request: NextRequest, context: RouteContext) {
       approved_count: validIds.length,
     })
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-    logger.error('Approve emails error', { error: error instanceof Error ? error.message : String(error) })
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return handleApiError(error)
   }
 }

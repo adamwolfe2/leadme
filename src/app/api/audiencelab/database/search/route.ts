@@ -7,9 +7,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
-import { getErrorMessage } from '@/lib/utils/error-messages'
 import { z } from 'zod'
 
 // Import AL API client
@@ -46,9 +46,7 @@ const searchSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    if (!user) return unauthorized()
 
     const body = await request.json()
     const params = searchSchema.parse(body)
@@ -268,18 +266,7 @@ export async function POST(request: NextRequest) {
       }
     }
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    safeError('[AL Database Search] Error:', error)
-    return NextResponse.json(
-      { error: getErrorMessage(error) },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 

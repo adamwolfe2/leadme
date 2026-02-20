@@ -1,8 +1,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { provisionCustomerPixel } from '@/lib/audiencelab/api-client'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -48,26 +49,17 @@ const provisionSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const user = await getCurrentUser()
+    if (!user) {
+      return unauthorized()
     }
 
-    // Get workspace_id and role from users table
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('workspace_id, full_name, role')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (userError || !userData?.workspace_id) {
+    if (!user.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 400 })
     }
 
     // Only workspace owners/admins can provision pixels
-    if (userData.role && !['owner', 'admin'].includes(userData.role)) {
+    if (user.role && !['owner', 'admin'].includes(user.role)) {
       return NextResponse.json(
         { error: 'Only workspace owners or admins can create pixels' },
         { status: 403 }
@@ -83,7 +75,7 @@ export async function POST(request: NextRequest) {
     const { data: existingPixel } = await adminSupabase
       .from('audiencelab_pixels')
       .select('pixel_id, domain, is_active, snippet, install_url, label, created_at')
-      .eq('workspace_id', userData.workspace_id)
+      .eq('workspace_id', user.workspace_id)
       .eq('is_active', true)
       .maybeSingle()
 
@@ -123,7 +115,7 @@ export async function POST(request: NextRequest) {
       .from('audiencelab_pixels')
       .insert({
         pixel_id: result.pixel_id,
-        workspace_id: userData.workspace_id,
+        workspace_id: user.workspace_id,
         domain,
         is_active: true,
         label: websiteName,
@@ -139,7 +131,7 @@ export async function POST(request: NextRequest) {
         const { data: racePixel } = await adminSupabase
           .from('audiencelab_pixels')
           .select('pixel_id, domain, snippet, install_url')
-          .eq('workspace_id', userData.workspace_id)
+          .eq('workspace_id', user.workspace_id)
           .eq('is_active', true)
           .maybeSingle()
 
@@ -161,7 +153,7 @@ export async function POST(request: NextRequest) {
         severity: 'error',
         message: `Pixel provisioned in AL but DB insert failed — needs manual recovery`,
         metadata: {
-          workspace_id: userData.workspace_id,
+          workspace_id: user.workspace_id,
           al_pixel_id: result.pixel_id,
           domain,
           error: insertError.message,
@@ -178,7 +170,7 @@ export async function POST(request: NextRequest) {
 
     // Fire pixel drip email sequence (non-blocking)
     firePixelProvisionedEvent({
-      workspace_id: userData.workspace_id,
+      workspace_id: user.workspace_id,
       pixel_id: result.pixel_id,
       domain,
       trial_ends_at: trialEndsAt,
@@ -190,8 +182,8 @@ export async function POST(request: NextRequest) {
       severity: 'info',
       message: `New pixel provisioned for ${domain} — trial ends ${trialEndsAt.split('T')[0]}`,
       metadata: {
-        workspace_id: userData.workspace_id,
-        user: userData.full_name || user.email,
+        workspace_id: user.workspace_id,
+        user: user.full_name || user.email,
         pixel_id: result.pixel_id,
         domain,
       },
@@ -206,17 +198,7 @@ export async function POST(request: NextRequest) {
       domain,
     })
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 }
-      )
-    }
-
     safeError('[API] Pixel provision error:', error)
-    return NextResponse.json(
-      { error: 'Failed to provision pixel. Please try again.' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

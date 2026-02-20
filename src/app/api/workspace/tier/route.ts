@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/server'
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
 import type { ProductTierFeatures } from '@/types'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 /** Type for service tier platform_features JSONB column */
 interface ServiceTierPlatformFeatures {
@@ -44,10 +45,7 @@ export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return unauthorized()
     }
 
     const supabase = await createClient()
@@ -206,11 +204,8 @@ export async function GET(request: NextRequest) {
           }
         : null,
     })
-  } catch (error: any) {
+  } catch (error) {
     safeError('[Workspace Tier] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to get tier info' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

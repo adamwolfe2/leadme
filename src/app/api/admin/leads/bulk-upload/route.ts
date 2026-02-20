@@ -331,7 +331,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    safeError(`[Admin Bulk Upload] ${results.successful} marketplace leads created, ${results.skipped_duplicates} duplicates skipped`)
+    safeLog(`[Admin Bulk Upload] ${results.successful} marketplace leads created, ${results.skipped_duplicates} duplicates skipped`)
 
     // Route newly created leads to matching users
     let routingStats = { routed: 0, notified: 0 }

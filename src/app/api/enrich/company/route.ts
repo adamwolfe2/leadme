@@ -10,6 +10,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { getCompanyEnrichmentService } from '@/lib/services/company-enrichment.service'
 import { checkRateLimit } from '@/lib/utils/rate-limit'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 
 // Domain validation schema
@@ -30,23 +31,17 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return unauthorized()
     }
 
     const body = await request.json()
     const validationResult = enrichRequestSchema.safeParse(body)
 
     if (!validationResult.success) {
-      if (validationResult.error instanceof z.ZodError) {
-        return NextResponse.json(
-          { error: 'Invalid request', details: validationResult.error.errors },
-          { status: 400 }
-        )
-      }
-      return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Invalid request', details: validationResult.error.errors },
+        { status: 400 }
+      )
     }
 
     const { domain, website, saveToWorkspace } = validationResult.data
@@ -89,12 +84,9 @@ export async function POST(request: NextRequest) {
       data: result.data,
       enrichedAt: result.enrichedAt,
     })
-  } catch (error: any) {
+  } catch (error) {
     safeError('[Company Enrichment POST] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to enrich company' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -167,11 +159,8 @@ export async function GET(request: NextRequest) {
         description: result.data.description?.substring(0, 200),
       },
     })
-  } catch (error: any) {
+  } catch (error) {
     safeError('[Company Enrichment GET] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to lookup company' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

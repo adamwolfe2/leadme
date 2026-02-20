@@ -12,8 +12,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { ImportRequestSchema, ExportRowSchema } from '@/lib/audiencelab/schemas'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { retryFetch } from '@/lib/utils/retry'
@@ -30,20 +30,9 @@ const MAX_ROWS = 50000
 
 export async function POST(request: NextRequest) {
   try {
-    // Auth: require authenticated user
-    const cookieStore = await cookies()
-    const supabaseAuth = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { cookies: { getAll: () => cookieStore.getAll() } }
-    )
-
-    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser()
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+    const user = await getCurrentUser()
+    if (!user) {
+      return unauthorized()
     }
 
     // Parse and validate request body
@@ -59,21 +48,14 @@ export async function POST(request: NextRequest) {
     const { fileUrl, audienceId } = parsed.data
     const supabase = createAdminClient()
 
-    // Get user's workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
+    if (!user.workspace_id) {
       return NextResponse.json(
         { error: 'No workspace found' },
         { status: 403 }
       )
     }
 
-    const workspaceId = parsed.data.workspaceId || userData.workspace_id
+    const workspaceId = parsed.data.workspaceId || user.workspace_id
 
     // Idempotency: check if this import was already started
     const importHash = await sha256Hex(`${fileUrl}|${audienceId || ''}|${workspaceId}`)
@@ -254,9 +236,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     safeError(`${LOG_PREFIX} Unhandled error`, error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

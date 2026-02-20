@@ -1,6 +1,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeParseFloat } from '@/lib/utils/parse-number'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -12,22 +14,8 @@ export async function PATCH(
     const supabase = await createClient()
     const { id } = await params
 
-    // Get current user
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-    if (!authUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get user's workspace
-    const { data: user } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
-    if (!user?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
     // Verify preference belongs to workspace
     const { data: existing } = await supabase
@@ -73,9 +61,8 @@ export async function PATCH(
     }
 
     return NextResponse.json({ success: true, data: preference })
-  } catch (error: any) {
-    safeError('[Lead Preferences] Update error:', error)
-    return NextResponse.json({ error: 'Failed to update preference' }, { status: 500 })
+  } catch (error) {
+    return handleApiError(error)
   }
 }
 
@@ -87,22 +74,8 @@ export async function DELETE(
     const supabase = await createClient()
     const { id } = await params
 
-    // Get current user
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-    if (!authUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get user's workspace
-    const { data: user } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
-    if (!user?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
     // Delete preference (RLS will ensure workspace ownership)
     const { error } = await supabase
@@ -117,8 +90,7 @@ export async function DELETE(
     }
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
-    safeError('[Lead Preferences] Delete error:', error)
-    return NextResponse.json({ error: 'Failed to delete preference' }, { status: 500 })
+  } catch (error) {
+    return handleApiError(error)
   }
 }

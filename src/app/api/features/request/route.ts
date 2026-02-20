@@ -7,6 +7,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -32,23 +34,10 @@ const requestSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    const userData = await getCurrentUser()
+    if (!userData) return unauthorized()
+
     const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get user data
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('id, workspace_id, full_name, email, role')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (userError || !userData?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 400 })
-    }
 
     // Get workspace data
     const { data: workspace } = await supabase
@@ -155,18 +144,7 @@ ${JSON.stringify(validated.request_data || {}, null, 2)}
       status: 'pending',
     })
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request data', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    safeError('[Feature Request] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to submit request. Please try again.' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -176,29 +154,16 @@ ${JSON.stringify(validated.request_data || {}, null, 2)}
  */
 export async function GET(request: NextRequest) {
   try {
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
+
     const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get user's workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 400 })
-    }
 
     // Get feature requests for this workspace
     const { data: requests, error: fetchError } = await supabase
       .from('feature_requests')
       .select('*')
-      .eq('workspace_id', userData.workspace_id)
+      .eq('workspace_id', user.workspace_id)
       .order('created_at', { ascending: false })
 
     if (fetchError) {
@@ -210,10 +175,6 @@ export async function GET(request: NextRequest) {
       total: requests?.length || 0,
     })
   } catch (error) {
-    safeError('[Feature Request] GET error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch requests' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

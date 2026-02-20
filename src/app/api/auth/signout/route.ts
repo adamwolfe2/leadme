@@ -7,34 +7,12 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-import { createServerClient } from '@supabase/ssr'
-import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function POST(req: NextRequest) {
   try {
-    const cookieStore = await cookies()
-
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll()
-          },
-          setAll(cookiesToSet: any[]) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-              )
-            } catch {
-              // Ignore
-            }
-          },
-        },
-      }
-    )
+    const supabase = await createClient()
 
     // Sign out from Supabase
     const { error } = await supabase.auth.signOut()
@@ -58,7 +36,7 @@ export async function POST(req: NextRequest) {
     response.cookies.set('x-workspace-id', '', { maxAge: 0, path: '/' })
 
     return response
-  } catch (error: any) {
+  } catch (error) {
     safeError('[Sign Out] Error:', error)
     return NextResponse.json(
       { error: 'Failed to sign out' },

@@ -51,20 +51,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     let validatedData: RequestInput
 
-    try {
-      validatedData = requestSchema.parse(body)
-    } catch (validationError) {
-      if (validationError instanceof z.ZodError) {
-        return NextResponse.json(
-          {
-            error: 'Validation failed',
-            details: validationError.errors,
-          },
-          { status: 400 }
-        )
-      }
-      throw validationError
-    }
+    validatedData = requestSchema.parse(body)
 
     // Create the feature request
     const { data: featureRequest, error: insertError } = await supabase

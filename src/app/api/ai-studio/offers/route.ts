@@ -10,6 +10,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 const querySchema = z.object({
   workspace: z.string().min(1, 'Invalid workspace ID format').regex(/^[a-zA-Z0-9-]+$/, 'Invalid workspace ID format'),
@@ -26,7 +27,7 @@ export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const { searchParams } = new URL(request.url)
@@ -49,22 +50,11 @@ export async function GET(request: NextRequest) {
 
     const supabase = await createClient()
 
-    // Verify brand workspace belongs to user's workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
-
     const { data: brandWorkspace } = await supabase
       .from('brand_workspaces')
       .select('id')
       .eq('id', workspaceId)
-      .eq('workspace_id', userData.workspace_id)
+      .eq('workspace_id', user.workspace_id)
       .maybeSingle()
 
     if (!brandWorkspace) {
@@ -87,10 +77,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ offers: offers || [] })
   } catch (error: any) {
     safeError('[Offers] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch offers' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -102,7 +89,7 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const body = await request.json()
@@ -111,22 +98,11 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient()
 
-    // Verify brand workspace belongs to user's workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
-
     const { data: brandWorkspace } = await supabase
       .from('brand_workspaces')
       .select('id')
       .eq('id', workspaceId)
-      .eq('workspace_id', userData.workspace_id)
+      .eq('workspace_id', user.workspace_id)
       .maybeSingle()
 
     if (!brandWorkspace) {
@@ -160,18 +136,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
   } catch (error: any) {
-    if (error instanceof z.ZodError) {
-      const firstError = error.errors[0]
-      return NextResponse.json(
-        { error: firstError.message },
-        { status: 400 }
-      )
-    }
-
     safeError('[Offers] Create error:', error)
-    return NextResponse.json(
-      { error: 'Failed to create offer' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

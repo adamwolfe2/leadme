@@ -1,8 +1,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 /**
  * GET /api/services/subscription
@@ -10,48 +10,10 @@ import { safeError } from '@/lib/utils/log-sanitizer'
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication
-    const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
-    if (authError) {
-      safeError('[Services Subscription] Auth error:', authError)
-      return NextResponse.json(
-        { error: 'Authentication failed' },
-        { status: 401 }
-      )
-    }
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      )
-    }
-
-    // Get user's workspace
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (userError) {
-      safeError('[Services Subscription] Failed to fetch user data:', userError)
-      return NextResponse.json(
-        { error: 'Failed to fetch user data' },
-        { status: 500 }
-      )
-    }
-
-    if (!userData || !userData.workspace_id) {
-      return NextResponse.json(
-        { error: 'Workspace not found' },
-        { status: 404 }
-      )
-    }
-
-    const workspaceId = userData.workspace_id
+    const workspaceId = user.workspace_id
 
     // Get active subscription
     const subscription = await serviceTierRepository.getWorkspaceActiveSubscription(workspaceId)
@@ -103,10 +65,6 @@ export async function GET(request: NextRequest) {
       }))
     })
   } catch (error) {
-    safeError('[Services Subscription] Unexpected error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch subscription' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

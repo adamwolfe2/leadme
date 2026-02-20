@@ -4,8 +4,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 const patchSchema = z.object({
@@ -14,23 +15,13 @@ const patchSchema = z.object({
 
 export async function GET() {
   try {
-    const supabase = await createClient()
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
+    if (!user.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
     }
 
@@ -38,7 +29,7 @@ export async function GET() {
     const { data: workspace } = await adminClient
       .from('workspaces')
       .select('settings')
-      .eq('id', userData.workspace_id)
+      .eq('id', user.workspace_id)
       .maybeSingle()
 
     const threshold = (workspace?.settings as Record<string, unknown> | null)?.credit_alert_threshold ?? 10
@@ -46,29 +37,19 @@ export async function GET() {
     return NextResponse.json({ threshold })
   } catch (error) {
     safeError('[CreditAlertThreshold] GET failed:', error)
-    return NextResponse.json({ error: 'Failed to fetch credit alert threshold' }, { status: 500 })
+    return handleApiError(error)
   }
 }
 
 export async function PATCH(request: NextRequest) {
   try {
-    const supabase = await createClient()
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
+    if (!user.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
     }
 
@@ -90,7 +71,7 @@ export async function PATCH(request: NextRequest) {
     const { data: workspace } = await adminClient
       .from('workspaces')
       .select('settings')
-      .eq('id', userData.workspace_id)
+      .eq('id', user.workspace_id)
       .maybeSingle()
 
     const existingSettings = (workspace?.settings as Record<string, unknown> | null) ?? {}
@@ -103,7 +84,7 @@ export async function PATCH(request: NextRequest) {
     const { error: updateError } = await adminClient
       .from('workspaces')
       .update({ settings: updatedSettings })
-      .eq('id', userData.workspace_id)
+      .eq('id', user.workspace_id)
 
     if (updateError) {
       safeError('[CreditAlertThreshold] Failed to update:', updateError)
@@ -113,12 +94,6 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ success: true, threshold })
   } catch (error) {
     safeError('[CreditAlertThreshold] PATCH failed:', error)
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-    return NextResponse.json({ error: 'Failed to save credit alert threshold' }, { status: 500 })
+    return handleApiError(error)
   }
 }

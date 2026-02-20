@@ -5,10 +5,10 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { CampaignBuilderRepository } from '@/lib/repositories/campaign-builder.repository'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import type { UpdateCampaignDraftRequest } from '@/types/campaign-builder'
 
 const updateDraftSchema = z.object({
@@ -69,32 +69,12 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createClient()
     const { id } = await params
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
-    // Auth check
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
-    }
-
-    // Get draft
     const repo = new CampaignBuilderRepository()
-    const draft = await repo.getById(id, userData.workspace_id)
+    const draft = await repo.getById(id, user.workspace_id)
 
     if (!draft) {
       return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
@@ -102,11 +82,7 @@ export async function GET(
 
     return NextResponse.json({ draft })
   } catch (error) {
-    safeError('[Campaign Builder] Get error:', error)
-    return NextResponse.json(
-      { error: 'Failed to get campaign' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -119,52 +95,19 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createClient()
     const { id } = await params
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
-    // Auth check
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
-    }
-
-    // Validate request
     const body = await req.json()
     const validated = updateDraftSchema.parse(body)
 
-    // Update draft
     const repo = new CampaignBuilderRepository()
-    const draft = await repo.update(id, userData.workspace_id, validated as UpdateCampaignDraftRequest)
+    const draft = await repo.update(id, user.workspace_id, validated as UpdateCampaignDraftRequest)
 
     return NextResponse.json({ draft })
   } catch (error) {
-    safeError('[Campaign Builder] Update error:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: 'Failed to update campaign' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -177,39 +120,15 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createClient()
     const { id } = await params
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
-    // Auth check
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
-    }
-
-    // Delete draft
     const repo = new CampaignBuilderRepository()
-    await repo.delete(id, userData.workspace_id)
+    await repo.delete(id, user.workspace_id)
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    safeError('[Campaign Builder] Delete error:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete campaign' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

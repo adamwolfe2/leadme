@@ -1,10 +1,10 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { createServiceCheckout } from '@/lib/stripe/service-checkout'
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 const checkoutSchema = z.object({
   tier_slug: z.string().min(1, 'Tier slug is required'),
@@ -23,32 +23,10 @@ const checkoutSchema = z.object({
  */
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      )
-    }
-
-    // Get user's workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id, workspaces(billing_email)')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData || !userData.workspace_id) {
-      return NextResponse.json(
-        { error: 'Workspace not found' },
-        { status: 404 }
-      )
-    }
-
-    const workspaceId = userData.workspace_id
+    const workspaceId = user.workspace_id
 
     // Check if workspace already has an active subscription
     const existingSubscription = await serviceTierRepository.getWorkspaceActiveSubscription(workspaceId)
@@ -80,16 +58,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get billing email
-    const billingEmail = (userData.workspaces as any)?.billing_email || user.email
-
     // Create Stripe Checkout session
     const checkoutResult = await createServiceCheckout({
       workspaceId,
-      userId: user.id,
+      userId: user.auth_user_id,
       serviceTierSlug: validated.tier_slug,
       negotiatedMonthlyPrice: validated.negotiated_monthly_price,
-      billingEmail: billingEmail || undefined,
+      billingEmail: user.email || undefined,
       successUrl: validated.success_url,
       cancelUrl: validated.cancel_url
     })
@@ -100,17 +75,6 @@ export async function POST(request: NextRequest) {
       session_id: checkoutResult.session_id
     })
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 }
-      )
-    }
-
-    safeError('[Service Checkout] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to create checkout session' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

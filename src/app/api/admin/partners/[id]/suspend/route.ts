@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth/admin'
 import { PartnerRepository } from '@/lib/repositories/partner.repository'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { handleApiError } from '@/lib/utils/api-error-handler'
 
 const suspendSchema = z.object({
   reason: z.string().min(10, 'Suspension reason must be at least 10 characters'),
@@ -25,15 +26,6 @@ export async function POST(
 
     const supabase = await createClient()
 
-    // Get user for audit log
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     // Parse request body
     const body = await request.json()
     const validated = suspendSchema.parse(body)
@@ -48,7 +40,7 @@ export async function POST(
 
     // Log action
     await supabase.from('audit_logs').insert({
-      user_id: user.id,
+      user_id: admin.id,
       action: 'partner.suspended',
       resource_type: 'partner',
       resource_id: id,
@@ -61,17 +53,6 @@ export async function POST(
     return NextResponse.json({ partner })
   } catch (error) {
     safeError('Error suspending partner:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: 'Failed to suspend partner' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

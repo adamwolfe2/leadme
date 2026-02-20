@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
       .select()
       .maybeSingle()
 
-    if (insertError) {
+    if (insertError || !requestData) {
       safeError('Failed to create custom audience request:', insertError)
       return NextResponse.json({ error: 'Failed to create request' }, { status: 500 })
     }

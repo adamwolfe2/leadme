@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
-import { getErrorMessage } from '@/lib/utils/error-messages'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { STRIPE_CONFIG } from '@/lib/stripe/config'
 import { CREDIT_PACKAGES } from '@/lib/constants/credit-packages'
 import { z } from 'zod'
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const body = await request.json()
@@ -131,18 +131,8 @@ export async function POST(request: NextRequest) {
       sessionId: session.id,
     })
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-
     safeError('[Credit Checkout] Error:', error)
-    return NextResponse.json(
-      { error: getErrorMessage(error) },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 

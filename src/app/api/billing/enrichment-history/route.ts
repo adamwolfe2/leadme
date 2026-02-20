@@ -9,8 +9,9 @@ export const runtime = 'nodejs'
  */
 
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 // ---- Types ----
@@ -30,26 +31,17 @@ export interface EnrichmentHistoryEntry {
 
 export async function GET() {
   try {
-    // Auth: verify user via JWT (server-side verification)
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
-    // Get workspace_id for the current user
-    const { data: userData, error: userErr } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (userErr || !userData?.workspace_id) {
+    if (!user.workspace_id) {
       return NextResponse.json({ error: 'Workspace not found' }, { status: 404 })
     }
 
-    const { workspace_id } = userData
+    const { workspace_id } = user
 
     // Use admin client to bypass RLS for joined query
     const adminClient = createAdminClient()
@@ -95,6 +87,6 @@ export async function GET() {
     return NextResponse.json({ entries })
   } catch (error: unknown) {
     safeError('[EnrichmentHistory] Route error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return handleApiError(error)
   }
 }

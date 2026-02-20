@@ -1,10 +1,11 @@
 // Credit Breakdown API
 // GET: returns credit usage breakdown by category, daily totals (last 30 days), and top 5 expenditures
-// Auth: createClient() + getUser()
+// Auth: getCurrentUser()
 
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface CategoryBreakdown {
@@ -27,27 +28,17 @@ interface TopPurchase {
 
 export async function GET() {
   try {
-    const supabase = await createClient()
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
+    if (!user.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
     }
 
-    const workspaceId = userData.workspace_id
+    const workspaceId = user.workspace_id
     const adminClient = createAdminClient()
 
     const thirtyDaysAgo = new Date()
@@ -72,8 +63,6 @@ export async function GET() {
       .order('credits_used', { ascending: false })
       .limit(5)
 
-    // Build by_category from marketplace purchases
-    // Categories: 'marketplace' (lead purchases), 'enrichment' (from enrichment_log), 'segment' (from segments)
     const categoryMap: Record<string, { credits: number; count: number }> = {}
 
     const marketplaceCredits = (purchases ?? []).reduce((sum, p) => sum + (p.credits_used || p.total_price || 0), 0)
@@ -99,10 +88,8 @@ export async function GET() {
       .map(([category, { credits, count }]) => ({ category, credits, count }))
       .sort((a, b) => b.credits - a.credits)
 
-    // Build daily breakdown for last 30 days
     const dailyMap: Record<string, number> = {}
 
-    // Initialize all 30 days
     for (let i = 0; i < 30; i++) {
       const d = new Date()
       d.setDate(d.getDate() - i)
@@ -110,7 +97,6 @@ export async function GET() {
       dailyMap[key] = 0
     }
 
-    // Add marketplace purchases
     for (const p of purchases ?? []) {
       const day = p.created_at.split('T')[0]
       if (day in dailyMap) {
@@ -118,7 +104,6 @@ export async function GET() {
       }
     }
 
-    // Add enrichment credits
     for (const e of enrichmentLogs ?? []) {
       const day = (e.created_at as string).split('T')[0]
       if (day in dailyMap) {
@@ -141,6 +126,6 @@ export async function GET() {
     return NextResponse.json({ by_category, daily, top_purchases })
   } catch (error) {
     safeError('[CreditBreakdown] GET failed:', error)
-    return NextResponse.json({ error: 'Failed to fetch credit breakdown' }, { status: 500 })
+    return handleApiError(error)
   }
 }

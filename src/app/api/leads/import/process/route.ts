@@ -13,6 +13,8 @@ import { createClient } from '@/lib/supabase/server'
 import { leadDataProcessor, type ProcessedLead } from '@/lib/services/lead-data-processor.service'
 import { geocodingService } from '@/lib/services/geocoding.service'
 import { z } from 'zod'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 const importProcessSchema = z.object({
   rows: z.array(z.record(z.string())).min(1, 'At least one row is required'),
@@ -40,25 +42,10 @@ const importProcessSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     // Auth check
-    const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get user's workspace
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (userError || !userData?.workspace_id) {
-      return NextResponse.json({ error: 'Workspace not found' }, { status: 404 })
-    }
-
-    const workspaceId = userData.workspace_id
+    const workspaceId = user.workspace_id
 
     // Parse and validate request body
     const body = await req.json()
@@ -100,6 +87,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check for duplicates if requested
+    const supabase = await createClient()
     let leadsToInsert = validLeads
     const duplicateEmails: string[] = []
 
@@ -188,11 +176,7 @@ export async function POST(req: NextRequest) {
       warnings: result.warnings,
     })
   } catch (error) {
-    safeError('Import process error:', error)
-    return NextResponse.json(
-      { error: 'Failed to process import' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 

@@ -1,37 +1,28 @@
 // API endpoint for marketplace statistics
 
-import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET() {
   try {
-    const supabase = await createClient()
-
-    // Get current user (server-verified)
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
-    // Get user's workspace
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (userError || !userData) {
+    if (!user.workspace_id) {
       return NextResponse.json(
         { error: 'User workspace not found' },
         { status: 404 }
       )
     }
 
-    const workspaceId = userData.workspace_id
+    const workspaceId = user.workspace_id
+    const supabase = await createClient()
 
     // Get available leads count (leads not purchased by this workspace)
     const { count: availableCount, error: availableError } = await supabase
@@ -50,6 +41,10 @@ export async function GET() {
       .select('balance')
       .eq('workspace_id', workspaceId)
       .maybeSingle()
+
+    if (creditsError) {
+      throw creditsError
+    }
 
     const credits = creditsData?.balance || 0
 
@@ -109,9 +104,6 @@ export async function GET() {
     })
   } catch (error) {
     safeError('Error fetching marketplace stats:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch marketplace statistics' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

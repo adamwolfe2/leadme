@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { handleApiError } from '@/lib/utils/api-error-handler'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import { getErrorMessage } from '@/lib/utils/error-messages'
 import { z } from 'zod'
@@ -92,10 +93,7 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     safeError('[Admin AL Pixels] GET error:', error)
-    return NextResponse.json(
-      { error: getErrorMessage(error) },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -211,18 +209,8 @@ export async function POST(request: NextRequest) {
       })
     }
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-
     safeError('[Admin AL Pixels] POST error:', error)
-    return NextResponse.json(
-      { error: getErrorMessage(error) },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -263,9 +251,6 @@ export async function DELETE(request: NextRequest) {
     })
   } catch (error) {
     safeError('[Admin AL Pixels] DELETE error:', error)
-    return NextResponse.json(
-      { error: getErrorMessage(error) },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

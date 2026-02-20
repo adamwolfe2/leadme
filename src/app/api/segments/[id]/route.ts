@@ -8,8 +8,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
-import { getErrorMessage } from '@/lib/utils/error-messages'
 import { z } from 'zod'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 const updateSchema = z.object({
   name: z.string().min(1).max(100).optional(),
@@ -29,7 +29,7 @@ export async function GET(
   try {
     const user = await getCurrentUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const { id } = await params
@@ -49,10 +49,7 @@ export async function GET(
     return NextResponse.json({ segment })
   } catch (error) {
     safeError('[Segments API] GET single error:', error)
-    return NextResponse.json(
-      { error: getErrorMessage(error) },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -67,7 +64,7 @@ export async function PATCH(
   try {
     const user = await getCurrentUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const { id } = await params
@@ -118,18 +115,8 @@ export async function PATCH(
 
     return NextResponse.json({ segment })
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-
     safeError('[Segments API] PATCH error:', error)
-    return NextResponse.json(
-      { error: getErrorMessage(error) },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -144,7 +131,7 @@ export async function DELETE(
   try {
     const user = await getCurrentUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const { id } = await params
@@ -188,9 +175,6 @@ export async function DELETE(
     return NextResponse.json({ success: true })
   } catch (error) {
     safeError('[Segments API] DELETE error:', error)
-    return NextResponse.json(
-      { error: getErrorMessage(error) },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

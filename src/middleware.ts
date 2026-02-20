@@ -138,6 +138,12 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/verify-email') ||
       pathname.startsWith('/auth/callback') ||
       pathname.startsWith('/auth/accept-invite') ||
+      pathname.startsWith('/superpixel') ||
+      pathname.startsWith('/privacy') ||
+      pathname.startsWith('/terms') ||
+      pathname.startsWith('/api/analyze-site') ||
+      pathname.startsWith('/api/lead-capture') ||
+      pathname.startsWith('/api/similarweb') ||
       pathname === '/' ||
       pathname.startsWith('/_next') ||
       pathname.startsWith('/api/webhooks') ||

@@ -8,10 +8,11 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 const schema = z.object({
   // Campaign brief
@@ -44,21 +45,8 @@ const schema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { data: profile } = await supabase
-      .from('users')
-      .select('id, workspace_id, full_name, email')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!profile?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace' }, { status: 400 })
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
     const body = await req.json()
     const validated = schema.parse(body)
@@ -69,21 +57,21 @@ export async function POST(req: NextRequest) {
     const { count: pixelCount } = await adminSupabase
       .from('leads')
       .select('id', { count: 'exact', head: true })
-      .eq('workspace_id', profile.workspace_id)
+      .eq('workspace_id', user.workspace_id)
       .or('source.ilike.%pixel%,source.ilike.%superpixel%')
 
     const { count: enrichedCount } = await adminSupabase
       .from('leads')
       .select('id', { count: 'exact', head: true })
-      .eq('workspace_id', profile.workspace_id)
+      .eq('workspace_id', user.workspace_id)
       .eq('enrichment_status', 'enriched')
 
     // Store request
     const { data: request, error: insertError } = await adminSupabase
       .from('outbound_campaign_requests')
       .insert({
-        workspace_id: profile.workspace_id,
-        user_id: profile.id,
+        workspace_id: user.workspace_id,
+        user_id: user.id,
         contact_name: validated.contact_name,
         contact_email: validated.contact_email,
         website_url: validated.website_url,
@@ -153,11 +141,7 @@ export async function POST(req: NextRequest) {
     }).catch(() => {})
 
     return NextResponse.json({ success: true, request_id: request?.id })
-  } catch (err: any) {
-    if (err instanceof z.ZodError) {
-      return NextResponse.json({ error: err.errors[0].message }, { status: 400 })
-    }
-    safeError('[Activate/Campaign] Error:', err)
-    return NextResponse.json({ error: 'Failed to submit request' }, { status: 500 })
+  } catch (err) {
+    return handleApiError(err)
   }
 }

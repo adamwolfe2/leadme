@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { handleApiError } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Use edge runtime for instant response
@@ -72,19 +73,6 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     // Log the actual error for debugging
     safeError('[Admin Bypass] Error:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      {
-        error: 'Failed to process request'
-      },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

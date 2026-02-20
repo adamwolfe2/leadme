@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { protectRoute, applyProtectionHeaders, PROTECTION_PRESETS } from '@/lib/middleware/api-protection'
 import { CreditService } from '@/lib/services/credit.service'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { handleApiError } from '@/lib/utils/api-error-handler'
 
 export async function GET(req: NextRequest) {
   // Protect route with authentication
@@ -41,11 +42,8 @@ export async function GET(req: NextRequest) {
 
     // Apply rate limit headers
     return applyProtectionHeaders(response, req, PROTECTION_PRESETS.authenticated)
-  } catch (error: any) {
+  } catch (error) {
     safeError('[Credits Status] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch credit status' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

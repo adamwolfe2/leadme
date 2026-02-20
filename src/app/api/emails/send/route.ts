@@ -4,6 +4,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { createClient } from '@/lib/supabase/server'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { sendEmail, createEmailTemplate } from '@/lib/email/resend-client'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -145,12 +147,9 @@ function renderTemplate(template: string, data: Record<string, any>): { html: st
 export async function POST(request: NextRequest) {
   try {
     // Auth check - prevent unauthenticated email sending
-    const { createClient } = await import('@/lib/supabase/server')
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    if (!user) return unauthorized()
 
     // Parse and validate request
     const body = await request.json()
@@ -181,18 +180,6 @@ export async function POST(request: NextRequest) {
       messageId: result.data?.data?.id,
     })
   } catch (error) {
-    safeError('Error sending email:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: 'Failed to send email' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

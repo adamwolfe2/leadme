@@ -8,10 +8,10 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { leadDataProcessor } from '@/lib/services/lead-data-processor.service'
 import { fieldMapper } from '@/lib/services/field-mapper.service'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 const importPreviewSchema = z.object({
   rows: z.array(z.record(z.string())).min(1, 'At least one data row is required').max(10000),
@@ -30,23 +30,8 @@ const importPreviewSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     // Auth check
-    const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get user's workspace
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (userError || !userData?.workspace_id) {
-      return NextResponse.json({ error: 'Workspace not found' }, { status: 404 })
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
     // Parse and validate request body
     const body = await req.json()
@@ -94,11 +79,7 @@ export async function POST(req: NextRequest) {
       },
     })
   } catch (error) {
-    safeError('Import preview error:', error)
-    return NextResponse.json(
-      { error: 'Failed to preview import' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -133,10 +114,6 @@ export async function GET() {
       },
     })
   } catch (error) {
-    safeError('Get fields error:', error)
-    return NextResponse.json(
-      { error: 'Failed to get field definitions' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

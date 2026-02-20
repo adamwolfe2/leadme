@@ -48,7 +48,7 @@ export async function GET(
       current_status: lead.status || 'new',
       history,
     })
-  } catch (error: any) {
+  } catch (error) {
     return handleApiError(error)
   }
 }
@@ -92,7 +92,7 @@ export async function PUT(
       message: 'Status updated successfully',
       status,
     })
-  } catch (error: any) {
+  } catch (error) {
     return handleApiError(error)
   }
 }

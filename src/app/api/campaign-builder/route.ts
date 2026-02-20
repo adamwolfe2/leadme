@@ -6,9 +6,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { CampaignBuilderRepository } from '@/lib/repositories/campaign-builder.repository'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 const createDraftSchema = z.object({
   name: z.string().min(1, 'Campaign name is required').max(200),
@@ -20,27 +20,8 @@ const createDraftSchema = z.object({
  */
 export async function GET(req: NextRequest) {
   try {
-    const supabase = await createClient()
-
-    // Auth check
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
     // Query params
     const searchParams = req.nextUrl.searchParams
@@ -50,7 +31,7 @@ export async function GET(req: NextRequest) {
 
     // Get drafts
     const repo = new CampaignBuilderRepository()
-    const result = await repo.listByWorkspace(userData.workspace_id, {
+    const result = await repo.listByWorkspace(user.workspace_id, {
       status,
       limit,
       offset,
@@ -63,11 +44,7 @@ export async function GET(req: NextRequest) {
       offset,
     })
   } catch (error) {
-    safeError('[Campaign Builder] List error:', error)
-    return NextResponse.json(
-      { error: 'Failed to list campaigns' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -77,27 +54,8 @@ export async function GET(req: NextRequest) {
  */
 export async function POST(req: NextRequest) {
   try {
-    const supabase = await createClient()
-
-    // Auth check
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('id, workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
     // Validate request
     const body = await req.json()
@@ -105,22 +63,10 @@ export async function POST(req: NextRequest) {
 
     // Create draft
     const repo = new CampaignBuilderRepository()
-    const draft = await repo.create(userData.workspace_id, userData.id, validated)
+    const draft = await repo.create(user.workspace_id, user.id, validated)
 
     return NextResponse.json({ draft }, { status: 201 })
   } catch (error) {
-    safeError('[Campaign Builder] Create error:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: 'Failed to create campaign' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

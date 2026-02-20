@@ -10,6 +10,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { enrich } from '@/lib/audiencelab/api-client'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -43,22 +45,8 @@ export async function POST(
     const supabase = await createClient()
     const adminSupabase = createAdminClient()
 
-    // Auth
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get user profile + credit state
-    const { data: userProfile } = await supabase
-      .from('users')
-      .select('id, workspace_id, daily_credits_used, daily_credit_limit, plan')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userProfile?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 400 })
-    }
+    const userProfile = await getCurrentUser()
+    if (!userProfile) return unauthorized()
 
     // Credit gate
     const creditsUsed = userProfile.daily_credits_used ?? 0
@@ -270,8 +258,7 @@ export async function POST(
       credits_used: ENRICH_CREDIT_COST,
       credits_remaining: creditsRemaining - ENRICH_CREDIT_COST,
     })
-  } catch (error: any) {
-    safeError('[Enrich] Unexpected error:', error)
-    return NextResponse.json({ error: 'Enrichment failed' }, { status: 500 })
+  } catch (error) {
+    return handleApiError(error)
   }
 }

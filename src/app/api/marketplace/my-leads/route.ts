@@ -1,23 +1,19 @@
 // My Purchased Leads API
 // Returns all leads purchased by the user's workspace in a flat list
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient()
-
-    // Auth check (server-verified)
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     // RATE LIMITING: Check default rate limit (100 per minute per user)
@@ -26,22 +22,17 @@ export async function GET(request: NextRequest) {
       return rateLimitResult
     }
 
-    // Get user's workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
+    if (!user.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
     }
+
+    const supabase = await createClient()
 
     // Get all completed purchases for this workspace
     const { data: purchases } = await supabase
       .from('marketplace_purchases')
       .select('id, total_price, completed_at')
-      .eq('buyer_workspace_id', userData.workspace_id)
+      .eq('buyer_workspace_id', user.workspace_id)
       .eq('status', 'completed')
       .order('completed_at', { ascending: false })
 
@@ -85,9 +76,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ leads: [] })
     }
 
-    // Flatten the data structure and add purchase metadata
     const leads = purchaseItems
-      .filter((item) => item.lead) // Filter out any items without lead data
+      .filter((item) => item.lead)
       .map((item: any) => {
         const purchase = purchases.find((p) => p.id === item.purchase_id)!
         return {
@@ -106,9 +96,6 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     safeError('Failed to fetch purchased leads:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch purchased leads' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

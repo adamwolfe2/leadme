@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
         total_pages: Math.ceil(result.total / result.per_page),
       },
     })
-  } catch (error: any) {
+  } catch (error) {
     return handleApiError(error)
   }
 }

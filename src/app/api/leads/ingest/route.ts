@@ -209,8 +209,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Log dedup rejections (non-blocking)
+    // Log dedup rejections (non-blocking, best-effort)
     logDedupRejections(workspaceId, 'api_ingest', dedupCandidates, dedupIndices, allLeads.length)
+      .catch((err: unknown) => safeError('[Lead Ingest] Dedup log failed:', err))
 
     // Update source statistics
     if (request.source_id) {
@@ -321,10 +322,10 @@ async function createLeadFromPush(
     })
   }
 
-  inngest.send({
+  await inngest.send({
     name: 'lead/created' as const,
     data: { lead_id: data.id, workspace_id: workspaceId, source: request.source_type || leadData.source || 'api' },
-  }).catch((err) => safeError('[Lead Ingest] Inngest send failed:', err))
+  })
 
   // Fire outbound webhook: lead.received
   inngest.send({

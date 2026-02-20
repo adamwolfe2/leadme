@@ -7,6 +7,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface RouteContext {
@@ -21,9 +22,7 @@ const updateSchema = z.object({
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const user = await getCurrentUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    if (!user) return unauthorized()
 
     const { id: campaignId, replyId } = await context.params
     const supabase = await createClient()
@@ -70,17 +69,14 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     return NextResponse.json({ data: reply })
   } catch (error) {
-    safeError('Get reply error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return handleApiError(error)
   }
 }
 
 export async function PATCH(request: NextRequest, context: RouteContext) {
   try {
     const user = await getCurrentUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    if (!user) return unauthorized()
 
     const { id: campaignId, replyId } = await context.params
     const body = await request.json()
@@ -128,13 +124,6 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
     return NextResponse.json({ data: updatedReply })
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-    safeError('Update reply error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return handleApiError(error)
   }
 }

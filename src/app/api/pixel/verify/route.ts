@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { unauthorized } from '@/lib/utils/api-error-handler'
 
 /**
  * GET /api/pixel/verify
@@ -10,29 +12,22 @@ import { safeError } from '@/lib/utils/log-sanitizer'
  */
 export async function GET() {
   try {
-    const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const user = await getCurrentUser()
+    if (!user) {
+      return unauthorized()
     }
 
-    // Resolve workspace_id for this user
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (userError || !userData?.workspace_id) {
+    if (!user.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 400 })
     }
+
+    const supabase = await createClient()
 
     // Get the pixel for this workspace (RLS enforces isolation)
     const { data: pixel, error: pixelError } = await supabase
       .from('audiencelab_pixels')
       .select('pixel_id')
-      .eq('workspace_id', userData.workspace_id)
+      .eq('workspace_id', user.workspace_id)
       .maybeSingle()
 
     if (pixelError) {

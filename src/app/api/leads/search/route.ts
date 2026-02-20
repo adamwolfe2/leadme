@@ -12,6 +12,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { getLeadProviderService, type LeadSearchFilters } from '@/lib/services/lead-provider.service'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 const leadSearchSchema = z.object({
   filters: z.object({
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     if (!user.workspace_id) {
@@ -136,20 +137,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error: any) {
     safeError('Lead search error:', error)
-
-    if (error.name === 'LeadLimitExceededError') {
-      return NextResponse.json(
-        {
-          error: error.message,
-          limits: error.limits,
-        },
-        { status: 429 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: 'Failed to search leads' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

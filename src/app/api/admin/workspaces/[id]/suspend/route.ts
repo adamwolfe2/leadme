@@ -1,7 +1,7 @@
-
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
+import { handleApiError } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -90,17 +90,7 @@ export async function PATCH(
       },
     })
   } catch (error: any) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-
     safeError('[Admin] Suspend workspace error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

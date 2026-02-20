@@ -3,7 +3,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import Stripe from 'stripe'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 // Lazy-load Stripe to avoid build-time initialization
 let stripeClient: Stripe | null = null
@@ -30,36 +31,20 @@ const portalSchema = z.object({
  */
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      )
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
     // Parse request body
     const body = await request.json()
     const validated = portalSchema.parse(body)
 
     // Verify user has access to this workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData || userData.workspace_id !== validated.workspace_id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 403 }
-      )
+    if (user.workspace_id !== validated.workspace_id) {
+      return unauthorized('Unauthorized')
     }
 
     // Get subscription to find Stripe customer ID
+    const supabase = await createClient()
     const { data: subscription } = await supabase
       .from('service_subscriptions')
       .select('stripe_customer_id')
@@ -83,17 +68,6 @@ export async function POST(request: NextRequest) {
       url: portalSession.url
     })
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 }
-      )
-    }
-
-    safeError('[Customer Portal] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to create portal session' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

@@ -12,6 +12,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { generateAdCreative } from '@/lib/ai-studio/image-generation'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 
 const generateSchema = z.object({
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const { searchParams } = new URL(request.url)
@@ -39,22 +40,11 @@ export async function GET(request: NextRequest) {
 
     const supabase = await createClient()
 
-    // Verify brand workspace belongs to user's workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
-
     const { data: brandWorkspace } = await supabase
       .from('brand_workspaces')
       .select('id')
       .eq('id', workspaceId)
-      .eq('workspace_id', userData.workspace_id)
+      .eq('workspace_id', user.workspace_id)
       .maybeSingle()
 
     if (!brandWorkspace) {
@@ -76,10 +66,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ creatives: creatives || [] })
   } catch (error: any) {
     safeError('[Creatives GET] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch creatives' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -87,7 +74,7 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const body = await request.json()
@@ -95,23 +82,12 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient()
 
-    // Verify brand workspace belongs to user's workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
-
     // 1. Get workspace with brand data and knowledge base
     const { data: workspace, error: workspaceError } = await supabase
       .from('brand_workspaces')
       .select('*, customer_profiles(*), offers(*)')
       .eq('id', workspaceId)
-      .eq('workspace_id', userData.workspace_id)
+      .eq('workspace_id', user.workspace_id)
       .maybeSingle()
 
     if (workspaceError || !workspace) {
@@ -163,17 +139,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ creative, message: 'Creative generated successfully' })
   } catch (error: any) {
     safeError('[Creatives] Error:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: 'Failed to generate creative' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

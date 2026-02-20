@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
         'Content-Disposition': `attachment; filename="leads-export-${new Date().toISOString().split('T')[0]}.csv"`,
       },
     })
-  } catch (error: any) {
+  } catch (error) {
     return handleApiError(error)
   }
 }

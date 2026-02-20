@@ -1,83 +1,76 @@
-
-import { NextRequest, NextResponse } from 'next/server'
-import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { NextRequest, NextResponse } from "next/server"
+import { createClient } from "@/lib/supabase/server"
+import { createAdminClient } from "@/lib/supabase/admin"
+import { safeError } from "@/lib/utils/log-sanitizer"
+import { getCurrentUser } from "@/lib/auth/helpers"
+import { handleApiError } from "@/lib/utils/api-error-handler"
 
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient()
-    const apiKey = request.headers.get('X-API-Key')
+    const apiKey = request.headers.get("X-API-Key")
 
     let partnerId: string | null = null
 
     // Try session-based auth first (for logged-in partners)
-    const { data: { user } } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
 
     if (user) {
       // User is logged in - get their linked partner
-      const adminClient = createAdminClient()
-      const { data: userData } = await adminClient
-        .from('users')
-        .select('linked_partner_id')
-        .eq('auth_user_id', user.id)
-        .maybeSingle()
-
-      if (userData?.linked_partner_id) {
-        partnerId = userData.linked_partner_id
+      if (user.linked_partner_id) {
+        partnerId = user.linked_partner_id
       } else {
         return NextResponse.json(
-          { error: 'No partner account linked to your user' },
+          { error: "No partner account linked to your user" },
           { status: 403 }
         )
       }
     } else if (apiKey) {
       // Fallback to API key auth (for server-to-server integrations)
       const { data: partner } = await supabase
-        .from('partners')
-        .select('id')
-        .eq('api_key', apiKey)
-        .eq('is_active', true)
+        .from("partners")
+        .select("id")
+        .eq("api_key", apiKey)
+        .eq("is_active", true)
         .maybeSingle()
 
-      if (!partner) {
-        return NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
+      if (\!partner) {
+        return NextResponse.json({ error: "Invalid API key" }, { status: 401 })
       }
       partnerId = partner.id
     } else {
       return NextResponse.json(
-        { error: 'Authentication required - please log in or provide API key' },
+        { error: "Authentication required - please log in or provide API key" },
         { status: 401 }
       )
     }
 
     // Fetch partner data
     const { data: partner, error: partnerError } = await supabase
-      .from('partners')
-      .select('id, name, total_earnings, pending_balance, available_balance, payout_threshold, stripe_account_id, stripe_onboarding_complete')
-      .eq('id', partnerId)
-      .eq('is_active', true)
+      .from("partners")
+      .select("id, name, total_earnings, pending_balance, available_balance, payout_threshold, stripe_account_id, stripe_onboarding_complete")
+      .eq("id", partnerId)
+      .eq("is_active", true)
       .maybeSingle()
 
-    if (partnerError || !partner) {
-      return NextResponse.json({ error: 'Partner not found' }, { status: 404 })
+    if (partnerError || \!partner) {
+      return NextResponse.json({ error: "Partner not found" }, { status: 404 })
     }
 
     // Get payout history
     const { data: payoutHistory } = await supabase
-      .from('payout_requests')
-      .select('id, amount, status, requested_at, processed_at, notes')
-      .eq('partner_id', partner.id)
-      .order('requested_at', { ascending: false })
+      .from("payout_requests")
+      .select("id, amount, status, requested_at, processed_at, notes")
+      .eq("partner_id", partner.id)
+      .order("requested_at", { ascending: false })
       .limit(50)
 
     // Calculate lifetime paid
     const { data: completedPayouts } = await supabase
-      .from('payout_requests')
-      .select('amount')
-      .eq('partner_id', partner.id)
-      .eq('status', 'completed')
+      .from("payout_requests")
+      .select("amount")
+      .eq("partner_id", partner.id)
+      .eq("status", "completed")
 
     const lifetimePaid = completedPayouts?.reduce((sum, p) => sum + Number(p.amount), 0) || 0
 
@@ -90,19 +83,12 @@ export async function GET(request: NextRequest) {
         available_balance: Number(partner.available_balance || 0),
         lifetime_paid: lifetimePaid,
         payout_threshold: Number(partner.payout_threshold || 50),
-        stripe_connected: !!partner.stripe_account_id && partner.stripe_onboarding_complete,
+        stripe_connected: \!\!partner.stripe_account_id && partner.stripe_onboarding_complete,
       },
       payout_history: payoutHistory || [],
     })
   } catch (error: any) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Validation error', details: error.format() },
-        { status: 400 }
-      )
-    }
-
-    safeError('Partner payouts error:', error)
-    return NextResponse.json({ error: 'Failed to fetch payouts' }, { status: 500 })
+    safeError("Partner payouts error:", error)
+    return handleApiError(error)
   }
 }

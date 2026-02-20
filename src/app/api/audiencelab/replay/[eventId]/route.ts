@@ -9,11 +9,10 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { processEventInline } from '@/lib/audiencelab/edge-processor'
 import { z } from 'zod'
-import { safeError } from '@/lib/utils/log-sanitizer'
 
 const ParamsSchema = z.object({
   eventId: z.string().uuid(),
@@ -32,37 +31,23 @@ export async function POST(
 
     const { eventId } = parsed.data
 
-    const cookieStore = await cookies()
-    const supabaseAuth = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { cookies: { getAll: () => cookieStore.getAll() } }
-    )
+    const user = await getCurrentUser()
+    if (!user) {
+      return unauthorized()
+    }
 
-    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser()
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!user.workspace_id) {
+      return NextResponse.json({ error: 'No workspace' }, { status: 403 })
     }
 
     const supabase = createAdminClient()
-
-    // Get user's workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace' }, { status: 403 })
-    }
 
     // Verify event belongs to user's workspace
     const { data: event, error: eventError } = await supabase
       .from('audiencelab_events')
       .select('id, source, workspace_id')
       .eq('id', eventId)
-      .eq('workspace_id', userData.workspace_id)
+      .eq('workspace_id', user.workspace_id)
       .maybeSingle()
 
     if (eventError || !event) {
@@ -78,7 +63,7 @@ export async function POST(
     // Process inline (bypasses Inngest callback which hangs on Vercel)
     const result = await processEventInline(
       eventId,
-      event.workspace_id || userData.workspace_id,
+      event.workspace_id || user.workspace_id,
       event.source
     )
 
@@ -87,7 +72,6 @@ export async function POST(
       event_id: eventId,
     })
   } catch (error) {
-    safeError('[AL Replay] Error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return handleApiError(error)
   }
 }

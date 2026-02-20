@@ -1,6 +1,5 @@
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { parse } from 'csv-parse/sync'
 import { z } from 'zod'
@@ -17,6 +16,8 @@ import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import { UPLOAD_LIMITS } from '@/lib/constants/timeouts'
 import { routeLeadsToMatchingUsers } from '@/lib/services/marketplace-lead-routing'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { unauthorized } from '@/lib/utils/api-error-handler'
 
 // Input validation for lead data
 const leadSchema = z.object({
@@ -94,27 +95,15 @@ export async function POST(request: NextRequest) {
 
   try {
     // Get authenticated user session
-    const supabase = await createClient()
-    const { data: { user: authUser } } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
 
-    if (!authUser) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+    if (!user) {
+      return unauthorized()
     }
 
     // RATE LIMITING: Check partner upload rate limit
     const rateLimitResult = await withRateLimit(request, 'partner-upload')
     if (rateLimitResult) return rateLimitResult
-
-    // Get user with access control fields
-    const { data: user } = await supabase
-      .from('users')
-      .select('id, role, partner_approved, email, full_name, linked_partner_id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
 
     // Verify user is a partner
     if (user.role !== 'partner') {
@@ -496,7 +485,7 @@ export async function POST(request: NextRequest) {
       .eq('id', batchId)
 
     // Update user's last upload timestamp (partner statistics tracked in partner_analytics view)
-    await supabase
+    await adminClient
       .from('users')
       .update({
         updated_at: new Date().toISOString(),

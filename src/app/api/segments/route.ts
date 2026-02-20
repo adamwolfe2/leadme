@@ -8,8 +8,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
-import { getErrorMessage } from '@/lib/utils/error-messages'
 import { z } from 'zod'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 const segmentSchema = z.object({
   name: z.string().min(1).max(100),
@@ -25,8 +25,8 @@ const segmentSchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (\!user) {
+      return unauthorized()
     }
 
     const { searchParams } = new URL(request.url)
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
       .eq('workspace_id', user.workspace_id)
       .order('created_at', { ascending: false })
 
-    if (status !== 'all') {
+    if (status \!== 'all') {
       query = query.eq('status', status)
     }
 
@@ -57,10 +57,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ segments })
   } catch (error) {
     safeError('[Segments API] GET error:', error)
-    return NextResponse.json(
-      { error: getErrorMessage(error) },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -71,8 +68,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (\!user) {
+      return unauthorized()
     }
 
     const body = await request.json()
@@ -125,17 +122,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ segment }, { status: 201 })
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-
     safeError('[Segments API] POST error:', error)
-    return NextResponse.json(
-      { error: getErrorMessage(error) },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

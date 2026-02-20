@@ -1,9 +1,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
-import { createClient } from '@/lib/supabase/server'
-import { isAdmin } from '@/lib/auth/roles'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError } from '@/lib/utils/api-error-handler'
 
 /**
  * GET /api/services/tiers
@@ -11,14 +10,10 @@ import { safeError } from '@/lib/utils/log-sanitizer'
  */
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
 
-    // Check if user is admin
-    let showAllTiers = false
-    if (user) {
-      showAllTiers = await isAdmin(user)
-    }
+    // Check if user is admin (owner or admin role)
+    const showAllTiers = user?.role === 'owner' || user?.role === 'admin'
 
     // Get tiers based on user role
     const tiers = showAllTiers
@@ -30,10 +25,6 @@ export async function GET(request: NextRequest) {
       count: tiers.length
     })
   } catch (error) {
-    safeError('[API] Error fetching service tiers:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch service tiers' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

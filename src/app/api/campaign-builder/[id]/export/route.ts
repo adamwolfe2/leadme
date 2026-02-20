@@ -8,11 +8,11 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { CampaignBuilderRepository } from '@/lib/repositories/campaign-builder.repository'
 import { exportCampaignToEmailBison } from '@/lib/integrations/emailbison'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import type { CampaignDraft } from '@/types/campaign-builder'
 
 const exportSchema = z.object({
@@ -39,43 +39,21 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createClient()
     const { id } = await params
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
-    // Auth check
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
-    }
-
-    // Query params
     const searchParams = req.nextUrl.searchParams
     const format = searchParams.get('format') as 'csv' | 'json' | 'manual' || 'csv'
     const markAsExported = searchParams.get('mark_as_exported') !== 'false'
 
-    // Get draft
     const repo = new CampaignBuilderRepository()
-    const draft = await repo.getById(id, userData.workspace_id)
+    const draft = await repo.getById(id, user.workspace_id)
 
     if (!draft) {
       return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
     }
 
-    // Validate campaign is approved
     if (draft.status !== 'approved' && draft.status !== 'exported') {
       return NextResponse.json(
         { error: 'Campaign must be approved before export' },
@@ -83,7 +61,6 @@ export async function GET(
       )
     }
 
-    // Validate has generated emails
     if (!draft.generated_emails || draft.generated_emails.length === 0) {
       return NextResponse.json(
         { error: 'Campaign has no generated emails' },
@@ -91,15 +68,12 @@ export async function GET(
       )
     }
 
-    // Format export data
     const exportData = formatExport(draft, format)
 
-    // Mark as exported (optional)
     if (markAsExported && draft.status !== 'exported') {
-      await repo.markExported(id, userData.workspace_id, { format: format as any })
+      await repo.markExported(id, user.workspace_id, { format: format as any })
     }
 
-    // Return appropriate response based on format
     if (format === 'csv') {
       return new NextResponse(exportData, {
         headers: {
@@ -116,11 +90,7 @@ export async function GET(
       campaign_name: draft.name,
     })
   } catch (error) {
-    safeError('[Campaign Builder] Export error:', error)
-    return NextResponse.json(
-      { error: 'Failed to export campaign' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -243,42 +213,20 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createClient()
     const { id } = await params
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
-    // Auth check
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
-    }
-
-    // Validate request body
     const body = await req.json()
     const validated = emailbisonExportSchema.parse(body)
 
-    // Get draft
     const repo = new CampaignBuilderRepository()
-    const draft = await repo.getById(id, userData.workspace_id)
+    const draft = await repo.getById(id, user.workspace_id)
 
     if (!draft) {
       return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
     }
 
-    // Validate campaign is approved
     if (draft.status !== 'approved' && draft.status !== 'exported') {
       return NextResponse.json(
         { error: 'Campaign must be approved before export to EmailBison' },
@@ -286,7 +234,6 @@ export async function POST(
       )
     }
 
-    // Validate has generated emails
     if (!draft.generated_emails || draft.generated_emails.length === 0) {
       return NextResponse.json(
         { error: 'Campaign has no generated emails' },
@@ -294,7 +241,6 @@ export async function POST(
       )
     }
 
-    // Push to EmailBison
     const result = await exportCampaignToEmailBison({
       name: draft.name,
       emails: draft.generated_emails.map((email) => ({
@@ -314,8 +260,7 @@ export async function POST(
       )
     }
 
-    // Mark as exported with EmailBison campaign ID
-    await repo.markExported(id, userData.workspace_id, {
+    await repo.markExported(id, user.workspace_id, {
       format: 'emailbison' as any,
       emailbison_campaign_id: result.campaignId,
     })
@@ -329,18 +274,6 @@ export async function POST(
       dashboard_url: 'https://send.meetcursive.com',
     })
   } catch (error) {
-    safeError('[Campaign Builder] EmailBison export error:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: 'Failed to export to EmailBison' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

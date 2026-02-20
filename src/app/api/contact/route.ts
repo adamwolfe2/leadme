@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { handleApiError } from '@/lib/utils/api-error-handler'
 
 const contactSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
@@ -55,17 +56,7 @@ export async function POST(request: NextRequest) {
       message: 'Your message has been sent successfully!'
     })
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 }
-      )
-    }
-
     safeError('[Contact] Submission error:', error)
-    return NextResponse.json(
-      { error: 'Failed to send message. Please try again.' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

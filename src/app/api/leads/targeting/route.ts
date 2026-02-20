@@ -11,6 +11,7 @@ import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 // Zod validation schema
 const targetingSchema = z.object({
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
   try {
     const userProfile = await getCurrentUser()
     if (!userProfile) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const supabase = await createClient()
@@ -58,12 +59,9 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true, data: targeting })
-  } catch (error: any) {
+  } catch (error) {
     safeError('Get targeting preferences error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch targeting preferences' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -75,29 +73,14 @@ export async function POST(request: NextRequest) {
   try {
     const userProfile = await getCurrentUser()
     if (!userProfile) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const supabase = await createClient()
 
     // Parse and validate request body
     const body = await request.json()
-
-    let validatedData: TargetingInput
-    try {
-      validatedData = targetingSchema.parse(body)
-    } catch (validationError) {
-      if (validationError instanceof z.ZodError) {
-        return NextResponse.json(
-          {
-            error: 'Validation failed',
-            details: validationError.errors,
-          },
-          { status: 400 }
-        )
-      }
-      throw validationError
-    }
+    const validatedData: TargetingInput = targetingSchema.parse(body)
 
     // Check if targeting record exists
     const { data: existing } = await supabase
@@ -209,11 +192,8 @@ export async function POST(request: NextRequest) {
       { success: true, data: savedData, segment_name: segmentName },
       { status: statusCode }
     )
-  } catch (error: any) {
+  } catch (error) {
     safeError('Save targeting preferences error:', error)
-    return NextResponse.json(
-      { error: 'Failed to save targeting preferences' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

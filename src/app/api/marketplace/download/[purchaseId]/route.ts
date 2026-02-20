@@ -1,6 +1,7 @@
-
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { unauthorized } from '@/lib/utils/api-error-handler'
 
 export async function GET(
   req: NextRequest,
@@ -10,24 +11,16 @@ export async function GET(
   const { purchaseId } = await params
 
   // 1. Verify user owns this purchase
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getCurrentUser()
   if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return unauthorized()
   }
 
-  const { data: userData, error: userError } = await supabase
-    .from('users')
-    .select('workspace_id')
-    .eq('auth_user_id', user.id)
-    .maybeSingle()
-
-  if (userError || !userData || !userData.workspace_id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!user.workspace_id) {
+    return unauthorized()
   }
 
-  const workspaceId = userData.workspace_id
+  const workspaceId = user.workspace_id
 
   // 2. Get purchase and verify ownership
   const { data: purchase, error: purchaseError } = await supabase
@@ -100,7 +93,7 @@ export async function GET(
       lead.intent_score_calculated || '',
       lead.freshness_score || '',
       lead.verification_status || '',
-    ].map((v) => `"${String(v).replace(/"/g, '""')}"`)
+    ].map((v) => `"${String(v).replace(/"/g, '""')}"`);
   })
 
   const csv = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n')

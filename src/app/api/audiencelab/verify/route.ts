@@ -14,7 +14,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { unauthorized } from '@/lib/utils/api-error-handler'
 import {
   listPixels,
   listAudiences,
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
 
   const { data: { user } } = await supabaseAuth.auth.getUser()
   if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return unauthorized()
   }
 
   // SECURITY: Verify platform admin access (not just workspace role)

@@ -10,6 +10,7 @@ import { z } from 'zod'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { handleApiError } from '@/lib/utils/api-error-handler'
 
 // CORS headers for marketing site
 const corsHeaders = {
@@ -160,20 +161,14 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     safeError('[Lead Magnet] Submission error:', error)
 
-    const response = NextResponse.json(
-      {
-        error: error instanceof z.ZodError
-          ? 'Please enter a valid email address'
-          : 'Something went wrong. Please try again.',
-      },
-      { status: error instanceof z.ZodError ? 400 : 500 }
-    )
+    // Use handleApiError but wrap response to include CORS headers
+    const errorResponse = handleApiError(error)
 
     // Add CORS headers even on errors
     Object.entries(corsHeaders).forEach(([key, value]) => {
-      response.headers.set(key, value)
+      errorResponse.headers.set(key, value)
     })
 
-    return response
+    return errorResponse
   }
 }

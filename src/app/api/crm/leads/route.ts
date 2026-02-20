@@ -4,6 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { CRMLeadRepository } from '@/lib/repositories/crm-lead.repository'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -30,7 +31,7 @@ export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const body = await req.json()
@@ -62,15 +63,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, lead })
   } catch (error) {
     safeError('[Create Lead] Error:', error)
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: error.errors },
-        { status: 400 }
-      )
-    }
-    return NextResponse.json(
-      { error: 'Failed to create lead' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
