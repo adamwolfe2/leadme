@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { useToast } from '@/lib/hooks/use-toast'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -53,6 +54,7 @@ export default function AdminPayoutsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [loading, setLoading] = useState(true)
   const [processingPayoutId, setProcessingPayoutId] = useState<string | null>(null)
+  const [confirmApproveId, setConfirmApproveId] = useState<string | null>(null)
   const [rejectDialogOpen, setRejectDialogOpen] = useState<string | null>(null)
   const [rejectReason, setRejectReason] = useState('')
 
@@ -105,11 +107,12 @@ export default function AdminPayoutsPage() {
     }
   }
 
-  const handleApprove = async (payoutId: string) => {
-    if (!confirm('Are you sure you want to approve this payout? This will initiate a Stripe transfer.')) {
-      return
-    }
+  const handleApproveClick = (payoutId: string) => {
+    setConfirmApproveId(payoutId)
+  }
 
+  const handleApprove = async (payoutId: string) => {
+    setConfirmApproveId(null)
     setProcessingPayoutId(payoutId)
     try {
       const response = await fetch('/api/admin/payouts/approve', {
@@ -320,7 +323,7 @@ export default function AdminPayoutsPage() {
                   {payout.status === 'pending' && (
                     <div className="flex space-x-2">
                       <Button
-                        onClick={() => handleApprove(payout.id)}
+                        onClick={() => handleApproveClick(payout.id)}
                         disabled={processingPayoutId === payout.id || !payout.partner.stripe_account_id}
                         variant="default"
                         size="sm"
@@ -343,6 +346,26 @@ export default function AdminPayoutsPage() {
           </ul>
         )}
       </div>
+
+      {/* Approve Confirmation Dialog */}
+      <Dialog open={!!confirmApproveId} onOpenChange={(open) => { if (!open) setConfirmApproveId(null) }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Approve Payout</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to approve this payout? This will initiate a Stripe transfer.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmApproveId(null)}>
+              Cancel
+            </Button>
+            <Button onClick={() => { if (confirmApproveId) handleApprove(confirmApproveId) }}>
+              Approve
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Reject Dialog */}
       {rejectDialogOpen && (

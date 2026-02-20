@@ -4,6 +4,8 @@ import { useState, type FormEvent } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { cn, formatDateTime, formatDate, formatRelativeTime } from '@/lib/utils'
 import { useToast } from '@/lib/hooks/use-toast'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 
 interface TeamMember {
   id: string
@@ -131,6 +133,7 @@ export default function TeamSettingsPage() {
   const [inviteError, setInviteError] = useState<string | null>(null)
   const [cancelingIds, setCancelingIds] = useState<Set<string>>(new Set())
   const [removingIds, setRemovingIds] = useState<Set<string>>(new Set())
+  const [pendingAction, setPendingAction] = useState<{ type: string; label: string; onConfirm: () => void } | null>(null)
 
   const queryClient = useQueryClient()
   const toast = useToast()
@@ -232,22 +235,36 @@ export default function TeamSettingsPage() {
 
   const handleRoleChange = (member: TeamMember, newRole: string) => {
     if (newRole === member.role) return
-    if (!confirm(`Change ${member.full_name || member.email}'s role to ${roleLabels[newRole as keyof typeof roleLabels] || newRole}?`)) {
-      return
-    }
-    updateRoleMutation.mutate({ id: member.id, role: newRole })
+    setPendingAction({
+      type: 'role-change',
+      label: `Change ${member.full_name || member.email}'s role to ${roleLabels[newRole as keyof typeof roleLabels] || newRole}?`,
+      onConfirm: () => {
+        updateRoleMutation.mutate({ id: member.id, role: newRole })
+        setPendingAction(null)
+      },
+    })
   }
 
   const handleRemoveMember = (member: TeamMember) => {
-    if (!confirm(`Remove ${member.full_name || member.email} from the workspace? They will lose all access immediately.`)) {
-      return
-    }
-    removeMemberMutation.mutate(member.id)
+    setPendingAction({
+      type: 'remove-member',
+      label: `Remove ${member.full_name || member.email} from the workspace? They will lose all access immediately.`,
+      onConfirm: () => {
+        removeMemberMutation.mutate(member.id)
+        setPendingAction(null)
+      },
+    })
   }
 
   const handleCancelInvite = (invite: TeamInvite) => {
-    if (!confirm(`Cancel the invitation for ${invite.email}?`)) return
-    cancelInviteMutation.mutate(invite.id)
+    setPendingAction({
+      type: 'cancel-invite',
+      label: `Cancel the invitation for ${invite.email}?`,
+      onConfirm: () => {
+        cancelInviteMutation.mutate(invite.id)
+        setPendingAction(null)
+      },
+    })
   }
 
   const members = membersData?.members || []
@@ -565,6 +582,24 @@ export default function TeamSettingsPage() {
           ))}
         </div>
       </div>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={!!pendingAction} onOpenChange={(open) => { if (!open) setPendingAction(null) }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Action</DialogTitle>
+            <DialogDescription>{pendingAction?.label}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPendingAction(null)}>
+              Cancel
+            </Button>
+            <Button onClick={() => pendingAction?.onConfirm()}>
+              Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Invite Modal */}
       {showInviteModal && (
