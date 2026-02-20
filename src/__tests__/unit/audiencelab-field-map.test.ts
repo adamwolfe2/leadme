@@ -322,14 +322,14 @@ describe('normalizeALPayload', () => {
     const result = normalizeALPayload({
       email: 'sync@company.com',
       first_name: 'Sync',
-      last_name: 'User',
+      last_name: 'Johnson',
       company: 'SyncCorp',
       phone: '+15559876543',
     })
 
     expect(result.primary_email).toBe('sync@company.com')
     expect(result.first_name).toBe('Sync')
-    expect(result.last_name).toBe('User')
+    expect(result.last_name).toBe('Johnson')
     expect(result.company_name).toBe('SyncCorp')
     // normalizePhone strips + prefix — check normalized form
     expect(result.phones.length).toBeGreaterThan(0)
@@ -394,14 +394,14 @@ describe('normalizeALPayload', () => {
       profile_id: 'prof-nested',
       resolution: {
         FIRST_NAME: 'Nested',
-        LAST_NAME: 'User',
+        LAST_NAME: 'Williams',
         PERSONAL_EMAILS: 'nested@example.com',
         COMPANY_NAME: 'Nested Corp',
       },
     })
 
     expect(result.first_name).toBe('Nested')
-    expect(result.last_name).toBe('User')
+    expect(result.last_name).toBe('Williams')
     expect(result.personal_emails).toContain('nested@example.com')
     expect(result.company_name).toBe('Nested Corp')
   })
