@@ -65,11 +65,12 @@ export function useUser() {
 
   const logout = async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' })
+      await fetch('/api/auth/signout', { method: 'POST' })
       queryClient.clear()
       router.push('/login')
-    } catch (error) {
-      console.error('Logout error:', error)
+    } catch {
+      // Even on error, clear local state and redirect
+      queryClient.clear()
       router.push('/login')
     }
   }

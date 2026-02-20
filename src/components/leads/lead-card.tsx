@@ -37,9 +37,9 @@ export interface Lead {
 
 export function intentColor(score: number | null) {
   if (!score) return { bg: 'bg-gray-100', text: 'text-gray-500' }
-  if (score >= 70) return { bg: 'bg-green-50 border border-green-200', text: 'text-green-700' }
+  if (score >= 70) return { bg: 'bg-emerald-50 border border-emerald-200', text: 'text-emerald-700' }
   if (score >= 40) return { bg: 'bg-amber-50 border border-amber-200', text: 'text-amber-700' }
-  return { bg: 'bg-red-50 border border-red-200', text: 'text-red-600' }
+  return { bg: 'bg-slate-100 border border-slate-200', text: 'text-slate-600' }
 }
 
 export function intentLabel(score: number | null) {
@@ -81,6 +81,13 @@ export function sourceLabel(source: string | null): { label: string; className: 
   return null
 }
 
+export function formatPhone(phone: string): string {
+  const digits = phone.replace(/\D/g, '')
+  if (digits.length === 10) return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
+  if (digits.length === 11 && digits[0] === '1') return `(${digits.slice(1,4)}) ${digits.slice(4,7)}-${digits.slice(7)}`
+  return phone // return as-is if not standard US format
+}
+
 // ─── CSV Export ────────────────────────────────────────────
 
 export function exportToCSV(leads: Lead[], filename: string) {
@@ -120,7 +127,7 @@ export function CopyButton({ value }: { value: string }) {
           setTimeout(() => setCopied(false), 1500)
         })
       }}
-      className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-primary"
+      className="ml-1 text-muted-foreground hover:text-foreground transition-colors"
       title="Copy to clipboard"
     >
       {copied ? (
@@ -225,7 +232,7 @@ export const LeadCard = memo(function LeadCard({
             {lead.phone && (
               <div className="flex items-center gap-1.5 text-xs text-gray-500">
                 <Phone className="h-3 w-3 text-gray-400 shrink-0" />
-                <span className="flex-1">{lead.phone}</span>
+                <span className="flex-1">{formatPhone(lead.phone)}</span>
                 <CopyButton value={lead.phone} />
               </div>
             )}
@@ -269,7 +276,7 @@ export const LeadCard = memo(function LeadCard({
               )}
             </div>
 
-            <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-1.5">
               {!isEnriched && creditsRemaining === 0 && (
                 <a
                   href="/settings/billing"

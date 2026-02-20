@@ -47,10 +47,17 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    return NextResponse.json({
+    // Clear custom cookies to prevent cross-user data leakage
+    const response = NextResponse.json({
       success: true,
       message: 'Signed out successfully',
+      redirectUrl: '/login',
     })
+
+    // Delete workspace cache cookie
+    response.cookies.set('x-workspace-id', '', { maxAge: 0, path: '/' })
+
+    return response
   } catch (error: any) {
     safeError('[Sign Out] Error:', error)
     return NextResponse.json(

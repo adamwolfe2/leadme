@@ -121,6 +121,7 @@ export async function POST(req: NextRequest) {
       .from('leads')
       .select('id, workspace_id, company_name, company_industry, company_location')
       .eq('id', leadId)
+      .eq('workspace_id', user.workspace_id)
       .single()
 
     if (leadError || !lead) {

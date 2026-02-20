@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Search, Download, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -26,12 +26,23 @@ export function ArchiveTab({
   const [page, setPage] = useState(1)
   const [enrichFilter, setEnrichFilter] = useState('')
   const [search, setSearch] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+
+  // Debounce search to avoid firing on every keystroke
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search)
+      setPage(1)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [search])
 
   const { data, isLoading } = useQuery({
-    queryKey: ['leads-archive', page, enrichFilter],
+    queryKey: ['leads-archive', page, enrichFilter, debouncedSearch],
     queryFn: async () => {
       const params = new URLSearchParams({ page: String(page), per_page: '24' })
       if (enrichFilter) params.set('enrichment_status', enrichFilter)
+      if (debouncedSearch.trim()) params.set('search', debouncedSearch.trim())
       const res = await fetch(`/api/leads?${params}`)
       if (!res.ok) throw new Error('Failed to load')
       return res.json()
@@ -39,9 +50,7 @@ export function ArchiveTab({
     staleTime: 60_000,
   })
 
-  const leads: Lead[] = (data?.data ?? []).filter((l: Lead) =>
-    !search || [l.full_name, l.email, l.company_name].some((v) => v?.toLowerCase().includes(search.toLowerCase()))
-  )
+  const leads: Lead[] = data?.data ?? []
 
   return (
     <div className="space-y-4">

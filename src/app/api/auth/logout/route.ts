@@ -1,29 +1,13 @@
 /**
- * Logout API Endpoint
- * POST /api/auth/logout - Sign out current user
+ * Logout API Endpoint — DEPRECATED
+ * Redirects to /api/auth/signout which handles proper cookie cleanup.
+ * Kept as a redirect for backward compatibility with any cached clients.
  */
 
-
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
-export async function POST() {
-  try {
-    const supabase = await createClient()
-
-    // Sign out the user
-    await supabase.auth.signOut()
-
-    return NextResponse.json(
-      { message: 'Logged out successfully' },
-      { status: 200 }
-    )
-  } catch (error) {
-    safeError('Logout error:', error)
-    return NextResponse.json(
-      { error: 'Failed to logout' },
-      { status: 500 }
-    )
-  }
+export async function POST(request: Request) {
+  // Forward to the canonical signout endpoint
+  const url = new URL('/api/auth/signout', request.url)
+  return NextResponse.redirect(url, { status: 307 })
 }

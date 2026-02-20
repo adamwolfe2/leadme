@@ -24,23 +24,23 @@ export interface ToastProps {
 
 const toastStyles = {
   success: {
-    container: 'bg-blue-50 border-blue-200 text-blue-900',
-    icon: 'text-blue-600',
+    container: 'bg-success-muted border-success/30 text-success-foreground',
+    icon: 'text-success',
     iconComponent: CheckCircle,
   },
   error: {
-    container: 'bg-red-50 border-red-200 text-red-900',
-    icon: 'text-red-600',
+    container: 'bg-destructive-muted border-destructive/30 text-destructive-foreground',
+    icon: 'text-destructive',
     iconComponent: XCircle,
   },
   warning: {
-    container: 'bg-amber-50 border-amber-200 text-amber-900',
-    icon: 'text-amber-600',
+    container: 'bg-warning-muted border-warning/30 text-warning-foreground',
+    icon: 'text-warning',
     iconComponent: AlertTriangle,
   },
   info: {
-    container: 'bg-zinc-50 border-zinc-200 text-zinc-900',
-    icon: 'text-zinc-600',
+    container: 'bg-info-muted border-info/30 text-info-foreground',
+    icon: 'text-info',
     iconComponent: Info,
   },
 }
@@ -160,19 +160,7 @@ export function Toast({
                 action.onClick()
                 handleClose()
               }}
-              className={`
-                mt-3 text-[13px] font-medium underline
-                hover:no-underline transition-all
-                ${
-                  type === 'success'
-                    ? 'text-blue-700 hover:text-blue-800'
-                    : type === 'error'
-                      ? 'text-red-700 hover:text-red-800'
-                      : type === 'warning'
-                        ? 'text-amber-700 hover:text-amber-800'
-                        : 'text-zinc-700 hover:text-zinc-800'
-                }
-              `}
+              className="mt-3 text-[13px] font-medium underline hover:no-underline transition-all opacity-80 hover:opacity-100"
             >
               {action.label}
             </button>
@@ -182,18 +170,7 @@ export function Toast({
         {/* Close Button */}
         <button
           onClick={handleClose}
-          className={`
-            flex-shrink-0 rounded p-1 transition-colors
-            ${
-              type === 'success'
-                ? 'hover:bg-blue-100'
-                : type === 'error'
-                  ? 'hover:bg-red-100'
-                  : type === 'warning'
-                    ? 'hover:bg-amber-100'
-                    : 'hover:bg-zinc-100'
-            }
-          `}
+          className="flex-shrink-0 rounded p-1 transition-colors hover:bg-black/10"
           aria-label="Close notification"
         >
           <X className="h-4 w-4" />
@@ -207,12 +184,12 @@ export function Toast({
             absolute bottom-0 left-0 h-1 rounded-b-lg transition-all
             ${
               type === 'success'
-                ? 'bg-blue-600'
+                ? 'bg-success'
                 : type === 'error'
-                  ? 'bg-red-600'
+                  ? 'bg-destructive'
                   : type === 'warning'
-                    ? 'bg-amber-600'
-                    : 'bg-zinc-600'
+                    ? 'bg-warning'
+                    : 'bg-info'
             }
           `}
           style={{

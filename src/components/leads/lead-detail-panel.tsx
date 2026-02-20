@@ -8,6 +8,7 @@ import { LeadStatusSelector } from './lead-status-selector'
 import { LeadNotesPanel } from './lead-notes-panel'
 import { LeadActivityTimeline } from './lead-activity-timeline'
 import { formatDate, cn } from '@/lib/utils'
+import { formatPhone } from './lead-card'
 
 interface LeadDetailPanelProps {
   lead: Lead
@@ -245,7 +246,7 @@ export function LeadDetailPanel({
                                 href={`tel:${phone}`}
                                 className="text-sm text-blue-600 hover:text-blue-700 hover:underline"
                               >
-                                {phone}
+                                {formatPhone(phone)}
                               </a>
                             </div>
                           )}

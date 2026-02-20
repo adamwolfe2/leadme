@@ -18,9 +18,9 @@ export const metadata: Metadata = {
 
 function intentLabel(score: number | null) {
   if (!score) return null
-  if (score >= 70) return { label: 'Hot', color: 'text-red-600 bg-red-50 border-red-200' }
+  if (score >= 70) return { label: 'Hot', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' }
   if (score >= 40) return { label: 'Warm', color: 'text-amber-600 bg-amber-50 border-amber-200' }
-  return { label: 'Cold', color: 'text-blue-600 bg-blue-50 border-blue-200' }
+  return { label: 'Cold', color: 'text-slate-600 bg-slate-100 border-slate-200' }
 }
 
 export default async function DashboardPage({
@@ -242,11 +242,14 @@ export default async function DashboardPage({
         <div className="rounded-xl bg-blue-50 border border-blue-200 p-5 flex items-start gap-3">
           <Calendar className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
           <div>
-            <p className="font-semibold text-blue-900">Your lead pipeline is being set up</p>
+            <p className="font-semibold text-blue-900">Your first leads will arrive by 8am CT tomorrow</p>
             <p className="text-sm text-blue-700 mt-1">
-              We&apos;re matching leads to your industry and location preferences. New leads are delivered every morning at 8am CT.
+              We&apos;re matching leads to your industry and location preferences right now. You&apos;ll get up to {dailyLimit} fresh leads every morning.
               {!hasPreferences && (
-                <> In the meantime, <Link href="/my-leads/preferences" className="font-medium underline">set your targeting preferences</Link> to get the most relevant leads.</>
+                <> <Link href="/my-leads/preferences" className="font-medium underline">Set your targeting preferences</Link> so we can match the most relevant leads for you.</>
+              )}
+              {hasPreferences && !hasPixel && (
+                <> While you wait, <Link href="/settings/pixel" className="font-medium underline">install the pixel</Link> to identify website visitors too.</>
               )}
             </p>
           </div>
@@ -348,7 +351,7 @@ export default async function DashboardPage({
                 <span className="text-sm text-gray-500">Enrichment Credits</span>
               </div>
               <div className={`text-3xl font-bold ${creditsRemaining <= 3 ? 'text-amber-600' : 'text-gray-900'}`}>{creditsRemaining}</div>
-              <p className="text-xs text-gray-500 mt-1">of {creditLimit} daily · 1/enrichment</p>
+              <p className="text-xs text-gray-500 mt-1">of {creditLimit}/day ({isFree ? 'Free' : 'Pro'}) · resets 8am CT</p>
             </div>
           </Link>
 
@@ -619,9 +622,14 @@ export default async function DashboardPage({
                   <Crown className="h-4 w-4 text-primary" />
                   <span className="text-sm font-semibold text-gray-900">Free Plan</span>
                 </div>
-                <p className="text-xs text-gray-500 mb-3">
-                  Upgrade to Pro for 100 leads/day, 1,000 enrichments/day, and priority data.
-                </p>
+                <div className="text-xs text-gray-500 mb-3 space-y-1">
+                  <p className="flex justify-between"><span>Daily leads</span><span className="font-medium text-gray-700">10/day</span></p>
+                  <p className="flex justify-between"><span>Enrichment credits</span><span className="font-medium text-gray-700">3/day</span></p>
+                  <p className="flex justify-between"><span>Credits reset</span><span className="font-medium text-gray-700">8am CT</span></p>
+                  <div className="border-t border-gray-200 pt-1 mt-1">
+                    <p className="flex justify-between text-primary"><span>Pro plan</span><span className="font-semibold">100 leads + 1,000 credits</span></p>
+                  </div>
+                </div>
                 <Link
                   href="/settings/billing"
                   className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"

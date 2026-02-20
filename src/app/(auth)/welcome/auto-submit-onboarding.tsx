@@ -81,14 +81,16 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
 
         // Retry logic: the auth callback sets cookies but they may not be
         // available to the API route on the very first request after redirect.
-        // Retry up to 5 times with increasing delays for 401 responses.
+        // Retry with exponential backoff + jitter for 401 responses.
         const MAX_RETRIES = 5
-        const RETRY_DELAYS = [500, 1000, 2000, 3000, 4000] // ~10.5s total
         let lastResponse: Response | null = null
 
         for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
           if (attempt > 0) {
-            await wait(RETRY_DELAYS[attempt - 1])
+            // Exponential backoff: 1000, 2000, 4000, 8000, 16000 + random jitter (0-500ms)
+            const baseDelay = Math.min(1000 * Math.pow(2, attempt - 1), 16000)
+            const jitter = Math.floor(Math.random() * 500)
+            await wait(baseDelay + jitter)
           }
 
           lastResponse = await fetch('/api/onboarding/setup', {

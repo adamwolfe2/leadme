@@ -48,6 +48,7 @@ import { LeadAvatar } from '@/app/(dashboard)/crm/components/LeadAvatar'
 import { CompanyFavicon } from '@/app/(dashboard)/crm/components/CompanyFavicon'
 import { ScoreProgress } from '@/app/(dashboard)/crm/components/ScoreProgress'
 import { useToast } from '@/lib/hooks/use-toast'
+import { formatPhone } from '@/components/leads/lead-card'
 import { formatDistanceToNow, format } from 'date-fns'
 import type { LeadTableRow } from '@/types/crm.types'
 
@@ -304,7 +305,7 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
                             href={`tel:${lead.phone}`}
                             className="text-sm text-gray-900"
                           >
-                            {lead.phone}
+                            {formatPhone(lead.phone)}
                           </a>
                         </div>
                       )}

@@ -43,7 +43,7 @@ export async function authenticatePartnerByApiKey(apiKey: string): Promise<Partn
     .from('partners')
     .select('*')
     .eq('api_key', apiKey)
-    .single()
+    .maybeSingle()
 
   if (error || !partner) {
     return { partner: null, error: 'Invalid API key' }
@@ -74,7 +74,7 @@ export async function authenticatePartnerByApiKey(apiKey: string): Promise<Partn
 export async function getPartnerById(partnerId: string): Promise<Partner | null> {
   const supabase = await createClient()
 
-  const { data } = await supabase.from('partners').select('*').eq('id', partnerId).single()
+  const { data } = await supabase.from('partners').select('*').eq('id', partnerId).maybeSingle()
 
   return data as Partner | null
 }
@@ -85,7 +85,7 @@ export async function getPartnerById(partnerId: string): Promise<Partner | null>
 export async function getPartnerByEmail(email: string): Promise<Partner | null> {
   const supabase = createAdminClient()
 
-  const { data } = await supabase.from('partners').select('*').eq('email', email).single()
+  const { data } = await supabase.from('partners').select('*').eq('email', email).maybeSingle()
 
   return data as Partner | null
 }
@@ -275,9 +275,9 @@ export async function getPartnerDashboardStats(partnerId: string): Promise<{
   const supabase = createAdminClient()
 
   // Get partner data
-  const { data: partner } = await supabase.from('partners').select('*').eq('id', partnerId).single()
+  const { data: partner, error } = await supabase.from('partners').select('*').eq('id', partnerId).maybeSingle()
 
-  if (!partner) {
+  if (error || !partner) {
     throw new Error('Partner not found')
   }
 

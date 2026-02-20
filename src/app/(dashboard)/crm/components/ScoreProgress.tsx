@@ -13,16 +13,16 @@ interface ScoreProgressProps {
 
 function getScoreColor(score: number | null): string {
   if (score === null) return 'text-gray-400'
-  if (score >= 70) return 'text-green-600 dark:text-green-400'
-  if (score >= 40) return 'text-yellow-600 dark:text-yellow-400'
-  return 'text-red-600 dark:text-red-400'
+  if (score >= 70) return 'text-emerald-700'
+  if (score >= 40) return 'text-amber-600'
+  return 'text-slate-600'
 }
 
 function getScoreBgColor(score: number | null): string {
   if (score === null) return 'bg-gray-400'
-  if (score >= 70) return 'bg-green-600 dark:bg-green-400'
-  if (score >= 40) return 'bg-yellow-600 dark:bg-yellow-400'
-  return 'bg-red-600 dark:bg-red-400'
+  if (score >= 70) return 'bg-emerald-600'
+  if (score >= 40) return 'bg-amber-500'
+  return 'bg-slate-400'
 }
 
 export function ScoreProgress({ score, className, showBar = true }: ScoreProgressProps) {

@@ -83,16 +83,16 @@ const ENRICHMENT_FILTERS = [
 
 function getIntentColor(score: number | null): string {
   if (!score) return 'text-gray-400'
-  if (score >= 70) return 'text-green-600'
+  if (score >= 70) return 'text-emerald-700'
   if (score >= 40) return 'text-amber-600'
-  return 'text-red-500'
+  return 'text-slate-600'
 }
 
 function getIntentBg(score: number | null): string {
   if (!score) return 'bg-gray-100'
-  if (score >= 70) return 'bg-green-50 border-green-200'
+  if (score >= 70) return 'bg-emerald-50 border-emerald-200'
   if (score >= 40) return 'bg-amber-50 border-amber-200'
-  return 'bg-red-50 border-red-200'
+  return 'bg-slate-100 border-slate-200'
 }
 
 function getInitials(lead: VisitorLead): string {
@@ -340,7 +340,7 @@ function TrialBanner({ pixel }: { pixel: PixelInfo }) {
             <div>
               <p className="font-semibold text-red-900 text-sm">Your pixel trial has ended</p>
               <p className="text-xs text-red-700 mt-0.5">
-                Upgrade to Pro to reactivate your pixel on <strong>{pixel.domain}</strong> and keep identifying new visitors.
+                Your pixel on <strong>{pixel.domain}</strong> has stopped firing — no new visitors are being identified. Upgrade to reactivate it.
               </p>
             </div>
           </div>
@@ -370,7 +370,7 @@ function TrialBanner({ pixel }: { pixel: PixelInfo }) {
                 {daysLeft === 0 ? 'Trial ends today' : `${daysLeft} day${daysLeft === 1 ? '' : 's'} left in your free pixel trial`}
               </p>
               <p className={cn('text-xs mt-0.5', isUrgent ? 'text-amber-700' : 'text-blue-700')}>
-                After your trial ends, your pixel stops identifying visitors. Upgrade to keep it running forever.
+                When your trial ends, your pixel will stop firing and no new visitors will be identified. Upgrade to keep it running.
               </p>
             </div>
           </div>
@@ -719,9 +719,9 @@ export default function WebsiteVisitorsPage() {
               <div className="mx-auto w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-3">
                 <AlertTriangle className="h-6 w-6 text-red-500" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">Pixel trial ended</h3>
-              <p className="text-sm text-gray-500 mb-4">
-                Upgrade to Pro to keep identifying website visitors and unlock full enrichment.
+              <h3 className="text-lg font-semibold text-foreground mb-1">Your pixel has stopped firing</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Your 14-day trial ended. No new visitors are being identified. Upgrade to Pro to reactivate your pixel and resume tracking.
               </p>
               <a
                 href="/settings/billing"

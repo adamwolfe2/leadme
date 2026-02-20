@@ -18,6 +18,7 @@ import {
   Target, CheckSquare,
 } from 'lucide-react'
 import { cn } from '@/lib/design-system'
+import { Button } from '@/components/ui/button'
 import { LeadCard, type Lead, exportToCSV } from './lead-card'
 import { StatCard } from './lead-stat-card'
 import { BulkActionBar } from './bulk-action-bar'
@@ -243,21 +244,22 @@ export function DailyLeadsView({
         </div>
 
         <div className="flex items-center gap-2">
-          <a
-            href="/my-leads/preferences"
-            className="inline-flex items-center gap-1.5 text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-600 hover:bg-gray-50 transition-colors"
-          >
-            <SlidersHorizontal className="h-3.5 w-3.5" />
-            Targeting
+          <a href="/my-leads/preferences">
+            <Button variant="outline" size="sm" className="gap-1.5">
+              <SlidersHorizontal className="h-3.5 w-3.5" />
+              Targeting
+            </Button>
           </a>
-          <button
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5"
             onClick={() => exportToCSV(todayLeads, `cursive-leads-${new Date().toISOString().split('T')[0]}.csv`)}
             disabled={todayLeads.length === 0}
-            className="inline-flex items-center gap-1.5 text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-40"
           >
             <Download className="h-3.5 w-3.5" />
             Export
-          </button>
+          </Button>
           <button
             onClick={toggleSelectionMode}
             className={cn(
@@ -336,7 +338,7 @@ export function DailyLeadsView({
           <div className="flex items-center gap-2.5">
             <Zap className="h-4 w-4 text-red-600 shrink-0" />
             <p className="text-sm text-red-800">
-              <strong>No enrichment credits remaining.</strong> Credits reset at midnight CT.
+              <strong>No enrichment credits remaining.</strong> Your daily credits reset at 8am CT tomorrow. Each enrichment costs 1 credit.
             </p>
           </div>
           <a

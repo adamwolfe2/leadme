@@ -7,6 +7,7 @@ import { NextResponse, type NextRequest, after } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
+import { sendWelcomeEmail } from '@/lib/email/service'
 import { FREE_TRIAL_CREDITS } from '@/lib/constants/credit-packages'
 import { z } from 'zod'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
@@ -190,15 +191,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 5. Generate slug from company name
-    const slug = validated.companyName
+    // 5. Generate slug from company name with collision handling
+    let slug = validated.companyName
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '')
 
-    safeLog('[Onboarding] Generated slug:', slug)
+    safeLog('[Onboarding] Generated base slug:', slug)
 
-    // 6. Check slug availability (both business AND partner flows)
+    // 6. Check slug availability — auto-append short suffix on collision
     const { data: existingSlug } = await admin
       .from('workspaces')
       .select('id')
@@ -206,10 +207,10 @@ export async function POST(request: NextRequest) {
       .maybeSingle()
 
     if (existingSlug) {
-      return NextResponse.json(
-        { error: 'A workspace with this name already exists. Please try a different company name.' },
-        { status: 409 }
-      )
+      // Append random 4-char suffix to guarantee uniqueness
+      const suffix = Math.random().toString(36).substring(2, 6)
+      slug = `${slug}-${suffix}`
+      safeLog('[Onboarding] Slug collision, using:', slug)
     }
 
     // 7. Create workspace
@@ -452,6 +453,11 @@ export async function POST(request: NextRequest) {
       metadata: slackMetadata,
     }).catch((error) => {
       safeError('[Onboarding] Slack notification failed:', error)
+    })
+
+    // Non-blocking welcome email (fire-and-forget)
+    sendWelcomeEmail(validated.email, validated.firstName).catch((error) => {
+      safeError('[Onboarding] Welcome email failed:', error)
     })
 
     // Non-blocking GHL onboard (fire-and-forget, lazy-loaded to avoid blocking)

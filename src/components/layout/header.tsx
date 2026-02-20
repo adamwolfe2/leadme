@@ -92,10 +92,10 @@ export function Header({ user, workspace, hasUnreadNotifications, onMenuClick, c
 
       {/* Right side */}
       <div className="flex items-center gap-4">
-        {/* Credits display */}
+        {/* Credits display — visible on all screen sizes */}
         {user && (
-          <div className="hidden items-center gap-2 sm:flex">
-            <span className="text-sm text-muted-foreground">Credits:</span>
+          <div className="flex items-center gap-2">
+            <span className="hidden text-sm text-muted-foreground sm:inline">Credits:</span>
             <span className="text-sm font-semibold text-foreground">
               {user.creditsRemaining.toLocaleString()}
             </span>
@@ -212,7 +212,7 @@ export function Header({ user, workspace, hasUnreadNotifications, onMenuClick, c
                 </svg>
                 Notifications
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/integrations')}>
+              <DropdownMenuItem onClick={() => router.push('/settings/integrations')}>
                 <svg
                   className="mr-2 h-4 w-4"
                   fill="none"

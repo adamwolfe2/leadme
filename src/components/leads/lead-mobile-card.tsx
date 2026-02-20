@@ -7,6 +7,7 @@
 
 import { Building2, Mail, Phone, MapPin, Briefcase, Target, Calendar } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { formatPhone } from './lead-card'
 import type { Lead } from '@/types'
 
 interface LeadMobileCardProps {
@@ -80,7 +81,7 @@ export function LeadMobileCard({ lead, onClick }: LeadMobileCardProps) {
             onClick={(e) => e.stopPropagation()}
           >
             <Phone className="h-4 w-4" />
-            <span>{lead.phone}</span>
+            <span>{formatPhone(lead.phone)}</span>
           </a>
         )}
       </div>

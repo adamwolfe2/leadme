@@ -12,6 +12,7 @@ import {
   MobileCardFooter,
   MobileCardMeta
 } from '@/components/ui/mobile-card'
+import { formatPhone } from '@/components/leads/lead-card'
 import type { LeadTableRow } from '@/types/crm.types'
 import { formatDistanceToNow } from 'date-fns'
 
@@ -95,7 +96,7 @@ export function LeadMobileCard({ lead, selected, onSelect, onView }: LeadMobileC
             label="Phone"
             value={
               <a href={`tel:${lead.phone}`} className="text-primary hover:underline">
-                {lead.phone}
+                {formatPhone(lead.phone)}
               </a>
             }
           />

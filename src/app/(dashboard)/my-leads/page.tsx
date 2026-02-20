@@ -174,15 +174,29 @@ export default async function MyLeadsPage() {
               <h3 className="text-sm font-medium text-green-800">
                 Targeting is active
               </h3>
-              <p className="mt-1 text-sm text-green-700">
-                Leads matching your preferences will appear here automatically.{' '}
-                <Link
-                  href="/my-leads/preferences"
-                  className="font-medium underline hover:text-green-900"
-                >
-                  Edit preferences
-                </Link>
-              </p>
+              <div className="mt-1 text-sm text-green-700">
+                <p>
+                  Leads matching your preferences will appear here automatically.{' '}
+                  <Link
+                    href="/my-leads/preferences"
+                    className="font-medium underline hover:text-green-900"
+                  >
+                    Edit preferences
+                  </Link>
+                </p>
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {(targeting.target_industries ?? []).map((ind: string) => (
+                    <span key={ind} className="inline-flex items-center text-xs bg-green-100 text-green-800 border border-green-200 rounded-full px-2 py-0.5">
+                      {ind}
+                    </span>
+                  ))}
+                  {(targeting.target_states ?? []).map((st: string) => (
+                    <span key={st} className="inline-flex items-center text-xs bg-green-100 text-green-800 border border-green-200 rounded-full px-2 py-0.5">
+                      {st}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>

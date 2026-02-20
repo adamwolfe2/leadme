@@ -86,13 +86,25 @@ export default function BillingClient() {
   })
 
   const [purchasingPackage, setPurchasingPackage] = useState<string | null>(null)
+  const [purchaseCooldown, setPurchaseCooldown] = useState(false)
 
   const handlePurchaseCredits = async (packageId: string, credits: number, price: number) => {
+    // Prevent double-click: ignore if already purchasing or in cooldown
+    if (purchasingPackage || purchaseCooldown) return
+
     setPurchasingPackage(packageId)
+    setPurchaseCooldown(true)
+
+    // Generate a client-side request ID for idempotency
+    const requestId = `${packageId}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+
     try {
       const response = await fetch('/api/marketplace/credits/purchase', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Request-Id': requestId,
+        },
         body: JSON.stringify({ packageId, credits, amount: price }),
       })
 
@@ -109,6 +121,8 @@ export default function BillingClient() {
       toast.error(error.message || 'Failed to start purchase')
     } finally {
       setPurchasingPackage(null)
+      // Keep button disabled for 5 seconds after click to prevent rapid re-clicks
+      setTimeout(() => setPurchaseCooldown(false), 5000)
     }
   }
 
@@ -366,6 +380,23 @@ export default function BillingClient() {
             </div>
             <p className="mt-1.5 text-xs text-muted-foreground">Each enrichment reveals phone, email & LinkedIn. Resets daily at midnight CT (Central Time).</p>
 
+            {/* Credit system explanation */}
+            <div className="mt-3 rounded-lg border border-border bg-muted/30 px-4 py-3">
+              <div className="flex items-start gap-2">
+                <svg className="h-4 w-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div className="space-y-1">
+                  <p className="text-xs font-medium text-foreground">How credits work</p>
+                  <ul className="text-xs text-muted-foreground space-y-0.5">
+                    <li>Each lead enrichment costs 1 credit</li>
+                    <li>Free plan: 3 credits/day &nbsp;|&nbsp; Pro plan: 1,000 credits/day</li>
+                    <li>Credits reset daily at 8am CT</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
             {/* Credit usage alerts */}
             {user && (user.credits_remaining || 0) === 0 && (
               <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
@@ -612,7 +643,7 @@ export default function BillingClient() {
               <button
                 key={pkg.id}
                 onClick={() => handlePurchaseCredits(pkg.id, pkg.credits, pkg.price)}
-                disabled={purchasingPackage === pkg.id}
+                disabled={purchasingPackage === pkg.id || purchaseCooldown}
                 className={`group border rounded-lg p-4 hover:border-primary/50 hover:shadow-md transition-all text-left relative disabled:opacity-60 disabled:cursor-wait ${
                   pkg.popular ? 'border-primary/30' : 'border-border'
                 }`}

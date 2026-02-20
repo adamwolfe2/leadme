@@ -50,6 +50,26 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validated = purchaseSchema.parse(body)
 
+    // Idempotency check: prevent duplicate purchases within 30 seconds
+    const requestId = request.headers.get('x-request-id')
+    if (requestId) {
+      const { data: recentPurchase } = await supabase
+        .from('credit_purchases')
+        .select('id')
+        .eq('workspace_id', userData.workspace_id)
+        .eq('package_name', validated.packageId)
+        .gte('created_at', new Date(Date.now() - 30_000).toISOString())
+        .limit(1)
+        .maybeSingle()
+
+      if (recentPurchase) {
+        return NextResponse.json(
+          { error: 'Duplicate purchase detected. Please wait before trying again.' },
+          { status: 409 }
+        )
+      }
+    }
+
     // SECURITY: Validate against predefined packages to prevent price tampering
     const validPackage = validateCreditPurchase({
       packageId: validated.packageId,
