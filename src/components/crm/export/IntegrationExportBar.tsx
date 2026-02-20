@@ -6,6 +6,7 @@ import { ExportButton, PLATFORM_CONFIGS, type ExportPlatform, type ConnectionSta
 import { cn } from '@/lib/utils'
 import { Download, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 
 // ============================================================================
 // Types
@@ -92,7 +93,10 @@ export function IntegrationExportBar({
 
   const handleExport = React.useCallback(
     async (platform: ExportPlatform) => {
-      if (selectedLeadIds.length === 0) return
+      if (selectedLeadIds.length === 0) {
+        toast.error('No leads selected', { description: 'Select leads to export.' })
+        return
+      }
 
       // Mark as exporting
       setExportState((prev) => ({
@@ -102,6 +106,9 @@ export function IntegrationExportBar({
 
       try {
         const config = PLATFORM_CONFIGS[platform]
+        // 30s timeout — Vercel serverless functions have a 10-60s limit
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 30_000)
 
         if (platform === 'csv') {
           // CSV export triggers a file download
@@ -112,10 +119,14 @@ export function IntegrationExportBar({
               format: 'csv',
               leadIds: selectedLeadIds,
             }),
+            signal: controller.signal,
           })
 
+          clearTimeout(timeoutId)
+
           if (!response.ok) {
-            throw new Error('Export failed')
+            const errorData = await response.json().catch(() => ({}))
+            throw new Error(errorData.error || `Export returned status ${response.status}`)
           }
 
           // Trigger download
@@ -128,6 +139,10 @@ export function IntegrationExportBar({
           link.click()
           document.body.removeChild(link)
           window.URL.revokeObjectURL(url)
+
+          toast.success('CSV downloaded', {
+            description: `${selectedLeadIds.length} lead${selectedLeadIds.length !== 1 ? 's' : ''} exported.`,
+          })
         } else {
           // CRM platform exports
           const response = await fetch(config.endpoint, {
@@ -136,12 +151,19 @@ export function IntegrationExportBar({
             body: JSON.stringify({
               leadIds: selectedLeadIds,
             }),
+            signal: controller.signal,
           })
+
+          clearTimeout(timeoutId)
 
           if (!response.ok) {
             const errorData = await response.json().catch(() => ({}))
             throw new Error(errorData.error || 'Export failed')
           }
+
+          toast.success(`Exported to ${PLATFORM_CONFIGS[platform].name}`, {
+            description: `${selectedLeadIds.length} lead${selectedLeadIds.length !== 1 ? 's' : ''} synced.`,
+          })
         }
 
         // Mark as success
@@ -158,15 +180,22 @@ export function IntegrationExportBar({
           }))
         }, 3000)
       } catch (error) {
-        console.error(`[Export] ${platform} export failed:`, error)
-
         setExportState((prev) => ({
           ...prev,
           [platform]: { isExporting: false, exportSuccess: false },
         }))
 
-        // Show basic error feedback (could be replaced with toast)
-        alert(`Export to ${PLATFORM_CONFIGS[platform].name} failed. Please try again.`)
+        const isTimeout = error instanceof DOMException && error.name === 'AbortError'
+        toast.error(
+          isTimeout
+            ? 'Export timed out'
+            : `Export to ${PLATFORM_CONFIGS[platform].name} failed`,
+          {
+            description: isTimeout
+              ? 'Try exporting fewer leads at a time.'
+              : error instanceof Error ? error.message : 'Please try again.',
+          }
+        )
       }
     },
     [selectedLeadIds]

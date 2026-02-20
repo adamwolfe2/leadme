@@ -12,6 +12,9 @@ import { z } from 'zod'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
+// Allow up to 30s for large exports (Vercel Pro default is 60s)
+export const maxDuration = 30
+
 const MAX_EXPORT_ROWS = 10_000
 
 const exportRequestSchema = z.object({

@@ -423,19 +423,9 @@ async function handleEmailOpened(
 
   // Update campaign stats (only on first open)
   if (isFirstOpen) {
-    const { error: rpcError } = await supabase.rpc('increment_campaign_opens', { campaign_id: emailSend.campaign_id })
+    const { error: rpcError } = await supabase.rpc('increment_campaign_opens', { p_campaign_id: emailSend.campaign_id })
     if (rpcError) {
-      // Fallback if RPC doesn't exist - just log the error
-      safeError('[Campaign Webhook] increment_campaign_opens RPC not available:', rpcError)
-    }
-
-    // Update campaign_lead engagement tracking via RPC or skip
-    const { error: leadRpcError } = await supabase.rpc('increment_campaign_lead_opens', {
-      p_campaign_id: emailSend.campaign_id,
-      p_lead_id: emailSend.lead_id,
-    })
-    if (leadRpcError) {
-      safeError('[Campaign Webhook] increment_campaign_lead_opens RPC not available:', leadRpcError)
+      safeError('[Campaign Webhook] increment_campaign_opens RPC failed:', rpcError)
     }
   }
 
@@ -493,19 +483,9 @@ async function handleEmailClicked(
 
   // Update campaign stats (only on first click)
   if (isFirstClick) {
-    const { error: rpcError } = await supabase.rpc('increment_campaign_clicks', { campaign_id: emailSend.campaign_id })
+    const { error: rpcError } = await supabase.rpc('increment_campaign_clicks', { p_campaign_id: emailSend.campaign_id })
     if (rpcError) {
-      // Fallback if RPC doesn't exist - just log the error
-      safeError('[Campaign Webhook] increment_campaign_clicks RPC not available:', rpcError)
-    }
-
-    // Update campaign_lead engagement tracking via RPC or skip
-    const { error: leadRpcError } = await supabase.rpc('increment_campaign_lead_clicks', {
-      p_campaign_id: emailSend.campaign_id,
-      p_lead_id: emailSend.lead_id,
-    })
-    if (leadRpcError) {
-      safeError('[Campaign Webhook] increment_campaign_lead_clicks RPC not available:', leadRpcError)
+      safeError('[Campaign Webhook] increment_campaign_clicks RPC failed:', rpcError)
     }
   }
 

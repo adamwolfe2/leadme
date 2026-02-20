@@ -12,6 +12,9 @@ import { createHubSpotService } from '@/lib/services/hubspot.service'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
+// Allow up to 60s for HubSpot sync (sequential API calls)
+export const maxDuration = 60
+
 const MAX_SYNC_LEADS = 500
 
 const hubspotExportSchema = z.object({
@@ -99,25 +102,42 @@ export async function POST(request: NextRequest) {
       details: [],
     }
 
-    for (const lead of typedLeads) {
-      const result = await hubspotService.syncLead(lead)
+    // Process in batches of 10 concurrently (avoids sequential timeout)
+    const BATCH_SIZE = 10
+    for (let i = 0; i < typedLeads.length; i += BATCH_SIZE) {
+      const batch = typedLeads.slice(i, i + BATCH_SIZE)
+      const batchResults = await Promise.allSettled(
+        batch.map(async (lead) => {
+          const result = await hubspotService.syncLead(lead)
+          return { lead, result }
+        })
+      )
 
-      if (result.success) {
-        results.synced++
-        results.details.push({
-          leadId: lead.id,
-          success: true,
-          contactId: result.contactId,
-        })
-      } else {
-        results.failed++
-        const errorMsg = result.error || 'Unknown sync error'
-        results.errors.push(`Lead ${lead.email || lead.id}: ${errorMsg}`)
-        results.details.push({
-          leadId: lead.id,
-          success: false,
-          error: errorMsg,
-        })
+      for (const settled of batchResults) {
+        if (settled.status === 'fulfilled') {
+          const { lead, result } = settled.value
+          if (result.success) {
+            results.synced++
+            results.details.push({
+              leadId: lead.id,
+              success: true,
+              contactId: result.contactId,
+            })
+          } else {
+            results.failed++
+            const errorMsg = result.error || 'Unknown sync error'
+            results.errors.push(`Lead ${lead.email || lead.id}: ${errorMsg}`)
+            results.details.push({
+              leadId: lead.id,
+              success: false,
+              error: errorMsg,
+            })
+          }
+        } else {
+          results.failed++
+          const errorMsg = settled.reason?.message || 'Sync error'
+          results.errors.push(errorMsg)
+        }
       }
     }
 

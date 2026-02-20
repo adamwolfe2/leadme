@@ -19,6 +19,7 @@
  */
 
 import { fetchWithTimeout } from '@/lib/utils/retry'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // ============================================================================
 // CONFIGURATION
@@ -703,7 +704,7 @@ export async function exportCampaignToEmailBison(options: {
         }
       } catch {
         // Non-fatal - user can add sender emails manually
-        console.warn('[EmailBison] Could not auto-add sender emails')
+        safeError('[EmailBison] Could not auto-add sender emails')
       }
     }
 

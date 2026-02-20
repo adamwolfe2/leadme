@@ -8,6 +8,9 @@ import { LeadRepository } from '@/lib/repositories/lead.repository'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 
+// Allow up to 30s for large exports
+export const maxDuration = 30
+
 const exportRequestSchema = z.object({
   filters: z
     .object({

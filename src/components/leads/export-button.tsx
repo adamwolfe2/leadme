@@ -27,11 +27,17 @@ export function ExportButton({
     setIsExporting(true)
 
     try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 30_000)
+
       const response = await fetch('/api/leads/export', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ filters }),
+        signal: controller.signal,
       })
+
+      clearTimeout(timeoutId)
 
       if (!response.ok) {
         const error = await response.json()
@@ -53,7 +59,11 @@ export function ExportButton({
         description: 'CSV file downloaded successfully',
       })
     } catch (error: any) {
-      toast.error(error.message || 'Export failed')
+      const isTimeout = error instanceof DOMException && error.name === 'AbortError'
+      toast.error(
+        isTimeout ? 'Export timed out' : (error.message || 'Export failed'),
+        { description: isTimeout ? 'Try exporting with fewer filters.' : undefined }
+      )
     } finally {
       setIsExporting(false)
     }
