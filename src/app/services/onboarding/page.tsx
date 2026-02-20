@@ -6,9 +6,8 @@ import { OnboardingForm } from '@/components/services/OnboardingForm'
 export default async function OnboardingPage() {
   const supabase = await createClient()
 
-  // Get current user via session (fast local JWT check, no network call)
-  const { data: { session } } = await supabase.auth.getSession()
-  const user = session?.user ?? null
+  // Get current user via JWT verification (billing-critical path)
+  const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
     redirect('/login?redirect=/services/onboarding')
