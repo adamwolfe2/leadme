@@ -2,7 +2,7 @@
 // POST /api/leads/bulk - Perform bulk actions on leads
 
 
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
@@ -10,12 +10,13 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, success, badRequest } from '@/lib/utils/api-error-handler'
 
 const bulkActionSchema = z.object({
-  action: z.enum(['update_status', 'assign', 'add_tags', 'remove_tags', 'delete', 'export']),
-  lead_ids: z.array(z.string().uuid()).min(1, 'At least one lead is required').max(500, 'Cannot process more than 500 leads at once'),
+  action: z.enum(['update_status', 'assign', 'add_tags', 'remove_tags', 'delete', 'export', 'archive', 'unarchive', 'tag', 'export_csv']),
+  lead_ids: z.array(z.string().uuid()).min(1, 'At least one lead is required').max(100, 'Cannot process more than 100 leads at once'),
   // Action-specific params
   status: z.enum(['new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost']).optional(),
   assigned_to: z.string().uuid().optional(),
   tag_ids: z.array(z.string().uuid()).max(50, 'Cannot apply more than 50 tags at once').optional(),
+  tag_name: z.string().min(1).max(50).optional(),
   note: z.string().max(500).optional(),
 })
 
@@ -31,7 +32,7 @@ export async function POST(request: NextRequest) {
       return badRequest(validationResult.error.errors[0]?.message || 'Invalid request')
     }
 
-    const { action, lead_ids, status, assigned_to, tag_ids, note } = validationResult.data
+    const { action, lead_ids, status, assigned_to, tag_ids, tag_name, note } = validationResult.data
     const supabase = await createClient()
     let result: { affected: number; message: string }
 
@@ -135,6 +136,171 @@ export async function POST(request: NextRequest) {
           message: `Export ${lead_ids.length} leads via /api/leads/export`,
         }
         break
+      }
+
+      // My-Leads table actions — operate on user_lead_assignments by assignment ID
+      case 'archive': {
+        const { error } = await supabase
+          .from('user_lead_assignments')
+          .update({ status: 'archived' })
+          .in('id', lead_ids)
+          .eq('workspace_id', user.workspace_id)
+          .eq('user_id', user.id)
+
+        if (error) {
+          safeError('[Bulk Archive] Error:', error)
+          throw new Error('Failed to archive assignments')
+        }
+        result = { affected: lead_ids.length, message: `Archived ${lead_ids.length} lead${lead_ids.length !== 1 ? 's' : ''}` }
+        break
+      }
+
+      case 'unarchive': {
+        const { error } = await supabase
+          .from('user_lead_assignments')
+          .update({ status: 'new' })
+          .in('id', lead_ids)
+          .eq('workspace_id', user.workspace_id)
+          .eq('user_id', user.id)
+
+        if (error) {
+          safeError('[Bulk Unarchive] Error:', error)
+          throw new Error('Failed to unarchive assignments')
+        }
+        result = { affected: lead_ids.length, message: `Unarchived ${lead_ids.length} lead${lead_ids.length !== 1 ? 's' : ''}` }
+        break
+      }
+
+      case 'tag': {
+        if (!tag_name) return badRequest('tag_name is required for the tag action')
+
+        // Fetch the lead_ids from the assignments
+        const { data: assignments, error: assignErr } = await supabase
+          .from('user_lead_assignments')
+          .select('lead_id')
+          .in('id', lead_ids)
+          .eq('workspace_id', user.workspace_id)
+          .eq('user_id', user.id)
+
+        if (assignErr) {
+          safeError('[Bulk Tag] Error fetching assignments:', assignErr)
+          throw new Error('Failed to fetch assignments for tagging')
+        }
+
+        if (!assignments || assignments.length === 0) {
+          return badRequest('No matching assignments found')
+        }
+
+        const resolvedLeadIds = assignments.map((a) => a.lead_id)
+
+        // Find or create the tag in lead_tags
+        const { data: existingTag } = await supabase
+          .from('lead_tags')
+          .select('id')
+          .eq('workspace_id', user.workspace_id)
+          .eq('name', tag_name.trim())
+          .maybeSingle()
+
+        let tagId: string
+
+        if (existingTag) {
+          tagId = existingTag.id
+        } else {
+          const { data: newTag, error: tagCreateErr } = await supabase
+            .from('lead_tags')
+            .insert({ workspace_id: user.workspace_id, name: tag_name.trim(), color: '#6b7280' })
+            .select('id')
+            .single()
+
+          if (tagCreateErr || !newTag) {
+            safeError('[Bulk Tag] Error creating tag:', tagCreateErr)
+            throw new Error('Failed to create tag')
+          }
+          tagId = newTag.id
+        }
+
+        // Upsert tag assignments for all resolved lead IDs
+        const tagRows = resolvedLeadIds.map((lid) => ({ lead_id: lid, tag_id: tagId }))
+        const { error: upsertErr } = await supabase
+          .from('lead_tag_assignments')
+          .upsert(tagRows, { onConflict: 'lead_id,tag_id', ignoreDuplicates: true })
+
+        if (upsertErr) {
+          safeError('[Bulk Tag] Error upserting tag assignments:', upsertErr)
+          throw new Error('Failed to apply tag to leads')
+        }
+
+        result = { affected: resolvedLeadIds.length, message: `Tagged ${resolvedLeadIds.length} lead${resolvedLeadIds.length !== 1 ? 's' : ''} with "${tag_name.trim()}"` }
+        break
+      }
+
+      case 'export_csv': {
+        // Fetch assignment + lead data for selected assignment IDs
+        const { data: assignmentsForExport, error: exportFetchErr } = await supabase
+          .from('user_lead_assignments')
+          .select(`
+            id,
+            status,
+            created_at,
+            leads (
+              id,
+              first_name,
+              last_name,
+              full_name,
+              email,
+              phone,
+              company_name,
+              job_title,
+              city,
+              state,
+              state_code,
+              company_industry
+            )
+          `)
+          .in('id', lead_ids)
+          .eq('workspace_id', user.workspace_id)
+          .eq('user_id', user.id)
+
+        if (exportFetchErr) {
+          safeError('[Bulk Export CSV] Error fetching data:', exportFetchErr)
+          throw new Error('Failed to fetch lead data for export')
+        }
+
+        const rows = (assignmentsForExport || []).map((a: any) => {
+          const lead = a.leads || {}
+          const fullName =
+            lead.full_name ||
+            [lead.first_name, lead.last_name].filter(Boolean).join(' ') ||
+            ''
+          const location = [lead.city, lead.state_code || lead.state].filter(Boolean).join(', ')
+          return [
+            fullName,
+            lead.email || '',
+            lead.phone || '',
+            lead.company_name || '',
+            lead.job_title || '',
+            location,
+            lead.company_industry || '',
+            a.status || '',
+            new Date(a.created_at).toLocaleDateString(),
+          ]
+        })
+
+        const headers = ['Name', 'Email', 'Phone', 'Company', 'Job Title', 'Location', 'Industry', 'Status', 'Assigned Date']
+        const csv = [
+          headers.join(','),
+          ...rows.map((row: string[]) =>
+            row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+          ),
+        ].join('\n')
+
+        return new NextResponse(csv, {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/csv',
+            'Content-Disposition': `attachment; filename="my-leads-export-${new Date().toISOString().split('T')[0]}.csv"`,
+          },
+        })
       }
 
       default:

@@ -171,6 +171,29 @@ export const leadEnrichment = inngest.createFunction(
       )
     })
 
+    // Fire outbound webhook: lead.enriched
+    await step.run('fire-outbound-webhook-enriched', async () => {
+      const supabase = createAdminClient()
+      const { data: enrichedLead } = await supabase
+        .from('leads')
+        .select('id, first_name, last_name, email, phone, company_name, company_industry, enrichment_status, enriched_at')
+        .eq('id', lead_id)
+        .single()
+
+      await inngest.send({
+        name: 'outbound-webhook/deliver',
+        data: {
+          workspace_id,
+          event_type: 'lead.enriched',
+          payload: {
+            event: 'lead.enriched',
+            timestamp: new Date().toISOString(),
+            lead: enrichedLead ?? { id: lead_id },
+          },
+        },
+      })
+    })
+
     return {
       success: true,
       lead_id,

@@ -9,6 +9,7 @@ import { PartnerRepository } from '@/lib/repositories/partner.repository'
 import { StatsCards } from '@/components/partner/StatsCards'
 import { UploadedLeadsTable } from '@/components/partner/UploadedLeadsTable'
 import { PartnerTierOverview } from '@/components/partner/PartnerTierOverview'
+import { PartnerLeaderboard } from '@/components/partner/PartnerLeaderboard'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
@@ -65,6 +66,9 @@ export default async function PartnerDashboard() {
 
       {/* Stats Cards (includes tier status card) */}
       <StatsCards analytics={analytics} credits={credits} />
+
+      {/* Partner Leaderboard — top partners by leads sold this month */}
+      <PartnerLeaderboard />
 
       {/* Partner Tier Breakdown */}
       <PartnerTierOverview totalLeads={totalLeadsUploaded} />

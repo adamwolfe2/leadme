@@ -70,9 +70,11 @@ export default async function AdminLayout({
                   { href: '/admin/premium-requests', label: 'Upgrades' },
                   { href: '/admin/leads', label: 'Leads' },
                   { href: '/admin/analytics', label: 'Analytics' },
+                  { href: '/admin/revenue', label: 'Revenue' },
                   { href: '/admin/payouts', label: 'Payouts' },
                   { href: '/admin/api', label: 'API Costs' },
                   { href: '/admin/monitoring/dedup-enrichment', label: 'Dedup' },
+                  { href: '/admin/email-stats', label: 'Email Stats' },
                 ].map(({ href, label }) => (
                   <Link
                     key={href}

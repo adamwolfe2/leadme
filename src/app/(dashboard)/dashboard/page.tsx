@@ -11,6 +11,7 @@ import {
 import { sanitizeName, sanitizeCompanyName, sanitizeText } from '@/lib/utils/sanitize-text'
 import { DashboardAnimationWrapper, AnimatedSection } from '@/components/dashboard/dashboard-animation-wrapper'
 import { formatDistanceToNow } from 'date-fns'
+import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist'
 
 export const metadata: Metadata = {
   title: 'Dashboard | Cursive',
@@ -221,6 +222,13 @@ export default async function DashboardPage({
           </div>
         </div>
       </AnimatedSection>
+
+      {/* In-app onboarding checklist widget — client component, handles dismissed state via localStorage */}
+      {showChecklist && (
+        <AnimatedSection delay={0.03}>
+          <OnboardingChecklist />
+        </AnimatedSection>
+      )}
 
       {/* Onboarding complete banner */}
       {onboarding === 'complete' && (

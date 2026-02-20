@@ -14,6 +14,8 @@ import {
 } from '@/components/ui/select-radix'
 import { Database, Search, Coins, Users, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
+import { UpgradeModal } from '@/components/marketplace/UpgradeModal'
+import { useUpgradeModal } from '@/lib/hooks/use-upgrade-modal'
 
 interface PreviewResult {
   count: number
@@ -31,6 +33,9 @@ export default function LeadDatabasePage() {
   const [preview, setPreview] = useState<PreviewResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [pulling, setPulling] = useState(false)
+
+  // Upgrade modal — triggered when a 402 credit error is returned
+  const { isOpen: upgradeModalOpen, trigger: upgradeTrigger, context: upgradeContext, showUpgradeModal, closeModal: closeUpgradeModal } = useUpgradeModal()
 
   const handlePreview = async () => {
     try {
@@ -88,8 +93,11 @@ export default function LeadDatabasePage() {
         setPreview(null) // Reset preview
       } else {
         if (response.status === 402) {
-          toast.error(
-            `Insufficient credits. Need ${data.required}, you have ${data.current}. Shortfall: ${data.shortfall}`
+          showUpgradeModal(
+            'credits_empty',
+            data.required && data.current
+              ? `You need ${data.required} credits but have ${data.current}. Top up to pull these leads.`
+              : data.error || "You don't have enough credits to pull these leads."
           )
         } else {
           toast.error(data.error || 'Failed to pull leads')
@@ -104,6 +112,14 @@ export default function LeadDatabasePage() {
 
   return (
     <div className="container mx-auto py-8 space-y-8">
+      {/* Upgrade modal — triggered on 402 credit errors */}
+      <UpgradeModal
+        isOpen={upgradeModalOpen}
+        onClose={closeUpgradeModal}
+        trigger={upgradeTrigger}
+        context={upgradeContext}
+      />
+
       {/* Header */}
       <div>
         <div className="flex items-center gap-3 mb-2">

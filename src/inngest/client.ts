@@ -213,6 +213,15 @@ export type Events = {
     }
   }
 
+  // Outbound webhook fan-out (new multi-endpoint system)
+  'outbound-webhook/deliver': {
+    data: {
+      workspace_id: string
+      event_type: string
+      payload: Record<string, any>
+    }
+  }
+
   // Campaign Events
   'campaign/lead-added': {
     data: {
@@ -413,6 +422,16 @@ export type Events = {
       user_email: string
       user_name: string
       credits: number
+    }
+  }
+
+  // Auto-Recharge Events
+  'marketplace/credits-low': {
+    data: {
+      workspace_id: string
+      user_id: string
+      balance: number
+      threshold: number
     }
   }
 

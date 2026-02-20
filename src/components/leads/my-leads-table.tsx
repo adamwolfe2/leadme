@@ -13,6 +13,9 @@ import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/design-system'
 import type { Database } from '@/types/database.types'
 import type { RealtimeChannel } from '@supabase/supabase-js'
+import { Checkbox } from '@/components/ui/checkbox'
+import { useBulkSelection } from '@/lib/hooks/use-bulk-selection'
+import { BulkActionToolbar } from './BulkActionToolbar'
 
 type UserLeadAssignmentUpdate = Database['public']['Tables']['user_lead_assignments']['Update']
 
@@ -66,7 +69,16 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
   const [totalCount, setTotalCount] = useState(0)
   const channelRef = useRef<RealtimeChannel | null>(null)
 
+  // Bulk selection — keyed on assignment.id
+  const bulkSelection = useBulkSelection(assignments)
+
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
+
+  // Clear bulk selection whenever filter or page changes
+  useEffect(() => {
+    bulkSelection.clearSelection()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter, page])
 
   // SECURITY: Validate page is within bounds to prevent expensive out-of-range queries
   useEffect(() => {
@@ -399,6 +411,15 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
           <table className="w-full">
             <thead>
               <tr className="border-b border-zinc-100 text-left text-sm font-medium text-zinc-500">
+                <th className="px-4 py-3 w-10">
+                  <Checkbox
+                    checked={bulkSelection.isAllSelected}
+                    indeterminate={bulkSelection.isIndeterminate}
+                    onChange={bulkSelection.toggleAll}
+                    aria-label="Select all leads on this page"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </th>
                 <th className="px-4 py-3">Contact</th>
                 <th className="px-4 py-3">Company</th>
                 <th className="px-4 py-3">Location</th>
@@ -412,9 +433,22 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
               {assignments.map((assignment) => (
                 <tr
                   key={assignment.id}
-                  className="hover:bg-zinc-50 cursor-pointer"
+                  className={cn(
+                    'cursor-pointer transition-colors',
+                    bulkSelection.isSelected(assignment.id)
+                      ? 'bg-blue-50'
+                      : 'hover:bg-zinc-50'
+                  )}
                   onClick={() => setSelectedLead(assignment)}
                 >
+                  <td className="px-4 py-3 w-10">
+                    <Checkbox
+                      checked={bulkSelection.isSelected(assignment.id)}
+                      onChange={() => bulkSelection.toggleItem(assignment.id)}
+                      onClick={(e) => e.stopPropagation()}
+                      aria-label={`Select lead ${getLeadName(assignment.leads)}`}
+                    />
+                  </td>
                   <td className="px-4 py-3">
                     <div>
                       <p className="font-medium text-zinc-900">
@@ -556,6 +590,14 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
           }}
         />
       )}
+
+      {/* Bulk action floating toolbar */}
+      <BulkActionToolbar
+        selectedCount={bulkSelection.selectedCount}
+        selectedIds={bulkSelection.selectedIds}
+        onClear={bulkSelection.clearSelection}
+        onSuccess={fetchAssignments}
+      />
     </div>
   )
 }

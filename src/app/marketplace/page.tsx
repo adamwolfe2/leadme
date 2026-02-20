@@ -10,6 +10,10 @@ import { Button } from '@/components/ui/button'
 import { MobileFilters } from './components/MobileFilters'
 import { BuyLeadButton } from '@/components/marketplace/BuyLeadButton'
 import { UpsellBanner } from '@/components/marketplace/UpsellBanner'
+import { UpgradeModal } from '@/components/marketplace/UpgradeModal'
+import { SaveSearchButton } from '@/components/marketplace/SaveSearchButton'
+import { SavedSearchesList } from '@/components/marketplace/SavedSearchesList'
+import { useUpgradeModal } from '@/lib/hooks/use-upgrade-modal'
 import { getServiceLink } from '@/lib/stripe/payment-links'
 import {
   useMarketplaceLeads,
@@ -76,6 +80,9 @@ export default function MarketplacePage() {
   const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set())
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const [purchasedLeadCount, setPurchasedLeadCount] = useState(0)
+
+  // Upgrade modal state — shown on 402 / insufficient_credits errors
+  const { isOpen: upgradeModalOpen, trigger: upgradeTrigger, context: upgradeContext, showUpgradeModal, closeModal: closeUpgradeModal } = useUpgradeModal()
 
   // Filters (with debouncing for better performance)
   const [filters, setFilters] = useState<Filters>({
@@ -179,8 +186,19 @@ export default function MarketplacePage() {
         setSelectedLeads(new Set())
         setTimeout(() => setShowSuccessMessage(false), 5000)
       },
+      onError: (error: Error) => {
+        // Show the upgrade modal instead of a toast when credits are exhausted
+        const msg = error.message.toLowerCase()
+        if (msg.includes('insufficient') || msg.includes('credits')) {
+          showUpgradeModal(
+            'credits_empty',
+            `You don't have enough credits to purchase ${leadIds.length} lead${leadIds.length !== 1 ? 's' : ''}. Top up to continue.`
+          )
+        }
+        // The usePurchaseLeads onError still shows a generic toast for other errors
+      },
     })
-  }, [selectedLeads, purchaseMutation])
+  }, [selectedLeads, purchaseMutation, showUpgradeModal])
 
   const toggleFilter = useCallback((category: keyof Filters, value: string) => {
     setFilters((prev) => {
@@ -204,10 +222,32 @@ export default function MarketplacePage() {
     setPage(0)
   }, [])
 
+  // Apply a saved search's filters to the current state
+  const applyFilters = useCallback((savedFilters: MarketplaceFilters) => {
+    setFilters({
+      industries: savedFilters.industries ?? [],
+      states: savedFilters.states ?? [],
+      companySizes: savedFilters.companySizes ?? [],
+      seniorityLevels: savedFilters.seniorityLevels ?? [],
+      hasVerifiedEmail: savedFilters.hasVerifiedEmail,
+      hasPhone: savedFilters.hasPhone,
+      intentScoreMin: savedFilters.intentScoreMin,
+      freshnessMin: savedFilters.freshnessMin,
+    })
+    setPage(0)
+  }, [])
+
   const totalPages = useMemo(() => Math.ceil(totalLeads / limit), [totalLeads, limit])
 
   return (
     <>
+      {/* Upgrade modal — rendered once at the top level, triggered from anywhere in this page */}
+      <UpgradeModal
+        isOpen={upgradeModalOpen}
+        onClose={closeUpgradeModal}
+        trigger={upgradeTrigger}
+        context={upgradeContext}
+      />
       <NavBar />
       <div className="min-h-screen bg-zinc-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8">
@@ -502,6 +542,14 @@ export default function MarketplacePage() {
                     Filters
                   </button>
 
+                  {/* Save Search Button — desktop only, shown next to Filters toggle */}
+                  <div className="hidden lg:block">
+                    <SaveSearchButton
+                      filters={filters}
+                      activeFilterCount={activeFilterCount}
+                    />
+                  </div>
+
                   {/* Mobile: Filter Sheet */}
                   <MobileFilters filterCount={activeFilterCount}>
                     <div className="space-y-4">
@@ -688,17 +736,35 @@ export default function MarketplacePage() {
                     <span className="text-[13px] text-zinc-600">
                       {selectedLeads.size} selected (${selectedTotal.toFixed(2)})
                     </span>
-                    <Button
-                      onClick={purchaseSelected}
-                      disabled={isPurchasing || selectedTotal > credits}
-                      loading={isPurchasing}
-                      size="sm"
-                    >
-                      Purchase Selected
-                    </Button>
+                    {selectedTotal > credits ? (
+                      <Button
+                        onClick={() =>
+                          showUpgradeModal(
+                            'credits_empty',
+                            `You need $${selectedTotal.toFixed(2)} in credits but only have $${credits.toFixed(2)}. Top up to purchase these leads.`
+                          )
+                        }
+                        variant="outline"
+                        size="sm"
+                      >
+                        Top Up to Purchase
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={purchaseSelected}
+                        disabled={isPurchasing}
+                        loading={isPurchasing}
+                        size="sm"
+                      >
+                        Purchase Selected
+                      </Button>
+                    )}
                   </div>
                 )}
               </div>
+
+              {/* Saved Searches — quick-access chips above the leads grid */}
+              <SavedSearchesList onApply={applyFilters} />
 
               {/* Service Tier Upsell Banner */}
               {credits < 50 && (
@@ -721,12 +787,13 @@ export default function MarketplacePage() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                           </svg>
                         </a>
-                        <Link
-                          href="/marketplace/credits"
+                        <button
+                          type="button"
+                          onClick={() => showUpgradeModal('credits_low', `You have $${credits.toFixed(2)} in credits remaining.`)}
                           className="inline-flex items-center justify-center gap-2 px-4 py-2 border-2 border-white hover:bg-white/10 text-white font-medium rounded-lg transition-colors text-sm"
                         >
                           Buy More Credits
-                        </Link>
+                        </button>
                       </div>
                     </div>
                   </div>

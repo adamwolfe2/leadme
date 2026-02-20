@@ -316,6 +316,37 @@ export async function POST(request: NextRequest) {
         // Inngest will retry automatically
       }
 
+      // Fire outbound webhook event: lead.purchased (once per purchased lead)
+      try {
+        const { inngest: inngestClient } = await import('@/inngest/client')
+        for (const lead of purchasedLeads) {
+          await inngestClient.send({
+            name: 'outbound-webhook/deliver',
+            data: {
+              workspace_id: userData.workspace_id,
+              event_type: 'lead.purchased',
+              payload: {
+                event: 'lead.purchased',
+                timestamp: new Date().toISOString(),
+                purchase_id: purchase.id,
+                lead: {
+                  id: lead.id,
+                  first_name: lead.first_name,
+                  last_name: lead.last_name,
+                  email: lead.email,
+                  phone: lead.phone,
+                  company_name: lead.company_name,
+                  company_industry: lead.company_industry,
+                },
+              },
+            },
+          })
+        }
+      } catch (webhookError) {
+        safeError('[Purchase] Failed to queue outbound webhook:', webhookError)
+        // Non-fatal — purchase already complete
+      }
+
       const response = {
         success: true,
         purchase: completedPurchase,

@@ -121,6 +121,9 @@ export {
   sendLeadEmailNotification,
 } from './webhook-delivery'
 
+// Outbound webhook fan-out (multi-endpoint subscription system)
+export { deliverOutboundWebhooks } from './outbound-webhook-delivery'
+
 // Lead notifications (Slack & Zapier)
 export { sendLeadNotifications } from './lead-notifications'
 
@@ -172,6 +175,9 @@ export { handleCustomAudienceRequest } from './custom-audience-request'
 
 // Post-purchase nurture drip (3-email sequence after credit purchase)
 export { postPurchaseSequence } from './post-purchase-sequence'
+
+// Credit auto-recharge (triggered on credit-purchased or credits-low)
+export { creditAutoRecharge } from './credit-auto-recharge'
 
 // AI Audit Processing
 export { processAiAudit } from './process-ai-audit'

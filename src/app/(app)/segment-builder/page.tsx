@@ -38,6 +38,8 @@ import {
 import { toast } from 'sonner'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { SkeletonCard } from '@/components/ui/skeleton'
+import { UpgradeModal } from '@/components/marketplace/UpgradeModal'
+import { useUpgradeModal } from '@/lib/hooks/use-upgrade-modal'
 
 interface FilterRule {
   id: string
@@ -125,6 +127,9 @@ export default function SegmentBuilderPage() {
   const [runningSegmentId, setRunningSegmentId] = useState<string | null>(null)
 
   const queryClient = useQueryClient()
+
+  // Upgrade modal — shown when 402 / insufficient_credits is returned
+  const { isOpen: upgradeModalOpen, trigger: upgradeTrigger, context: upgradeContext, showUpgradeModal, closeModal: closeUpgradeModal } = useUpgradeModal()
 
   // Fetch saved segments
   const { data: segmentsData, isLoading: segmentsLoading } = useQuery({
@@ -339,7 +344,10 @@ export default function SegmentBuilderPage() {
         setPreview(null)
       } else {
         if (response.status === 402) {
-          toast.error(`Insufficient credits: ${data.error}`)
+          showUpgradeModal(
+            'credits_empty',
+            data.error || "You don't have enough credits to pull leads from this segment."
+          )
         } else {
           toast.error(data.error || 'Failed to pull leads')
         }
@@ -370,7 +378,10 @@ export default function SegmentBuilderPage() {
         }
       } else {
         if (response.status === 402) {
-          toast.error(`Insufficient credits: ${data.error}`)
+          showUpgradeModal(
+            'credits_empty',
+            data.error || "You don't have enough credits to run this segment."
+          )
         } else {
           toast.error(data.error || 'Failed to run segment')
         }
@@ -430,6 +441,14 @@ export default function SegmentBuilderPage() {
 
   return (
     <div className="container mx-auto py-8 space-y-8">
+      {/* Upgrade modal — triggered on 402 credit errors */}
+      <UpgradeModal
+        isOpen={upgradeModalOpen}
+        onClose={closeUpgradeModal}
+        trigger={upgradeTrigger}
+        context={upgradeContext}
+      />
+
       {/* Header */}
       <div>
         <div className="flex items-center gap-3 mb-2">

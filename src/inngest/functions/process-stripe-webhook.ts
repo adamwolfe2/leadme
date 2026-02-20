@@ -200,6 +200,25 @@ async function processCreditPurchase({
     }
   })
 
+  // Fire outbound webhook: credit.purchased
+  await step.run('fire-outbound-webhook-credit-purchased', async () => {
+    await inngest.send({
+      name: 'outbound-webhook/deliver',
+      data: {
+        workspace_id,
+        event_type: 'credit.purchased',
+        payload: {
+          event: 'credit.purchased',
+          timestamp: new Date().toISOString(),
+          credit_purchase_id,
+          credits: creditsAmount,
+          new_balance: result.newBalance,
+          amount_usd: ((amountTotal || 0) / 100),
+        },
+      },
+    })
+  })
+
   return {
     success: true,
     creditPurchaseId: credit_purchase_id,

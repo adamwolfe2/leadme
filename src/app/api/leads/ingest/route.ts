@@ -322,6 +322,28 @@ async function createLeadFromPush(
     data: { lead_id: data.id, workspace_id: workspaceId, source: request.source_type || leadData.source || 'api' },
   }).catch((err) => safeError('[Lead Ingest] Inngest send failed:', err))
 
+  // Fire outbound webhook: lead.received
+  inngest.send({
+    name: 'outbound-webhook/deliver' as const,
+    data: {
+      workspace_id: workspaceId,
+      event_type: 'lead.received',
+      payload: {
+        event: 'lead.received',
+        timestamp: new Date().toISOString(),
+        lead: {
+          id: data.id,
+          first_name: leadData.first_name,
+          last_name: leadData.last_name,
+          email: leadData.email,
+          phone: leadData.phone,
+          company_name: leadData.company_name,
+          source: request.source_type || leadData.source || 'api',
+        },
+      },
+    },
+  }).catch((err) => safeError('[Lead Ingest] Outbound webhook send failed:', err))
+
   return { id: data.id, wasDuplicate: false }
 }
 
