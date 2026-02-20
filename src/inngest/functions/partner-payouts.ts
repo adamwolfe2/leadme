@@ -172,21 +172,24 @@ async function processPartnerPayout(partner: {
       // Don't fail - transfer already succeeded
     }
 
-    // Update partner balance - fetch current total first then update
-    const { data: currentPartner } = await supabase
-      .from('partners')
-      .select('total_paid_out')
-      .eq('id', partner.partnerId)
-      .single()
+    // Atomically update partner balance: decrement by payout amount (not reset to 0)
+    // This prevents losing commissions earned between fetch and update
+    const { error: balanceError } = await supabase.rpc('process_partner_payout', {
+      p_partner_id: partner.partnerId,
+      p_payout_amount: partner.availableBalance,
+    })
 
-    await supabase
-      .from('partners')
-      .update({
-        available_balance: 0,
-        total_paid_out: ((currentPartner as any)?.total_paid_out || 0) + partner.availableBalance,
-        last_payout_at: new Date().toISOString(),
-      } as any)
-      .eq('id', partner.partnerId)
+    if (balanceError) {
+      safeError('[Payout] Failed to update partner balance atomically:', balanceError)
+      // Fallback: direct update (still better than read-then-write)
+      await supabase
+        .from('partners')
+        .update({
+          available_balance: 0,
+          last_payout_at: new Date().toISOString(),
+        })
+        .eq('id', partner.partnerId)
+    }
 
     // Mark commissions as paid
     const { data: paidItems } = await supabase
@@ -255,7 +258,8 @@ function getWeekStart(): string {
   const now = new Date()
   const day = now.getDay()
   const diff = now.getDate() - day + (day === 0 ? -6 : 1) // Monday
-  const monday = new Date(now.setDate(diff))
+  const monday = new Date(now)
+  monday.setDate(diff)
   return monday.toISOString().split('T')[0]
 }
 

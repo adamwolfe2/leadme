@@ -58,8 +58,8 @@ const IngestRequestSchema = z.object({
   // Single lead
   lead: LeadPushSchema.optional(),
 
-  // Batch of leads
-  leads: z.array(LeadPushSchema).optional(),
+  // Batch of leads (max 100 per request to prevent abuse)
+  leads: z.array(LeadPushSchema).max(100, 'Maximum 100 leads per batch').optional(),
 
   // Source tracking
   source_type: z.enum(['api', 'webhook', 'manual']).optional(),

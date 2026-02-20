@@ -1,7 +1,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { getStripeClient } from '@/lib/stripe/client'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -42,7 +42,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
     }
 
-    const supabase = await createClient()
+    // SECURITY: Webhooks have no auth context — must use admin client
+    const supabase = createAdminClient()
 
     // Idempotency: check if we've already processed this event
     const { data: existingEvent } = await supabase

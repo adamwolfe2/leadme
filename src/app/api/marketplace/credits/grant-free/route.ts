@@ -1,6 +1,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { FREE_TRIAL_CREDITS } from '@/lib/constants/credit-packages'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -76,8 +77,10 @@ export async function POST(request: NextRequest) {
       throw grantError
     }
 
-    // Grant recorded successfully — now add credits
-    const { error: updateError } = await supabase.rpc('add_workspace_credits', {
+    // Grant recorded successfully — now add credits using admin client
+    // (credit writes need admin privileges to bypass RLS)
+    const adminClient = createAdminClient()
+    const { error: updateError } = await adminClient.rpc('add_workspace_credits', {
       p_workspace_id: userData.workspace_id,
       p_amount: FREE_TRIAL_CREDITS.credits,
       p_source: 'free_trial',
@@ -86,64 +89,40 @@ export async function POST(request: NextRequest) {
     if (updateError) {
       safeError('[Grant Free Credits] RPC add_workspace_credits failed, using fallback:', updateError)
 
-      // Fallback: Use atomic upsert to prevent race conditions
-      // This ensures we don't have a SELECT-then-UPDATE race condition
-      const { error: upsertError } = await supabase
+      // Fallback: Insert or increment credits (NOT upsert which overwrites balance)
+      const { data: existing } = await adminClient
         .from('workspace_credits')
-        .upsert(
-          {
+        .select('balance, total_earned')
+        .eq('workspace_id', userData.workspace_id)
+        .single()
+
+      if (existing) {
+        // Increment existing balance (safe: free_credit_grants prevents duplicates)
+        const { error: updateErr } = await adminClient
+          .from('workspace_credits')
+          .update({
+            balance: existing.balance + FREE_TRIAL_CREDITS.credits,
+            total_earned: (existing.total_earned || 0) + FREE_TRIAL_CREDITS.credits,
+          })
+          .eq('workspace_id', userData.workspace_id)
+
+        if (updateErr) {
+          throw updateErr
+        }
+      } else {
+        // No credit record yet — create one
+        const { error: insertErr } = await adminClient
+          .from('workspace_credits')
+          .insert({
             workspace_id: userData.workspace_id,
             balance: FREE_TRIAL_CREDITS.credits,
             total_purchased: 0,
             total_used: 0,
-            total_earned: 0,
-          },
-          {
-            onConflict: 'workspace_id',
-            // On conflict, increment the balance instead of replacing
-            ignoreDuplicates: false,
-          }
-        )
+            total_earned: FREE_TRIAL_CREDITS.credits,
+          })
 
-      if (upsertError) {
-        // If upsert also fails, we need to manually increment
-        // This is a last resort and should rarely happen
-        safeError('[Grant Free Credits] Upsert failed, using manual increment:', upsertError)
-
-        // RACE CONDITION WARNING: This is not atomic, but it's a last resort
-        // The free_credit_grants table should prevent duplicates anyway
-        const { data: existing } = await supabase
-          .from('workspace_credits')
-          .select('balance, total_earned')
-          .eq('workspace_id', userData.workspace_id)
-          .single()
-
-        if (existing) {
-          const { error: updateErr } = await supabase
-            .from('workspace_credits')
-            .update({
-              balance: existing.balance + FREE_TRIAL_CREDITS.credits,
-              total_earned: (existing.total_earned || 0) + FREE_TRIAL_CREDITS.credits,
-            })
-            .eq('workspace_id', userData.workspace_id)
-
-          if (updateErr) {
-            throw updateErr
-          }
-        } else {
-          const { error: insertErr } = await supabase
-            .from('workspace_credits')
-            .insert({
-              workspace_id: userData.workspace_id,
-              balance: FREE_TRIAL_CREDITS.credits,
-              total_purchased: 0,
-              total_used: 0,
-              total_earned: FREE_TRIAL_CREDITS.credits,
-            })
-
-          if (insertErr) {
-            throw insertErr
-          }
+        if (insertErr) {
+          throw insertErr
         }
       }
     }
