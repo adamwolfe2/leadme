@@ -198,7 +198,7 @@ export async function middleware(req: NextRequest) {
         .from('users')
         .select('role')
         .eq('auth_user_id', user.id)
-        .single()
+        .maybeSingle()
 
       if (!userRecord || (userRecord.role !== 'admin' && userRecord.role !== 'owner')) {
         if (pathname.startsWith('/api/admin')) {
@@ -225,7 +225,7 @@ export async function middleware(req: NextRequest) {
           .from('users')
           .select('workspace_id')
           .eq('auth_user_id', user.id)
-          .single()
+          .maybeSingle()
 
         if (!userRecord?.workspace_id) {
           // No workspace — API routes get JSON error, page routes redirect to onboarding.

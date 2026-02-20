@@ -15,19 +15,20 @@ export default async function WelcomePage({
   searchParams: Promise<{ source?: string; returning?: string }>
 }) {
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  // SECURITY: Use getUser() for server-side JWT verification instead of getSession()
+  const { data: { user: authUser } } = await supabase.auth.getUser()
 
   const params = await searchParams
   const isMarketplace = params.source === 'marketplace'
   const isReturning = params.returning === 'true'
 
-  if (session) {
+  if (authUser) {
     // Use admin client to bypass RLS
     const admin = createAdminClient()
     const { data: user } = await admin
       .from('users')
       .select('workspace_id, role')
-      .eq('auth_user_id', session.user.id)
+      .eq('auth_user_id', authUser.id)
       .maybeSingle()
 
     // If user already has workspace, redirect to dashboard

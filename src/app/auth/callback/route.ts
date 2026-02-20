@@ -92,6 +92,15 @@ export async function GET(request: NextRequest) {
   const code = requestUrl.searchParams.get('code')
   const next = sanitizeRedirectPath(requestUrl.searchParams.get('next') || '/dashboard')
 
+  // Handle OAuth errors (e.g., user denied permission)
+  const oauthError = requestUrl.searchParams.get('error')
+  if (oauthError) {
+    safeError('[Auth Callback] OAuth error:', oauthError, requestUrl.searchParams.get('error_description'))
+    return NextResponse.redirect(
+      new URL('/login?error=auth_callback_error', requestUrl.origin)
+    )
+  }
+
   if (code) {
     // Use a Map to accumulate cookies — prevents accidental overwrites if the
     // SDK calls setAll multiple times (e.g., during exchangeCodeForSession + getUser).
@@ -161,7 +170,7 @@ export async function GET(request: NextRequest) {
       status: 200,
       headers: {
         'Content-Type': 'text/html',
-        'Refresh': `1; url=${encodeURI(redirectUrl)}`, // 1s delay for cookie propagation
+        'Refresh': `2; url=${encodeURI(redirectUrl)}`, // 2s delay for cookie propagation (JS fires at 1.5s)
       },
     })
 

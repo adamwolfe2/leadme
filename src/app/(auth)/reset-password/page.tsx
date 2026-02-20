@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { passwordSchema } from '@/lib/validation/schemas'
 
 function ResetPasswordForm() {
   const router = useRouter()
@@ -37,9 +38,10 @@ function ResetPasswordForm() {
     setLoading(true)
     setError(null)
 
-    // Validate password
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters')
+    // Validate password with same rules as signup
+    const passwordResult = passwordSchema.safeParse(password)
+    if (!passwordResult.success) {
+      setError(passwordResult.error.errors[0].message)
       setLoading(false)
       return
     }

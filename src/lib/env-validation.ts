@@ -31,6 +31,7 @@ const OPTIONAL_WITH_WARNING = [
   'AUDIENCELAB_ACCOUNT_API_KEY',
   'OPENAI_API_KEY',
   'NEXT_PUBLIC_APP_URL',
+  'NEXT_PUBLIC_SITE_URL',
 ] as const
 
 let validated = false
