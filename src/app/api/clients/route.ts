@@ -128,7 +128,7 @@ export async function POST(req: NextRequest) {
         workspace_id: user.workspace_id,
       })
       .select('id, workspace_id, client_name, client_code, contact_email, contact_phone, routing_priority, routing_weight, is_exclusive, is_active, created_at, updated_at')
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === '23505') {

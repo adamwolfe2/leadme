@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
         .from('email_sends')
         .select('id, campaign_id, clicked_at')
         .eq('id', emailSendId)
-        .single()
+        .maybeSingle()
 
       if (emailSend) {
         // Record click event

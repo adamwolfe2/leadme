@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       .select('id, name, extraction_status')
       .eq('workspace_id', user.workspace_id)
       .eq('url', url)
-      .single()
+      .maybeSingle()
 
     if (existing) {
       return NextResponse.json({
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
         extraction_status: 'processing',
       })
       .select('id, name')
-      .single()
+      .maybeSingle()
 
     if (workspaceError) {
       throw new Error(`Failed to create workspace: ${workspaceError.message}`)

@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
         campaign_status: 'pending',
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (campaignError || !campaign) {
       safeError('[Campaign Checkout] Failed to create campaign:', campaignError)

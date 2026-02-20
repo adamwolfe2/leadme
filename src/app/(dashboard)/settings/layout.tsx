@@ -13,6 +13,7 @@ const settingsTabs = [
   { label: 'Notifications', href: '/settings/notifications' },
   { label: 'Integrations', href: '/settings/integrations' },
   { label: 'Pixel', href: '/settings/pixel' },
+  { label: 'API Keys', href: '/settings/api-keys' },
 ]
 
 export default function SettingsLayout({

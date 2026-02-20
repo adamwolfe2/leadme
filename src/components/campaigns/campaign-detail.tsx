@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { CampaignAbTesting } from '@/components/campaigns/campaign-ab-testing'
 
 interface Campaign {
   id: string
@@ -143,6 +144,7 @@ export function CampaignDetail({ campaignId }: CampaignDetailProps) {
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="leads">Leads</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="ab-tests">A/B Tests</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -288,6 +290,10 @@ export function CampaignDetail({ campaignId }: CampaignDetailProps) {
               </p>
             </div>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="ab-tests">
+          <CampaignAbTesting campaignId={campaignId} />
         </TabsContent>
       </Tabs>
     </PageContainer>

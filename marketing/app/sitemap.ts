@@ -120,6 +120,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/snov-io-alternative',
     '/blog/reply-io-alternative',
     '/blog/klenty-alternative',
+    // New sales engagement alternative pages (created Feb 20 2026)
+    '/blog/salesloft-alternative',
+    '/blog/outreach-alternative',
+    '/blog/lemlist-alternative',
     // Existing "cursive vs" pages
     '/blog/cursive-vs-rb2b',
     '/blog/cursive-vs-leadfeeder',

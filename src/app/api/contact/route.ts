@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
         user_agent,
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[Contact] Insert error:', error)

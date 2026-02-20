@@ -78,6 +78,7 @@ export default async function AdminLayout({
                   { href: '/admin/email-stats', label: 'Email Stats' },
                   { href: '/admin/dedup-stats', label: 'Dedup Stats' },
                   { href: '/admin/credit-usage', label: 'Credit Usage' },
+                  { href: '/admin/audit-logs', label: 'Audit Logs' },
                 ].map(({ href, label }) => (
                   <Link
                     key={href}

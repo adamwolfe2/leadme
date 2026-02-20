@@ -36,13 +36,13 @@ export async function GET(
       `)
       .eq('id', campaignId)
       .eq('brand_workspaces.workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[Campaign GET] Error:', error)
       return NextResponse.json(
-        { error: 'Campaign not found' },
-        { status: 404 }
+        { error: 'Failed to fetch campaign' },
+        { status: 500 }
       )
     }
 

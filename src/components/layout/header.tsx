@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { HeaderNotificationBell } from '@/components/notifications/header-notification-bell'
+import { GlobalSearch } from '@/components/search/global-search'
 
 interface HeaderProps {
   user?: {
@@ -87,8 +88,10 @@ export function Header({ user, workspace, onMenuClick, className }: HeaderProps)
         </div>
       )}
 
-      {/* Spacer */}
-      <div className="flex-1" />
+      {/* Global Search — center area */}
+      <div className="flex flex-1 items-center justify-center px-4">
+        <GlobalSearch />
+      </div>
 
       {/* Right side */}
       <div className="flex items-center gap-4">

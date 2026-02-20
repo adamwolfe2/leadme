@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
         user_id: user.id,
       })
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[Filters API] Create error:', error)
@@ -213,7 +213,7 @@ export async function PATCH(request: NextRequest) {
       .eq('id', id)
       .eq('user_id', user.id)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[Filters API] Update error:', error)

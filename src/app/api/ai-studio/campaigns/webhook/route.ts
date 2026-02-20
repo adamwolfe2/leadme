@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
       .from('webhook_events')
       .select('id, processed_at')
       .eq('stripe_event_id', event.id)
-      .single()
+      .maybeSingle()
 
     if (existingEvent?.processed_at) {
       return NextResponse.json({ received: true, duplicate: true })
@@ -131,7 +131,7 @@ export async function POST(req: NextRequest) {
             .from('ad_campaigns')
             .select('id')
             .eq('stripe_payment_intent_id', paymentIntentId)
-            .single()
+            .maybeSingle()
 
           if (campaign) {
             await supabase

@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
         .from('email_sends')
         .select('id, campaign_id, opened_at, email_campaigns!inner(workspace_id)')
         .eq('id', emailSendId)
-        .single()
+        .maybeSingle()
 
       // Only process if we found a valid record with a workspace
       if (emailSend && emailSend.email_campaigns && !emailSend.opened_at) {
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
       .from('email_sends')
       .select('id, campaign_id, clicked_at, email_campaigns!inner(workspace_id)')
       .eq('id', emailSendId)
-      .single()
+      .maybeSingle()
 
     // Validate that the email send exists and belongs to a valid workspace
     if (!emailSend || !emailSend.email_campaigns) {
