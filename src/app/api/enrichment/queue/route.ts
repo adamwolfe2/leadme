@@ -6,9 +6,11 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
+import { safeLog } from '@/lib/utils/log-sanitizer'
 import { inngest } from '@/inngest/client'
 import { z } from 'zod'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
 import {
   queueEnrichment,
@@ -29,24 +31,10 @@ const queueEnrichmentSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
+
     const supabase = await createClient()
-
-    // Auth check
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-    if (!authUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get user's workspace
-    const { data: user } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
 
     // Validate input
     const body = await req.json()
@@ -81,35 +69,17 @@ export async function POST(req: NextRequest) {
       providers,
       priority,
     })
-  } catch (error: any) {
-    if (error.name === 'ZodError') {
-      return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 })
-    }
-    safeError('Enrichment queue error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  } catch (error) {
+    return handleApiError(error)
   }
 }
 
 export async function GET(req: NextRequest) {
   try {
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
+
     const supabase = await createClient()
-
-    // Auth check
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-    if (!authUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get user's workspace
-    const { data: user } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
 
     // Get stats
     const days = parseInt(req.nextUrl.searchParams.get('days') || '30')
@@ -127,8 +97,7 @@ export async function GET(req: NextRequest) {
       stats,
       recentJobs,
     })
-  } catch (error: any) {
-    safeError('Enrichment stats error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  } catch (error) {
+    return handleApiError(error)
   }
 }

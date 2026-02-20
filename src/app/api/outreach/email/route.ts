@@ -9,6 +9,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
 import { sendEmail, sendBulkEmails, logSentEmail } from '@/lib/services/outreach/email-sender.service'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -37,22 +39,10 @@ const bulkEmailSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
+
     const supabase = await createClient()
-
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-    if (!authUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { data: user } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
 
     const body = await req.json()
 
@@ -162,11 +152,7 @@ export async function POST(req: NextRequest) {
       success: true,
       message_id: result.messageId,
     })
-  } catch (error: any) {
-    if (error.name === 'ZodError') {
-      return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 })
-    }
-    safeError('Email send error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  } catch (error) {
+    return handleApiError(error)
   }
 }

@@ -6,6 +6,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
 import {
   syncContactToGhl,
@@ -13,7 +15,6 @@ import {
   getGhlConnection,
   getGhlPipelines,
 } from '@/lib/services/integrations/gohighlevel.service'
-import { safeError } from '@/lib/utils/log-sanitizer'
 
 const syncSchema = z.object({
   lead_ids: z.array(z.string().uuid()).min(1).max(100),
@@ -25,22 +26,8 @@ const syncSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = await createClient()
-
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-    if (!authUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { data: user } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
     // Check GHL connection
     const connection = await getGhlConnection(user.workspace_id)
@@ -59,6 +46,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Fetch leads
+    const supabase = await createClient()
     const { data: leads, error: leadsError } = await supabase
       .from('leads')
       .select('id, company_data, contact_data')
@@ -91,40 +79,21 @@ export async function POST(req: NextRequest) {
       failed: result.failed,
       results: result.results,
     })
-  } catch (error: any) {
-    if (error.name === 'ZodError') {
-      return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 })
-    }
-    safeError('GHL sync error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  } catch (error) {
+    return handleApiError(error)
   }
 }
 
 // GET pipelines
 export async function GET(req: NextRequest) {
   try {
-    const supabase = await createClient()
-
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-    if (!authUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { data: user } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
     const pipelines = await getGhlPipelines(user.workspace_id)
 
     return NextResponse.json({ pipelines })
-  } catch (error: any) {
-    safeError('GHL pipelines fetch error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  } catch (error) {
+    return handleApiError(error)
   }
 }

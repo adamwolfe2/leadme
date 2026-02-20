@@ -7,8 +7,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
-import { safeError } from '@/lib/utils/log-sanitizer'
 
 const createSequenceSchema = z.object({
   name: z.string().min(1).max(100),
@@ -27,22 +28,10 @@ const createSequenceSchema = z.object({
 
 export async function GET(req: NextRequest) {
   try {
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
+
     const supabase = await createClient()
-
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-    if (!authUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { data: user } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
 
     // Get sequences with step count
     const { data: sequences, error } = await supabase
@@ -60,30 +49,17 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({ sequences })
-  } catch (error: any) {
-    safeError('Sequences fetch error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  } catch (error) {
+    return handleApiError(error)
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
+
     const supabase = await createClient()
-
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-    if (!authUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { data: user } = await supabase
-      .from('users')
-      .select('workspace_id, id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
 
     const body = await req.json()
     const { name, description, trigger_type, trigger_config, steps } = createSequenceSchema.parse(body)
@@ -127,11 +103,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ sequence }, { status: 201 })
-  } catch (error: any) {
-    if (error.name === 'ZodError') {
-      return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 })
-    }
-    safeError('Sequence creation error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  } catch (error) {
+    return handleApiError(error)
   }
 }
