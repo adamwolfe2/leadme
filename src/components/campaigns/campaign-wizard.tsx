@@ -239,55 +239,55 @@ export function CampaignWizard() {
 
       {/* Current Step Content */}
       <Card className="p-6">
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-foreground">
-            {STEPS[currentStep].title}
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            {STEPS[currentStep].description}
-          </p>
-        </div>
-
-        {error && (
-          <div className="mb-6 p-4 rounded-lg bg-destructive/10 text-destructive text-sm">
-            {error}
+        <form onSubmit={(e) => { e.preventDefault(); if (currentStep === STEPS.length - 1) { handleSubmit() } else { handleNext() } }}>
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold text-foreground">
+              {STEPS[currentStep].title}
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {STEPS[currentStep].description}
+            </p>
           </div>
-        )}
 
-        {renderStep()}
+          {error && (
+            <div className="mb-6 p-4 rounded-lg bg-destructive/10 text-destructive text-sm">
+              {error}
+            </div>
+          )}
 
-        {/* Navigation Buttons */}
-        <div className="flex justify-between mt-8 pt-6 border-t border-border">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={currentStep === 0 ? () => router.push('/campaigns') : handleBack}
-            disabled={loading}
-          >
-            {currentStep === 0 ? 'Cancel' : 'Back'}
-          </Button>
+          {renderStep()}
 
-          <div className="flex gap-3">
-            {currentStep === STEPS.length - 1 ? (
-              <Button
-                type="button"
-                onClick={handleSubmit}
-                loading={loading}
-                disabled={!canProceed()}
-              >
-                Create Campaign
-              </Button>
-            ) : (
-              <Button
-                type="button"
-                onClick={handleNext}
-                disabled={!canProceed()}
-              >
-                Continue
-              </Button>
-            )}
+          {/* Navigation Buttons */}
+          <div className="flex justify-between mt-8 pt-6 border-t border-border">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={currentStep === 0 ? () => router.push('/campaigns') : handleBack}
+              disabled={loading}
+            >
+              {currentStep === 0 ? 'Cancel' : 'Back'}
+            </Button>
+
+            <div className="flex gap-3">
+              {currentStep === STEPS.length - 1 ? (
+                <Button
+                  type="submit"
+                  loading={loading}
+                  disabled={!canProceed()}
+                >
+                  Create Campaign
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  disabled={!canProceed()}
+                >
+                  Continue
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
+        </form>
       </Card>
     </PageContainer>
   )

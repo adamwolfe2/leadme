@@ -448,7 +448,7 @@ function AudienceWizard({
         <StepIndicator current={step} total={4} labels={AUDIENCE_STEPS} />
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
+      <form className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm" onSubmit={(e) => { e.preventDefault(); if (step < 3) { if (canAdvance) setStep((s) => s + 1) } else { if (canAdvance && !submitting) handleSubmit() } }}>
 
         {/* Step 0: Audience type */}
         {step === 0 && (
@@ -648,29 +648,29 @@ function AudienceWizard({
             </div>
           </div>
         )}
-      </div>
 
-      {/* Navigation */}
-      <div className="flex items-center justify-between mt-6">
-        <Button variant="outline" onClick={step === 0 ? onBack : () => setStep((s) => s - 1)}>
-          <ArrowLeft className="h-4 w-4 mr-2" /> Back
-        </Button>
-        {step < 3 ? (
-          <Button onClick={() => setStep((s) => s + 1)} disabled={!canAdvance}>
-            Continue <ArrowRight className="h-4 w-4 ml-2" />
+        {/* Navigation */}
+        <div className="flex items-center justify-between mt-6">
+          <Button type="button" variant="outline" onClick={step === 0 ? onBack : () => setStep((s) => s - 1)}>
+            <ArrowLeft className="h-4 w-4 mr-2" /> Back
           </Button>
-        ) : (
-          <Button
-            onClick={handleSubmit}
-            disabled={submitting || !canAdvance}
-            className="bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 text-white gap-2"
-          >
-            {submitting ? 'Submitting...' : (
-              <><Sparkles className="h-4 w-4" /> Submit Request</>
-            )}
-          </Button>
-        )}
-      </div>
+          {step < 3 ? (
+            <Button type="submit" disabled={!canAdvance}>
+              Continue <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              disabled={submitting || !canAdvance}
+              className="bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 text-white gap-2"
+            >
+              {submitting ? 'Submitting...' : (
+                <><Sparkles className="h-4 w-4" /> Submit Request</>
+              )}
+            </Button>
+          )}
+        </div>
+      </form>
     </div>
   )
 }
@@ -763,7 +763,7 @@ function CampaignWizard({
         <StepIndicator current={step} total={4} labels={CAMPAIGN_STEPS} />
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
+      <form className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm" onSubmit={(e) => { e.preventDefault(); if (step < 3) { if (canAdvance) setStep((s) => s + 1) } else { if (canAdvance && !submitting) handleSubmit() } }}>
 
         {/* Step 0: Goal + Audience source */}
         {step === 0 && (
@@ -998,29 +998,29 @@ function CampaignWizard({
             </div>
           </div>
         )}
-      </div>
 
-      {/* Navigation */}
-      <div className="flex items-center justify-between mt-6">
-        <Button variant="outline" onClick={step === 0 ? onBack : () => setStep((s) => s - 1)}>
-          <ArrowLeft className="h-4 w-4 mr-2" /> Back
-        </Button>
-        {step < 3 ? (
-          <Button onClick={() => setStep((s) => s + 1)} disabled={!canAdvance}>
-            Continue <ArrowRight className="h-4 w-4 ml-2" />
+        {/* Navigation */}
+        <div className="flex items-center justify-between mt-6">
+          <Button type="button" variant="outline" onClick={step === 0 ? onBack : () => setStep((s) => s - 1)}>
+            <ArrowLeft className="h-4 w-4 mr-2" /> Back
           </Button>
-        ) : (
-          <Button
-            onClick={handleSubmit}
-            disabled={submitting || !canAdvance}
-            className="bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 text-white gap-2"
-          >
-            {submitting ? 'Submitting...' : (
-              <><Sparkles className="h-4 w-4" /> Launch Campaign Request</>
-            )}
-          </Button>
-        )}
-      </div>
+          {step < 3 ? (
+            <Button type="submit" disabled={!canAdvance}>
+              Continue <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              disabled={submitting || !canAdvance}
+              className="bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 text-white gap-2"
+            >
+              {submitting ? 'Submitting...' : (
+                <><Sparkles className="h-4 w-4" /> Launch Campaign Request</>
+              )}
+            </Button>
+          )}
+        </div>
+      </form>
     </div>
   )
 }

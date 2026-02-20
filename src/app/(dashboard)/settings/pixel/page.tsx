@@ -454,7 +454,7 @@ export default function PixelSettingsPage() {
           Enter your website URL below and we will generate your tracking pixel instantly.
         </p>
 
-        <div className="space-y-4 max-w-lg">
+        <form className="space-y-4 max-w-lg" onSubmit={(e) => { e.preventDefault(); handleCreatePixel() }}>
           <div>
             <label className="block text-sm font-medium text-zinc-700 mb-2">
               Website URL <span className="text-red-500">*</span>
@@ -483,13 +483,13 @@ export default function PixelSettingsPage() {
           </div>
 
           <button
-            onClick={handleCreatePixel}
+            type="submit"
             disabled={provisionMutation.isPending || !websiteUrl}
             className="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
           >
             {provisionMutation.isPending ? 'Creating Pixel...' : 'Start Free Trial'}
           </button>
-        </div>
+        </form>
       </div>
 
       {/* Info section */}

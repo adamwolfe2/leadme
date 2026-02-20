@@ -473,6 +473,7 @@ export default function IntegrationsClient() {
               className="block w-full rounded-lg border-zinc-300 shadow-sm focus:border-primary focus:ring-primary disabled:bg-zinc-50 disabled:cursor-not-allowed"
               value={customWebhookUrl}
               onChange={(e) => setCustomWebhookUrl(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && isPro) { e.preventDefault(); handleSaveWebhookSettings() } }}
               disabled={!isPro}
             />
             <p className="mt-1 text-xs text-zinc-500">

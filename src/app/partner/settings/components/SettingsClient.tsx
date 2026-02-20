@@ -192,6 +192,7 @@ export function SettingsClient({ partner, payouts }: SettingsClientProps) {
                         step="5"
                         value={payoutThreshold}
                         onChange={(e) => setPayoutThreshold(Number(e.target.value))}
+                        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSavePayoutThreshold() } }}
                         className="pl-9"
                       />
                     </div>
