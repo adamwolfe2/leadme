@@ -4,8 +4,10 @@ import { useState } from 'react'
 import { EnhancedCompaniesTable } from '@/components/crm/table/EnhancedCompaniesTable'
 import { RecordDrawer } from '@/components/crm/drawer/RecordDrawer'
 import { CreateCompanyDialog } from './CreateCompanyDialog'
+import { Button } from '@/components/ui/button'
 import { formatDistanceToNow } from 'date-fns'
 import { useRouter } from 'next/navigation'
+import { Building2 } from 'lucide-react'
 import type { Company } from '@/types/crm.types'
 
 interface CompaniesPageClientProps {
@@ -40,11 +42,28 @@ export function CompaniesPageClient({ initialData }: CompaniesPageClientProps) {
   return (
     <div className="flex h-full flex-col p-6">
       {/* Enhanced square-ui inspired table */}
-      <EnhancedCompaniesTable
-        data={companies}
-        onRowClick={handleRowClick}
-        onCreateClick={handleCreateClick}
-      />
+      {companies.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-lg border border-gray-200 bg-white py-16 px-8 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+            <Building2 className="h-7 w-7 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900">No companies yet</h3>
+          <p className="mt-2 max-w-sm text-sm text-gray-500">
+            Add your first company to start organizing accounts and tracking business relationships.
+          </p>
+          <div className="mt-6">
+            <Button size="sm" onClick={handleCreateClick}>
+              Add Company
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <EnhancedCompaniesTable
+          data={companies}
+          onRowClick={handleRowClick}
+          onCreateClick={handleCreateClick}
+        />
+      )}
 
       {/* Create Company Dialog */}
       <CreateCompanyDialog

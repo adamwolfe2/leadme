@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import { DragDropKanbanBoard } from '@/components/crm/board/DragDropKanbanBoard'
 import { RecordDrawer } from '@/components/crm/drawer/RecordDrawer'
 import { CreateDealDialog } from './CreateDealDialog'
+import { Button } from '@/components/ui/button'
 import { formatDistanceToNow, format } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import { DollarSign, Calendar } from 'lucide-react'
@@ -137,14 +138,31 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
   return (
     <div className="flex h-full flex-col">
       {/* Drag-and-drop Kanban Board */}
-      <DragDropKanbanBoard
-        columns={boardColumns}
-        data={boardData}
-        renderCard={renderCard}
-        onCardClick={handleRowClick}
-        onCardMove={handleCardMove}
-        onAddCard={handleAddCard}
-      />
+      {deals.length === 0 ? (
+        <div className="m-6 flex flex-col items-center justify-center rounded-lg border border-gray-200 bg-white py-16 px-8 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+            <DollarSign className="h-7 w-7 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900">No deals yet</h3>
+          <p className="mt-2 max-w-sm text-sm text-gray-500">
+            Create your first deal to start tracking opportunities through your pipeline and closing revenue.
+          </p>
+          <div className="mt-6">
+            <Button size="sm" onClick={() => setCreateDialogOpen(true)}>
+              Add Deal
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <DragDropKanbanBoard
+          columns={boardColumns}
+          data={boardData}
+          renderCard={renderCard}
+          onCardClick={handleRowClick}
+          onCardMove={handleCardMove}
+          onAddCard={handleAddCard}
+        />
+      )}
 
       {/* Create Deal Dialog */}
       <CreateDealDialog

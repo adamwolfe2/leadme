@@ -4,8 +4,10 @@ import { useState } from 'react'
 import { EnhancedContactsTable } from '@/components/crm/table/EnhancedContactsTable'
 import { RecordDrawer } from '@/components/crm/drawer/RecordDrawer'
 import { CreateContactDialog } from './CreateContactDialog'
+import { Button } from '@/components/ui/button'
 import { formatDistanceToNow } from 'date-fns'
 import { useRouter } from 'next/navigation'
+import { Users } from 'lucide-react'
 import type { Contact } from '@/types/crm.types'
 
 interface ContactsPageClientProps {
@@ -44,11 +46,28 @@ export function ContactsPageClient({ initialData }: ContactsPageClientProps) {
   return (
     <div className="flex h-full flex-col p-6">
       {/* Enhanced square-ui inspired table */}
-      <EnhancedContactsTable
-        data={contacts}
-        onRowClick={handleRowClick}
-        onCreateClick={handleCreateClick}
-      />
+      {contacts.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-lg border border-gray-200 bg-white py-16 px-8 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+            <Users className="h-7 w-7 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900">No contacts yet</h3>
+          <p className="mt-2 max-w-sm text-sm text-gray-500">
+            Add your first contact to start tracking relationships and interactions with people in your network.
+          </p>
+          <div className="mt-6">
+            <Button size="sm" onClick={handleCreateClick}>
+              Add Contact
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <EnhancedContactsTable
+          data={contacts}
+          onRowClick={handleRowClick}
+          onCreateClick={handleCreateClick}
+        />
+      )}
 
       {/* Create Contact Dialog */}
       <CreateContactDialog
