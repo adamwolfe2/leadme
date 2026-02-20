@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export default function DashboardError({
   error,
@@ -14,7 +15,7 @@ export default function DashboardError({
 }) {
   useEffect(() => {
     // Only log error message, not full object to avoid leaking sensitive data
-    console.error('Dashboard error:', error.message)
+    safeError('[DashboardError]', 'Dashboard error:', error.message)
   }, [error])
 
   return (

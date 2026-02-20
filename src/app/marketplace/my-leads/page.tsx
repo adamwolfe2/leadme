@@ -9,6 +9,7 @@ import { useUser } from '@/hooks/use-user'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { UpsellBanner } from '@/components/marketplace/UpsellBanner'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface PurchasedLead {
   id: string
@@ -94,7 +95,7 @@ export default function MyLeadsPage() {
         })
       }
     } catch (error) {
-      console.error('Failed to fetch leads:', error)
+      safeError('[MarketplaceMyLeads]', 'Failed to fetch leads:', error)
       toast({
         title: 'Error',
         message: 'An error occurred while loading leads',
@@ -120,7 +121,7 @@ export default function MyLeadsPage() {
         setTotalSpend(statsData.totalSpent || 0)
       }
     } catch (error) {
-      console.error('Failed to fetch upsell data:', error)
+      safeError('[MarketplaceMyLeads]', 'Failed to fetch upsell data:', error)
     }
   }, [])
 

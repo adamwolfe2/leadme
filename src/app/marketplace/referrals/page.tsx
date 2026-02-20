@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { NavBar } from '@/components/nav-bar'
 import { useUser } from '@/hooks/use-user'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface ReferralStats {
   referralCode: string
@@ -45,7 +46,7 @@ export default function ReferralsPage() {
         return
       }
     } catch (error) {
-      console.error('Failed to fetch referral stats:', error)
+      safeError('[ReferralsPage]', 'Failed to fetch referral stats:', error)
     } finally {
       setIsLoading(false)
     }

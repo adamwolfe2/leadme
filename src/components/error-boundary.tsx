@@ -1,6 +1,7 @@
 'use client'
 
 import { Component, ReactNode } from 'react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface Props {
   children: ReactNode
@@ -26,7 +27,7 @@ export class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log error to console in development
     if (process.env.NODE_ENV === 'development') {
-      console.error('Error Boundary caught an error:', error, errorInfo)
+      safeError('[ErrorBoundary]', 'Error Boundary caught an error:', error, errorInfo)
     }
 
     // Call optional error handler

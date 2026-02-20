@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { SearchForm } from '@/components/people-search/search-form'
 import { SearchResults } from '@/components/people-search/search-results'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface SearchResult {
   id: string
@@ -80,7 +81,7 @@ export default function PeopleSearchPage() {
         setCreditsRemaining(data.data.credits_remaining)
       }
     } catch (err) {
-      console.error('Failed to fetch credits:', err)
+      safeError('[PeopleSearchPage]', 'Failed to fetch credits:', err)
     }
   }
 

@@ -8,6 +8,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { cn } from '@/lib/design-system'
 import type { Database } from '@/types/database.types'
 
@@ -182,7 +183,7 @@ export function TargetingPreferencesForm({
       setSuccess(true)
       router.refresh()
     } catch (err) {
-      console.error('Failed to save preferences:', err)
+      safeError('[TargetingPreferencesForm]', 'Failed to save preferences:', err)
       setError(err instanceof Error ? err.message : 'Failed to save preferences')
     } finally {
       setSaving(false)

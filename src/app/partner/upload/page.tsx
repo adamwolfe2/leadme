@@ -14,6 +14,7 @@ import {
   Loader2,
 } from 'lucide-react'
 import { FileUploader } from '@/components/ui/file-uploader'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface FieldMapping {
   sourceColumn: string
@@ -81,7 +82,7 @@ export default function PartnerUploadPage() {
           setIndustries(data)
         }
       } catch (err) {
-        console.error('Failed to fetch industries:', err)
+        safeError('[PartnerUpload]', 'Failed to fetch industries:', err)
       }
     }
     fetchIndustries()

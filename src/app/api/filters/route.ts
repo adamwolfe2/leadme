@@ -58,6 +58,7 @@ export async function GET(request: NextRequest) {
 
     // Get user's own filters
     const { data: ownFilters, error: ownError } = await query
+      .eq('workspace_id', user.workspace_id)
       .eq('user_id', user.id)
 
     if (ownError) {
@@ -192,7 +193,7 @@ export async function PATCH(request: NextRequest) {
         .select('filter_type')
         .eq('id', id)
         .eq('user_id', user.id)
-        .single()
+        .maybeSingle()
 
       if (existingFilter) {
         await supabase

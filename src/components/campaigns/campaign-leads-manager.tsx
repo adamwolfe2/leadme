@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { PageContainer, PageHeader } from '@/components/layout'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -117,7 +118,7 @@ export function CampaignLeadsManager({ campaignId }: CampaignLeadsManagerProps) 
         setAvailableLeads(available)
       }
     } catch (err) {
-      console.error('Failed to fetch leads:', err)
+      safeError('[CampaignLeadsManager]', 'Failed to fetch leads:', err)
     } finally {
       setLoadingLeads(false)
     }
@@ -187,7 +188,7 @@ export function CampaignLeadsManager({ campaignId }: CampaignLeadsManagerProps) 
       setSelectedLeadIds(new Set())
       setSearchQuery('')
     } catch (err) {
-      console.error('Failed to add leads:', err)
+      safeError('[CampaignLeadsManager]', 'Failed to add leads:', err)
     } finally {
       setAdding(false)
     }
@@ -204,7 +205,7 @@ export function CampaignLeadsManager({ campaignId }: CampaignLeadsManagerProps) 
         setCampaignLeads((prev) => prev.filter((cl) => cl.id !== campaignLeadId))
       }
     } catch (err) {
-      console.error('Failed to remove lead:', err)
+      safeError('[CampaignLeadsManager]', 'Failed to remove lead:', err)
     }
   }
 

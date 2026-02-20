@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { WaitlistRepository, type WaitlistSignup } from '@/lib/repositories/waitlist.repository'
 import { useToast } from '@/lib/hooks/use-toast'
 import { Download, Mail, Calendar, Building, Linkedin, MapPin } from 'lucide-react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export default function AdminWaitlistPage() {
   const [signups, setSignups] = useState<WaitlistSignup[]>([])
@@ -70,7 +71,7 @@ export default function AdminWaitlistPage() {
       setStats({ total, converted, industries })
     } catch (error) {
       toast.error('Failed to load waitlist signups')
-      console.error(error)
+      safeError('[AdminWaitlist]', error)
     } finally {
       setLoading(false)
     }

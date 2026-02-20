@@ -20,6 +20,7 @@ import {
   Sparkles,
   XCircle,
 } from 'lucide-react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface Creative {
   id: string
@@ -103,7 +104,7 @@ function CreativesPageInner() {
       setProfiles(profilesData.profiles || [])
       setOffers(offersData.offers || [])
     } catch (error) {
-      console.error('Failed to load data:', error)
+      safeError('[CreativesPage]', 'Failed to load data:', error)
     } finally {
       setIsLoading(false)
     }

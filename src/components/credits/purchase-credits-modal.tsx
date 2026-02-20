@@ -7,6 +7,7 @@
 
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import {
   Dialog,
   DialogContent,
@@ -53,7 +54,7 @@ export function PurchaseCreditsModal({
         setLoadingPackages(false)
       })
       .catch(err => {
-        console.error('Failed to load packages:', err)
+        safeError('[PurchaseCreditsModal]', 'Failed to load packages:', err)
         setLoadingPackages(false)
       })
   })

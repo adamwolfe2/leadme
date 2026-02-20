@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { AlertCircle, RefreshCw } from 'lucide-react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export default function AIStudioError({
   error,
@@ -13,7 +14,7 @@ export default function AIStudioError({
 }) {
   useEffect(() => {
     // Log error to monitoring service
-    console.error('[AI Studio Error Boundary]', error)
+    safeError('[AIStudioError]', error)
   }, [error])
 
   return (

@@ -7,6 +7,7 @@
 
 import { useState } from 'react'
 import { loadStripe } from '@stripe/stripe-js'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import {
   Elements,
   PaymentElement,
@@ -187,7 +188,7 @@ export function BuyLeadButton({ lead, onPurchaseComplete }: BuyLeadButtonProps) 
   }
 
   const handleError = (errorMessage: string) => {
-    console.error('Purchase error:', errorMessage)
+    safeError('[BuyLeadButton]', 'Purchase error:', errorMessage)
   }
 
   const isSold = lead.status === 'sold'

@@ -17,6 +17,7 @@ import {
   AlertCircle,
   ExternalLink
 } from 'lucide-react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface ServiceSubscription {
   id: string
@@ -123,7 +124,7 @@ export default function AdminSubscriptionDetailPage() {
 
       setSubscription(data)
     } catch (error) {
-      console.error('Failed to fetch subscription:', error)
+      safeError('[AdminSubscriptionDetail]', 'Failed to fetch subscription:', error)
     } finally {
       setLoading(false)
     }
@@ -141,7 +142,7 @@ export default function AdminSubscriptionDetailPage() {
 
       setDeliveries(data || [])
     } catch (error) {
-      console.error('Failed to fetch deliveries:', error)
+      safeError('[AdminSubscriptionDetail]', 'Failed to fetch deliveries:', error)
     }
   }
 
@@ -157,7 +158,7 @@ export default function AdminSubscriptionDetailPage() {
 
       fetchSubscriptionDetails()
     } catch (error) {
-      console.error('Failed to update status:', error)
+      safeError('[AdminSubscriptionDetail]', 'Failed to update status:', error)
     } finally {
       setUpdating(false)
     }
@@ -178,7 +179,7 @@ export default function AdminSubscriptionDetailPage() {
 
       fetchSubscriptionDetails()
     } catch (error) {
-      console.error('Failed to toggle onboarding:', error)
+      safeError('[AdminSubscriptionDetail]', 'Failed to toggle onboarding:', error)
     } finally {
       setUpdating(false)
     }

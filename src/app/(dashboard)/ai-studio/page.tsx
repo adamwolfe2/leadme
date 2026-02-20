@@ -31,6 +31,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { getServiceLink } from '@/lib/stripe/payment-links'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface BrandWorkspace {
   id: string
@@ -82,7 +83,7 @@ export default function AIStudioPage() {
         setUserName(firstName)
       }
     } catch (error) {
-      console.error('Failed to fetch user name:', error)
+      safeError('[AIStudioPage]', 'Failed to fetch user name:', error)
     }
   }
 
@@ -92,7 +93,7 @@ export default function AIStudioPage() {
       const data = await response.json()
       setWorkspaces(data.workspaces || [])
     } catch (error) {
-      console.error('Failed to load workspaces:', error)
+      safeError('[AIStudioPage]', 'Failed to load workspaces:', error)
     } finally {
       setIsLoadingWorkspaces(false)
     }
@@ -173,7 +174,7 @@ export default function AIStudioPage() {
             setExtractionError(workspace.extraction_error || 'Extraction failed')
           }
         } catch (error) {
-          console.error('Polling error:', error)
+          safeError('[AIStudioPage]', 'Polling error:', error)
           consecutiveErrors++
 
           if (consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {

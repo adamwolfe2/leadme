@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { ArrowLeft, ExternalLink, Mail, CheckCircle2, XCircle, Clock, Package } from 'lucide-react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface CustomAudienceRequest {
   id: string
@@ -77,7 +78,7 @@ export default function CustomAudiencesAdminPage() {
       .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('Failed to fetch requests:', error)
+      safeError('[CustomAudiences]', 'Failed to fetch requests:', error)
     } else {
       setRequests(data || [])
     }
@@ -108,7 +109,7 @@ export default function CustomAudiencesAdminPage() {
       .eq('id', requestId)
 
     if (error) {
-      console.error('Failed to update status:', error)
+      safeError('[CustomAudiences]', 'Failed to update status:', error)
       alert('Failed to update status')
     } else {
       await fetchRequests()

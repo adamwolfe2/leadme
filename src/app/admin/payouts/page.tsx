@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/lib/hooks/use-toast'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface Partner {
   id: string
@@ -98,7 +99,7 @@ export default function AdminPayoutsPage() {
         setTotals(data.totals || { pending_amount: 0, approved_amount: 0, completed_amount: 0, rejected_amount: 0 })
       }
     } catch (error) {
-      console.error('Failed to fetch payouts:', error)
+      safeError('[AdminPayouts]', 'Failed to fetch payouts:', error)
     } finally {
       setLoading(false)
     }

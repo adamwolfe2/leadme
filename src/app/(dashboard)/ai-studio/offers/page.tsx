@@ -14,6 +14,7 @@ import { PageLoading } from '@/components/ui/loading-states'
 import { EmptyState } from '@/components/ui/empty-states'
 import { CreateOfferDialog } from '@/components/ai-studio/create-offer-dialog'
 import { ArrowLeft, ArrowRight, Package, Plus, Tag } from 'lucide-react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface Offer {
   id: string
@@ -48,7 +49,7 @@ function OffersPageInner() {
       const data = await response.json()
       setOffers(data.offers || [])
     } catch (error) {
-      console.error('Failed to load offers:', error)
+      safeError('[OffersPage]', 'Failed to load offers:', error)
     } finally {
       setIsLoading(false)
     }

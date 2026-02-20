@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export default function MarketplaceError({
   error,
@@ -10,7 +11,7 @@ export default function MarketplaceError({
   reset: () => void
 }) {
   useEffect(() => {
-    console.error('[Marketplace] Page error:', error.message, error.digest)
+    safeError('[MarketplaceError]', 'Page error:', error.message, error.digest)
   }, [error])
 
   return (

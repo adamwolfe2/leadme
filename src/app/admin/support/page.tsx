@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useToast } from '@/lib/hooks/use-toast'
 import { MessageSquare, Mail, Clock, CheckCircle, Archive, AlertCircle } from 'lucide-react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface SupportMessage {
   id: string
@@ -67,7 +68,7 @@ export default function AdminSupportPage() {
       setMessages(data.messages)
     } catch (error) {
       toast.error('Failed to load support messages')
-      console.error(error)
+      safeError('[AdminSupport]', error)
     } finally {
       setLoading(false)
     }
@@ -91,7 +92,7 @@ export default function AdminSupportPage() {
       }
     } catch (error) {
       toast.error('Failed to update message')
-      console.error(error)
+      safeError('[AdminSupport]', error)
     }
   }
 

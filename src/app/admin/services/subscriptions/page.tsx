@@ -13,6 +13,7 @@ import {
   Users,
   DollarSign
 } from 'lucide-react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface ServiceSubscription {
   id: string
@@ -108,7 +109,7 @@ export default function AdminServiceSubscriptionsPage() {
       const allSubscriptions = filterStatus !== 'all' ? await fetchAllSubscriptions() : data
       calculateStats(allSubscriptions || [])
     } catch (error) {
-      console.error('Failed to fetch subscriptions:', error)
+      safeError('[AdminSubscriptions]', 'Failed to fetch subscriptions:', error)
     } finally {
       setLoading(false)
     }

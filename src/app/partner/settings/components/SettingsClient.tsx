@@ -26,6 +26,7 @@ import {
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { useSafeAnimation } from '@/hooks/use-reduced-motion'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface Payout {
   id: string
@@ -85,10 +86,10 @@ export function SettingsClient({ partner, payouts }: SettingsClientProps) {
       })
       if (!response.ok) {
         const data = await response.json()
-        console.error('Failed to save payout threshold:', data.error)
+        safeError('[SettingsClient]', 'Failed to save payout threshold:', data.error)
       }
     } catch (error) {
-      console.error('Failed to save payout threshold:', error)
+      safeError('[SettingsClient]', 'Failed to save payout threshold:', error)
     } finally {
       setIsSavingThreshold(false)
     }
@@ -109,7 +110,7 @@ export function SettingsClient({ partner, payouts }: SettingsClientProps) {
         window.location.href = data.url
       }
     } catch (error) {
-      console.error('Failed to connect Stripe:', error)
+      safeError('[SettingsClient]', 'Failed to connect Stripe:', error)
     } finally {
       setIsConnecting(false)
     }

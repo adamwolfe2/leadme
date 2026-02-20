@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { getSubscriptionLink } from '@/lib/stripe/payment-links'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface SubscriptionPlan {
   id: string
@@ -81,7 +82,7 @@ export function PricingCards({ plans, currentPlan }: PricingCardsProps) {
       // Redirect to Stripe Checkout
       window.location.href = url
     } catch (error) {
-      console.error('Checkout error:', error)
+      safeError('[PricingCards]', 'Checkout error:', error)
       alert(error instanceof Error ? error.message : 'Failed to start checkout')
       setLoadingPlanId(null)
     }

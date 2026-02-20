@@ -9,6 +9,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import type { PremiumFeatureRequest, FeatureType } from '@/types/premium'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { PREMIUM_FEATURES } from '@/types/premium'
 
 interface PremiumRequestsClientProps {
@@ -62,7 +63,7 @@ export function PremiumRequestsClient({ initialRequests }: PremiumRequestsClient
       )
       setSelectedRequest(null)
     } catch (error) {
-      console.error('Failed to approve request:', error)
+      safeError('[PremiumRequests]', 'Failed to approve request:', error)
       toast.error(error instanceof Error ? error.message : 'Failed to approve request')
     } finally {
       setProcessing(false)
@@ -101,7 +102,7 @@ export function PremiumRequestsClient({ initialRequests }: PremiumRequestsClient
       )
       setSelectedRequest(null)
     } catch (error) {
-      console.error('Failed to reject request:', error)
+      safeError('[PremiumRequests]', 'Failed to reject request:', error)
       toast.error(error instanceof Error ? error.message : 'Failed to reject request')
     } finally {
       setProcessing(false)

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 
@@ -44,7 +45,7 @@ export function TopicCard({ topic, onTrackTopic }: TopicCardProps) {
           setChartData(data.data)
         }
       } catch (error) {
-        console.error('Failed to fetch chart data:', error)
+        safeError('[TopicCard]', 'Failed to fetch chart data:', error)
       } finally {
         setLoadingChart(false)
       }

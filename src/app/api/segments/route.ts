@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
       .select('id')
       .eq('workspace_id', user.workspace_id)
       .eq('name', validated.name)
-      .single()
+      .maybeSingle()
 
     if (existing) {
       return NextResponse.json(

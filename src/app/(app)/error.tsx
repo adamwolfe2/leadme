@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { AlertTriangle, Home, RefreshCw } from 'lucide-react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export default function Error({
   error,
@@ -15,7 +16,7 @@ export default function Error({
 }) {
   useEffect(() => {
     // Log error to monitoring service
-    console.error('[App Error]:', error)
+    safeError('[AppError]', error)
   }, [error])
 
   return (

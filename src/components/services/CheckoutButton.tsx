@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useToast } from '@/lib/hooks/use-toast'
 import { VENTURE_STUDIO_CALENDAR_URL, supportsDirectCheckout } from '@/lib/stripe/service-products'
 import { trackCheckout } from '@/lib/analytics/service-tier-events'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface CheckoutButtonProps {
   tierSlug: string
@@ -62,7 +63,7 @@ export function CheckoutButton({
       // Redirect to Stripe Checkout
       window.location.href = data.checkout_url
     } catch (error: any) {
-      console.error('Checkout error:', error)
+      safeError('[CheckoutButton]', 'Checkout error:', error)
       toast.error(error.message || 'Failed to start checkout')
       setLoading(false)
     }

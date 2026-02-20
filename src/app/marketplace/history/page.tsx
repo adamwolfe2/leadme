@@ -9,6 +9,7 @@ import { NavBar } from '@/components/nav-bar'
 import { useUser } from '@/hooks/use-user'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface MarketplacePurchase {
   id: string
@@ -65,7 +66,7 @@ export default function PurchaseHistoryPage() {
         return
       }
     } catch (error) {
-      console.error('Failed to fetch purchases:', error)
+      safeError('[PurchaseHistory]', 'Failed to fetch purchases:', error)
     } finally {
       setIsLoading(false)
     }
@@ -95,7 +96,7 @@ export default function PurchaseHistoryPage() {
         setExpandedPurchase(purchaseId)
       }
     } catch (error) {
-      console.error('Failed to fetch purchase leads:', error)
+      safeError('[PurchaseHistory]', 'Failed to fetch purchase leads:', error)
     } finally {
       setLoadingLeads(null)
     }

@@ -6,6 +6,7 @@ import type { Table } from '@tanstack/react-table'
 import { debounce } from '@/lib/utils'
 import Link from 'next/link'
 import { useToast } from '@/lib/hooks/use-toast'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface Tag {
   id: string
@@ -183,7 +184,7 @@ export function LeadsTableToolbar({
         type: 'success',
       })
     } catch (error) {
-      console.error('Export error:', error)
+      safeError('[LeadsTableToolbar]', 'Export error:', error)
       toast({
         title: 'Export failed',
         message: 'Failed to export leads. Please try again.',

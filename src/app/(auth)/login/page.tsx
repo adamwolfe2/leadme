@@ -9,6 +9,7 @@ import Image from 'next/image'
 import { isRedirectError } from 'next/dist/client/components/redirect-error'
 import { loginAction, googleLoginAction } from '../actions'
 import { loginSchema, type LoginFormData } from '@/lib/validation/schemas'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 function LoginForm() {
   const searchParams = useSearchParams()
@@ -58,7 +59,7 @@ function LoginForm() {
       const result = await loginAction(formData)
 
       if (result?.error) {
-        console.error('❌ Client: Login error from Server Action:', result.error)
+        safeError('[LoginPage]', 'Login error from Server Action:', result.error)
         setError(result.error)
         setLoading(false)
         return
@@ -71,7 +72,7 @@ function LoginForm() {
       if (isRedirectError(err)) {
         throw err
       }
-      console.error('❌ Client: Exception during login:', err)
+      safeError('[LoginPage]', 'Exception during login:', err)
       setError('An unexpected error occurred')
       setLoading(false)
     }
@@ -85,7 +86,7 @@ function LoginForm() {
       const result = await googleLoginAction(redirect)
 
       if (result?.error) {
-        console.error('❌ Client: Google login error:', result.error)
+        safeError('[LoginPage]', 'Google login error:', result.error)
         setError(result.error)
         setLoading(false)
         return
@@ -98,7 +99,7 @@ function LoginForm() {
       if (isRedirectError(err)) {
         throw err
       }
-      console.error('❌ Client: Exception during Google login:', err)
+      safeError('[LoginPage]', 'Exception during Google login:', err)
       setError('An unexpected error occurred')
       setLoading(false)
     }

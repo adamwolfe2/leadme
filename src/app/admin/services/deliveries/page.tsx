@@ -13,6 +13,7 @@ import {
   FileText,
   Plus
 } from 'lucide-react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface ServiceDelivery {
   id: string
@@ -107,7 +108,7 @@ export default function AdminServiceDeliveriesPage() {
 
       setDeliveries(data || [])
     } catch (error) {
-      console.error('Failed to fetch deliveries:', error)
+      safeError('[AdminDeliveries]', 'Failed to fetch deliveries:', error)
     } finally {
       setLoading(false)
     }
@@ -130,7 +131,7 @@ export default function AdminServiceDeliveriesPage() {
 
       fetchDeliveries()
     } catch (error) {
-      console.error('Failed to update delivery status:', error)
+      safeError('[AdminDeliveries]', 'Failed to update delivery status:', error)
     }
   }
 

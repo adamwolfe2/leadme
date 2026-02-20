@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { MyLeadsRealtime } from '@/components/leads/my-leads-realtime'
 import { ErrorBoundary } from '@/components/error-boundary'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import Link from 'next/link'
 import type { Database } from '@/types/database.types'
 
@@ -205,7 +206,7 @@ export default async function MyLeadsPage() {
       {/* Stats + Table with realtime updates */}
       <ErrorBoundary
         onError={(error, errorInfo) => {
-          console.error('[MyLeadsPage] Component error:', error, errorInfo)
+          safeError('[MyLeadsPage]', 'Component error:', error, errorInfo)
         }}
       >
         <MyLeadsRealtime userId={userProfile.id} workspaceId={userProfile.workspace_id} />

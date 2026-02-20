@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useDebounce } from '@/lib/hooks/use-debounce'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface TopicSearchStepProps {
   selectedTopicId: string | null
@@ -50,7 +51,7 @@ export function TopicSearchStep({
         setResults(data.data || [])
       }
     } catch (error) {
-      console.error('Topic search error:', error)
+      safeError('[TopicSearchStep]', 'Topic search error:', error)
     } finally {
       setLoading(false)
     }

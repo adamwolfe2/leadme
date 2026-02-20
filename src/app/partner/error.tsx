@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export default function PartnerError({
   error,
@@ -10,7 +11,7 @@ export default function PartnerError({
   reset: () => void
 }) {
   useEffect(() => {
-    console.error('[Partner] Page error:', error.message, error.digest)
+    safeError('[PartnerError]', 'Page error:', error.message, error.digest)
   }, [error])
 
   return (

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Sparkles, X } from 'lucide-react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface RequestMoreLeadsBannerProps {
   currentLeads: number
@@ -52,7 +53,7 @@ export function RequestMoreLeadsBanner({ currentLeads, leadLimit, workspaceName 
       // Auto-dismiss after 5 seconds
       setTimeout(() => setDismissed(true), 5000)
     } catch (error) {
-      console.error('Failed to request more leads:', error)
+      safeError('[RequestMoreLeadsBanner]', 'Failed to request more leads:', error)
       alert(error instanceof Error ? error.message : 'Failed to submit request')
     } finally {
       setRequesting(false)

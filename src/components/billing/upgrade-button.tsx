@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { getSubscriptionLink } from '@/lib/stripe/payment-links'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface UpgradeButtonProps {
   billingPeriod: 'monthly' | 'yearly'
@@ -52,7 +53,7 @@ export function UpgradeButton({
       }
     } catch (error: any) {
       // Final fallback: use payment link directly
-      console.error('Upgrade error, using payment link fallback:', error)
+      safeError('[UpgradeButton]', 'Upgrade error, using payment link fallback:', error)
       try {
         const cycle = billingPeriod === 'yearly' ? 'annual' : 'monthly'
         const paymentUrl = getSubscriptionLink(plan, cycle)

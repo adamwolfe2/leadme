@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { FormField, FormLabel, FormInput, FormSelect, FormTextarea } from '@/components/ui/form'
 import type { CampaignFormData } from '../campaign-wizard'
 
@@ -27,7 +28,7 @@ export function StepBasics({ formData, updateFormData }: StepBasicsProps) {
           setAgents(result.data || [])
         }
       } catch (error) {
-        console.error('Failed to fetch agents:', error)
+        safeError('[StepBasics]', 'Failed to fetch agents:', error)
       } finally {
         setLoadingAgents(false)
       }

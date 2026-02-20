@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export default function Error({
   error,
@@ -10,7 +11,7 @@ export default function Error({
   reset: () => void
 }) {
   useEffect(() => {
-    console.error('[Services] Page error:', error.message, error.digest)
+    safeError('[ServicesError]', 'Page error:', error.message, error.digest)
   }, [error])
 
   return (

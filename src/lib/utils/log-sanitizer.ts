@@ -102,39 +102,50 @@ export function sanitizeLog(data: any): any {
 }
 
 /**
+ * Sanitize a single argument for safe logging.
+ * Objects are recursively sanitized; Error objects preserve stack traces.
+ */
+function sanitizeArg(arg: any): any {
+  if (arg === null || arg === undefined || typeof arg !== 'object') {
+    return arg
+  }
+  // Preserve stack traces on Error-like objects
+  const sanitized = sanitizeLog(arg)
+  if (arg?.stack) {
+    return { ...sanitized, stack: arg.stack }
+  }
+  return sanitized
+}
+
+/**
  * Safe console.log that sanitizes sensitive data
  */
-export function safeLog(message: string, data?: any): void {
-  if (data) {
-    console.log(message, sanitizeLog(data))
-  } else {
+export function safeLog(message: string, ...args: any[]): void {
+  if (args.length === 0) {
     console.log(message)
+  } else {
+    console.log(message, ...args.map(sanitizeArg))
   }
 }
 
 /**
  * Safe console.error that sanitizes sensitive data
  */
-export function safeError(message: string, error?: any): void {
-  if (error) {
-    // Sanitize error object but preserve stack trace
-    const sanitizedError = {
-      ...sanitizeLog(error),
-      stack: error?.stack // Keep stack trace for debugging
-    }
-    console.error(message, sanitizedError)
-  } else {
+export function safeError(message: string, ...args: any[]): void {
+  if (args.length === 0) {
     console.error(message)
+  } else {
+    console.error(message, ...args.map(sanitizeArg))
   }
 }
 
 /**
  * Safe console.warn that sanitizes sensitive data
  */
-export function safeWarn(message: string, data?: any): void {
-  if (data) {
-    console.warn(message, sanitizeLog(data))
-  } else {
+export function safeWarn(message: string, ...args: any[]): void {
+  if (args.length === 0) {
     console.warn(message)
+  } else {
+    console.warn(message, ...args.map(sanitizeArg))
   }
 }

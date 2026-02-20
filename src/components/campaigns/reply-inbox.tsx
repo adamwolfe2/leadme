@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { PageContainer, PageHeader } from '@/components/layout'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -110,7 +111,7 @@ export function ReplyInbox({ campaignId }: ReplyInboxProps) {
           setReplies(repliesData.data || [])
         }
       } catch (error) {
-        console.error('Failed to fetch data:', error)
+        safeError('[ReplyInbox]', 'Failed to fetch data:', error)
       } finally {
         setLoading(false)
       }

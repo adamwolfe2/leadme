@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/client'
 import { signupSchema, type SignupFormData } from '@/lib/validation/schemas'
 import { PasswordStrength } from '@/components/ui/password-strength'
 import { getErrorMessage } from '@/lib/utils/error-messages'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 function SignupPageInner() {
   const router = useRouter()
@@ -55,7 +56,7 @@ function SignupPageInner() {
     })
 
     if (signUpError) {
-      console.error('[Signup] Supabase error:', signUpError.message, signUpError.status)
+      safeError('[SignupPage]', 'Supabase error:', signUpError.message, signUpError.status)
       // Show the actual Supabase error message — these are user-safe auth messages
       // (e.g., "User already registered", "Password should be at least 6 characters")
       // Only fall back to generic message if no message is available
@@ -88,7 +89,7 @@ function SignupPageInner() {
     })
 
     if (signInError) {
-      console.error('[Signup] Google OAuth error:', signInError.message)
+      safeError('[SignupPage]', 'Google OAuth error:', signInError.message)
       setError(signInError.message || getErrorMessage(signInError))
       setLoading(false)
     }

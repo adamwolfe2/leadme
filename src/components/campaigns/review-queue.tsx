@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { PageContainer, PageHeader } from '@/components/layout'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -112,7 +113,7 @@ export function ReviewQueue() {
         setReviews(result.data || [])
       }
     } catch (error) {
-      console.error('Failed to fetch reviews:', error)
+      safeError('[ReviewQueue]', 'Failed to fetch reviews:', error)
     } finally {
       setLoading(false)
     }
@@ -144,10 +145,10 @@ export function ReviewQueue() {
         fetchReviews() // Refresh the list
       } else {
         const result = await response.json()
-        console.error('Review failed:', result.error)
+        safeError('[ReviewQueue]', 'Review failed:', result.error)
       }
     } catch (error) {
-      console.error('Failed to submit review:', error)
+      safeError('[ReviewQueue]', 'Failed to submit review:', error)
     } finally {
       setSubmitting(false)
     }

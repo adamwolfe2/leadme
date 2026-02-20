@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createServiceCheckout } from '@/lib/stripe/service-checkout'
 import { supportsDirectCheckout, VENTURE_STUDIO_CALENDAR_URL } from '@/lib/stripe/service-products'
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface CheckoutPageProps {
   searchParams: Promise<{
@@ -75,7 +76,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
 
     redirect(checkoutUrl.checkout_url)
   } catch (error) {
-    console.error('Checkout error:', error)
+    safeError('[CheckoutPage]', 'Checkout error:', error)
     redirect('/?error=checkout_failed')
   }
 }

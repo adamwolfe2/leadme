@@ -8,6 +8,7 @@ import { formatDistanceToNow, format } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import { DollarSign, Calendar } from 'lucide-react'
 import type { Deal } from '@/types/crm.types'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface DealsPageClientProps {
   initialData: Deal[]
@@ -92,7 +93,7 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
           deal.id === dealId ? { ...deal, stage: fromColumn } : deal
         )
       )
-      console.error('Error updating deal stage:', error)
+      safeError('[DealsPageClient]', 'Error updating deal stage:', error)
     }
   }
 

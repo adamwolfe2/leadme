@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useToast } from '@/lib/hooks/use-toast'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface RoutingRule {
   id: string
@@ -59,7 +60,7 @@ export default function AdminDashboard() {
         .order('priority', { ascending: false })
       if (data) setRules(data)
     } catch (error) {
-      console.error('Failed to fetch rules:', error)
+      safeError('[AdminDashboard]', 'Failed to fetch rules:', error)
     } finally {
       setRulesLoading(false)
     }
@@ -81,7 +82,7 @@ export default function AdminDashboard() {
       })
       setLeadsStats(stats)
     } catch (error) {
-      console.error('Failed to fetch leads:', error)
+      safeError('[AdminDashboard]', 'Failed to fetch leads:', error)
     } finally {
       setLeadsLoading(false)
     }

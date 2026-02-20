@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { FormField, FormLabel, FormSelect } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -53,7 +54,7 @@ export function StepTemplates({ formData, updateFormData }: StepTemplatesProps) 
           setTemplates(result.data || [])
         }
       } catch (error) {
-        console.error('Failed to fetch templates:', error)
+        safeError('[StepTemplates]', 'Failed to fetch templates:', error)
       } finally {
         setLoading(false)
       }

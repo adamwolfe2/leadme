@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/dialog'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { RefreshCw, CheckCircle, XCircle, AlertTriangle, Eye } from 'lucide-react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 type OperationType = 'email' | 'webhook' | 'job'
 
@@ -105,7 +106,7 @@ export default function FailedOperationsPage() {
       const data = await response.json()
       setOperations(data.operations || [])
     } catch (error) {
-      console.error('Failed to load operations:', error)
+      safeError('[FailedOperations]', 'Failed to load operations:', error)
     } finally {
       setLoading(false)
     }
@@ -129,7 +130,7 @@ export default function FailedOperationsPage() {
         alert(`Failed to retry: ${result.error}`)
       }
     } catch (error) {
-      console.error('Failed to retry operation:', error)
+      safeError('[FailedOperations]', 'Failed to retry operation:', error)
       alert('Failed to retry operation')
     } finally {
       setRetrying(null)
@@ -148,7 +149,7 @@ export default function FailedOperationsPage() {
       alert('Operation marked as resolved')
       await loadOperations()
     } catch (error) {
-      console.error('Failed to resolve operation:', error)
+      safeError('[FailedOperations]', 'Failed to resolve operation:', error)
       alert('Failed to resolve operation')
     } finally {
       setResolving(null)

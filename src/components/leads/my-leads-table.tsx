@@ -8,6 +8,7 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo, memo } from 'react'
 import { toast } from 'sonner'
+import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/design-system'
 import type { Database } from '@/types/database.types'
@@ -124,7 +125,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
     const { data, error, count } = await query.range(from, to)
 
     if (error) {
-      console.error('Failed to fetch assignments:', error)
+      safeError('[MyLeadsTable]', 'Failed to fetch assignments:', error)
     } else {
       setAssignments((data as unknown as LeadAssignment[]) || [])
       setTotalCount(count ?? 0)
@@ -225,7 +226,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
           // Close modal if the deleted lead is currently selected
           setSelectedLead((current) => {
             if (current?.id === payload.old.id) {
-              console.log('[Realtime] Closing modal for deleted lead')
+              safeLog('[MyLeadsTable]', 'Closing modal for deleted lead')
               return null
             }
             return current
@@ -249,7 +250,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
     // Capture previous state for rollback on error
     const previousAssignment = assignments.find((a) => a.id === assignmentId)
     if (!previousAssignment) {
-      console.error('[Status Update] Assignment not found:', assignmentId)
+      safeError('[MyLeadsTable]', 'Assignment not found:', assignmentId)
       return
     }
 
@@ -279,7 +280,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
 
       if (error) {
         // Rollback optimistic update on error
-        console.error('[Status Update] Failed to update status:', error)
+        safeError('[MyLeadsTable]', 'Failed to update status:', error)
         setAssignments((prev) =>
           prev.map((a) => (a.id === assignmentId ? { ...a, status: previousStatus } : a))
         )
@@ -291,7 +292,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
       onLeadChange?.()
     } catch (err) {
       // Rollback on exception
-      console.error('[Status Update] Exception during update:', err)
+      safeError('[MyLeadsTable]', 'Exception during update:', err)
       setAssignments((prev) =>
         prev.map((a) => (a.id === assignmentId ? { ...a, status: previousStatus } : a))
       )
@@ -561,7 +562,7 @@ const LeadDetailModal = memo(function LeadDetailModal({
 
   // ERROR HANDLING: Validate lead data exists
   if (!lead) {
-    console.error('[LeadDetailModal] Lead data is missing for assignment:', assignment.id)
+    safeError('[MyLeadsTable]', 'Lead data is missing for assignment:', assignment.id)
     return (
       <div
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"

@@ -13,6 +13,7 @@ import { PageContainer, PageHeader, PageSection } from '@/components/layout/page
 import { PageLoading } from '@/components/ui/loading-states'
 import { EmptyState } from '@/components/ui/empty-states'
 import { ArrowLeft, ArrowRight, User, MapPin, DollarSign, GraduationCap, Target, TrendingUp, Radio, Users } from 'lucide-react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface CustomerProfile {
   id: string
@@ -56,7 +57,7 @@ function ProfilesPageInner() {
         setSelectedProfile(data.profiles[0])
       }
     } catch (error) {
-      console.error('Failed to load profiles:', error)
+      safeError('[ProfilesPage]', 'Failed to load profiles:', error)
     } finally {
       setIsLoading(false)
     }

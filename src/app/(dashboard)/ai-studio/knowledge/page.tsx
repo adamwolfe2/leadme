@@ -13,6 +13,7 @@ import { PageContainer, PageHeader, PageSection } from '@/components/layout/page
 import { PageLoading } from '@/components/ui/loading-states'
 import { EmptyState } from '@/components/ui/empty-states'
 import { ArrowLeft, ArrowRight, BookOpen, Target, Megaphone, MessageSquare, XCircle } from 'lucide-react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface KnowledgeBase {
   company_overview: string
@@ -63,7 +64,7 @@ function KnowledgePageInner() {
       const found = data.workspaces?.find((w: BrandWorkspace) => w.id === workspaceId)
       setWorkspace(found || null)
     } catch (error) {
-      console.error('Failed to load workspace:', error)
+      safeError('[KnowledgePage]', 'Failed to load workspace:', error)
     } finally {
       setIsLoading(false)
     }

@@ -14,6 +14,7 @@ import { BuyLeadButton } from '@/components/marketplace/BuyLeadButton'
 import { UpsellBanner } from '@/components/marketplace/UpsellBanner'
 import { getServiceLink } from '@/lib/stripe/payment-links'
 import { getErrorMessage } from '@/lib/utils/error-messages'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Types for marketplace leads
 interface MarketplaceLeadPreview {
@@ -152,7 +153,7 @@ export default function MarketplacePage() {
         setTotalLeads(data.total || 0)
       }
     } catch (error) {
-      console.error('Failed to fetch leads:', error)
+      safeError('[MarketplacePage]', 'Failed to fetch leads:', error)
     } finally {
       setIsLoading(false)
     }
@@ -166,7 +167,7 @@ export default function MarketplacePage() {
         setCredits(data.balance || 0)
       }
     } catch (error) {
-      console.error('Failed to fetch credits:', error)
+      safeError('[MarketplacePage]', 'Failed to fetch credits:', error)
     }
     try {
       const statsRes = await fetch('/api/marketplace/stats')
@@ -175,7 +176,7 @@ export default function MarketplacePage() {
         setTotalSpend(statsData.totalSpent || 0)
       }
     } catch (error) {
-      console.error('Failed to fetch stats:', error)
+      safeError('[MarketplacePage]', 'Failed to fetch stats:', error)
     }
   }, [])
 

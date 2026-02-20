@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export default function AuthError({
   error,
@@ -13,7 +14,7 @@ export default function AuthError({
   reset: () => void
 }) {
   useEffect(() => {
-    console.error('Authentication error:', error)
+    safeError('[AuthError] Authentication error:', error)
   }, [error])
 
   return (

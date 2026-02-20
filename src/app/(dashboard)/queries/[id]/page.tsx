@@ -195,7 +195,7 @@ export default async function QueryDetailPage({ params }: QueryDetailPageProps) 
                 {filters.industry.map((industry: string) => (
                   <span
                     key={industry}
-                    className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800"
+                    className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary"
                   >
                     {industry}
                   </span>
@@ -311,7 +311,7 @@ export default async function QueryDetailPage({ params }: QueryDetailPageProps) 
           <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
             <Link
               href={`/data?query_id=${query.id}`}
-              className="text-sm font-medium text-blue-600 hover:text-blue-500"
+              className="text-sm font-medium text-primary hover:text-primary/80"
             >
               View all leads →
             </Link>

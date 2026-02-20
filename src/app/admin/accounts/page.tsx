@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface Workspace {
   id: string
@@ -168,7 +169,7 @@ export default function AdminAccountsPage() {
 
       refetch()
     } catch (error) {
-      console.error('Failed to toggle suspension:', error)
+      safeError('[AdminAccounts]', 'Failed to toggle suspension:', error)
       alert(error instanceof Error ? error.message : 'Failed to update workspace')
     }
   }

@@ -23,6 +23,7 @@ import {
   XCircle,
   Megaphone,
 } from 'lucide-react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface Creative {
   id: string
@@ -127,7 +128,7 @@ function CampaignsPageInner() {
       setCreatives(creativesData.creatives || [])
       setProfiles(profilesData.profiles || [])
     } catch (error) {
-      console.error('Failed to load data:', error)
+      safeError('[AICampaignsPage]', 'Failed to load data:', error)
     } finally {
       setIsLoading(false)
     }
@@ -175,7 +176,7 @@ function CampaignsPageInner() {
       }
 
     } catch (error: any) {
-      console.error('Checkout error:', error)
+      safeError('[AICampaignsPage]', 'Checkout error:', error)
       setCheckoutError(error.message || 'Failed to create checkout session')
       setIsCreatingCheckout(false)
     }

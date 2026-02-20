@@ -73,7 +73,7 @@ export async function getCurrentUser(): Promise<User | null> {
     .from('users')
     .select('*')
     .eq('auth_user_id', authUser.id)
-    .single()
+    .maybeSingle()
 
   return user as User | null
 }
@@ -130,7 +130,7 @@ export async function getUserWithWorkspace() {
     .from('users')
     .select('*, workspaces(*)')
     .eq('auth_user_id', authUser.id)
-    .single()
+    .maybeSingle()
 
   return user
 }
@@ -249,7 +249,7 @@ export async function verifyWorkspaceOwnership(brandWorkspaceId: string): Promis
     .from('brand_workspaces')
     .select('workspace_id')
     .eq('id', brandWorkspaceId)
-    .single()
+    .maybeSingle()
 
   if (error || !workspace) return false
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface AnalyticsData {
   overview: {
@@ -67,7 +68,7 @@ export default function AdminAnalyticsPage() {
         setAnalytics(data.data)
       }
     } catch (error) {
-      console.error('Failed to fetch analytics:', error)
+      safeError('[AdminAnalytics]', 'Failed to fetch analytics:', error)
     }
     setLoading(false)
   }, [dateRange])

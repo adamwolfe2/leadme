@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export default function AdminError({
   error,
@@ -13,7 +14,7 @@ export default function AdminError({
   reset: () => void
 }) {
   useEffect(() => {
-    console.error('Admin panel error:', error)
+    safeError('[AdminError]', 'Admin panel error:', error)
   }, [error])
 
   return (

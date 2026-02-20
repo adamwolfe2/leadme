@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { RefreshCw, TrendingUp, TrendingDown, AlertTriangle, CheckCircle } from 'lucide-react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface HealthMetrics {
   emailDeliveryRate: number
@@ -74,7 +75,7 @@ export default function OperationsHealthPage() {
       const data = await response.json()
       setMetrics(data)
     } catch (error) {
-      console.error('Failed to load metrics:', error)
+      safeError('[OperationsHealth]', 'Failed to load metrics:', error)
     } finally {
       setLoading(false)
     }

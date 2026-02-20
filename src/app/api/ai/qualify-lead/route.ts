@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       .select('id, company_data, contact_data')
       .eq('id', lead_id)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (leadError || !lead) {
       return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
       .from('workspaces')
       .select('industry_vertical, allowed_industries, allowed_regions')
       .eq('id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     const companyData = lead.company_data as LeadCompanyData | null
     const contactData = lead.contact_data as LeadContactData | null

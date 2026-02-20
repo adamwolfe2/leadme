@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { PageContainer, PageHeader } from '@/components/layout'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -130,7 +131,7 @@ export function CampaignAnalytics({ campaignId }: CampaignAnalyticsProps) {
           setStepPerf(analyticsData.step_performance || [])
         }
       } catch (error) {
-        console.error('Failed to fetch analytics:', error)
+        safeError('[CampaignAnalytics]', 'Failed to fetch analytics:', error)
         setError('Failed to load campaign analytics. Please try again.')
       } finally {
         setLoading(false)

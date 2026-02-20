@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import DOMPurify from 'isomorphic-dompurify'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { PageContainer, PageHeader } from '@/components/layout'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -95,7 +96,7 @@ export function TemplateBrowser() {
           setTemplates(data.data || [])
         }
       } catch (error) {
-        console.error('Failed to fetch templates:', error)
+        safeError('[TemplateBrowser]', 'Failed to fetch templates:', error)
       } finally {
         setLoading(false)
       }

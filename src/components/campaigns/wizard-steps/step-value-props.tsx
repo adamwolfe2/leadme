@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { FormField, FormLabel, FormInput, FormTextarea } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -47,7 +48,7 @@ export function StepValueProps({ formData, updateFormData }: StepValuePropsProps
           }
         }
       } catch (error) {
-        console.error('Failed to fetch client profile:', error)
+        safeError('[StepValueProps]', 'Failed to fetch client profile:', error)
       } finally {
         setLoading(false)
       }

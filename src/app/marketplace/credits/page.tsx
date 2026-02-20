@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 import { CREDIT_PACKAGES, type CreditPackage } from '@/lib/constants/credit-packages'
 import { getCreditLink } from '@/lib/stripe/payment-links'
 import { UpsellBanner } from '@/components/marketplace/UpsellBanner'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Map credit package IDs to payment link tiers
 const PACKAGE_TO_CREDIT_TIER: Record<string, 'leadPurchase' | 'starter' | 'professional' | 'enterprise'> = {
@@ -50,7 +51,7 @@ export default function CreditsPage() {
         return
       }
     } catch (error) {
-      console.error('Failed to fetch credits:', error)
+      safeError('[CreditsPage]', 'Failed to fetch credits:', error)
     } finally {
       setIsLoading(false)
     }
@@ -61,7 +62,7 @@ export default function CreditsPage() {
         setTotalSpend(statsData.totalSpent || 0)
       }
     } catch (error) {
-      console.error('Failed to fetch stats:', error)
+      safeError('[CreditsPage]', 'Failed to fetch stats:', error)
     }
   }, [router])
 
@@ -125,7 +126,7 @@ export default function CreditsPage() {
       }
     } catch (error) {
       // Final fallback: use payment link directly
-      console.error('Purchase failed, using payment link fallback:', error)
+      safeError('[CreditsPage]', 'Purchase failed, using payment link fallback:', error)
       const creditTier = PACKAGE_TO_CREDIT_TIER[pkg.id]
       if (creditTier) {
         window.open(getCreditLink(creditTier), '_blank', 'noopener,noreferrer')

@@ -16,6 +16,7 @@ import {
   TrendingUp,
   Zap,
 } from 'lucide-react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface SystemMetrics {
   apiResponseTime: {
@@ -132,7 +133,7 @@ export default function MonitoringPage() {
       setActiveAlerts(alerts.data)
       setLoading(false)
     } catch (error) {
-      console.error('Failed to fetch metrics:', error)
+      safeError('[AdminMonitoring]', 'Failed to fetch metrics:', error)
       setLoading(false)
     }
   }

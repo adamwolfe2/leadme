@@ -8,6 +8,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { Mail, Phone, MessageSquare } from 'lucide-react'
 import type { FeatureType, ContactPreference } from '@/types/premium'
 import { PREMIUM_FEATURES } from '@/types/premium'
@@ -86,7 +87,7 @@ export function PremiumFeatureRequestModal({
         onClose()
       }, 500)
     } catch (error) {
-      console.error('Failed to submit request:', error)
+      safeError('[PremiumFeatureRequestModal]', 'Failed to submit request:', error)
       toast.error('Failed to submit request', {
         description: error instanceof Error ? error.message : 'Please try again',
       })

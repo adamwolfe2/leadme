@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { CheckCircle, XCircle, Clock, AlertCircle, ExternalLink, MessageSquare } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface FeatureRequest {
   id: string
@@ -115,7 +116,7 @@ export function RequestsManagementClient({ initialRequests }: RequestsManagement
       setAdminNotes('')
       router.refresh()
     } catch (error) {
-      console.error('Failed to update request:', error)
+      safeError('[RequestsManagementClient]', 'Failed to update request:', error)
       alert('Failed to update request')
     } finally {
       setUpdating(false)

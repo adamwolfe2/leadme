@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { RequestsManagementClient } from './RequestsManagementClient'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export const metadata = {
   title: 'Feature Requests | Admin | Cursive',
@@ -37,7 +38,7 @@ export default async function AdminRequestsPage() {
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('Failed to fetch feature requests:', error)
+    safeError('[AdminRequests]', 'Failed to fetch feature requests:', error)
   }
 
   return (

@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 function PartnerConnectSuccessContent() {
   const searchParams = useSearchParams()
@@ -32,7 +33,7 @@ function PartnerConnectSuccessContent() {
           setMessage('Stripe onboarding not complete. Please try again.')
         }
       } catch (error) {
-        console.error('Verification error:', error)
+        safeError('[PartnerConnectSuccess]', 'Verification error:', error)
         setStatus('error')
         setMessage('Failed to verify onboarding status')
       }
