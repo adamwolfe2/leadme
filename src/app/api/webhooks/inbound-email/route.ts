@@ -3,6 +3,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { createAdminClient } from '@/lib/supabase/admin'
 
+// Timing-safe string comparison to prevent timing attacks
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false
+  let result = 0
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  }
+  return result === 0
+}
+
 /**
  * Verify webhook signature (Edge-compatible HMAC-SHA256)
  */
@@ -13,7 +23,7 @@ async function verifySignature(payload: string, signature: string, secret: strin
   )
   const sig = await crypto.subtle.sign('HMAC', key, encoder.encode(payload))
   const expected = Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
-  return expected === signature
+  return timingSafeEqual(expected, signature)
 }
 
 /**

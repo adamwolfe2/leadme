@@ -181,26 +181,13 @@ export async function POST(request: NextRequest) {
       if (pixelData?.workspace_id) workspaceId = pixelData.workspace_id
     }
 
-    // Fallback: admin workspace
+    // SECURITY: Do NOT fall back to arbitrary workspaces — this causes cross-tenant data contamination
     if (!workspaceId) {
-      const ADMIN_WORKSPACE_ID = '00000000-0000-0000-0000-000000000000'
-      const { data: adminWorkspace } = await supabase
-        .from('workspaces')
-        .select('id')
-        .eq('id', ADMIN_WORKSPACE_ID)
-        .single()
-      workspaceId = adminWorkspace?.id || null
-    }
-
-    // Last resort: first active pixel's workspace
-    if (!workspaceId) {
-      const { data: anyPixel } = await supabase
-        .from('audiencelab_pixels')
-        .select('workspace_id')
-        .eq('is_active', true)
-        .limit(1)
-        .single()
-      workspaceId = anyPixel?.workspace_id || null
+      safeError(`${LOG_PREFIX} Could not determine target workspace — rejecting to prevent cross-tenant contamination`)
+      return NextResponse.json(
+        { error: 'Could not determine target workspace for this audience sync' },
+        { status: 400 }
+      )
     }
 
     const insertedIds: string[] = []

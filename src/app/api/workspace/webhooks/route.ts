@@ -16,9 +16,8 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient()
 
-    // Get current user's workspace (session-based for read-only perf)
-    const { data: { session } } = await supabase.auth.getSession()
-    const authUser = session?.user ?? null
+    // Get current user's workspace (server-verified)
+    const { data: { user: authUser } } = await supabase.auth.getUser()
     if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }

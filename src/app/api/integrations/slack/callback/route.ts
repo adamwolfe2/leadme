@@ -107,10 +107,10 @@ export async function GET(req: NextRequest) {
 
     // CRITICAL: Validate context against authenticated user to prevent context injection
     const authSupabase = await createClient()
-    const { data: { session } } = await authSupabase.auth.getSession()
+    const { data: { user: authUser } } = await authSupabase.auth.getUser()
 
-    if (!session?.user) {
-      safeError('[Slack OAuth] No authenticated session during callback')
+    if (!authUser) {
+      safeError('[Slack OAuth] No authenticated user during callback')
       return NextResponse.redirect(
         new URL('/login?error=unauthorized&redirect=/settings/integrations', req.url)
       )
@@ -120,7 +120,7 @@ export async function GET(req: NextRequest) {
     const { data: userData } = await authSupabase
       .from('users')
       .select('id, workspace_id')
-      .eq('auth_user_id', session.user.id)
+      .eq('auth_user_id', authUser.id)
       .single()
 
     if (!userData) {

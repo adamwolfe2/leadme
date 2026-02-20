@@ -11,18 +11,16 @@ export async function GET() {
   try {
     const supabase = await createClient()
 
-    // Auth check (session-based for read-only perf)
+    // Auth check (server-verified)
     const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
 
-    if (sessionError) {
-      safeError('[Get Credits] Session error:', sessionError)
+    if (authError) {
+      safeError('[Get Credits] Auth error:', authError)
       return NextResponse.json({ error: 'Authentication failed' }, { status: 401 })
     }
-
-    const user = session?.user ?? null
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

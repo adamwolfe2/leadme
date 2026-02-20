@@ -25,6 +25,16 @@ import {
 // Webhook secret from environment
 const WEBHOOK_SECRET = process.env.EMAILBISON_WEBHOOK_SECRET || ''
 
+// Timing-safe string comparison to prevent timing attacks
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false
+  let result = 0
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  }
+  return result === 0
+}
+
 // Edge-compatible HMAC-SHA256 verification
 async function verifySignatureEdge(payload: string, signature: string, secret: string): Promise<boolean> {
   const encoder = new TextEncoder()
@@ -34,7 +44,7 @@ async function verifySignatureEdge(payload: string, signature: string, secret: s
   const sig = await crypto.subtle.sign('HMAC', key, encoder.encode(payload))
   const expected = Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
   const provided = signature.replace(/^sha256=/, '')
-  return expected === provided
+  return timingSafeEqual(expected, provided)
 }
 
 // Edge-compatible SHA-256 hash

@@ -152,13 +152,13 @@ export async function getUserIdFromRequest(
   req: NextRequest
 ): Promise<string | null> {
   try {
-    // Get user from Supabase session
+    // SECURITY: Use getUser() for server-side JWT verification
     const { createClient } = await import('@/lib/supabase/middleware')
     const { supabase } = createClient(req)
     const {
-      data: { session },
-    } = await supabase.auth.getSession()
-    return session?.user?.id || null
+      data: { user },
+    } = await supabase.auth.getUser()
+    return user?.id || null
   } catch (error) {
     logger.error('Failed to get user from request', {}, error as Error)
     return null

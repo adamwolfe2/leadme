@@ -24,8 +24,8 @@ export interface AccessControlUser {
 export async function getCurrentUserWithAccess(): Promise<AccessControlUser | null> {
   const supabase = await createClient()
 
-  const { data: { session } } = await supabase.auth.getSession()
-  const authUser = session?.user ?? null
+  // SECURITY: Use getUser() for server-side JWT verification
+  const { data: { user: authUser } } = await supabase.auth.getUser()
   if (!authUser) return null
 
   const { data: user } = await supabase

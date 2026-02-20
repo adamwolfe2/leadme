@@ -153,13 +153,12 @@ export async function middleware(req: NextRequest) {
     let authenticatedUser: { id: string; email?: string } | null = null
     if (!isPublicRoute) {
       try {
-        // getSession() reads the session from cookies and refreshes if expired.
-        // This is a local JWT check that only makes a network call when
-        // the token needs refreshing.
-        const { data: { session } } = await supabase.auth.getSession()
-        authenticatedUser = session?.user ? {
-          id: session.user.id,
-          email: session.user.email,
+        // SECURITY: getUser() verifies the JWT server-side, preventing forged tokens.
+        // Slightly slower than getSession() but required for secure auth.
+        const { data: { user: authUser } } = await supabase.auth.getUser()
+        authenticatedUser = authUser ? {
+          id: authUser.id,
+          email: authUser.email,
         } : null
       } catch (e) {
         safeError('[Middleware] Auth session check failed:', e)

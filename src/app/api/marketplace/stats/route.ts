@@ -8,11 +8,10 @@ export async function GET() {
   try {
     const supabase = await createClient()
 
-    // Get current user (session-based for read-only perf)
+    // Get current user (server-verified)
     const {
-      data: { session },
-    } = await supabase.auth.getSession()
-    const user = session?.user ?? null
+      data: { user },
+    } = await supabase.auth.getUser()
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

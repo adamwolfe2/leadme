@@ -59,10 +59,10 @@ export async function getCurrentUser(): Promise<User | null> {
 
   const supabase = await createClient()
 
+  // SECURITY: Use getUser() instead of getSession() to verify JWT server-side
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  const authUser = session?.user ?? null
+    data: { user: authUser },
+  } = await supabase.auth.getUser()
 
   if (!authUser) {
     return null
@@ -117,10 +117,10 @@ export async function hasPro(): Promise<boolean> {
 export async function getUserWithWorkspace() {
   const supabase = await createClient()
 
+  // SECURITY: Use getUser() for server-side JWT verification
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  const authUser = session?.user ?? null
+    data: { user: authUser },
+  } = await supabase.auth.getUser()
 
   if (!authUser) {
     return null
@@ -204,14 +204,14 @@ export async function requirePermission(
 
 /**
  * Get authenticated user
- * Returns the Supabase auth user via getSession() (fast local cookie read)
+ * Returns the Supabase auth user via getUser() (server-side JWT verification)
  */
 export async function getAuthUser() {
   const supabase = await createClient()
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  return session?.user ?? null
+    data: { user },
+  } = await supabase.auth.getUser()
+  return user ?? null
 }
 
 /**

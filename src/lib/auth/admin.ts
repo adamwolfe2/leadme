@@ -24,8 +24,8 @@ export async function isAdmin(): Promise<boolean> {
     const supabase = await createClient()
 
     // Get current user
-    const { data: { session } } = await supabase.auth.getSession()
-    const user = session?.user ?? null
+    // SECURITY: Use getUser() for server-side JWT verification
+    const { data: { user } } = await supabase.auth.getUser()
 
     if (!user?.email) {
       return false
@@ -52,8 +52,8 @@ export async function isAdmin(): Promise<boolean> {
 export async function getCurrentAdminEmail(): Promise<string | null> {
   try {
     const supabase = await createClient()
-    const { data: { session } } = await supabase.auth.getSession()
-    const user = session?.user ?? null
+    // SECURITY: Use getUser() for server-side JWT verification
+    const { data: { user } } = await supabase.auth.getUser()
     return user?.email || null
   } catch {
     return null
@@ -67,8 +67,8 @@ export async function getCurrentAdminEmail(): Promise<string | null> {
  */
 export async function requireAdmin(): Promise<{ id: string; email: string }> {
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
-  const user = session?.user ?? null
+  // SECURITY: Use getUser() for server-side JWT verification
+  const { data: { user } } = await supabase.auth.getUser()
 
   if (!user?.id) {
     throw new Error('Unauthorized: Admin access required')
@@ -109,8 +109,8 @@ export async function requireAdmin(): Promise<{ id: string; email: string }> {
  */
 export async function requireAdminRole(): Promise<{ id: string; email: string }> {
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
-  const user = session?.user ?? null
+  // SECURITY: Use getUser() for server-side JWT verification
+  const { data: { user } } = await supabase.auth.getUser()
 
   if (!user?.id) {
     throw new Error('Unauthorized: Admin access required')
@@ -135,8 +135,8 @@ export async function requireAdminRole(): Promise<{ id: string; email: string }>
 export async function getCurrentAdminId(): Promise<string | null> {
   try {
     const supabase = await createClient()
-    const { data: { session } } = await supabase.auth.getSession()
-    const user = session?.user ?? null
+    // SECURITY: Use getUser() for server-side JWT verification
+    const { data: { user } } = await supabase.auth.getUser()
 
     if (!user?.email) {
       return null
@@ -161,8 +161,8 @@ export async function getCurrentAdminId(): Promise<string | null> {
 export async function getCurrentAdmin(): Promise<PlatformAdmin | null> {
   try {
     const supabase = await createClient()
-    const { data: { session } } = await supabase.auth.getSession()
-    const user = session?.user ?? null
+    // SECURITY: Use getUser() for server-side JWT verification
+    const { data: { user } } = await supabase.auth.getUser()
 
     if (!user?.email) {
       return null
