@@ -130,7 +130,7 @@ const nextConfig = {
               "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
               "object-src 'none'",
               "base-uri 'self'",
-              "form-action 'self'",
+              "form-action 'self' https://*.supabase.co https://accounts.google.com",
               "upgrade-insecure-requests",
             ].join('; '),
           },

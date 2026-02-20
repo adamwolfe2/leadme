@@ -21,6 +21,14 @@ function LoginForm() {
     ? 'Sign-in failed. Please try again.'
     : urlReason === 'middleware_error'
     ? 'A session error occurred. Please sign in again.'
+    : urlReason === 'invalid_session'
+    ? 'Your session could not be verified. Please sign in again.'
+    : urlReason === 'auth_failed'
+    ? 'Authentication failed. Please sign in again.'
+    : urlReason === 'no_session'
+    ? 'No active session found. Please sign in.'
+    : urlReason === 'session_expired'
+    ? 'Your session has expired. Please sign in again.'
     : null
 
   const [loading, setLoading] = useState(false)

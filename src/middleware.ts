@@ -214,7 +214,8 @@ export async function middleware(req: NextRequest) {
 
     // Workspace check: verify authenticated users have a workspace for dashboard routes.
     // Caches workspace_id in a cookie to avoid DB query on every request (~50-100ms savings).
-    if (user && !isPublicRoute && !isAdminRoute && !isPartnerRoute && !pathname.startsWith('/onboarding') && !pathname.startsWith('/welcome') && !pathname.startsWith('/api/onboarding')) {
+    // Exclude /api/auth/* — needed during onboarding before workspace exists.
+    if (user && !isPublicRoute && !isAdminRoute && !isPartnerRoute && !pathname.startsWith('/onboarding') && !pathname.startsWith('/welcome') && !pathname.startsWith('/api/onboarding') && !pathname.startsWith('/api/auth')) {
       // Check cookie cache first to avoid DB roundtrip on every request
       const cachedWorkspaceId = req.cookies.get('x-workspace-id')?.value
 
@@ -227,8 +228,14 @@ export async function middleware(req: NextRequest) {
           .single()
 
         if (!userRecord?.workspace_id) {
-          // No workspace — redirect to onboarding. Admin routes are excluded above,
-          // so /admin/* is still accessible for admins without workspaces.
+          // No workspace — API routes get JSON error, page routes redirect to onboarding.
+          // Admin routes are excluded above, so /admin/* is still accessible.
+          if (isApiRoute) {
+            return NextResponse.json(
+              { error: 'No workspace. Complete onboarding first.', code: 'NO_WORKSPACE' },
+              { status: 403 }
+            )
+          }
           const onboardingUrl = new URL('/welcome', req.url)
           return redirectWithCookies(onboardingUrl)
         }
