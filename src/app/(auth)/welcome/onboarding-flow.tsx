@@ -50,9 +50,11 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
 
   const [submittedEmail, setSubmittedEmail] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleBusinessSubmit = useCallback(async (data: BusinessFormData, authMethod: 'email' | 'google', password?: string) => {
     setError(null)
+    setIsSubmitting(true)
     const supabase = createClient()
 
     if (authMethod === 'google') {
@@ -73,7 +75,9 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
       })
       if (oauthError) {
         setError(oauthError.message)
+        setIsSubmitting(false)
       }
+      // Don't reset isSubmitting on success — page will redirect
       return
     }
 
@@ -91,6 +95,7 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
 
       if (signUpError) {
         setError(signUpError.message)
+        setIsSubmitting(false)
         return
       }
 
@@ -116,6 +121,7 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
       if (!res.ok) {
         const body = await res.json()
         setError(body.error || 'Failed to create account')
+        setIsSubmitting(false)
         return
       }
 
@@ -123,11 +129,13 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
       goToScreen('business-success')
     } catch (err: any) {
       setError(err.message || 'Something went wrong')
+      setIsSubmitting(false)
     }
   }, [isMarketplace, goToScreen, router])
 
   const handlePartnerSubmit = useCallback(async (data: PartnerFormData, authMethod: 'email' | 'google', password?: string) => {
     setError(null)
+    setIsSubmitting(true)
     const supabase = createClient()
 
     if (authMethod === 'google') {
@@ -146,7 +154,9 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
       })
       if (oauthError) {
         setError(oauthError.message)
+        setIsSubmitting(false)
       }
+      // Don't reset isSubmitting on success — page will redirect
       return
     }
 
@@ -164,6 +174,7 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
 
       if (signUpError) {
         setError(signUpError.message)
+        setIsSubmitting(false)
         return
       }
 
@@ -187,6 +198,7 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
       if (!res.ok) {
         const body = await res.json()
         setError(body.error || 'Failed to create account')
+        setIsSubmitting(false)
         return
       }
 
@@ -194,6 +206,7 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
       goToScreen('partner-success')
     } catch (err: any) {
       setError(err.message || 'Something went wrong')
+      setIsSubmitting(false)
     }
   }, [isMarketplace, goToScreen, router])
 
@@ -257,6 +270,7 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
             onSubmit={handleBusinessSubmit}
             onBack={goBack}
             error={error}
+            isSubmitting={isSubmitting}
           />
         )
 
@@ -324,6 +338,7 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
             onSubmit={handlePartnerSubmit}
             onBack={goBack}
             error={error}
+            isSubmitting={isSubmitting}
           />
         )
 

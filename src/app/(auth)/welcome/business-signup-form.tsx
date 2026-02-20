@@ -28,10 +28,12 @@ interface BusinessSignupFormProps {
   onSubmit: (data: BusinessFormData, authMethod: 'email' | 'google', password?: string) => Promise<void>
   onBack: () => void
   error: string | null
+  isSubmitting?: boolean
 }
 
-export function BusinessSignupForm({ vslAnswers, onSubmit, onBack, error }: BusinessSignupFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
+export function BusinessSignupForm({ vslAnswers, onSubmit, onBack, error, isSubmitting: parentSubmitting }: BusinessSignupFormProps) {
+  const [localSubmitting, setLocalSubmitting] = useState(false)
+  const isSubmitting = localSubmitting || !!parentSubmitting
   const [password, setPassword] = useState('')
   const [passwordError, setPasswordError] = useState<string | null>(null)
 
@@ -67,11 +69,11 @@ export function BusinessSignupForm({ vslAnswers, onSubmit, onBack, error }: Busi
       setPasswordError('Password must contain a number')
       return
     }
-    setIsSubmitting(true)
+    setLocalSubmitting(true)
     try {
       await onSubmit(data, 'email', password)
     } finally {
-      setIsSubmitting(false)
+      setLocalSubmitting(false)
     }
   }
 
@@ -86,7 +88,7 @@ export function BusinessSignupForm({ vslAnswers, onSubmit, onBack, error }: Busi
 
     if (!isValid) return
 
-    setIsSubmitting(true)
+    setLocalSubmitting(true)
     const data = getValues()
     await onSubmit(data, 'google')
     // Don't set isSubmitting false — page will redirect

@@ -177,5 +177,8 @@ export const { GET, POST, PUT } = serve({
 
     // AI SDR Follow-up Cron
     functions.sdrFollowupCron,
+
+    // Partner Stripe Connect Validation
+    functions.partnerStripeValidation,
   ],
 })

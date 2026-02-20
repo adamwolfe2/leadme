@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow, format, addDays } from 'date-fns'
 import {
   Table,
   TableBody,
@@ -19,6 +19,7 @@ import {
   Clock,
   CheckCircle,
   Download,
+  AlertCircle,
 } from 'lucide-react'
 import { EmptyState } from '@/components/animations/EmptyState'
 import { useSafeAnimation } from '@/hooks/use-reduced-motion'
@@ -100,7 +101,7 @@ export function EarningsClient({
     return (
       <div className="space-y-6">
         {/* Stats Summary */}
-        <StatsGrid stats={stats} shouldAnimate={shouldAnimate} />
+        <StatsGrid stats={stats} shouldAnimate={shouldAnimate} earnings={initialEarnings} />
 
         <EmptyState
           icon={<DollarSign className="h-12 w-12" />}
@@ -114,7 +115,10 @@ export function EarningsClient({
   return (
     <div className="space-y-6">
       {/* Stats Summary */}
-      <StatsGrid stats={stats} shouldAnimate={shouldAnimate} />
+      <StatsGrid stats={stats} shouldAnimate={shouldAnimate} earnings={initialEarnings} />
+
+      {/* Payout Timeline */}
+      <PayoutTimeline earnings={initialEarnings} />
 
       {/* Desktop Table */}
       <div className="hidden md:block bg-white rounded-lg border border-blue-100/50 shadow-sm overflow-hidden">
@@ -276,12 +280,104 @@ export function EarningsClient({
   )
 }
 
+function PayoutTimeline({ earnings }: { earnings: Earning[] }) {
+  const pendingEarnings = earnings.filter(e => e.status === 'pending')
+
+  if (pendingEarnings.length === 0) {
+    return null
+  }
+
+  const now = new Date()
+  const holdbackDays = 14
+
+  const readyForPayout = pendingEarnings.filter(e => {
+    const created = new Date(e.created_at)
+    const daysSince = (now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24)
+    return daysSince >= holdbackDays
+  })
+
+  const inHoldback = pendingEarnings.filter(e => {
+    const created = new Date(e.created_at)
+    const daysSince = (now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24)
+    return daysSince < holdbackDays
+  })
+
+  const readyTotal = readyForPayout.reduce((sum, e) => sum + e.amount, 0)
+  const holdbackTotal = inHoldback.reduce((sum, e) => sum + e.amount, 0)
+
+  const nextPayoutDate = inHoldback.length > 0
+    ? new Date(
+        Math.min(...inHoldback.map(e => new Date(e.created_at).getTime())) +
+          holdbackDays * 24 * 60 * 60 * 1000
+      )
+    : null
+
+  const allReady = inHoldback.length === 0 && readyForPayout.length > 0
+
+  return (
+    <div className="rounded-lg border border-blue-100/50 shadow-sm bg-white overflow-hidden">
+      <div className="p-4 border-b border-gray-100">
+        <h2 className="text-lg font-semibold">Payout Timeline</h2>
+        <p className="text-sm text-muted-foreground">
+          {readyForPayout.length} of {pendingEarnings.length} earnings ready for payout
+        </p>
+      </div>
+
+      <div className="p-4 space-y-3">
+        {allReady ? (
+          <div className="flex items-center gap-2 rounded-lg bg-green-50 border border-green-200 p-3">
+            <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+            <span className="text-sm font-medium text-green-700">
+              All earnings are eligible for payout
+            </span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* In Holdback */}
+            {inHoldback.length > 0 && (
+              <div className="flex items-start gap-3 rounded-lg bg-amber-50 border border-amber-200 p-3">
+                <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-amber-800">In Holdback</div>
+                  <div className="text-xs text-amber-600 mt-0.5">
+                    {inHoldback.length} earning{inHoldback.length !== 1 ? 's' : ''} &middot; ${holdbackTotal.toFixed(2)}
+                  </div>
+                  {nextPayoutDate && (
+                    <div className="text-xs text-amber-600 mt-1">
+                      Next eligible {format(nextPayoutDate, 'MMM d, yyyy')}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Ready for Payout */}
+            {readyForPayout.length > 0 && (
+              <div className="flex items-start gap-3 rounded-lg bg-green-50 border border-green-200 p-3">
+                <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-green-800">Ready for Payout</div>
+                  <div className="text-xs text-green-600 mt-0.5">
+                    {readyForPayout.length} earning{readyForPayout.length !== 1 ? 's' : ''} &middot; ${readyTotal.toFixed(2)}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function StatsGrid({
   stats,
   shouldAnimate,
+  earnings,
 }: {
   stats: EarningsClientProps['stats']
   shouldAnimate: boolean
+  earnings: Earning[]
 }) {
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -292,6 +388,17 @@ function StatsGrid({
       },
     },
   }
+
+  // Compute pending subtitle with estimated payout date
+  const pendingEarnings = earnings.filter(e => e.status === 'pending')
+  const pendingSubtitle = (() => {
+    if (pendingEarnings.length === 0) return 'No pending earnings'
+    const mostRecentCreatedAt = Math.max(
+      ...pendingEarnings.map(e => new Date(e.created_at).getTime())
+    )
+    const payoutDate = addDays(new Date(mostRecentCreatedAt), 14)
+    return `Est. payout ${format(payoutDate, 'MMM d, yyyy')}`
+  })()
 
   return (
     <motion.div
@@ -321,7 +428,7 @@ function StatsGrid({
         value={`$${stats.pendingBalance.toFixed(2)}`}
         icon={Clock}
         color="amber"
-        subtitle="Processing"
+        subtitle={pendingSubtitle}
         shouldAnimate={shouldAnimate}
       />
       <StatCard

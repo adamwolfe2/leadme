@@ -28,10 +28,12 @@ interface PartnerSignupFormProps {
   onSubmit: (data: PartnerFormData, authMethod: 'email' | 'google', password?: string) => Promise<void>
   onBack: () => void
   error: string | null
+  isSubmitting?: boolean
 }
 
-export function PartnerSignupForm({ vslAnswers, onSubmit, onBack, error }: PartnerSignupFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
+export function PartnerSignupForm({ vslAnswers, onSubmit, onBack, error, isSubmitting: parentSubmitting }: PartnerSignupFormProps) {
+  const [localSubmitting, setLocalSubmitting] = useState(false)
+  const isSubmitting = localSubmitting || !!parentSubmitting
   const [password, setPassword] = useState('')
   const [passwordError, setPasswordError] = useState<string | null>(null)
 
@@ -67,11 +69,11 @@ export function PartnerSignupForm({ vslAnswers, onSubmit, onBack, error }: Partn
       setPasswordError('Password must contain a number')
       return
     }
-    setIsSubmitting(true)
+    setLocalSubmitting(true)
     try {
       await onSubmit(data, 'email', password)
     } finally {
-      setIsSubmitting(false)
+      setLocalSubmitting(false)
     }
   }
 
@@ -85,7 +87,7 @@ export function PartnerSignupForm({ vslAnswers, onSubmit, onBack, error }: Partn
 
     if (!isValid) return
 
-    setIsSubmitting(true)
+    setLocalSubmitting(true)
     const data = getValues()
     await onSubmit(data, 'google')
   }

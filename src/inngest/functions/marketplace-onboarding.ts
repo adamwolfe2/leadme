@@ -48,6 +48,7 @@ export const marketplaceOnboardingSequence = inngest.createFunction(
 
             <p style="color: #6b7280; font-size: 14px;">Questions? Just reply to this email &mdash; a real person reads every one.</p>
             <p style="color: #6b7280; font-size: 14px;">&mdash; Team Cursive</p>
+            <p style="margin:4px 0 0;font-size:12px;"><a href="${APP_URL}/settings/notifications" style="color:#9ca3af;text-decoration:underline;">Manage email preferences</a> &middot; <a href="mailto:hello@meetcursive.com" style="color:#9ca3af;text-decoration:underline;">Contact support</a></p>
           </div>
         `,
         tags: [{ name: 'sequence', value: 'marketplace-onboarding' }, { name: 'step', value: 'welcome' }],
@@ -87,6 +88,7 @@ export const marketplaceOnboardingSequence = inngest.createFunction(
             </p>
 
             <p style="color: #6b7280; font-size: 14px;">&mdash; Team Cursive</p>
+            <p style="margin:4px 0 0;font-size:12px;"><a href="${APP_URL}/settings/notifications" style="color:#9ca3af;text-decoration:underline;">Manage email preferences</a> &middot; <a href="mailto:hello@meetcursive.com" style="color:#9ca3af;text-decoration:underline;">Contact support</a></p>
           </div>
         `,
         tags: [{ name: 'sequence', value: 'marketplace-onboarding' }, { name: 'step', value: 'tips' }],
@@ -135,6 +137,7 @@ export const marketplaceOnboardingSequence = inngest.createFunction(
               </p>
 
               <p style="color: #6b7280; font-size: 14px;">&mdash; Team Cursive</p>
+            <p style="margin:4px 0 0;font-size:12px;"><a href="${APP_URL}/settings/notifications" style="color:#9ca3af;text-decoration:underline;">Manage email preferences</a> &middot; <a href="mailto:hello@meetcursive.com" style="color:#9ca3af;text-decoration:underline;">Contact support</a></p>
             </div>
           `,
           tags: [{ name: 'sequence', value: 'marketplace-onboarding' }, { name: 'step', value: 'credit-upsell' }],
@@ -177,6 +180,7 @@ export const marketplaceOnboardingSequence = inngest.createFunction(
             </p>
 
             <p style="color: #6b7280; font-size: 14px;">&mdash; Adam, Founder @ Cursive</p>
+            <p style="margin:4px 0 0;font-size:12px;"><a href="${APP_URL}/settings/notifications" style="color:#9ca3af;text-decoration:underline;">Manage email preferences</a> &middot; <a href="mailto:hello@meetcursive.com" style="color:#9ca3af;text-decoration:underline;">Contact support</a></p>
           </div>
         `,
         tags: [{ name: 'sequence', value: 'marketplace-onboarding' }, { name: 'step', value: 'dfy-upsell' }],

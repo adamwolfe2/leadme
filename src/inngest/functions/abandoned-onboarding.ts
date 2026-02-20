@@ -149,9 +149,7 @@ function buildRecoveryEmailHtml(user: IncompleteUser): string {
               <p style="margin: 0 0 4px 0; font-size: 13px; color: #9ca3af;">
                 Cursive &middot; AI-powered lead intelligence
               </p>
-              <p style="margin: 0; font-size: 13px; color: #9ca3af;">
-                <a href="mailto:adam@meetcursive.com" style="color: #9ca3af; text-decoration: underline;">Contact Support</a>
-              </p>
+              <p style="margin:4px 0 0;font-size:12px;"><a href="${APP_URL}/settings/notifications" style="color:#9ca3af;text-decoration:underline;">Manage email preferences</a> &middot; <a href="mailto:hello@meetcursive.com" style="color:#9ca3af;text-decoration:underline;">Contact support</a></p>
             </td>
           </tr>
         </table>

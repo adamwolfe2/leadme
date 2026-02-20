@@ -55,6 +55,7 @@ interface SendEmailOptions {
   text?: string
   replyTo?: string
   tags?: { name: string; value: string }[]
+  headers?: Record<string, string>
 }
 
 interface EmailResult {
@@ -75,6 +76,7 @@ const FROM_EMAIL = process.env.EMAIL_FROM || 'Cursive <notifications@meetcursive
 export async function sendEmail(options: SendEmailOptions): Promise<EmailResult> {
   try {
     const resend = getResendClient()
+    const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
 
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
@@ -84,6 +86,11 @@ export async function sendEmail(options: SendEmailOptions): Promise<EmailResult>
       text: options.text,
       replyTo: options.replyTo,
       tags: options.tags,
+      headers: {
+        'List-Unsubscribe': `<${APP_URL}/settings/notifications>`,
+        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+        ...options.headers,
+      },
     })
 
     if (error) {

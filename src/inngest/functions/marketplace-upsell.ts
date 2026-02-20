@@ -52,6 +52,7 @@ function buildUpsellEmail(type: 'data' | 'outbound', userName: string, lifetimeS
         </td></tr>
         <tr><td style="padding:24px 40px;text-align:center;background-color:#f9fafb;border-top:1px solid #e5e7eb;">
           <p style="margin:0;font-size:13px;color:#9ca3af;">Cursive &middot; AI-powered lead intelligence</p>
+          <p style="margin:4px 0 0;font-size:12px;"><a href="${APP_URL}/settings/notifications" style="color:#9ca3af;text-decoration:underline;">Manage email preferences</a> &middot; <a href="mailto:hello@meetcursive.com" style="color:#9ca3af;text-decoration:underline;">Contact support</a></p>
         </td></tr>
       </table>
     </td></tr>
@@ -103,6 +104,7 @@ function buildUpsellEmail(type: 'data' | 'outbound', userName: string, lifetimeS
         </td></tr>
         <tr><td style="padding:24px 40px;text-align:center;background-color:#f9fafb;border-top:1px solid #e5e7eb;">
           <p style="margin:0;font-size:13px;color:#9ca3af;">Cursive &middot; AI-powered lead intelligence</p>
+          <p style="margin:4px 0 0;font-size:12px;"><a href="${APP_URL}/settings/notifications" style="color:#9ca3af;text-decoration:underline;">Manage email preferences</a> &middot; <a href="mailto:hello@meetcursive.com" style="color:#9ca3af;text-decoration:underline;">Contact support</a></p>
         </td></tr>
       </table>
     </td></tr>
