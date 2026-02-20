@@ -6,34 +6,11 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-
-// Edge-compatible crypto helpers (no Node.js 'crypto' import)
+import { hmacSha256Hex, timingSafeEqual } from '@/lib/utils/crypto'
 
 function generateRandomHex(byteLength: number): string {
   const bytes = crypto.getRandomValues(new Uint8Array(byteLength))
   return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('')
-}
-
-async function hmacSha256Hex(key: string, data: string): Promise<string> {
-  const encoder = new TextEncoder()
-  const cryptoKey = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(key),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  )
-  const sig = await crypto.subtle.sign('HMAC', cryptoKey, encoder.encode(data))
-  return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
-}
-
-function constantTimeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false
-  let result = 0
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
-  }
-  return result === 0
 }
 
 // ============================================
@@ -77,7 +54,7 @@ export function validateCsrfToken(request: NextRequest): boolean {
   }
 
   try {
-    return constantTimeEqual(cookieToken, headerToken)
+    return timingSafeEqual(cookieToken, headerToken)
   } catch {
     return false
   }
@@ -407,7 +384,7 @@ export async function verifySignature(
   const expected = await generateSignature(payload, secret, algorithm)
 
   try {
-    return constantTimeEqual(signature, expected)
+    return timingSafeEqual(signature, expected)
   } catch {
     return false
   }

@@ -1,19 +1,7 @@
 // EmailBison Webhook Types and Handlers
 // Handles incoming webhook events from EmailBison
 
-// Edge-compatible crypto helper (no Node.js 'crypto' import)
-async function hmacSha256Hex(key: string, data: string): Promise<string> {
-  const encoder = new TextEncoder()
-  const cryptoKey = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(key),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  )
-  const sig = await crypto.subtle.sign('HMAC', cryptoKey, encoder.encode(data))
-  return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
-}
+import { hmacSha256Hex, timingSafeEqual } from '@/lib/utils/crypto'
 
 // ============================================================================
 // WEBHOOK EVENT TYPES
@@ -161,14 +149,7 @@ export async function verifyWebhookSignature(
     const providedSignature = signature.replace(/^sha256=/, '')
 
     // Constant-time comparison
-    if (expectedSignature.length !== providedSignature.length) {
-      return { isValid: false, error: 'Signature mismatch' }
-    }
-    let result = 0
-    for (let i = 0; i < expectedSignature.length; i++) {
-      result |= expectedSignature.charCodeAt(i) ^ providedSignature.charCodeAt(i)
-    }
-    const isValid = result === 0
+    const isValid = timingSafeEqual(expectedSignature, providedSignature)
 
     return { isValid, error: isValid ? undefined : 'Signature mismatch' }
   } catch (error) {

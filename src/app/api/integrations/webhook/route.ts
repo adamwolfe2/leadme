@@ -8,18 +8,10 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { hmacSha256Hex } from '@/lib/utils/crypto'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { z } from 'zod'
-
-async function hmacSha256Hex(data: string, secret: string): Promise<string> {
-  const encoder = new TextEncoder()
-  const key = await crypto.subtle.importKey(
-    'raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
-  )
-  const sig = await crypto.subtle.sign('HMAC', key, encoder.encode(data))
-  return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
-}
 
 // Request validation schemas
 const updateWebhookSchema = z.object({
@@ -265,7 +257,7 @@ export async function PUT(req: NextRequest) {
     // Generate signature
     const timestamp = Math.floor(Date.now() / 1000)
     const signaturePayload = `${timestamp}.${payloadString}`
-    const signature = await hmacSha256Hex(signaturePayload, workspace?.webhook_secret || 'test')
+    const signature = await hmacSha256Hex(workspace?.webhook_secret || 'test', signaturePayload)
 
     // Send test webhook
     const controller = new AbortController()

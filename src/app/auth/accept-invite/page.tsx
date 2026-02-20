@@ -37,7 +37,7 @@ function AcceptInviteContent() {
         if (!res.ok) {
           if (res.status === 401) {
             // User not logged in - redirect to login with return URL
-            router.push(`/auth/login?redirect=/auth/accept-invite?token=${token}`)
+            router.push(`/login?redirect=/auth/accept-invite?token=${token}`)
             return
           }
           throw new Error(data.error || 'Failed to accept invitation')
@@ -109,7 +109,7 @@ function AcceptInviteContent() {
             </p>
             <div className="mt-6 space-y-3">
               <Link
-                href="/auth/login"
+                href="/login"
                 className="block w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 text-center"
               >
                 Sign In

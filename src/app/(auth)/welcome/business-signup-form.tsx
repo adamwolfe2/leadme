@@ -173,7 +173,7 @@ export function BusinessSignupForm({ vslAnswers, onSubmit, onBack, error }: Busi
 
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1.5">Password *</label>
-                <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Min. 6 characters" aria-required="true" aria-invalid={!!passwordError} aria-describedby={passwordError ? 'password-error' : undefined} />
+                <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Min. 8 characters" aria-required="true" aria-invalid={!!passwordError} aria-describedby={passwordError ? 'password-error' : undefined} />
                 {passwordError && <p id="password-error" className="text-xs text-destructive mt-1" role="alert">{passwordError}</p>}
               </div>
 

@@ -29,8 +29,16 @@ export async function POST(request: NextRequest) {
 
     // Validate input
     const body = await request.json()
-    const validatedData = registerSchema.parse(body)
+    const validation = registerSchema.safeParse(body)
 
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: validation.error.errors.map(e => e.message).join(', ') },
+        { status: 400 }
+      )
+    }
+
+    const validatedData = validation.data
     const supabase = createAdminClient()
 
     // Check if partner already exists
@@ -80,17 +88,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     safeError('[Partner Register] Error:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        {
-          error: 'Validation error',
-          details: error.errors.map(e => e.message).join(', '),
-        },
-        { status: 400 }
-      )
-    }
-
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -4,9 +4,6 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-// Use edge runtime for instant response
-export const runtime = 'edge'
-
 async function handleSignOut(request: NextRequest) {
   const cookieStore: { name: string; value: string; options?: any }[] = []
 

@@ -20,29 +20,7 @@
  * Field normalization: src/lib/audiencelab/field-map.ts
  */
 
-// Edge-compatible crypto helpers (no Node.js 'crypto' import)
-
-async function hmacSha256Hex(key: string, data: string): Promise<string> {
-  const encoder = new TextEncoder()
-  const cryptoKey = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(key),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  )
-  const sig = await crypto.subtle.sign('HMAC', cryptoKey, encoder.encode(data))
-  return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
-}
-
-function constantTimeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false
-  let result = 0
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
-  }
-  return result === 0
-}
+import { hmacSha256Hex, timingSafeEqual } from '@/lib/utils/crypto'
 
 // Re-export schemas and field-map for convenience
 export { SuperPixelEventSchema, AudienceSyncEventSchema, ExportRowSchema } from '@/lib/audiencelab/schemas'
@@ -65,7 +43,7 @@ export async function verifyAudienceLabWebhook(
   // Check shared secret header
   if (headers.secret) {
     try {
-      return constantTimeEqual(headers.secret, webhookSecret)
+      return timingSafeEqual(headers.secret, webhookSecret)
     } catch {
       return false
     }
@@ -76,7 +54,7 @@ export async function verifyAudienceLabWebhook(
     const expected = await hmacSha256Hex(webhookSecret, rawBody)
     const provided = headers.signature.replace(/^sha256=/, '')
     try {
-      return constantTimeEqual(provided, expected)
+      return timingSafeEqual(provided, expected)
     } catch {
       return false
     }

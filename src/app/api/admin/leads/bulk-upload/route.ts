@@ -131,12 +131,13 @@ export async function POST(request: NextRequest) {
         trim: true,
       })
     } catch (e: any) {
+      safeError('[Admin Bulk Upload] CSV parsing error:', e)
       return NextResponse.json({
         success: false,
         total: 0,
         successful: 0,
         failed: 0,
-        errors: [`CSV parsing error: ${e.message}`],
+        errors: ['CSV parsing error: Invalid file format. Please check your CSV file.'],
         category_summary: {},
       })
     }
@@ -286,7 +287,8 @@ export async function POST(request: NextRequest) {
         } as any).select('id').single()
 
         if (insertError) {
-          results.errors.push(`Row ${rowNum}: ${insertError.message}`)
+          safeError(`[Admin Bulk Upload] Row ${rowNum} insert error:`, insertError)
+          results.errors.push(`Row ${rowNum}: Failed to insert lead`)
           results.failed++
           continue
         }
