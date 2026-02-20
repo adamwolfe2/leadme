@@ -47,6 +47,7 @@ export function BulkActionToolbar({
 
   async function handleArchive() {
     setLoading(true)
+    setActionState('archive')
     try {
       await callBulkAPI('archive')
       toast.success(`Archived ${selectedCount} lead${selectedCount !== 1 ? 's' : ''}`)
@@ -63,6 +64,7 @@ export function BulkActionToolbar({
 
   async function handleUnarchive() {
     setLoading(true)
+    setActionState('unarchive')
     try {
       await callBulkAPI('unarchive')
       toast.success(`Unarchived ${selectedCount} lead${selectedCount !== 1 ? 's' : ''}`)

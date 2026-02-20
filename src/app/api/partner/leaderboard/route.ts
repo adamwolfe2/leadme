@@ -49,10 +49,9 @@ export async function GET() {
   try {
     // 1. Auth: verify the caller is a logged-in partner
     const supabase = await createClient()
-    const { data: { session } } = await supabase.auth.getSession()
-    const authUser = session?.user ?? null
+    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
 
-    if (!authUser) {
+    if (authError || !authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

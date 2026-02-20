@@ -38,7 +38,7 @@ async function getUser() {
     .from('users')
     .select('id, workspace_id')
     .eq('auth_user_id', authUser.id)
-    .single()
+    .maybeSingle()
 
   return user ?? null
 }

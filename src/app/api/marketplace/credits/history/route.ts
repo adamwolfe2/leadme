@@ -50,6 +50,15 @@ export async function GET(req: NextRequest) {
 
     const adminClient = createAdminClient()
 
+    // Fetch the actual current balance from workspace_credits
+    const { data: creditsData } = await adminClient
+      .from('workspace_credits')
+      .select('balance')
+      .eq('workspace_id', workspaceId)
+      .maybeSingle()
+
+    const actualCurrentBalance = creditsData?.balance ?? 0
+
     // Fetch credit purchases (credits in) — completed only
     const purchasesQuery = adminClient
       .from('credit_purchases')
@@ -130,17 +139,20 @@ export async function GET(req: NextRequest) {
     // Sort all transactions by date descending
     transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
-    // Compute running balance (forward pass, then reverse to attach to each row)
-    // We need total credits purchased and total used to compute the current balance,
-    // then walk backwards to assign per-row balance.
+    // Compute running balance using the real current balance as the anchor.
+    // Walk transactions newest-to-oldest, assigning per-row balance.
     const totalIn = transactions.reduce((sum, t) => sum + t.credits_in, 0)
     const totalOut = transactions.reduce((sum, t) => sum + t.credits_out, 0)
-    let runningBalance = totalIn - totalOut
+
+    // Start from the actual current balance (from workspace_credits), not just the
+    // period-filtered sum. This ensures the balance column is correct even when
+    // the date filter excludes older transactions.
+    let runningBalance = actualCurrentBalance
 
     type TransactionWithBalance = Transaction & { balance: number }
     const transactionsWithBalance: TransactionWithBalance[] = transactions.map((t) => {
       const entry = { ...t, balance: runningBalance }
-      // Walk backwards: after this transaction the balance before it was:
+      // Walk backwards: balance before this transaction was:
       //   balance_before = runningBalance - credits_in + credits_out
       runningBalance = runningBalance - t.credits_in + t.credits_out
       return entry
@@ -158,7 +170,7 @@ export async function GET(req: NextRequest) {
       summary: {
         totalIn,
         totalOut,
-        currentBalance: totalIn - totalOut,
+        currentBalance: actualCurrentBalance,
       },
     })
   } catch (error) {

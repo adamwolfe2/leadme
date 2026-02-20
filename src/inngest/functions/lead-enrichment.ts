@@ -72,7 +72,7 @@ export const leadEnrichment = inngest.createFunction(
         )
 
         return result
-      } catch (error: any) {
+      } catch (error: unknown) {
         logger.error('Clay enrichment failed:', error)
         throw error
       }
@@ -82,7 +82,7 @@ export const leadEnrichment = inngest.createFunction(
     await step.run('update-lead', async () => {
       const supabase = createAdminClient()
 
-      const updateData: any = {
+      const updateData: Record<string, unknown> = {
         enrichment_status: 'completed',
         enriched_at: new Date().toISOString(),
       }
@@ -128,6 +128,39 @@ export const leadEnrichment = inngest.createFunction(
       }
 
       logger.info(`Lead ${lead_id} enriched successfully`)
+
+      // Fire-and-forget: log enrichment to enrichment_log
+      // Determine which fields were enriched from the contacts result
+      const fieldsEnriched: string[] = []
+      if (enrichmentResult.contacts.length > 0) {
+        const primary = enrichmentResult.contacts[0]
+        if (primary.email || primary.verified_email) fieldsEnriched.push('email')
+        if (primary.phone) fieldsEnriched.push('phone')
+        if (primary.linkedin_url) fieldsEnriched.push('linkedin_url')
+        if (primary.title) fieldsEnriched.push('job_title')
+      }
+      if (enrichmentResult.company_info) {
+        const ci = enrichmentResult.company_info as Record<string, unknown>
+        if (ci.name) fieldsEnriched.push('company_name')
+        if (ci.domain) fieldsEnriched.push('company_domain')
+        if (ci.industry) fieldsEnriched.push('company_industry')
+        if (ci.employee_count || ci.headcount) fieldsEnriched.push('employee_count')
+      }
+
+      void (async () => {
+        try {
+          const adminLog = createAdminClient()
+          await adminLog.from('enrichment_log').insert({
+            workspace_id,
+            lead_id,
+            credits_charged: 1,
+            enrichment_source: 'clay',
+            fields_enriched: fieldsEnriched.length > 0 ? fieldsEnriched : null,
+          })
+        } catch {
+          // Non-blocking — don't let logging failures disrupt enrichment
+        }
+      })()
     })
 
     // Step 4: Trigger delivery
@@ -150,7 +183,7 @@ export const leadEnrichment = inngest.createFunction(
       const deliveryChannels: ('email' | 'slack' | 'webhook')[] = ['email']
 
       if (integrations) {
-        integrations.forEach((integration: any) => {
+        integrations.forEach((integration: { type: string; status: string }) => {
           if (integration.type === 'slack') deliveryChannels.push('slack')
           if (integration.type === 'webhook') deliveryChannels.push('webhook')
         })

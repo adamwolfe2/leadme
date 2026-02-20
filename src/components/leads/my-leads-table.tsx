@@ -16,6 +16,7 @@ import type { RealtimeChannel } from '@supabase/supabase-js'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useBulkSelection } from '@/lib/hooks/use-bulk-selection'
 import { BulkActionToolbar } from './BulkActionToolbar'
+import { useDebounce } from '@/hooks/use-debounce'
 
 type UserLeadAssignmentUpdate = Database['public']['Tables']['user_lead_assignments']['Update']
 
@@ -63,22 +64,51 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
   const [assignments, setAssignments] = useState<LeadAssignment[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>('all')
+  const [searchInput, setSearchInput] = useState('')
   const [selectedLead, setSelectedLead] = useState<LeadAssignment | null>(null)
   const [newLeadCount, setNewLeadCount] = useState(0)
   const [page, setPage] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
   const channelRef = useRef<RealtimeChannel | null>(null)
 
+  // Debounce search input to avoid excessive re-fetches
+  const searchQuery = useDebounce(searchInput, 350)
+
   // Bulk selection — keyed on assignment.id
   const bulkSelection = useBulkSelection(assignments)
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
 
-  // Clear bulk selection whenever filter or page changes
+  // Client-side search filter applied on top of paginated server results.
+  // When search is active, we filter the current page's assignments locally.
+  const visibleAssignments = useMemo(() => {
+    if (!searchQuery.trim()) return assignments
+    const q = searchQuery.toLowerCase().trim()
+    return assignments.filter((a) => {
+      const lead = a.leads
+      const name = (
+        lead.full_name ||
+        [lead.first_name, lead.last_name].filter(Boolean).join(' ')
+      ).toLowerCase()
+      return (
+        name.includes(q) ||
+        (lead.email?.toLowerCase().includes(q) ?? false) ||
+        (lead.company_name?.toLowerCase().includes(q) ?? false) ||
+        (lead.job_title?.toLowerCase().includes(q) ?? false)
+      )
+    })
+  }, [assignments, searchQuery])
+
+  // Clear bulk selection whenever filter, search, or page changes
   useEffect(() => {
     bulkSelection.clearSelection()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter, page])
+  }, [filter, searchQuery, page])
+
+  // Reset to page 1 when search changes
+  useEffect(() => {
+    setPage(1)
+  }, [searchQuery])
 
   // SECURITY: Validate page is within bounds to prevent expensive out-of-range queries
   useEffect(() => {
@@ -352,9 +382,9 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
         </div>
       )}
 
-      {/* Filter tabs */}
-      <div className="border-b border-zinc-200 px-4 py-3">
-        <div className="flex gap-2">
+      {/* Filter tabs + Search */}
+      <div className="border-b border-zinc-200 px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="flex gap-2 flex-wrap">
           {['all', 'new', 'viewed', 'contacted', 'converted'].map((status) => (
             <button
               key={status}
@@ -370,10 +400,40 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
             </button>
           ))}
         </div>
+        {/* Debounced search input */}
+        <div className="relative sm:ml-auto sm:w-64">
+          <svg
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="Search by name, email, company…"
+            className="w-full h-9 pl-8 pr-3 text-sm border border-zinc-200 rounded-md bg-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-300"
+            aria-label="Search leads"
+          />
+          {searchInput && (
+            <button
+              onClick={() => setSearchInput('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
+              aria-label="Clear search"
+            >
+              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Table */}
-      {assignments.length === 0 ? (
+      {visibleAssignments.length === 0 ? (
         <div className="p-12 text-center">
           <svg
             className="mx-auto h-12 w-12 text-zinc-400"
@@ -390,11 +450,20 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
           </svg>
           <p className="mt-4 text-sm font-medium text-zinc-900">No leads found</p>
           <p className="mt-1 text-sm text-zinc-500">
-            {filter === 'all'
+            {searchQuery.trim()
+              ? `No leads match "${searchQuery}". Try a different search term.`
+              : filter === 'all'
               ? 'Leads will appear here when they match your targeting preferences.'
               : `No ${filter} leads at the moment.`}
           </p>
-          {filter === 'all' && (
+          {searchQuery.trim() ? (
+            <button
+              onClick={() => setSearchInput('')}
+              className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 transition-colors"
+            >
+              Clear Search
+            </button>
+          ) : filter === 'all' ? (
             <a
               href="/my-leads/preferences"
               className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 transition-colors"
@@ -404,7 +473,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </a>
-          )}
+          ) : null}
         </div>
       ) : (
         <div className="overflow-x-auto">
@@ -430,7 +499,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100">
-              {assignments.map((assignment) => (
+              {visibleAssignments.map((assignment) => (
                 <tr
                   key={assignment.id}
                   className={cn(

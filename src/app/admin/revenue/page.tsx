@@ -277,13 +277,13 @@ function SectionCard({ title, children }: { title: string; children: React.React
 export default async function AdminRevenuePage() {
   // Auth: verify admin via layout-level server check
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user: sessionUser }, error: authError } = await supabase.auth.getUser()
 
-  if (!session?.user) {
+  if (authError || !sessionUser) {
     redirect('/login?error=unauthorized')
   }
 
-  const userWithRole = await getUserWithRole(session.user)
+  const userWithRole = await getUserWithRole(sessionUser)
   if (!userWithRole || (userWithRole.role !== 'owner' && userWithRole.role !== 'admin')) {
     redirect('/dashboard?error=admin_required')
   }

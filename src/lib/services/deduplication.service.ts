@@ -395,10 +395,13 @@ export async function checkWorkspaceDuplicates(
     last_name: string | null
     company_name: string | null
     company_domain: string | null
-  }>
+  }>,
+  source?: string
 ): Promise<Set<number>> {
   const supabase = createAdminClient()
   const duplicateIndices = new Set<number>()
+  // Track per-index rejection reason for dedup_log
+  const rejectionReasons = new Map<number, 'email_match' | 'name_company_match' | 'intra_batch'>()
 
   // Collect all candidate emails and name+company combos
   const candidateEmails = candidates
@@ -428,6 +431,7 @@ export async function checkWorkspaceDuplicates(
     const email = candidates[i].email?.toLowerCase().trim()
     if (email && existingEmails.has(email)) {
       duplicateIndices.add(i)
+      rejectionReasons.set(i, 'email_match')
     }
   }
 
@@ -469,6 +473,7 @@ export async function checkWorkspaceDuplicates(
       const key = `${candidate.first_name!.toLowerCase().trim()}|${candidate.last_name!.toLowerCase().trim()}|${candidate.company_name!.toLowerCase().trim()}`
       if (existingNameCompanyKeys.has(key)) {
         duplicateIndices.add(candidate.index)
+        rejectionReasons.set(candidate.index, 'name_company_match')
       }
     }
   }
@@ -483,6 +488,7 @@ export async function checkWorkspaceDuplicates(
     if (email) {
       if (seenEmails.has(email)) {
         duplicateIndices.add(i)
+        rejectionReasons.set(i, 'intra_batch')
         continue
       }
       seenEmails.add(email)
@@ -493,9 +499,42 @@ export async function checkWorkspaceDuplicates(
       const key = `${first_name.toLowerCase().trim()}|${last_name.toLowerCase().trim()}|${company_name.toLowerCase().trim()}`
       if (seenNameCompany.has(key)) {
         duplicateIndices.add(i)
+        rejectionReasons.set(i, 'intra_batch')
         continue
       }
       seenNameCompany.add(key)
+    }
+  }
+
+  // Fire-and-forget: log rejections to dedup_log for monitoring
+  if (duplicateIndices.size > 0 && source) {
+    try {
+      const adminClient = createAdminClient()
+      const rows = Array.from(duplicateIndices).map((i) => {
+        const c = candidates[i]
+        return {
+          workspace_id: workspaceId,
+          lead_email: c.email ?? null,
+          lead_name: (c.first_name && c.last_name)
+            ? `${c.first_name} ${c.last_name}`
+            : null,
+          company_name: c.company_name ?? null,
+          rejection_reason: rejectionReasons.get(i) ?? 'email_match',
+          source,
+        }
+      })
+      // Insert in chunks — do NOT await (fire-and-forget)
+      void (async () => {
+        try {
+          for (let i = 0; i < rows.length; i += 50) {
+            await adminClient.from('dedup_log').insert(rows.slice(i, i + 50))
+          }
+        } catch (insertErr) {
+          safeError('[Deduplication] dedup_log insert failed:', insertErr)
+        }
+      })()
+    } catch (logErr) {
+      safeError('[Deduplication] dedup_log logging setup failed:', logErr)
     }
   }
 
