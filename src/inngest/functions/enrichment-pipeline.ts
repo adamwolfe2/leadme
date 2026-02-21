@@ -198,11 +198,12 @@ export const processEnrichmentJob = inngest.createFunction(
     await step.run('check-completion', async () => {
       const supabase = createAdminClient()
 
-      // Check if there are more pending jobs for this lead
+      // Check if there are more pending jobs for this lead (scoped to workspace for isolation)
       const { data: pendingJobs } = await supabase
         .from('enrichment_jobs')
         .select('id')
         .eq('lead_id', lead_id)
+        .eq('workspace_id', workspace_id)
         .in('status', ['pending', 'in_progress'])
 
       if (!pendingJobs || pendingJobs.length === 0) {

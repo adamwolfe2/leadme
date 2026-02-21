@@ -28,6 +28,9 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status') || 'active'
     const includeSteps = searchParams.get('include_steps') === 'true'
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100)
+    const page = Math.max(parseInt(searchParams.get('page') || '1'), 1)
+    const offset = (page - 1) * limit
 
     const supabase = await createClient()
 
@@ -50,16 +53,18 @@ export async function GET(request: NextRequest) {
             clicked_count
           )
         `
-          : '*'
+          : '*',
+        { count: 'exact' }
       )
       .eq('workspace_id', user.workspace_id)
       .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
 
     if (status !== 'all') {
       query = query.eq('status', status)
     }
 
-    const { data: sequences, error } = await query
+    const { data: sequences, count, error } = await query
 
     if (error) {
       safeError('Failed to fetch email sequences:', error)
@@ -69,7 +74,15 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    return NextResponse.json({ sequences })
+    return NextResponse.json({
+      sequences,
+      pagination: {
+        page,
+        limit,
+        total: count ?? 0,
+        has_more: offset + limit < (count ?? 0),
+      },
+    })
   } catch (error) {
     safeError('Email sequences GET error:', error)
     return NextResponse.json(

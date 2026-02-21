@@ -103,9 +103,9 @@ export default function BrandingSettingsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workspace-branding'] })
       setHasChanges(false)
-      toast.success('Branding updated successfully!')
-      // Reload to apply theme changes
-      window.location.reload()
+      toast.success('Branding updated! Applying theme changes...')
+      // Delay reload so the toast is visible before page refreshes
+      setTimeout(() => window.location.reload(), 1500)
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to save branding')

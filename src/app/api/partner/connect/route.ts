@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     // Get partner details
     const { data: partner, error: partnerError } = await supabase
       .from('partners')
-      .select('id, email, company_name, stripe_account_id')
+      .select('id, email, company_name, stripe_account_id, user_id')
       .eq('id', partnerId)
       .maybeSingle()
 
@@ -40,6 +40,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Partner not found' },
         { status: 404 }
+      )
+    }
+
+    // Verify the authenticated user owns this partner record
+    if (partner.user_id !== user.id) {
+      return NextResponse.json(
+        { error: 'Forbidden' },
+        { status: 403 }
       )
     }
 

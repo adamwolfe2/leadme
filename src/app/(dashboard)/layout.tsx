@@ -3,6 +3,7 @@
 // Force dynamic rendering for all dashboard pages (auth required)
 export const dynamic = 'force-dynamic'
 
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
@@ -236,7 +237,9 @@ export default async function DashboardLayout({
               todayLeadCount,
             }}
           >
-            {children}
+            <Suspense fallback={null}>
+              {children}
+            </Suspense>
           </DashboardProvider>
         </AppShell>
       </BrandThemeWrapper>

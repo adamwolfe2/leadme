@@ -1,6 +1,6 @@
 'use client'
 
-import { type ReactNode } from 'react'
+import { type ReactNode, useRef, useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useToast } from '@/lib/hooks/use-toast'
@@ -119,13 +119,27 @@ export default function NotificationsSettingsPage() {
 
   const isSaving = updateNotificationsMutation.isPending
 
-  const handleToggle = (setting: string, value: boolean | string) => {
+  // Debounce pref changes so rapid toggles batch into a single API call
+  const pendingPrefsRef = useRef<Record<string, boolean | string> | null>(null)
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
+
+  const handleToggle = useCallback((setting: string, value: boolean | string) => {
     const currentPrefs = user?.notification_preferences || {}
-    updateNotificationsMutation.mutate({
+    // Merge this change into pending changes
+    pendingPrefsRef.current = {
       ...currentPrefs,
+      ...(pendingPrefsRef.current || {}),
       [setting]: value,
-    })
-  }
+    }
+    // Clear any existing timer and set a new one
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
+    debounceTimerRef.current = setTimeout(() => {
+      if (pendingPrefsRef.current) {
+        updateNotificationsMutation.mutate(pendingPrefsRef.current)
+        pendingPrefsRef.current = null
+      }
+    }, 600)
+  }, [user?.notification_preferences, updateNotificationsMutation])
 
   if (isLoading) {
     return (
