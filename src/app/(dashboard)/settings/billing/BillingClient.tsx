@@ -742,7 +742,7 @@ export default function BillingClient() {
       )}
 
       {/* Buy Credits Section */}
-      <Card>
+      <Card id="credits">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Buy Credits</CardTitle>
