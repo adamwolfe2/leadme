@@ -52,6 +52,7 @@ export async function PATCH(
       .from('lead_preferences')
       .update(updateData)
       .eq('id', id)
+      .eq('workspace_id', user.workspace_id) // Defense-in-depth
       .select('id, workspace_id, name, description, is_active, target_industries, target_regions, target_company_sizes, target_intent_signals, max_leads_per_day, max_cost_per_lead, monthly_budget, created_at, updated_at')
       .maybeSingle()
 
