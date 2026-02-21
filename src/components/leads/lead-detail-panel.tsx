@@ -9,6 +9,7 @@ import { LeadNotesPanel } from './lead-notes-panel'
 import { LeadActivityTimeline } from './lead-activity-timeline'
 import { formatDate, cn } from '@/lib/utils'
 import { formatPhone } from './lead-card'
+import { useToast } from '@/lib/hooks/use-toast'
 
 interface LeadDetailPanelProps {
   lead: Lead
@@ -130,6 +131,7 @@ export function LeadDetailPanel({
   onRefresh,
 }: LeadDetailPanelProps) {
   const queryClient = useQueryClient()
+  const toast = useToast()
   const [currentStatus, setCurrentStatus] = useState<LeadStatus>((lead.status as LeadStatus) || 'new')
 
   // Get display values from lead data
@@ -153,6 +155,10 @@ export function LeadDetailPanel({
       setCurrentStatus(variables.status)
       queryClient.invalidateQueries({ queryKey: ['lead-activities', lead.id] })
       onRefresh()
+      toast.success('Lead status updated')
+    },
+    onError: () => {
+      toast.error('Failed to update status. Please try again.')
     },
   })
 

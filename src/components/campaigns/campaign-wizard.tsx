@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useToast } from '@/lib/hooks/use-toast'
 import { PageContainer, PageHeader } from '@/components/layout'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -79,6 +80,7 @@ const initialFormData: CampaignFormData = {
 
 export function CampaignWizard() {
   const router = useRouter()
+  const toast = useToast()
   const [currentStep, setCurrentStep] = useState(0)
   const [formData, setFormData] = useState<CampaignFormData>(initialFormData)
   const [loading, setLoading] = useState(false)
@@ -138,6 +140,7 @@ export function CampaignWizard() {
       }
 
       const result = await response.json()
+      toast.success('Campaign created successfully!')
       router.push(`/campaigns/${result.data.id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')

@@ -153,8 +153,9 @@ export function ComposedEmailsReview({ campaignId }: ComposedEmailsReviewProps) 
           selectedIds.has(e.id) ? { ...e, status: 'approved' } : e
         )
       )
+      const approvedCount = selectedIds.size
       setSelectedIds(new Set())
-      toast.success(`Approved ${selectedIds.size} email(s)`)
+      toast.success(`Approved ${approvedCount} email(s)`)
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to approve')
     } finally {

@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { useToast } from '@/lib/hooks/use-toast'
 import { PageContainer, PageHeader } from '@/components/layout'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -67,6 +68,7 @@ interface CampaignLeadsManagerProps {
 
 export function CampaignLeadsManager({ campaignId }: CampaignLeadsManagerProps) {
   const router = useRouter()
+  const toast = useToast()
   const [campaign, setCampaign] = useState<Campaign | null>(null)
   const [campaignLeads, setCampaignLeads] = useState<CampaignLead[]>([])
   const [availableLeads, setAvailableLeads] = useState<Lead[]>([])
@@ -203,9 +205,13 @@ export function CampaignLeadsManager({ campaignId }: CampaignLeadsManagerProps) 
 
       if (response.ok) {
         setCampaignLeads((prev) => prev.filter((cl) => cl.id !== campaignLeadId))
+        toast.success('Lead removed from campaign')
+      } else {
+        toast.error('Failed to remove lead')
       }
     } catch (err) {
       safeError('[CampaignLeadsManager]', 'Failed to remove lead:', err)
+      toast.error('Failed to remove lead. Please try again.')
     }
   }
 
