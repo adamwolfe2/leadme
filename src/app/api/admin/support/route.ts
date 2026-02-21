@@ -5,15 +5,21 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     await requireAdmin()
+
+    const { searchParams } = new URL(request.url)
+    const limit = Math.min(parseInt(searchParams.get('limit') || '100'), 200)
+    const page = Math.max(parseInt(searchParams.get('page') || '1'), 1)
+    const offset = (page - 1) * limit
 
     const adminSupabase = createAdminClient()
     const { data: messages, error } = await adminSupabase
       .from('support_messages')
       .select('id, user_id, workspace_id, subject, message, status, priority, category, admin_notes, created_at, updated_at')
       .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
 
     if (error) {
       throw new Error(error.message)

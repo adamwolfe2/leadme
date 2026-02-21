@@ -187,9 +187,11 @@ export default function TeamSettingsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['team-invites'] })
+      setPendingAction(null)
       toast.success('Invitation cancelled.')
     },
     onError: (err: Error) => {
+      setPendingAction(null)
       toast.error(err.message || 'Failed to cancel invitation.')
     },
   })
@@ -198,9 +200,11 @@ export default function TeamSettingsPage() {
     mutationFn: ({ id, role }: { id: string; role: string }) => updateMemberRole(id, role),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['team-members'] })
+      setPendingAction(null)
       toast.success(`Role updated to ${roleLabels[variables.role as keyof typeof roleLabels] || variables.role}.`)
     },
     onError: (err: Error) => {
+      setPendingAction(null)
       toast.error(err.message || 'Failed to update role.')
     },
   })
@@ -220,9 +224,11 @@ export default function TeamSettingsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['team-members'] })
+      setPendingAction(null)
       toast.success('Member removed from workspace.')
     },
     onError: (err: Error) => {
+      setPendingAction(null)
       toast.error(err.message || 'Failed to remove member.')
     },
   })
@@ -240,7 +246,7 @@ export default function TeamSettingsPage() {
       label: `Change ${member.full_name || member.email}'s role to ${roleLabels[newRole as keyof typeof roleLabels] || newRole}?`,
       onConfirm: () => {
         updateRoleMutation.mutate({ id: member.id, role: newRole })
-        setPendingAction(null)
+        // Dialog stays open until mutation completes (success/error handler closes it)
       },
     })
   }
@@ -251,7 +257,7 @@ export default function TeamSettingsPage() {
       label: `Remove ${member.full_name || member.email} from the workspace? They will lose all access immediately.`,
       onConfirm: () => {
         removeMemberMutation.mutate(member.id)
-        setPendingAction(null)
+        // Dialog stays open until mutation completes (success/error handler closes it)
       },
     })
   }
@@ -262,7 +268,7 @@ export default function TeamSettingsPage() {
       label: `Cancel the invitation for ${invite.email}?`,
       onConfirm: () => {
         cancelInviteMutation.mutate(invite.id)
-        setPendingAction(null)
+        // Dialog stays open until mutation completes (success/error handler closes it)
       },
     })
   }
@@ -584,22 +590,30 @@ export default function TeamSettingsPage() {
       </div>
 
       {/* Confirmation Dialog */}
-      <Dialog open={!!pendingAction} onOpenChange={(open) => { if (!open) setPendingAction(null) }}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirm Action</DialogTitle>
-            <DialogDescription>{pendingAction?.label}</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setPendingAction(null)}>
-              Cancel
-            </Button>
-            <Button onClick={() => pendingAction?.onConfirm()}>
-              Confirm
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {(() => {
+        const isConfirmPending = updateRoleMutation.isPending || removeMemberMutation.isPending || cancelInviteMutation.isPending
+        return (
+          <Dialog open={!!pendingAction} onOpenChange={(open) => { if (!open && !isConfirmPending) setPendingAction(null) }}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Confirm Action</DialogTitle>
+                <DialogDescription>{pendingAction?.label}</DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button variant="outline" disabled={isConfirmPending} onClick={() => setPendingAction(null)}>
+                  Cancel
+                </Button>
+                <Button
+                  disabled={isConfirmPending}
+                  onClick={() => pendingAction?.onConfirm()}
+                >
+                  {isConfirmPending ? 'Processing…' : 'Confirm'}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )
+      })()}
 
       {/* Invite Modal */}
       {showInviteModal && (

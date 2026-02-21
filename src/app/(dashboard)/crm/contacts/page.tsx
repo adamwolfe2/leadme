@@ -6,6 +6,7 @@ import { ContactsPageClient } from './components/ContactsPageClient'
 import { createClient } from '@/lib/supabase/server'
 import { ContactRepository } from '@/lib/repositories/contact.repository'
 import { redirect } from 'next/navigation'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export const metadata = {
   title: 'Contacts - CRM',
@@ -25,13 +26,19 @@ export default async function CRMContactsPage() {
     .maybeSingle()
   if (!userData?.workspace_id) redirect('/welcome')
 
-  // Fetch initial contacts data
+  // Fetch initial contacts data — gracefully degrade on error so the page still renders
   const contactRepo = new ContactRepository()
-  const initialData = await contactRepo.findByWorkspace(userData.workspace_id, undefined, undefined, 1, 100)
+  let initialContacts: Awaited<ReturnType<typeof contactRepo.findByWorkspace>>['data'] = []
+  try {
+    const result = await contactRepo.findByWorkspace(userData.workspace_id, undefined, undefined, 1, 100)
+    initialContacts = result.data
+  } catch (err) {
+    safeError('[CRMContacts] Failed to prefetch initial contacts:', err)
+  }
 
   return (
     <QueryProvider>
-      <ContactsPageClient initialData={initialData.data} />
+      <ContactsPageClient initialData={initialContacts} />
     </QueryProvider>
   )
 }

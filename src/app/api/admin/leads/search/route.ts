@@ -179,7 +179,7 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     let workspaceId = searchParams.get('workspaceId')
-    const limit = parseInt(searchParams.get('limit') || '10')
+    const limit = Math.min(Math.max(1, parseInt(searchParams.get('limit') || '10')), 1000)
     const allWorkspaces = searchParams.get('allWorkspaces') === 'true'
 
     // SECURITY: If admin is impersonating a workspace, restrict to that workspace only

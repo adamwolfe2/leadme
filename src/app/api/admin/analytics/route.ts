@@ -75,10 +75,11 @@ export async function GET(request: NextRequest) {
         .eq('is_active', true),
       supabase.from('partners').select('*', { count: 'estimated', head: true })
         .eq('is_active', true),
-      // Leads data for charts (single query with all needed fields)
+      // Leads data for charts (single query with all needed fields, capped at 10k)
       supabase.from('leads').select('created_at, company_industry, company_location')
         .gte('created_at', startDate.toISOString())
-        .order('created_at', { ascending: true }),
+        .order('created_at', { ascending: true })
+        .limit(10000),
       // Dummy for industryRaw - we'll process from leadsByDayRaw
       Promise.resolve({ data: null }),
       // Dummy for regionRaw - we'll process from leadsByDayRaw

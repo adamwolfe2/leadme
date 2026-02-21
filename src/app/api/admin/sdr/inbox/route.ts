@@ -12,8 +12,9 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
     const draft_status = searchParams.get('draft_status') || undefined
     const workspace_id = searchParams.get('workspace_id') || undefined
-    const limit = searchParams.get('limit') ? Number(searchParams.get('limit')) : 100
-    const offset = searchParams.get('offset') ? Number(searchParams.get('offset')) : undefined
+    const limit = Math.min(Math.max(1, parseInt(searchParams.get('limit') || '100')), 500)
+    const rawOffset = parseInt(searchParams.get('offset') || '0')
+    const offset = isNaN(rawOffset) ? 0 : Math.max(0, rawOffset)
 
     const repo = new SdrInboxRepository()
     const [replies, counts] = await Promise.all([
