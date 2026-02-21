@@ -169,6 +169,7 @@ export const processSequenceStep = inngest.createFunction(
           .from('leads')
           .select('*, contact_data, company_data')
           .eq('id', lead_id)
+          .eq('workspace_id', workspace_id)
           .maybeSingle(),
       ])
 
