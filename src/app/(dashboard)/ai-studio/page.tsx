@@ -5,7 +5,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import NextImage from 'next/image'
 import { Button } from '@/components/ui/button'
@@ -72,6 +72,17 @@ export default function AIStudioPage() {
   useEffect(() => {
     fetchWorkspaces()
     fetchUserName()
+  }, [])
+
+  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const timeoutIdRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Cleanup polling intervals on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current)
+      if (timeoutIdRef.current) clearTimeout(timeoutIdRef.current)
+    }
   }, [])
 
   async function fetchUserName() {
@@ -185,12 +196,14 @@ export default function AIStudioPage() {
           }
         }
       }, 2000)
+      pollIntervalRef.current = pollInterval
 
       timeoutId = setTimeout(() => {
         if (pollInterval) clearInterval(pollInterval)
         setIsExtracting(false)
         setExtractionError('Extraction timed out. The API may be overloaded. Please try again.')
       }, 30000)
+      timeoutIdRef.current = timeoutId
 
     } catch (error: any) {
       if (pollInterval) clearInterval(pollInterval)

@@ -4,6 +4,7 @@ import { CalculatorForm } from './CalculatorForm'
 import { LoadingState } from './LoadingState'
 import { ResultsDashboard } from './ResultsDashboard'
 import { calculateScenarios } from '@/lib/superpixel-constants'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 type Step = 'form' | 'loading' | 'results'
 
@@ -29,7 +30,7 @@ export function RevenueCalculator() {
       fetch(`/api/analyze-site?domain=${encodeURIComponent(data.domain)}`)
         .then(r => r.json())
         .then(d => setSiteData(d.error ? null : d))
-        .catch(() => {}),
+        .catch((err) => { safeError('[RevenueCalculator] Site analysis fetch failed:', err) }),
     ])
 
     // Minimum loading time of 2s for UX

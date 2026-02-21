@@ -23,6 +23,14 @@ function PartnerConnectSuccessContent() {
       try {
         // Verify Stripe onboarding completed
         const response = await fetch(`/api/partner/connect/verify?partner_id=${partnerId}`)
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}))
+          setStatus('error')
+          setMessage((errorData as any).error || 'Failed to verify onboarding status')
+          return
+        }
+
         const data = await response.json()
 
         if (data.onboardingComplete) {
