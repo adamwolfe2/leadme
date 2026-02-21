@@ -12,6 +12,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { isValidWebhookUrl } from '@/lib/utils/ssrf-guard'
 
 const ALLOWED_EVENTS = [
   'lead.received',
@@ -94,6 +95,13 @@ export async function PATCH(
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Validation failed', details: parsed.error.flatten().fieldErrors },
+        { status: 400 }
+      )
+    }
+
+    if (parsed.data.url !== undefined && !isValidWebhookUrl(parsed.data.url)) {
+      return NextResponse.json(
+        { error: 'Webhook URL must be a public HTTPS endpoint. Internal/private network addresses are not allowed.' },
         { status: 400 }
       )
     }

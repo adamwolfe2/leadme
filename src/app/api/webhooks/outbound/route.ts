@@ -12,6 +12,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { isValidWebhookUrl } from '@/lib/utils/ssrf-guard'
 
 const ALLOWED_EVENTS = [
   'lead.received',
@@ -110,6 +111,14 @@ export async function POST(req: NextRequest) {
     }
 
     const { url, events, name } = parsed.data
+
+    if (!isValidWebhookUrl(url)) {
+      return NextResponse.json(
+        { error: 'Webhook URL must be a public HTTPS endpoint. Internal/private network addresses are not allowed.' },
+        { status: 400 }
+      )
+    }
+
     const secret = generateSecret()
 
     const supabase = createAdminClient()
