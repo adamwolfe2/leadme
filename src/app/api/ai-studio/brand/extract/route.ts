@@ -133,12 +133,17 @@ async function processBrandExtractionWithTimeout(
     ])
   } catch (error: any) {
     safeError('[Brand Extract] Background extraction failed:', error)
+    // Sanitize error message — don't store raw error.message which may contain internal details
+    const safeErrorMessage =
+      error?.message === 'Processing timed out'
+        ? 'Processing timed out — please try again'
+        : 'Extraction failed — please try again'
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (supabase as any)
       .from('brand_workspaces')
       .update({
         extraction_status: 'error',
-        extraction_error: error.message,
+        extraction_error: safeErrorMessage,
       })
       .eq('id', workspaceId)
   }

@@ -32,6 +32,7 @@ export const processBulkUpload = inngest.createFunction(
         .from('bulk_upload_jobs')
         .update({ status: 'processing' })
         .eq('id', jobId)
+        .eq('workspace_id', workspaceId) // defense-in-depth
     })
 
     const results = {
@@ -157,6 +158,7 @@ export const processBulkUpload = inngest.createFunction(
             failed_records: results.failed
           })
           .eq('id', jobId)
+          .eq('workspace_id', workspaceId) // defense-in-depth
       })
     }
 
@@ -177,6 +179,7 @@ export const processBulkUpload = inngest.createFunction(
           completed_at: new Date().toISOString()
         })
         .eq('id', jobId)
+        .eq('workspace_id', workspaceId) // defense-in-depth
     })
 
     return results
@@ -291,6 +294,7 @@ export const importLeadFromAudienceLabs = inngest.createFunction(
         .from('bulk_upload_jobs')
         .select('successful_records')
         .eq('id', jobId)
+        .eq('workspace_id', workspaceId) // defense-in-depth
         .maybeSingle()
 
       if (job) {
@@ -300,6 +304,7 @@ export const importLeadFromAudienceLabs = inngest.createFunction(
             successful_records: (job.successful_records || 0) + 1
           })
           .eq('id', jobId)
+          .eq('workspace_id', workspaceId) // defense-in-depth
       }
     })
 
