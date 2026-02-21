@@ -125,7 +125,9 @@ export async function POST(req: NextRequest) {
         additional_notes: validated.additional_notes || '—',
         action: `Reply to ${validated.contact_email} within 24h`,
       },
-    }).catch(() => {})
+    }).catch((alertErr) => {
+      safeError('[Activate/Audience] Slack alert failed:', alertErr)
+    })
 
     return NextResponse.json({ success: true, request_id: request?.id })
   } catch (err) {
