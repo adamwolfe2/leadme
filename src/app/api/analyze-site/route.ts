@@ -3,7 +3,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
 
 export async function GET(req: NextRequest) {
-  const rateLimited = await withRateLimit(req, 'api-general')
+  const rateLimited = await withRateLimit(req, 'default')
   if (rateLimited) return rateLimited
 
   const user = await getCurrentUser()

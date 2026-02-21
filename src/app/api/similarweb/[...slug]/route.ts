@@ -9,7 +9,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ slug: string[] }> }
 ) {
-  const rateLimited = await withRateLimit(req, 'api-general')
+  const rateLimited = await withRateLimit(req, 'default')
   if (rateLimited) return rateLimited
 
   const user = await getCurrentUser()
