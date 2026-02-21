@@ -182,9 +182,18 @@ export default function PartnerPayoutsPage() {
               </div>
             </Link>
           </div>
-          <Link href="/partner" className="text-[13px] text-zinc-600 hover:text-zinc-900">
-            Back to Dashboard
-          </Link>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => window.open('/api/partner/payouts/export', '_blank')}
+              className="h-9 px-4 text-[13px] border border-zinc-200 text-zinc-700 rounded-lg hover:bg-zinc-50 transition-colors"
+            >
+              Export CSV
+            </button>
+            <Link href="/partner" className="text-[13px] text-zinc-600 hover:text-zinc-900">
+              Back to Dashboard
+            </Link>
+          </div>
         </div>
       </header>
 

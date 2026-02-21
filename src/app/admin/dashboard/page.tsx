@@ -35,6 +35,15 @@ interface BulkUploadJob {
   routing_summary: any
 }
 
+interface DashboardStats {
+  totalUsers: number
+  newToday: number
+  leadsThisWeek: number
+  activeQueries: number
+  creditsPurchasedThisMonth: number
+  failedOpsToday: number
+}
+
 export default function AdminDashboard() {
   const { toast } = useToast()
   const [rules, setRules] = useState<RoutingRule[]>([])
@@ -45,6 +54,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(false)
   const [rulesLoading, setRulesLoading] = useState(true)
   const [leadsLoading, setLeadsLoading] = useState(true)
+  const [kpis, setKpis] = useState<DashboardStats | null>(null)
 
   const supabase = createClient()
 
@@ -88,10 +98,20 @@ export default function AdminDashboard() {
     }
   }
 
+  async function fetchKpis() {
+    try {
+      const res = await fetch('/api/admin/dashboard-stats')
+      if (res.ok) setKpis(await res.json())
+    } catch (error) {
+      safeError('[AdminDashboard]', 'Failed to fetch KPIs:', error)
+    }
+  }
+
   // Fetch data on mount - auth already verified by middleware
   useEffect(() => {
     fetchRules()
     fetchLeads()
+    fetchKpis()
     const interval = setInterval(fetchLeads, 5000)
     return () => clearInterval(interval)
   }, [])
@@ -191,6 +211,33 @@ export default function AdminDashboard() {
             <p className="text-[13px] text-zinc-500 mt-1">
               Manage routing rules, monitor leads, and test integrations
             </p>
+          </div>
+
+          {/* Platform Health KPIs */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+            {[
+              { label: 'Total Users', value: kpis?.totalUsers, link: '/admin/accounts', color: 'text-zinc-900' },
+              { label: 'New Today', value: kpis?.newToday, link: '/admin/accounts', color: 'text-emerald-600' },
+              { label: 'Leads (7d)', value: kpis?.leadsThisWeek, link: '/admin/leads', color: 'text-blue-600' },
+              { label: 'Active Queries', value: kpis?.activeQueries, link: '/admin/dashboard', color: 'text-zinc-900' },
+              { label: 'Credits (MTD, $)', value: kpis ? `$${kpis.creditsPurchasedThisMonth.toFixed(0)}` : null, link: '/admin/revenue', color: 'text-emerald-600' },
+              { label: 'Failed Ops Today', value: kpis?.failedOpsToday, link: '/admin/failed-operations', color: kpis && kpis.failedOpsToday > 0 ? 'text-red-600' : 'text-zinc-900' },
+            ].map((stat) => (
+              <a
+                key={stat.label}
+                href={stat.link}
+                className="bg-white border border-zinc-200 rounded-lg p-4 hover:border-zinc-300 hover:shadow-sm transition-all"
+              >
+                <div className="text-[12px] text-zinc-500 mb-1 truncate">{stat.label}</div>
+                <div className={`text-2xl font-semibold tracking-tight ${stat.color}`}>
+                  {stat.value == null ? (
+                    <span className="inline-block h-6 w-10 bg-zinc-100 rounded animate-pulse" />
+                  ) : (
+                    stat.value
+                  )}
+                </div>
+              </a>
+            ))}
           </div>
 
           {/* Routing Rules Section */}
