@@ -97,6 +97,7 @@ export async function PATCH(
       .from('saved_segments')
       .update(validated)
       .eq('id', id)
+      .eq('workspace_id', user.workspace_id) // Defense-in-depth
       .select()
       .maybeSingle()
 

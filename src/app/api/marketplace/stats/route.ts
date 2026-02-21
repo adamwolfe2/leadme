@@ -78,12 +78,13 @@ export async function GET() {
       0
     ) || 0
 
-    // Get average lead price
+    // Get average lead price (sample up to 5000 for performance)
     const { data: avgPriceData, error: avgError } = await supabase
       .from('leads')
       .select('price')
       .neq('workspace_id', workspaceId)
       .eq('status', 'available')
+      .limit(5000)
 
     if (avgError) {
       throw avgError
