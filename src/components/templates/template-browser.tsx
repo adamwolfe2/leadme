@@ -44,6 +44,43 @@ const STRUCTURES = ['problem_solution', 'value_prop_first', 'social_proof', 'que
 const CTA_TYPES = ['demo_request', 'meeting_request', 'free_trial', 'open_question', 'send_resource']
 const SENIORITIES = ['c_level', 'vp', 'director', 'manager']
 
+const CATEGORIES = ['All', 'Cold Email', 'Follow-up', 'Re-engagement', 'Nurture', 'Demo Request'] as const
+type Category = typeof CATEGORIES[number]
+
+function matchesCategory(template: Template, category: Category): boolean {
+  if (category === 'All') return true
+  const nameLower = template.name.toLowerCase()
+  const subjectLower = template.subject.toLowerCase()
+  if (category === 'Demo Request') {
+    return template.cta_type === 'demo_request'
+  }
+  if (category === 'Follow-up') {
+    return nameLower.includes('follow') || subjectLower.includes('follow')
+  }
+  if (category === 'Re-engagement') {
+    return (
+      nameLower.includes('re-engag') ||
+      nameLower.includes('reengage') ||
+      nameLower.includes('win back') ||
+      subjectLower.includes('re-engag') ||
+      subjectLower.includes('reengage') ||
+      subjectLower.includes('win back')
+    )
+  }
+  if (category === 'Nurture') {
+    return nameLower.includes('nurture') || subjectLower.includes('nurture')
+  }
+  if (category === 'Cold Email') {
+    return (
+      nameLower.includes('cold') ||
+      subjectLower.includes('cold') ||
+      template.structure === 'value_prop_first' ||
+      template.structure === 'problem_solution'
+    )
+  }
+  return true
+}
+
 // Sample data for preview
 const SAMPLE_DATA: Record<string, string> = {
   first_name: 'Alex',
@@ -69,6 +106,7 @@ export function TemplateBrowser() {
   const [templates, setTemplates] = useState<Template[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [activeCategory, setActiveCategory] = useState<Category>('All')
   const [filters, setFilters] = useState({
     tone: '',
     structure: '',
@@ -104,8 +142,9 @@ export function TemplateBrowser() {
     fetchTemplates()
   }, [filters])
 
-  // Filter by search query
+  // Filter by search query and active category
   const filteredTemplates = templates.filter((template) => {
+    if (!matchesCategory(template, activeCategory)) return false
     if (!searchQuery) return true
     const query = searchQuery.toLowerCase()
     return (
@@ -164,9 +203,10 @@ export function TemplateBrowser() {
       seniority: '',
     })
     setSearchQuery('')
+    setActiveCategory('All')
   }
 
-  const hasActiveFilters = filters.tone || filters.structure || filters.cta_type || filters.seniority || searchQuery
+  const hasActiveFilters = filters.tone || filters.structure || filters.cta_type || filters.seniority || searchQuery || activeCategory !== 'All'
 
   return (
     <PageContainer>
@@ -178,6 +218,24 @@ export function TemplateBrowser() {
           { label: 'Templates' },
         ]}
       />
+
+      {/* Category Filter Pills */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {CATEGORIES.map((category) => (
+          <button
+            key={category}
+            onClick={() => setActiveCategory(category)}
+            className={[
+              'px-3 py-1.5 rounded-full text-sm font-medium border transition-colors',
+              activeCategory === category
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-foreground',
+            ].join(' ')}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
 
       {/* Filters */}
       <Card className="p-4 mb-6">
