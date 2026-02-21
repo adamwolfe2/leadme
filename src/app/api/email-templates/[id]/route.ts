@@ -174,6 +174,7 @@ export async function DELETE(
       .from('email_templates')
       .delete()
       .eq('id', id)
+      .eq('workspace_id', user.workspace_id) // Defense-in-depth
 
     if (error) {
       safeError('Failed to delete email template:', error)

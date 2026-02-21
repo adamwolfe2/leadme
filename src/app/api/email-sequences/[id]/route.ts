@@ -217,6 +217,7 @@ export async function DELETE(
       .from('email_sequences')
       .delete()
       .eq('id', id)
+      .eq('workspace_id', user.workspace_id) // Defense-in-depth: enforce ownership on delete
 
     if (error) {
       safeError('Failed to delete email sequence:', error)

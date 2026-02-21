@@ -161,6 +161,7 @@ export async function DELETE(
       .from('saved_segments')
       .delete()
       .eq('id', id)
+      .eq('workspace_id', user.workspace_id) // Defense-in-depth
 
     if (error) {
       safeError('[Segments API] Delete error:', error)
