@@ -18,7 +18,6 @@ const nextConfig = {
   // ============================================
   images: {
     formats: ['image/avif', 'image/webp'],
-    domains: ['localhost', 'meetcursive.com'],
     remotePatterns: [
       {
         protocol: 'https',
@@ -31,6 +30,14 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: '**.googleusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'meetcursive.com',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
       },
     ],
     // Minimize image processing memory

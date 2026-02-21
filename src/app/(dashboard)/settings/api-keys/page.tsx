@@ -167,7 +167,7 @@ export default function ApiKeysPage() {
             <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-amber-800 mb-1">
-                Save your API key — it won't be shown again
+                Save your API key — it won&apos;t be shown again
               </p>
               <div className="flex items-center gap-2 mt-2">
                 <code className="flex-1 min-w-0 rounded bg-white border border-amber-200 px-3 py-2 text-xs font-mono text-amber-900 overflow-x-auto">
@@ -195,7 +195,7 @@ export default function ApiKeysPage() {
               onClick={() => setNewKeyValue(null)}
               className="text-amber-700 hover:text-amber-900 hover:bg-amber-100 text-xs"
             >
-              I've saved it, dismiss
+              I&apos;ve saved it, dismiss
             </Button>
           </div>
         </div>
