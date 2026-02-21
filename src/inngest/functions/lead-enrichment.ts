@@ -121,6 +121,7 @@ export const leadEnrichment = inngest.createFunction(
         .from('leads')
         .update(updateData)
         .eq('id', lead_id)
+        .eq('workspace_id', workspace_id)
 
       if (error) {
         logger.error('Failed to update lead:', error)
@@ -261,6 +262,7 @@ export const leadEnrichmentFailure = inngest.createFunction(
           enriched_at: new Date().toISOString(),
         })
         .eq('id', lead_id)
+        .eq('workspace_id', workspace_id)
 
       logger.warn(`Lead ${lead_id} marked as enrichment failed`)
     })

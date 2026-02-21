@@ -156,6 +156,7 @@ export const processEnrichmentJob = inngest.createFunction(
           .from('leads')
           .update(updatePayload)
           .eq('id', lead_id)
+          .eq('workspace_id', workspace_id)
 
         // Log the enrichment activity
         await supabase.from('lead_activities').insert({

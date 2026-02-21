@@ -108,7 +108,7 @@ export const inferLeadTimezones = inngest.createFunction(
 
       const { data, error } = await supabase
         .from('leads')
-        .select('id, company_location, company_domain')
+        .select('id, workspace_id, company_location, company_domain')
         .is('timezone', null)
         .limit(500)
 
@@ -147,6 +147,7 @@ export const inferLeadTimezones = inngest.createFunction(
                 timezone_source: inferred.source,
               })
               .eq('id', lead.id)
+              .eq('workspace_id', lead.workspace_id)
 
             if (updateError) {
               errors++

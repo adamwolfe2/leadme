@@ -243,6 +243,7 @@ export const processAudienceLabEvent = inngest.createFunction(
           .from('leads')
           .update(updateFields)
           .eq('id', identity.existing_lead_id)
+          .eq('workspace_id', targetWorkspaceId)
 
         return { lead_id: identity.existing_lead_id, is_new_lead: false }
       }
@@ -438,6 +439,7 @@ export const processAudienceLabEvent = inngest.createFunction(
               .from('leads')
               .update({ assigned_user_id: ut.user_id })
               .eq('id', lead.id)
+              .eq('workspace_id', targetWorkspaceId)
               .is('assigned_user_id', null)
 
             // Increment user lead counts

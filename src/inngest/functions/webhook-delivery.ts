@@ -114,6 +114,7 @@ export const deliverLeadWebhook = inngest.createFunction(
             delivery_method: 'webhook',
           })
           .eq('id', lead_id)
+          .eq('workspace_id', workspace_id)
       } else {
         const nextRetry = calculateNextRetry(1)
 
@@ -233,6 +234,7 @@ export const retryWebhookDeliveries = inngest.createFunction(
                 delivery_method: 'webhook',
               })
               .eq('id', delivery.lead_id)
+              .eq('workspace_id', delivery.workspace_id)
           }
 
           return { status: 'succeeded' as const }

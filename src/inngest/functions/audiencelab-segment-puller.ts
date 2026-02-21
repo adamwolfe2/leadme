@@ -337,6 +337,7 @@ export const audienceLabSegmentPuller = inngest.createFunction(
               .from('leads')
               .update({ assigned_user_id: ut.user_id })
               .eq('id', lead.id)
+              .eq('workspace_id', lead.workspace_id)
               .is('assigned_user_id', null) // Only if not already assigned
 
             // Increment user lead counts

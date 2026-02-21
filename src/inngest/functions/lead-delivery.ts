@@ -237,6 +237,7 @@ export const leadDelivery = inngest.createFunction(
           delivered_at: new Date().toISOString(),
         })
         .eq('id', lead_id)
+        .eq('workspace_id', workspace_id)
 
       logger.info(`Lead ${lead_id} marked as delivered`)
     })
