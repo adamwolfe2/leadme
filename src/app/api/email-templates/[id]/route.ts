@@ -88,6 +88,7 @@ export async function PATCH(
       .from('email_templates')
       .update(validated)
       .eq('id', id)
+      .eq('workspace_id', user.workspace_id) // Defense-in-depth
       .select()
       .maybeSingle()
 
@@ -111,6 +112,7 @@ export async function PATCH(
         .from('email_templates')
         .update({ last_used_at: new Date().toISOString() })
         .eq('id', id)
+        .eq('workspace_id', user.workspace_id) // Defense-in-depth
     }
 
     return NextResponse.json({ template })

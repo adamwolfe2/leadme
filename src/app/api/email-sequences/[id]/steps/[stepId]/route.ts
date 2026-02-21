@@ -96,6 +96,7 @@ export async function PATCH(
       .from('email_sequence_steps')
       .update(validated)
       .eq('id', stepId)
+      .eq('sequence_id', sequenceId) // Defense-in-depth
       .select()
       .maybeSingle()
 
@@ -195,6 +196,7 @@ export async function DELETE(
           .from('email_sequence_steps')
           .update({ step_order: i })
           .eq('id', remainingSteps[i].id)
+          .eq('sequence_id', sequenceId) // Defense-in-depth
       }
     }
 

@@ -130,6 +130,7 @@ export async function PATCH(
       .from('email_sequences')
       .update(validated)
       .eq('id', id)
+      .eq('workspace_id', user.workspace_id) // Defense-in-depth
       .select()
       .maybeSingle()
 

@@ -536,6 +536,7 @@ async function executeActionStep(
           .from('leads')
           .update({ enrichment_status: config.status })
           .eq('id', lead.id)
+          .eq('workspace_id', workspaceId)
       }
       break
 
@@ -560,6 +561,7 @@ async function executeActionStep(
             ),
           })
           .eq('id', lead.id)
+          .eq('workspace_id', workspaceId)
       }
       break
   }
