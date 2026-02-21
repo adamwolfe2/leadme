@@ -106,14 +106,18 @@ function LeadActionsCell({ lead, onRefresh }: { lead: LeadTableRow; onRefresh?: 
             <Button
               variant="destructive"
               onClick={() => {
-                fetch(`/api/leads/${confirmDelete!}`, { method: 'DELETE' })
-                  .then((res) => {
-                    if (!res.ok) throw new Error('Delete failed')
+                const id = confirmDelete!
+                setConfirmDelete(null)
+                fetch(`/api/leads/${id}`, { method: 'DELETE' })
+                  .then(async (res) => {
+                    if (!res.ok) {
+                      const body = await res.json().catch(() => ({}))
+                      throw new Error(body.error || 'Delete failed')
+                    }
                     toast.success('Lead deleted')
                     if (onRefresh) onRefresh(); else window.location.reload()
                   })
-                  .catch(() => toast.error('Failed to delete lead'))
-                setConfirmDelete(null)
+                  .catch((err) => toast.error(err.message || 'Failed to delete lead'))
               }}
             >
               Delete
