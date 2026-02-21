@@ -19,11 +19,14 @@ export async function GET(req: NextRequest) {
 
     const workspaceId = user.workspace_id
 
-    // Parse query params
+    // Parse query params — use Number() with isNaN guard to avoid NaN propagation
     const { searchParams } = new URL(req.url)
-    const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), 100)
-    const offset = Math.max(parseInt(searchParams.get('offset') || '0', 10), 0)
-    const days = parseInt(searchParams.get('days') || '0', 10) // 0 = all time
+    const rawLimit = Number(searchParams.get('limit') ?? 50)
+    const rawOffset = Number(searchParams.get('offset') ?? 0)
+    const rawDays = Number(searchParams.get('days') ?? 0)
+    const limit = Math.min(Math.max(1, isNaN(rawLimit) ? 50 : rawLimit), 100)
+    const offset = Math.min(Math.max(0, isNaN(rawOffset) ? 0 : rawOffset), 100000)
+    const days = isNaN(rawDays) ? 0 : Math.max(0, rawDays) // 0 = all time
     const dateFilter = days > 0
       ? new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString()
       : null
