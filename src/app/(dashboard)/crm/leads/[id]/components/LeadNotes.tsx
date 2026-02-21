@@ -21,6 +21,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useToast } from '@/lib/hooks/use-toast'
 
 interface Note {
@@ -69,6 +70,7 @@ export function LeadNotes({ leadId }: LeadNotesProps) {
   const [noteType, setNoteType] = useState<string>('note')
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null)
   const [editContent, setEditContent] = useState('')
+  const [confirmDeleteNote, setConfirmDeleteNote] = useState<string | null>(null)
 
   // Fetch notes
   const { data, isLoading, error, refetch } = useQuery({
@@ -332,11 +334,7 @@ export function LeadNotes({ leadId }: LeadNotesProps) {
                       variant="ghost"
                       size="icon"
                       className="h-6 w-6"
-                      onClick={() => {
-                        if (confirm('Delete this note?')) {
-                          deleteMutation.mutate(note.id)
-                        }
-                      }}
+                      onClick={() => setConfirmDeleteNote(note.id)}
                     >
                       <Trash2 className="h-3 w-3 text-gray-400" />
                     </Button>
@@ -391,6 +389,18 @@ export function LeadNotes({ leadId }: LeadNotesProps) {
           })}
         </div>
       )}
+      <Dialog open={!!confirmDeleteNote} onOpenChange={(open) => { if (!open) setConfirmDeleteNote(null) }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Note</DialogTitle>
+            <DialogDescription>Are you sure you want to delete this note? This action cannot be undone.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDeleteNote(null)}>Cancel</Button>
+            <Button variant="destructive" onClick={() => { deleteMutation.mutate(confirmDeleteNote!); setConfirmDeleteNote(null) }}>Delete</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

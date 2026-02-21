@@ -5,6 +5,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { cn, formatDateTime, formatRelativeTime } from '@/lib/utils'
 import type { LeadNote, NoteType } from '@/types'
 import { NOTE_TYPES } from '@/types'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 interface LeadNotesPanelProps {
   leadId: string
@@ -85,6 +87,7 @@ export function LeadNotesPanel({ leadId, className }: LeadNotesPanelProps) {
   const [newNoteContent, setNewNoteContent] = useState('')
   const [selectedNoteType, setSelectedNoteType] = useState<NoteType>('note')
   const [isExpanded, setIsExpanded] = useState(false)
+  const [confirmDeleteNote, setConfirmDeleteNote] = useState<string | null>(null)
 
   const queryClient = useQueryClient()
 
@@ -249,11 +252,7 @@ export function LeadNotesPanel({ leadId, className }: LeadNotesPanelProps) {
                     </svg>
                   </button>
                   <button
-                    onClick={() => {
-                      if (confirm('Are you sure you want to delete this note?')) {
-                        deleteMutation.mutate(note.id)
-                      }
-                    }}
+                    onClick={() => setConfirmDeleteNote(note.id)}
                     className="rounded p-1 text-zinc-400 hover:text-red-600 transition-colors"
                     title="Delete"
                   >
@@ -272,6 +271,19 @@ export function LeadNotesPanel({ leadId, className }: LeadNotesPanelProps) {
           ))
         )}
       </div>
+
+      <Dialog open={!!confirmDeleteNote} onOpenChange={(open) => { if (!open) setConfirmDeleteNote(null) }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Note</DialogTitle>
+            <DialogDescription>Are you sure you want to delete this note? This action cannot be undone.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDeleteNote(null)}>Cancel</Button>
+            <Button variant="destructive" onClick={() => { deleteMutation.mutate(confirmDeleteNote!); setConfirmDeleteNote(null) }}>Delete</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

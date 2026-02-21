@@ -3,12 +3,14 @@
 
 'use client'
 
+import { useState } from 'react'
 import { ColumnDef } from '@tanstack/react-table'
 import { MoreHorizontal, ArrowUpDown } from 'lucide-react'
 import { format, formatDistanceToNow } from 'date-fns'
 import { toast } from 'sonner'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -60,6 +62,68 @@ function formatPhone(phone: string | null): string {
   return phone
 }
 
+
+// Separate component so it can hold Dialog state (hooks cannot be called inside column defs)
+function LeadActionsCell({ lead, onRefresh }: { lead: LeadTableRow; onRefresh?: () => void }) {
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuItem onClick={() => navigator.clipboard.writeText(lead.email || '')}>
+            Copy email
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => { window.location.href = `/crm/leads/${lead.id}` }}>
+            View details
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => { window.location.href = `/crm/leads/${lead.id}?edit=true` }}>
+            Edit lead
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="text-destructive" onClick={() => setConfirmDelete(lead.id)}>
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Dialog open={!!confirmDelete} onOpenChange={(open) => { if (!open) setConfirmDelete(null) }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Lead</DialogTitle>
+            <DialogDescription>Are you sure you want to delete this lead? This action cannot be undone.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDelete(null)}>Cancel</Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                fetch(`/api/leads/${confirmDelete!}`, { method: 'DELETE' })
+                  .then((res) => {
+                    if (!res.ok) throw new Error('Delete failed')
+                    toast.success('Lead deleted')
+                    if (onRefresh) onRefresh(); else window.location.reload()
+                  })
+                  .catch(() => toast.error('Failed to delete lead'))
+                setConfirmDelete(null)
+              }}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  )
+}
 
 export function createLeadsTableColumns(
   availableUsers: WorkspaceUser[] = [],
@@ -409,56 +473,7 @@ export function createLeadsTableColumns(
   // Actions column
   {
     id: 'actions',
-    cell: ({ row }) => {
-      const lead = row.original
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(lead.email || '')}
-            >
-              Copy email
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => window.location.href = `/crm/leads/${lead.id}`}>
-              View details
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => window.location.href = `/crm/leads/${lead.id}?edit=true`}>
-              Edit lead
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-destructive"
-              onClick={() => {
-                if (confirm(`Are you sure you want to delete this lead?`)) {
-                  fetch(`/api/leads/${lead.id}`, { method: 'DELETE' })
-                    .then((res) => {
-                      if (!res.ok) throw new Error('Delete failed')
-                      toast.success('Lead deleted')
-                      if (onRefresh) {
-                        onRefresh()
-                      } else {
-                        window.location.reload()
-                      }
-                    })
-                    .catch(() => toast.error('Failed to delete lead'))
-                }
-              }}
-            >
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
+    cell: ({ row }) => <LeadActionsCell lead={row.original} onRefresh={onRefresh} />,
     size: 60,
     enableHiding: false,
   },

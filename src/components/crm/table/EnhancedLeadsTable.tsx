@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ImportLeadsDialog } from '@/components/crm/dialogs/ImportLeadsDialog'
 import { CreateLeadDialog } from '@/components/crm/dialogs/CreateLeadDialog'
 import { EditLeadDialog } from '@/components/crm/dialogs/EditLeadDialog'
@@ -93,6 +94,7 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
   const [editDialogOpen, setEditDialogOpen] = React.useState(false)
   const [editingLead, setEditingLead] = React.useState<LeadTableRow | null>(null)
   const [selectedLeadIds, setSelectedLeadIds] = React.useState<Set<string>>(new Set())
+  const [confirmDeleteId, setConfirmDeleteId] = React.useState<string | null>(null)
   const router = useRouter()
   const { toast } = useToast()
 
@@ -522,22 +524,7 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             className="text-red-600"
-                            onClick={async () => {
-                              if (confirm('Are you sure you want to delete this lead?')) {
-                                try {
-                                  const response = await fetch(`/api/crm/leads/${lead.id}`, {
-                                    method: 'DELETE',
-                                  })
-                                  if (response.ok) {
-                                    router.refresh()
-                                  } else {
-                                    toast({ type: 'error', message: 'Failed to delete lead' })
-                                  }
-                                } catch (error) {
-                                  toast({ type: 'error', message: 'Failed to delete lead' })
-                                }
-                              }
-                            }}
+                            onClick={() => setConfirmDeleteId(lead.id)}
                           >
                             <Trash2 className="size-4 mr-2" />
                             Delete
@@ -693,6 +680,40 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
           router.refresh()
         }}
       />
+
+      {/* Confirm Delete Dialog */}
+      <Dialog open={!!confirmDeleteId} onOpenChange={(open) => { if (!open) setConfirmDeleteId(null) }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Lead</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this lead? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDeleteId(null)}>Cancel</Button>
+            <Button
+              variant="destructive"
+              onClick={async () => {
+                const id = confirmDeleteId!
+                setConfirmDeleteId(null)
+                try {
+                  const response = await fetch(`/api/crm/leads/${id}`, { method: 'DELETE' })
+                  if (response.ok) {
+                    router.refresh()
+                  } else {
+                    toast({ type: 'error', message: 'Failed to delete lead' })
+                  }
+                } catch {
+                  toast({ type: 'error', message: 'Failed to delete lead' })
+                }
+              }}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 })

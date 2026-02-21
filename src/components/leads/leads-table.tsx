@@ -24,6 +24,7 @@ import { TableSkeleton } from '@/components/skeletons'
 import { ErrorDisplay } from '@/components/error-display'
 import { Users, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import Link from 'next/link'
 
 interface LeadsTableProps {
@@ -82,6 +83,7 @@ export function LeadsTable({ initialFilters }: LeadsTableProps) {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 50 })
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
+  const [confirmBulkDelete, setConfirmBulkDelete] = useState(false)
 
   // Fetch leads with all filters
   const { data, isLoading, error, refetch } = useQuery({
@@ -412,14 +414,9 @@ export function LeadsTable({ initialFilters }: LeadsTableProps) {
 
   const { mutateAsync: doDelete } = deleteMutation
   const handleBulkDelete = useCallback(async () => {
-    if (
-      selectedLeadIds.length === 0 ||
-      !confirm(`Delete ${selectedLeadIds.length} lead(s)?`)
-    ) {
-      return
-    }
-    await doDelete(selectedLeadIds)
-  }, [selectedLeadIds, doDelete])
+    if (selectedLeadIds.length === 0) return
+    setConfirmBulkDelete(true)
+  }, [selectedLeadIds])
 
   // Show error state
   if (error) {
@@ -639,6 +636,30 @@ export function LeadsTable({ initialFilters }: LeadsTableProps) {
           onRefresh={() => { refetch() }}
         />
       )}
+
+      {/* Confirm Bulk Delete Dialog */}
+      <Dialog open={confirmBulkDelete} onOpenChange={(open) => { if (!open) setConfirmBulkDelete(false) }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Leads</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete {selectedLeadIds.length} lead{selectedLeadIds.length !== 1 ? 's' : ''}? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmBulkDelete(false)}>Cancel</Button>
+            <Button
+              variant="destructive"
+              onClick={async () => {
+                setConfirmBulkDelete(false)
+                await doDelete(selectedLeadIds)
+              }}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
