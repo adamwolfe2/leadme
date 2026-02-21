@@ -11,22 +11,18 @@ export async function POST(request: NextRequest) {
   try {
     const payload = await request.text()
     const signature = request.headers.get('x-webhook-signature') || ''
-    const webhookSecret = process.env.INBOUND_EMAIL_WEBHOOK_SECRET || ''
+    const webhookSecret = process.env.INBOUND_EMAIL_WEBHOOK_SECRET
 
-    // Require webhook signature verification
+    // Always require webhook secret to be configured — no dev-mode bypass
     if (!webhookSecret) {
-      // Allow without secret only in development
-      if (process.env.NODE_ENV !== 'development') {
-        safeError('INBOUND_EMAIL_WEBHOOK_SECRET is not configured')
-        return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 })
-      }
-    } else {
-      if (!signature) {
-        return NextResponse.json({ error: 'Missing webhook signature' }, { status: 401 })
-      }
-      if (!(await verifyHmacSignature(payload, signature, webhookSecret))) {
-        return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
-      }
+      safeError('[Inbound Email] INBOUND_EMAIL_WEBHOOK_SECRET is not configured')
+      return NextResponse.json({ error: 'Webhook not configured' }, { status: 500 })
+    }
+    if (!signature) {
+      return NextResponse.json({ error: 'Missing webhook signature' }, { status: 401 })
+    }
+    if (!(await verifyHmacSignature(payload, signature, webhookSecret))) {
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
     }
 
     const data = JSON.parse(payload)
