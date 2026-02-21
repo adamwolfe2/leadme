@@ -66,6 +66,10 @@ const ACTIVITY_ICONS: Record<string, React.ElementType> = {
   tag_added: Tag,
   tag_removed: Tag,
   assigned: UserCheck,
+  enrichment_started: RefreshCw,
+  enrichment_completed: UserCheck,
+  enrichment_failed: AlertCircle,
+  enrichment_partial: RefreshCw,
 }
 
 const ACTIVITY_COLORS: Record<string, string> = {
@@ -80,6 +84,10 @@ const ACTIVITY_COLORS: Record<string, string> = {
   tag_added: 'bg-teal-100 text-teal-600',
   tag_removed: 'bg-red-100 text-red-600',
   assigned: 'bg-cyan-100 text-cyan-600',
+  enrichment_started: 'bg-violet-100 text-violet-600',
+  enrichment_completed: 'bg-emerald-100 text-emerald-600',
+  enrichment_failed: 'bg-red-100 text-red-600',
+  enrichment_partial: 'bg-amber-100 text-amber-600',
 }
 
 export function LeadActivityTimeline({ leadId }: LeadActivityTimelineProps) {

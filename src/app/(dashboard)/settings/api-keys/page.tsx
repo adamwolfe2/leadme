@@ -56,7 +56,7 @@ const DEFAULT_FORM: CreateForm = {
 }
 
 export default function ApiKeysPage() {
-  const toast = useToast()
+  const { toast } = useToast()
   const queryClient = useQueryClient()
   const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [newKeyValue, setNewKeyValue] = useState<string | null>(null)
@@ -98,10 +98,10 @@ export default function ApiKeysPage() {
       setNewKeyValue(result.data.api_key.key)
       setForm(DEFAULT_FORM)
       setShowCreateDialog(false)
-      toast.success('API key created. Save it now — it won\'t be shown again.')
+      toast({ type: 'success', message: 'API key created. Save it now — it won\'t be shown again.' })
     },
     onError: (err: Error) => {
-      toast.error(err.message)
+      toast({ type: 'error', message: err.message })
     },
   })
 
@@ -115,10 +115,10 @@ export default function ApiKeysPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workspace', 'api-keys'] })
       setRevokeConfirmId(null)
-      toast.success('API key revoked')
+      toast({ type: 'success', message: 'API key revoked' })
     },
     onError: () => {
-      toast.error('Failed to revoke API key')
+      toast({ type: 'error', message: 'Failed to revoke API key' })
     },
   })
 
@@ -299,6 +299,57 @@ export default function ApiKeysPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Rate Limits & Usage */}
+      {!isLoading && apiKeys.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              Rate Limits & Usage
+            </CardTitle>
+            <CardDescription>
+              Current rate limits and last activity per key.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="divide-y divide-border">
+              {apiKeys.filter((k) => k.is_active && !isExpired(k)).map((key) => (
+                <div key={key.id} className="py-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">{key.name}</p>
+                    <p className="text-xs text-muted-foreground font-mono">{key.key_prefix}•••</p>
+                  </div>
+                  <div className="flex items-center gap-4 text-xs shrink-0">
+                    <div className="text-center">
+                      <div className="font-semibold text-foreground">
+                        {key.rate_limit_per_minute ?? '—'}
+                      </div>
+                      <div className="text-muted-foreground">req/min</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="font-semibold text-foreground">
+                        {key.rate_limit_per_day != null
+                          ? key.rate_limit_per_day.toLocaleString()
+                          : '—'}
+                      </div>
+                      <div className="text-muted-foreground">req/day</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-medium text-foreground">
+                        {key.last_used_at
+                          ? formatDistanceToNow(new Date(key.last_used_at), { addSuffix: true })
+                          : 'Never used'}
+                      </div>
+                      <div className="text-muted-foreground">last used</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Usage & Docs Info */}
       <Card>
