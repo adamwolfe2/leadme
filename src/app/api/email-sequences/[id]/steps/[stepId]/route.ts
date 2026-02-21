@@ -172,6 +172,7 @@ export async function DELETE(
       .from('email_sequence_steps')
       .delete()
       .eq('id', stepId)
+      .eq('sequence_id', sequenceId) // Defense-in-depth
 
     if (error) {
       safeError('Failed to delete email sequence step:', error)

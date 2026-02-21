@@ -44,6 +44,7 @@ export const ghlDeliverLeads = inngest.createFunction(
           'id, first_name, last_name, email, phone, company_name, company_industry, company_size, state, seniority_level, intent_score_calculated'
         )
         .in('id', lead_ids)
+        .eq('workspace_id', workspace_id)
 
       if (error) {
         throw new Error(`Failed to fetch leads: ${error.message}`)

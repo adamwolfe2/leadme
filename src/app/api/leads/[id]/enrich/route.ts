@@ -116,6 +116,7 @@ export async function POST(
         .from('leads')
         .update({ enrichment_status: 'pending' })
         .eq('id', leadId)
+        .eq('workspace_id', userProfile.workspace_id)
     }
 
     // Build the enrichment filter — use whatever identifiers we have
@@ -154,6 +155,7 @@ export async function POST(
           enriched_at: new Date().toISOString(),
         })
         .eq('id', leadId)
+        .eq('workspace_id', userProfile.workspace_id)
 
       logEnrichment(adminSupabase, {
         workspace_id: userProfile.workspace_id,
@@ -226,6 +228,7 @@ export async function POST(
           enrichment_attempts: (lead as any).enrichment_attempts + 1 || 1,
         })
         .eq('id', leadId)
+        .eq('workspace_id', userProfile.workspace_id)
 
       if (updateError) {
         safeError('[Enrich] Failed to update lead:', updateError)
