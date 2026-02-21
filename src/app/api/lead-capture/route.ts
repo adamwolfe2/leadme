@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { withRateLimit } from '@/lib/middleware/rate-limiter'
 
 export async function POST(req: NextRequest) {
   try {
+    const rateLimited = await withRateLimit(req, 'public-form')
+    if (rateLimited) return rateLimited
+
     const body = await req.json()
     const webhookUrl = process.env.NEXT_PUBLIC_LEAD_WEBHOOK_URL
 

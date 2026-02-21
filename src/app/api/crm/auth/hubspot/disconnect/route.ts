@@ -48,6 +48,7 @@ export async function POST() {
         updated_at: new Date().toISOString(),
       })
       .eq('id', existingConnection.id)
+      .eq('workspace_id', user.workspace_id) // defense-in-depth
 
     if (updateError) {
       safeError('[HubSpot OAuth] Failed to disconnect:', updateError)

@@ -10,9 +10,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCompanyEnrichmentService } from '@/lib/services/company-enrichment.service'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { withRateLimit } from '@/lib/middleware/rate-limiter'
 
 export async function GET(request: NextRequest) {
   try {
+    const rateLimited = await withRateLimit(request, 'public-form')
+    if (rateLimited) return rateLimited
+
     const { searchParams } = new URL(request.url)
     const domain = searchParams.get('domain')
 

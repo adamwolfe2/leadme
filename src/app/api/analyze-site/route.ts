@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { withRateLimit } from '@/lib/middleware/rate-limiter'
 
 export async function GET(req: NextRequest) {
+  const rateLimited = await withRateLimit(req, 'api-general')
+  if (rateLimited) return rateLimited
+
+  const user = await getCurrentUser()
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const domain = req.nextUrl.searchParams.get('domain')
   if (!domain) {
     return NextResponse.json({ error: 'Domain required' }, { status: 400 })

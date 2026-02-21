@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { cookies } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getCurrentUser } from '@/lib/auth/helpers'
 
 // GHL OAuth Token URL
 const GHL_TOKEN_URL = 'https://services.leadconnectorhq.com/oauth/token'
@@ -76,6 +77,21 @@ export async function GET(req: NextRequest) {
     // Clear OAuth cookies
     cookieStore.delete('ghl_oauth_state')
     cookieStore.delete('ghl_oauth_context')
+
+    // SECURITY: Validate cookie context against the authenticated Supabase session.
+    // The cookie alone is not sufficient — an attacker who can forge cookies could
+    // inject credentials into an arbitrary workspace. Cross-check against the real session.
+    const sessionUser = await getCurrentUser()
+    if (
+      !sessionUser ||
+      context.user_id !== sessionUser.id ||
+      context.workspace_id !== sessionUser.workspace_id
+    ) {
+      safeError('[GHL OAuth] SECURITY: Cookie context mismatch vs authenticated session')
+      return NextResponse.redirect(
+        new URL('/settings/integrations?error=ghl_invalid_session', req.url)
+      )
+    }
 
     // Validate GHL configuration
     const clientId = process.env.GHL_CLIENT_ID

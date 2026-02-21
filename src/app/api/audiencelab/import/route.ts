@@ -55,7 +55,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const workspaceId = parsed.data.workspaceId || user.workspace_id
+    // SECURITY: Always use the authenticated user's workspace_id — never trust client-supplied workspaceId
+    const workspaceId = user.workspace_id
 
     // Idempotency: check if this import was already started
     const importHash = await sha256Hex(`${fileUrl}|${audienceId || ''}|${workspaceId}`)

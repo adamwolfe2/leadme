@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { withRateLimit } from '@/lib/middleware/rate-limiter'
 
 const BASE_URL = 'https://api.similarweb.com/v1/website'
 const API_KEY = process.env.SIMILARWEB_API_KEY
@@ -7,6 +9,14 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ slug: string[] }> }
 ) {
+  const rateLimited = await withRateLimit(req, 'api-general')
+  if (rateLimited) return rateLimited
+
+  const user = await getCurrentUser()
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   if (!API_KEY) {
     return NextResponse.json({ error: true, message: 'API key not configured' }, { status: 200 })
   }

@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { cookies } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getCurrentUser } from '@/lib/auth/helpers'
 
 // Salesforce OAuth Token URL
 const SF_TOKEN_URL = 'https://login.salesforce.com/services/oauth2/token'
@@ -76,6 +77,21 @@ export async function GET(req: NextRequest) {
     // Clear OAuth cookies
     cookieStore.delete('sf_oauth_state')
     cookieStore.delete('sf_oauth_context')
+
+    // SECURITY: Validate cookie context against the authenticated Supabase session.
+    // The cookie alone is not sufficient — an attacker who can forge cookies could
+    // inject credentials into an arbitrary workspace. Cross-check against the real session.
+    const sessionUser = await getCurrentUser()
+    if (
+      !sessionUser ||
+      context.user_id !== sessionUser.id ||
+      context.workspace_id !== sessionUser.workspace_id
+    ) {
+      safeError('[Salesforce OAuth] SECURITY: Cookie context mismatch vs authenticated session')
+      return NextResponse.redirect(
+        new URL('/settings/integrations?error=sf_invalid_session', req.url)
+      )
+    }
 
     // Validate Salesforce configuration
     const clientId = process.env.SALESFORCE_CLIENT_ID

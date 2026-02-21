@@ -11,6 +11,7 @@ import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { handleApiError } from '@/lib/utils/api-error-handler'
+import { withRateLimit } from '@/lib/middleware/rate-limiter'
 
 // CORS headers for marketing site
 const corsHeaders = {
@@ -44,6 +45,13 @@ export async function OPTIONS() {
  */
 export async function POST(request: NextRequest) {
   try {
+    const rateLimited = await withRateLimit(request, 'public-form')
+    if (rateLimited) {
+      const response = rateLimited
+      Object.entries(corsHeaders).forEach(([key, value]) => response.headers.set(key, value))
+      return response
+    }
+
     const body = await request.json()
     const { email, audit_type, utm_source, utm_medium, utm_campaign } = leadMagnetSchema.parse(body)
 

@@ -104,6 +104,7 @@ export async function GET(request: NextRequest) {
               clicked_at: new Date().toISOString(),
             })
             .eq('id', emailSendId)
+            .eq('campaign_id', emailSend.campaign_id) // defense-in-depth: anchor to campaign
 
           if (updateError) {
             safeError('[Click Track] Failed to update email send status:', updateError)
